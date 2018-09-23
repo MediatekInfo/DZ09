@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<EmBitz_project_file>
+	<EmBitzVersion release="1.11" revision="0" />
+	<FileVersion major="1" minor="0" />
+	<Project>
+		<Option title="DZ09" />
+		<Option pch_mode="2" />
+		<Option compiler="armgcc_eb" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin\Release\DZ09.elf" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="armgcc_eb" />
+				<Option projectDeviceOptionsRelation="0" />
+				<Compiler>
+					<Add option="-mthumb-interwork" />
+					<Add option="-eb_arm" />
+					<Add option="-fdata-sections" />
+					<Add option="-ffunction-sections" />
+					<Add option="-O0" />
+					<Add option="-g2" />
+					<Add option="-save-temps=obj" />
+				</Compiler>
+				<Assembler>
+					<Add option="-eb_arm" />
+				</Assembler>
+				<Linker>
+					<Add option="-Wl,--gc-sections" />
+				</Linker>
+			</Target>
+		</Build>
+		<Device>
+			<Add option="$device=arm9e" />
+			<Add option="$arch=armv5te" />
+			<Add option="$lscript=MT6261DA.ld" />
+			<Add option="$heap=0x0000" />
+		</Device>
+		<Compiler>
+			<Add symbol="$(TARGET_NAME)" />
+			<Add directory=".\Inc" />
+		</Compiler>
+		<Linker>
+			<Add option="-eb_lib=n" />
+			<Add option="-Wl,--gc-sections" />
+		</Linker>
+		<ExtraCommands>
+			<Add after="arm-none-eabi-objcopy -S -O binary $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+			<Add after="mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+			<Mode before="0" />
+			<Mode after="1" />
+		</ExtraCommands>
+		<Unit filename="MT6261DA.ld" />
+		<Unit filename="Source\Lib\appheader.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\gpio.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\gpt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\gpt.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\nvic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\nvic.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\pctl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\pctl.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\pmu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\rgu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\rgu.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\rtc.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\rtc.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\usart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\usart.h" />
+		<Unit filename="Source\Lib\MT6261\mt6261.h" />
+		<Unit filename="Source\startup_MT6261x.S">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\asmutils.s">
+			<Option compilerVar="ASM" />
+		</Unit>
+		<Unit filename="Source\System\debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\debug.h" />
+		<Unit filename="Source\System\dlist.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\dlist.h" />
+		<Unit filename="Source\System\DZ09.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\init.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\init.h" />
+		<Unit filename="Source\System\memory.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\memory.h" />
+		<Unit filename="Source\System\pmngr.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\pmngr.h" />
+		<Unit filename="Source\System\systemlib.h" />
+		<Unit filename="Source\System\systypes.h" />
+		<Unit filename="Source\System\tlsf.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\tlsf.h" />
+		<Unit filename="Source\System\utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\utils.h" />
+		<Unit filename="Source\systemconfig.h" />
+		<Extensions>
+			<code_completion />
+			<debugger>
+				<target_debugging_settings target="Release" active_interface="Generic">
+					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
+						<family_options family_id="All" />
+					</debug_interface>
+				</target_debugging_settings>
+			</debugger>
+			<envvars />
+			<DoxyBlocks>
+				<comment_style block="0" line="0" />
+				<doxyfile_project />
+				<doxyfile_build />
+				<doxyfile_warnings />
+				<doxyfile_output />
+				<doxyfile_dot />
+				<general />
+			</DoxyBlocks>
+		</Extensions>
+	</Project>
+</EmBitz_project_file>
