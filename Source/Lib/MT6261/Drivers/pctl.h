@@ -65,7 +65,7 @@
 #define CNFG_PDN_CON0_CLR           (*(volatile uint16_t*)(CONFIG_base + 0x0320))
 #define CNFG_PDN_CON1_CLR           (*(volatile uint16_t*)(CONFIG_base + 0x0324))
 #define CNFG_PDN_CON2_CLR           (*(volatile uint16_t*)(CONFIG_base + 0x0328))
-#define CNFG_PDN2_MASK              0xF7FF                                                          //Disable all peripherals? except serial flash controller
+#define CNFG_PDN2_MASK              0xF7FF                                                          //Disable all peripherals, except serial flash controller
 
 //Analog power control
 #define PD_PWM3                     (0x30)                                                          //spec : PWM3
