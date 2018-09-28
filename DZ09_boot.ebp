@@ -3,12 +3,12 @@
 	<EmBitzVersion release="1.11" revision="0" />
 	<FileVersion major="1" minor="0" />
 	<Project>
-		<Option title="DZ09" />
+		<Option title="DZ09_boot" />
 		<Option pch_mode="2" />
 		<Option compiler="armgcc_eb" />
 		<Build>
 			<Target title="Release">
-				<Option output="bin\Release\DZ09.elf" />
+				<Option output="bin\Release\DZ09_boot.elf" />
 				<Option object_output="obj\Release\" />
 				<Option type="0" />
 				<Option compiler="armgcc_eb" />
@@ -33,7 +33,7 @@
 		<Device>
 			<Add option="$device=arm9e" />
 			<Add option="$arch=armv5te" />
-			<Add option="$lscript=MT6261DA.ld" />
+			<Add option="$lscript=MT6261DA_boot.ld" />
 			<Add option="$heap=0x0000" />
 		</Device>
 		<Compiler>
@@ -50,12 +50,14 @@
 			<Mode before="0" />
 			<Mode after="1" />
 		</ExtraCommands>
-		<Unit filename="MT6261DA.ld" />
-		<Unit filename="Source\Lib\appheader.c">
+		<Unit filename="MT6261DA_boot.ld" />
+		<Unit filename="Source\Bootloader\DZ09_boot.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\bootheader.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\gpio.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -64,10 +66,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\gpt.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\nvic.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -80,18 +78,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\rgu.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\rgu.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\rtc.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\rtc.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\usart.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -107,35 +93,11 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\System\debug.h" />
-		<Unit filename="Source\System\dlist.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\dlist.h" />
-		<Unit filename="Source\System\DZ09.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\init.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\init.h" />
-		<Unit filename="Source\System\memory.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\memory.h" />
-		<Unit filename="Source\System\pmngr.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\pmngr.h" />
-		<Unit filename="Source\System\tlsf.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\tlsf.h" />
 		<Unit filename="Source\System\utils.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\System\utils.h" />
 		<Unit filename="Source\systemconfig.h" />
-		<Unit filename="Source\systemlib.h" />
 		<Unit filename="Source\systypes.h" />
 		<Extensions>
 			<code_completion />
