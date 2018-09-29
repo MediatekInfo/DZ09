@@ -54,50 +54,13 @@
 		<Unit filename="Source\Bootloader\DZ09_boot.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="Source\Bootloader\DZ09_boot.h" />
 		<Unit filename="Source\Lib\bootheader.c">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\gpio.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\gpio.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\gpt.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\gpt.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\nvic.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\nvic.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\pctl.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\pctl.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\pmu.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\usart.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\usart.h" />
-		<Unit filename="Source\Lib\MT6261\mt6261.h" />
 		<Unit filename="Source\startup_MT6261x.S">
 			<Option compilerVar="CC" />
 		</Unit>
-		<Unit filename="Source\System\asmutils.s">
-			<Option compilerVar="ASM" />
-		</Unit>
-		<Unit filename="Source\System\debug.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\debug.h" />
-		<Unit filename="Source\System\utils.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\utils.h" />
-		<Unit filename="Source\systemconfig.h" />
 		<Unit filename="Source\systypes.h" />
 		<Extensions>
 			<code_completion />
