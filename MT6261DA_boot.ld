@@ -27,7 +27,7 @@
 /* ---------------------------------------------------------------------------- */
 
 /*------------------------------------------------------------------------------
- *      Linker script for running in internal FLASH on the MT6261A
+ *      Linker script for running in internal TCM on the MT6261DA
  *----------------------------------------------------------------------------*/
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
@@ -37,8 +37,6 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions for MT6261A*/
 MEMORY
 {
-/*    ROM  (rx) : ORIGIN = 0x10006000, LENGTH = 8M - 0x6000
-    RAM (rwx) : ORIGIN = 0x00000000, LENGTH = 4M*/
     TCM (rwx) : ORIGIN = 0x70006000, LENGTH = 0x00004000
 }
 
