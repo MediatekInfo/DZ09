@@ -387,417 +387,418 @@
 #define GPIO_MODE0                  (*(volatile uint32_t*)(GPIO_Base + 0x0C00))
 #define GPIO_MODE0_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C04))
 #define GPIO_MODE0_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C08))
-#define GPIO_MODE0MASK              (GPIO00MASK|GPIO01MASK|GPIO02MASK|GPIO03MASK|\
-                                    GPIO04MASK|GPIO05MASK|GPIO06MASK|GPIO07MASK)
-//GPIO0
-#define GPIO00MASK                  0x0F
-#define M00GPIO                     0x00                                                            //IO
-#define M00EINT0                    0x01                                                            //I
-#define M00XP                       0x02                                                            //AIO
-#define M00U3RXD                    0x03                                                            //I
-#define M00CMCSD2                   0x04                                                            //I
-#define M00CMCSK                    0x05                                                            //I
-#define M00EDIDO                    0x06                                                            //O
-#define M00JTDI                     0x07                                                            //I
-#define M00BTJTDI                   0x08                                                            //I
-#define M00FMJTDI                   0x09                                                            //I
-//GPIO1
-#define GPIO01MASK                  0x0F
-#define M01GPIO                     0x00                                                            //IO
-#define M01EINT1                    0x01                                                            //I
-#define M01XM                       0x02                                                            //AIO
-#define M01U3TXD                    0x03                                                            //O
-#define M01U1CTS                    0x04                                                            //I
-#define M01CMMCLK                   0x05                                                            //O
-#define M01EDIDI                    0x06                                                            //I
-#define M01JTMS                     0x07                                                            //I
-#define M01BTJTMS                   0x08                                                            //I
-#define M01FMJTMS                   0x09                                                            //I
-//GPIO2
-#define GPIO02MASK                  0x0F
-#define M02GPIO                     0x00                                                            //IO
-#define M02EINT2                    0x01                                                            //I
-#define M02YP                       0x02                                                            //AIO
-#define M02GPSFSYNC                 0x03                                                            //O
-#define M02PWM0                     0x04                                                            //O
-#define M02CMCSD0                   0x05                                                            //I
-#define M02EDIWS                    0x06                                                            //O
-#define M02JTRST                    0x07                                                            //I
-#define M02BTJTRST                  0x08                                                            //I
-#define M02FMJTRST                  0x09                                                            //I
-//GPIO3
-#define GPIO03MASK                  0x0F
-#define M03GPIO                     0x00                                                            //IO
-#define M03G3MCINS                  0x01                                                            //I
-#define M03YM                       0x02                                                            //AIO
-#define M03PWM1                     0x04                                                            //O
-#define M03CMCSD1                   0x05                                                            //I
-#define M03EDICK                    0x06                                                            //O
-#define M03JTDO                     0x07                                                            //O
-#define M03BTJTDO                   0x08                                                            //O
-#define M03FMJTDO                   0x09                                                            //O
-//GPIO4
-#define GPIO04MASK                  0x07
-#define M04GPIO                     0x00                                                            //IO
-#define M04EINT3                    0x01                                                            //I
-#define M04U1RTS                    0x04                                                            //O
-//GPIO5
-#define GPIO05MASK                  0x07
-#define M05GPIO                     0x00                                                            //IO
-#define M05EINT4                    0x01                                                            //I
-#define M05BPI_BUS3                 0x03                                                            //O
-//GPIO6
-#define GPIO06MASK                  0x07
-#define M06GPIO                     0x00                                                            //IO
-#define M06EINT5                    0x01                                                            //I
-#define M06G6MCINS                  0x02                                                            //I
-#define M06BPI_BUS4                 0x03                                                            //O
-//GPIO7
-#define GPIO07MASK                  0x07
-#define M07GPIO                     0x00                                                            //IO
-#define M07EINT6                    0x01                                                            //I
-#define M07BPI_BUS5                 0x03                                                            //O
+#define GPIO_MODE0MASK              (GPIO00_MASK|GPIO01_MASK|GPIO02_MASK|GPIO03_MASK|\
+                                    GPIO04_MASK|GPIO05_MASK|GPIO06_MASK|GPIO07_MASK)
+
+#define GPIO00_MASK                 0x0F
+#define GPIO00_MODE_IO              0x00                                                            //IO
+#define GPIO00_MODE_EINT0           0x01                                                            //I
+#define GPIO00_MODE_XP              0x02                                                            //AIO
+#define GPIO00_MODE_U3RXD           0x03                                                            //I
+#define GPIO00_MODE_CMCSD2          0x04                                                            //I
+#define GPIO00_MODE_CMCSK           0x05                                                            //I
+#define GPIO00_MODE_EDIDO           0x06                                                            //O
+#define GPIO00_MODE_JTDI            0x07                                                            //I
+#define GPIO00_MODE_BTJTDI          0x08                                                            //I
+#define GPIO00_MODE_FMJTDI          0x09                                                            //I
+
+#define GPIO01_MASK                 0x0F
+#define GPIO01_MODE_IO              0x00                                                            //IO
+#define GPIO01_MODE_EINT1           0x01                                                            //I
+#define GPIO01_MODE_XM              0x02                                                            //AIO
+#define GPIO01_MODE_U3TXD           0x03                                                            //O
+#define GPIO01_MODE_U1CTS           0x04                                                            //I
+#define GPIO01_MODE_CMMCLK          0x05                                                            //O
+#define GPIO01_MODE_EDIDI           0x06                                                            //I
+#define GPIO01_MODE_JTMS            0x07                                                            //I
+#define GPIO01_MODE_BTJTMS          0x08                                                            //I
+#define GPIO01_MODE_FMJTMS          0x09                                                            //I
+
+#define GPIO02_MASK                 0x0F
+#define GPIO02_MODE_IO              0x00                                                            //IO
+#define GPIO02_MODE_EINT2           0x01                                                            //I
+#define GPIO02_MODE_YP              0x02                                                            //AIO
+#define GPIO02_MODE_GPSFSYNC        0x03                                                            //O
+#define GPIO02_MODE_PWM0            0x04                                                            //O
+#define GPIO02_MODE_CMCSD0          0x05                                                            //I
+#define GPIO02_MODE_EDIWS           0x06                                                            //O
+#define GPIO02_MODE_JTRST           0x07                                                            //I
+#define GPIO02_MODE_BTJTRST         0x08                                                            //I
+#define GPIO02_MODE_FMJTRST         0x09                                                            //I
+
+#define GPIO03_MASK                 0x0F
+#define GPIO03_MODE_IO              0x00                                                            //IO
+#define GPIO03_MODE_G3MCINS         0x01                                                            //I
+#define GPIO03_MODE_YM              0x02                                                            //AIO
+#define GPIO03_MODE_PWM1            0x04                                                            //O
+#define GPIO03_MODE_CMCSD1          0x05                                                            //I
+#define GPIO03_MODE_EDICK           0x06                                                            //O
+#define GPIO03_MODE_JTDO            0x07                                                            //O
+#define GPIO03_MODE_BTJTDO          0x08                                                            //O
+#define GPIO03_MODE_FMJTDO          0x09                                                            //O
+
+#define GPIO04_MASK                 0x07
+#define GPIO04_MODE_IO              0x00                                                            //IO
+#define GPIO04_MODE_EINT3           0x01                                                            //I
+#define GPIO04_MODE_U1RTS           0x04                                                            //O
+
+#define GPIO05_MASK                 0x07
+#define GPIO05_MODE_IO              0x00                                                            //IO
+#define GPIO05_MODE_EINT4           0x01                                                            //I
+#define GPIO05_MODE_BPI_BUS3        0x03                                                            //O
+
+#define GPIO06_MASK                 0x07
+#define GPIO06_MODE_IO              0x00                                                            //IO
+#define GPIO06_MODE_EINT5           0x01                                                            //I
+#define GPIO06_MODE_G6MCINS         0x02                                                            //I
+#define GPIO06_MODE_BPI_BUS4        0x03                                                            //O
+
+#define GPIO07_MASK                 0x07
+#define GPIO07_MODE_IO              0x00                                                            //IO
+#define GPIO07_MODE_EINT6           0x01                                                            //I
+#define GPIO07_MODE_BPI_BUS5        0x03                                                            //O
 
 #define GPIO_MODE1                  (*(volatile uint32_t*)(GPIO_Base + 0x0C10))
 #define GPIO_MODE1_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C14))
 #define GPIO_MODE1_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C18))
-#define GPIO_MODE1MASK              (GPIO08MASK|GPIO09MASK|GPIO10MASK|GPIO11MASK|\
-                                    GPIO12MASK|GPIO13MASK|GPIO14MASK|GPIO15MASK)
-//GPIO8
-#define GPIO08MASK                  0x07
-#define M08GPIO                     0x00                                                            //IO
-#define M08EINT7                    0x01                                                            //I
-#define M08SCL                      0x02                                                            //IO
-//GPIO9
-#define GPIO09MASK                  0x07
-#define M09GPIO                     0x00                                                            //IO
-#define M09EINT8                    0x01                                                            //I
-#define M09SDA                      0x02                                                            //IO
-//GPIO10
-#define GPIO10MASK                  0x07
-#define M10GPIO                     0x00                                                            //IO
-#define M10U1RXD                    0x01                                                            //I
-#define M10CMRST                    0x02                                                            //O
-#define M10EINT9                    0x03                                                            //I
-#define M10G10MCINS                 0x04                                                            //I
-//GPIO11
-#define GPIO11MASK                  0x07
-#define M11GPIO                     0x00                                                            //IO
-#define M11U1TXD                    0x01                                                            //O
-#define M11CMPDN                    0x02                                                            //O
-#define M11EINT10                   0x03                                                            //I
-//GPIO12
-#define GPIO12MASK                  0x07
-#define M12GPIO                     0x00                                                            //IO
-#define M12KCOL4                    0x01                                                            //IO
-#define M12U2RXD                    0x02                                                            //I
-#define M12EDIDI                    0x03                                                            //I
-#define M12FMJTDI                   0x04                                                            //I
-#define M12JTDI                     0x05                                                            //I
-#define M12BTJTDI                   0x06                                                            //I
-//GPIO13
-#define GPIO13MASK                  0x07
-#define M13GPIO                     0x00                                                            //IO
-#define M13KCOL3                    0x01                                                            //IO
-#define M13EINT11                   0x02                                                            //I
-#define M13PWM0                     0x03                                                            //O
-#define M13FMJTMS                   0x04                                                            //I
-#define M13JTMS                     0x05                                                            //I
-#define M13BTJTMS                   0x06                                                            //I
-//GPIO14
-#define GPIO14MASK                  0x07
-#define M14GPIO                     0x00                                                            //IO
-#define M14KCOL2                    0x01                                                            //IO
-#define M14EINT12                   0x02                                                            //I
-#define M14U1RTS                    0x03                                                            //I
-//GPIO15
-#define GPIO15MASK                  0x07
-#define M15GPIO                     0x00                                                            //IO
-#define M15KCOL1                    0x01                                                            //IO
-#define M15GPSFSYNC                 0x02                                                            //O
-#define M15U1CTS                    0x03                                                            //I
-#define M15FMJTCK                   0x04                                                            //I
-#define M15JTCK                     0x05                                                            //I
-#define M15BTJTCK                   0x06                                                            //I
+#define GPIO_MODE1MASK              (GPIO08_MASK|GPIO09_MASK|GPIO10_MASK|GPIO11_MASK|\
+                                    GPIO12_MASK|GPIO13_MASK|GPIO14_MASK|GPIO15_MASK)
+
+#define GPIO08_MASK                 0x07
+#define GPIO08_MODE_IO              0x00                                                            //IO
+#define GPIO08_MODE_EINT7           0x01                                                            //I
+#define GPIO08_MODE_SCL             0x02                                                            //IO
+
+#define GPIO09_MASK                 0x07
+#define GPIO09_MODE_IO              0x00                                                            //IO
+#define GPIO09_MODE_EINT8           0x01                                                            //I
+#define GPIO09_MODE_SDA             0x02                                                            //IO
+
+#define GPIO10_MASK                 0x07
+#define GPIO10_MODE_IO              0x00                                                            //IO
+#define GPIO10_MODE_U1RXD           0x01                                                            //I
+#define GPIO10_MODE_CMRST           0x02                                                            //O
+#define GPIO10_MODE_EINT9           0x03                                                            //I
+#define GPIO10_MODE_G10MCINS        0x04                                                            //I
+
+#define GPIO11_MASK                 0x07
+#define GPIO11_MODE_IO              0x00                                                            //IO
+#define GPIO11_MODE_U1TXD           0x01                                                            //O
+#define GPIO11_MODE_CMPDN           0x02                                                            //O
+#define GPIO11_MODE_EINT10          0x03                                                            //I
+
+#define GPIO12_MASK                 0x07
+#define GPIO12_MODE_IO              0x00                                                            //IO
+#define GPIO12_MODE_KCOL4           0x01                                                            //IO
+#define GPIO12_MODE_U2RXD           0x02                                                            //I
+#define GPIO12_MODE_EDIDI           0x03                                                            //I
+#define GPIO12_MODE_FMJTDI          0x04                                                            //I
+#define GPIO12_MODE_JTDI            0x05                                                            //I
+#define GPIO12_MODE_BTJTDI          0x06                                                            //I
+
+#define GPIO13_MASK                 0x07
+#define GPIO13_MODE_IO              0x00                                                            //IO
+#define GPIO13_MODE_KCOL3           0x01                                                            //IO
+#define GPIO13_MODE_EINT11          0x02                                                            //I
+#define GPIO13_MODE_PWM0            0x03                                                            //O
+#define GPIO13_MODE_FMJTMS          0x04                                                            //I
+#define GPIO13_MODE_JTMS            0x05                                                            //I
+#define GPIO13_MODE_BTJTMS          0x06                                                            //I
+
+#define GPIO14_MASK                 0x07
+#define GPIO14_MODE_IO              0x00                                                            //IO
+#define GPIO14_MODE_KCOL2           0x01                                                            //IO
+#define GPIO14_MODE_EINT12          0x02                                                            //I
+#define GPIO14_MODE_U1RTS           0x03                                                            //I
+
+#define GPIO15_MASK                 0x07
+#define GPIO15_MODE_IO              0x00                                                            //IO
+#define GPIO15_MODE_KCOL1           0x01                                                            //IO
+#define GPIO15_MODE_GPSFSYNC        0x02                                                            //O
+#define GPIO15_MODE_U1CTS           0x03                                                            //I
+#define GPIO15_MODE_FMJTCK          0x04                                                            //I
+#define GPIO15_MODE_JTCK            0x05                                                            //I
+#define GPIO15_MODE_BTJTCK          0x06                                                            //I
 
 #define GPIO_MODE2                  (*(volatile uint32_t*)(GPIO_Base + 0x0C20))
 #define GPIO_MODE2_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C24))
 #define GPIO_MODE2_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C28))
-#define GPIO_MODE2MASK              (GPIO16MASK|GPIO17MASK|GPIO18MASK|GPIO19MASK|\
-                                    GPIO20MASK|GPIO21MASK|GPIO22MASK|GPIO23MASK)
-//GPIO16
-#define GPIO16MASK                  0x07
-#define M16GPIO                     0x00                                                            //IO
-#define M16KCOL0                    0x01                                                            //IO
-//GPIO17
-#define GPIO17MASK                  0x07
-#define M17GPIO                     0x00                                                            //IO
-#define M17KROW4                    0x01                                                            //IO
-#define M17U2TXD                    0x02                                                            //O
-#define M17EDICK                    0x03                                                            //O
-//GPIO18
-#define GPIO18MASK                  0x07
-#define M18GPIO                     0x00                                                            //IO
-#define M18KROW3                    0x01                                                            //IO
-#define M18EINT13                   0x02                                                            //I
-#define M18CLKO0                    0x03                                                            //O
-#define M18FMJTRSTB                 0x04                                                            //I
-#define M18JTRST_B                  0x05                                                            //I
-#define M18BTJTRSTB                 0x06                                                            //I
-//GPIO19
-#define GPIO19MASK                  0x07
-#define M19GPIO                     0x00                                                            //IO
-#define M19KROW2                    0x01                                                            //IO
-#define M19PWM1                     0x02                                                            //I
-#define M19EDIWS                    0x03                                                            //O
-#define M19FMJTDO                   0x04                                                            //O
-#define M19JTDO                     0x05                                                            //O
-#define M19BTJTDO                   0x06                                                            //O
-//GPIO20
-#define GPIO20MASK                  0x07
-#define M20GPIO                     0x00                                                            //IO
-#define M20KROW1                    0x01                                                            //IO
-#define M20EINT14                   0x02                                                            //I
-#define M20EDIDO                    0x03                                                            //O
-#define M20BTPRI                    0x04                                                            //IO
-#define M20JTRCK                    0x05                                                            //O
-#define M20BTDBGACKN                0x06                                                            //O
-//GPIO21
-#define GPIO21MASK                  0x07
-#define M21GPIO                     0x00                                                            //IO
-#define M21KROW0                    0x01                                                            //IO
-#define M21MCINS                    0x05                                                            //I
-#define M21BTDBGIN                  0x06                                                            //I
-//GPIO22
-#define GPIO22MASK                  0x07
-#define M22GPIO                     0x00                                                            //IO
-#define M22BPI_BUS2                 0x01                                                            //O
-//GPIO23
-#define GPIO23MASK                  0x07
-#define M23GPIO                     0x00                                                            //IO
-#define M23PI_BUS1                  0x01                                                            //O
+#define GPIO_MODE2MASK              (GPIO16_MASK|GPIO17_MASK|GPIO18_MASK|GPIO19_MASK|\
+                                    GPIO20_MASK|GPIO21_MASK|GPIO22_MASK|GPIO23_MASK)
+
+#define GPIO16_MASK                 0x07
+#define GPIO16_MODE_IO              0x00                                                            //IO
+#define GPIO16_MODE_KCOL0           0x01                                                            //IO
+
+#define GPIO17_MASK                 0x07
+#define GPIO17_MODE_IO              0x00                                                            //IO
+#define GPIO17_MODE_KROW4           0x01                                                            //IO
+#define GPIO17_MODE_U2TXD           0x02                                                            //O
+#define GPIO17_MODE_EDICK           0x03                                                            //O
+
+#define GPIO18_MASK                 0x07
+#define GPIO18_MODE_IO              0x00                                                            //IO
+#define GPIO18_MODE_KROW3           0x01                                                            //IO
+#define GPIO18_MODE_EINT13          0x02                                                            //I
+#define GPIO18_MODE_CLKO0           0x03                                                            //O
+#define GPIO18_MODE_FMJTRSTB        0x04                                                            //I
+#define GPIO18_MODE_JTRST_B         0x05                                                            //I
+#define GPIO18_MODE_BTJTRSTB        0x06                                                            //I
+
+#define GPIO19_MASK                 0x07
+#define GPIO19_MODE_IO              0x00                                                            //IO
+#define GPIO19_MODE_KROW2           0x01                                                            //IO
+#define GPIO19_MODE_PWM1            0x02                                                            //I
+#define GPIO19_MODE_EDIWS           0x03                                                            //O
+#define GPIO19_MODE_FMJTDO          0x04                                                            //O
+#define GPIO19_MODE_JTDO            0x05                                                            //O
+#define GPIO19_MODE_BTJTDO          0x06                                                            //O
+
+#define GPIO20_MASK                 0x07
+#define GPIO20_MODE_IO              0x00                                                            //IO
+#define GPIO20_MODE_KROW1           0x01                                                            //IO
+#define GPIO20_MODE_EINT14          0x02                                                            //I
+#define GPIO20_MODE_EDIDO           0x03                                                            //O
+#define GPIO20_MODE_BTPRI           0x04                                                            //IO
+#define GPIO20_MODE_JTRCK           0x05                                                            //O
+#define GPIO20_MODE_BTDBGACKN       0x06                                                            //O
+
+#define GPIO21_MASK                 0x07
+#define GPIO21_MODE_IO              0x00                                                            //IO
+#define GPIO21_MODE_KROW0           0x01                                                            //IO
+#define GPIO21_MODE_MCINS           0x05                                                            //I
+#define GPIO21_MODE_BTDBGIN         0x06                                                            //I
+
+#define GPIO22_MASK                 0x07
+#define GPIO22_MODE_IO              0x00                                                            //IO
+#define GPIO22_MODE_BPI_BUS2        0x01                                                            //O
+
+#define GPIO23_MASK                 0x07
+#define GPIO23_MODE_IO              0x00                                                            //IO
+#define GPIO23_MODE_PI_BUS1         0x01                                                            //O
 
 #define GPIO_MODE3                  (*(volatile uint32_t*)(GPIO_Base + 0x0C30))
 #define GPIO_MODE3_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C34))
 #define GPIO_MODE3_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C38))
-#define GPIO_MODE3MASK              (GPIO24MASK|GPIO25MASK|GPIO26MASK|GPIO27MASK|\
-                                    GPIO28MASK|GPIO29MASK|GPIO30MASK|GPIO31MASK)
-//GPIO24
-#define GPIO24MASK                  0x07
-#define M24GPIO                     0x00                                                            //IO
-#define M24BPI_BUS0                 0x01                                                            //O
-//GPIO25
-#define GPIO25MASK                  0x07
-#define M25GPIO                     0x00                                                            //IO
-#define M25CMRST                    0x01                                                            //O
-#define M25LSRSTB                   0x02                                                            //O
-#define M25CLKO1                    0x03                                                            //O
-#define M25EINT15                   0x04                                                            //I
-#define M25FMJTDI                   0x05                                                            //I
-#define M25JTDI                     0x06                                                            //I
-//GPIO26
-#define GPIO26MASK                  0x07
-#define M26GPIO                     0x00                                                            //IO
-#define M26CMPDN                    0x01                                                            //O
-#define M26LSCK1                    0x02                                                            //O
-#define M26DAICLK                   0x03                                                            //O
-#define M26SPICS                    0x04                                                            //IO
-#define M26FMJTMS                   0x05                                                            //I
-#define M26JTMS                     0x06                                                            //I
-//GPIO27
-#define GPIO27MASK                  0x0F
-#define M27GPIO                     0x00                                                            //IO
-#define M27CMCSD0                   0x01                                                            //I
-#define M27LSCE_B1                  0x02                                                            //O
-#define M27DAIPCMIN                 0x03                                                            //I
-#define M27SPISCK                   0x04                                                            //IO
-#define M27FMJTCK                   0x05                                                            //I
-#define M27JTCK                     0x06                                                            //I
-#define M27MC2CM0                   0x08                                                            //O
-//GPIO28
-#define GPIO28MASK                  0x0F
-#define M28GPIO                     0x00                                                            //IO
-#define M28CMCSD1                   0x01                                                            //I
-#define M28LSDA1                    0x02                                                            //IO
-#define M28DAIPCMOUT                0x03                                                            //O
-#define M28SPIMOSI                  0x04                                                            //IO
-#define M28FMJTRSTB                 0x05                                                            //I
-#define M28JTRST_B                  0x06                                                            //I
-#define M28MC2CK                    0x08                                                            //O
-//GPIO29
-#define GPIO29MASK                  0x0F
-#define M29GPIO                     0x00                                                            //IO
-#define M29CMMCLK                   0x01                                                            //O
-#define M29LSA0DA1                  0x02                                                            //O
-#define M29DAISYNC                  0x03                                                            //O
-#define M29SPIMISO                  0x04                                                            //IO
-#define M29FMJTDO                   0x05                                                            //O
-#define M29JTDO                     0x06                                                            //O
-#define M29MC2DA0                   0x08                                                            //IO
-//GPIO30
-#define GPIO30MASK                  0x07
-#define M30GPIO                     0x00                                                            //IO
-#define M30CMCSK                    0x01                                                            //I
-#define M30LPTE                     0x02                                                            //I
-#define M30CMCSD2                   0x03                                                            //I
-#define M30EINT16                   0x04                                                            //I
-#define M30JTRCK                    0x06                                                            //O
-//GPIO31
-#define GPIO31MASK                  0x07
-#define M31GPIO                     0x00                                                            //IO
-#define M31MCCK                     0x01                                                            //O
-#define M31U2RXD                    0x04                                                            //I
+#define GPIO_MODE3MASK              (GPIO24_MASK|GPIO25_MASK|GPIO26_MASK|GPIO27_MASK|\
+                                    GPIO28_MASK|GPIO29_MASK|GPIO30_MASK|GPIO31_MASK)
+
+#define GPIO24_MASK                 0x07
+#define GPIO24_MODE_IO              0x00                                                            //IO
+#define GPIO24_MODE_BPI_BUS0        0x01                                                            //O
+
+#define GPIO25_MASK                 0x07
+#define GPIO25_MODE_IO              0x00                                                            //IO
+#define GPIO25_MODE_CMRST           0x01                                                            //O
+#define GPIO25_MODE_LSRSTB          0x02                                                            //O
+#define GPIO25_MODE_CLKO1           0x03                                                            //O
+#define GPIO25_MODE_EINT15          0x04                                                            //I
+#define GPIO25_MODE_FMJTDI          0x05                                                            //I
+#define GPIO25_MODE_JTDI            0x06                                                            //I
+
+#define GPIO26_MASK                 0x07
+#define GPIO26_MODE_IO              0x00                                                            //IO
+#define GPIO26_MODE_CMPDN           0x01                                                            //O
+#define GPIO26_MODE_LSCK1           0x02                                                            //O
+#define GPIO26_MODE_DAICLK          0x03                                                            //O
+#define GPIO26_MODE_SPICS           0x04                                                            //IO
+#define GPIO26_MODE_FMJTMS          0x05                                                            //I
+#define GPIO26_MODE_JTMS            0x06                                                            //I
+
+#define GPIO27_MASK                 0x0F
+#define GPIO27_MODE_IO              0x00                                                            //IO
+#define GPIO27_MODE_CMCSD0          0x01                                                            //I
+#define GPIO27_MODE_LSCE_B1         0x02                                                            //O
+#define GPIO27_MODE_DAIPCMIN        0x03                                                            //I
+#define GPIO27_MODE_SPISCK          0x04                                                            //IO
+#define GPIO27_MODE_FMJTCK          0x05                                                            //I
+#define GPIO27_MODE_JTCK            0x06                                                            //I
+#define GPIO27_MODE_MC2CM0          0x08                                                            //O
+
+#define GPIO28_MASK                 0x0F
+#define GPIO28_MODE_IO              0x00                                                            //IO
+#define GPIO28_MODE_CMCSD1          0x01                                                            //I
+#define GPIO28_MODE_LSDA1           0x02                                                            //IO
+#define GPIO28_MODE_DAIPCMOUT       0x03                                                            //O
+#define GPIO28_MODE_SPIMOSI         0x04                                                            //IO
+#define GPIO28_MODE_FMJTRSTB        0x05                                                            //I
+#define GPIO28_MODE_JTRST_B         0x06                                                            //I
+#define GPIO28_MODE_MC2CK           0x08                                                            //O
+
+#define GPIO29_MASK                 0x0F
+#define GPIO29_MODE_IO              0x00                                                            //IO
+#define GPIO29_MODE_CMMCLK          0x01                                                            //O
+#define GPIO29_MODE_LSA0DA1         0x02                                                            //O
+#define GPIO29_MODE_DAISYNC         0x03                                                            //O
+#define GPIO29_MODE_SPIMISO         0x04                                                            //IO
+#define GPIO29_MODE_FMJTDO          0x05                                                            //O
+#define GPIO29_MODE_JTDO            0x06                                                            //O
+#define GPIO29_MODE_MC2DA0          0x08                                                            //IO
+
+#define GPIO30_MASK                 0x07
+#define GPIO30_MODE_IO              0x00                                                            //IO
+#define GPIO30_MODE_CMCSK           0x01                                                            //I
+#define GPIO30_MODE_LPTE            0x02                                                            //I
+#define GPIO30_MODE_CMCSD2          0x03                                                            //I
+#define GPIO30_MODE_EINT16          0x04                                                            //I
+#define GPIO30_MODE_JTRCK           0x06                                                            //O
+
+#define GPIO31_MASK                 0x07
+#define GPIO31_MODE_IO              0x00                                                            //IO
+#define GPIO31_MODE_MCCK            0x01                                                            //O
+#define GPIO31_MODE_U2RXD           0x04                                                            //I
 
 #define GPIO_MODE4                  (*(volatile uint32_t*)(GPIO_Base + 0x0C40))
 #define GPIO_MODE4_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C44))
 #define GPIO_MODE4_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C48))
-#define GPIO_MODE4MASK              (GPIO32MASK|GPIO33MASK|GPIO34MASK|GPIO35MASK|\
-                                    GPIO36MASK|GPIO37MASK|GPIO38MASK|GPIO39MASK)
-//GPIO32
-#define GPIO32MASK                  0x07
-#define M32GPIO                     0x00                                                            //IO
-#define M32MCCM0                    0x01                                                            //O
-#define M32U2TDX                    0x04                                                            //O
-//GPIO33
-#define GPIO33MASK                  0x07
-#define M33GPIO                     0x00                                                            //IO
-#define M33MCDA0                    0x01                                                            //IO
-#define M33DAISYNC                  0x04                                                            //O
-//GPIO34
-#define GPIO34MASK                  0x07
-#define M34GPIO                     0x00                                                            //IO
-#define M34MCDA1                    0x01                                                            //IO
-#define M34EINT17                   0x02                                                            //I
-#define M34DAIPCMIN                 0x04                                                            //O
-//GPIO35
-#define GPIO35MASK                  0x07
-#define M35GPIO                     0x00                                                            //IO
-#define M35MCDA2                    0x01                                                            //IO
-#define M35EINT18                   0x02                                                            //I
-#define M35DAICLK                   0x04                                                            //O
-//GPIO36
-#define GPIO36MASK                  0x07
-#define M36GPIO                     0x00                                                            //IO
-#define M36MCDA3                    0x01                                                            //IO
-#define M36EINT19                   0x02                                                            //I
-#define M36CLKO2                    0x03                                                            //O
-#define M36DAIPCMOUT                0x04                                                            //O
-//GPIO37
-#define GPIO37MASK                  0x07
-#define M37GPIO                     0x00                                                            //IO
-#define M37SIM1_SIO                 0x01                                                            //IO
-//GPIO38
-#define GPIO38MASK                  0x07
-#define M38GPIO                     0x00                                                            //IO
-#define M38SIM1_SRST                0x01                                                            //IO
-//GPIO39
-#define GPIO39MASK                  0x07
-#define M39GPIO                     0x00                                                            //IO
-#define M39SIM1_SCLK                0x01                                                            //IO
+#define GPIO_MODE4MASK              (GPIO32_MASK|GPIO33_MASK|GPIO34_MASK|GPIO35_MASK|\
+                                    GPIO36_MASK|GPIO37_MASK|GPIO38_MASK|GPIO39_MASK)
+
+#define GPIO32_MASK                 0x07
+#define GPIO32_MODE_IO              0x00                                                            //IO
+#define GPIO32_MODE_MCCM0           0x01                                                            //O
+#define GPIO32_MODE_U2TDX           0x04                                                            //O
+
+#define GPIO33_MASK                 0x07
+#define GPIO33_MODE_IO              0x00                                                            //IO
+#define GPIO33_MODE_MCDA0           0x01                                                            //IO
+#define GPIO33_MODE_DAISYNC         0x04                                                            //O
+
+#define GPIO34_MASK                 0x07
+#define GPIO34_MODE_IO              0x00                                                            //IO
+#define GPIO34_MODE_MCDA1           0x01                                                            //IO
+#define GPIO34_MODE_EINT17          0x02                                                            //I
+#define GPIO34_MODE_DAIPCMIN        0x04                                                            //O
+
+#define GPIO35_MASK                 0x07
+#define GPIO35_MODE_IO              0x00                                                            //IO
+#define GPIO35_MODE_MCDA2           0x01                                                            //IO
+#define GPIO35_MODE_EINT18          0x02                                                            //I
+#define GPIO35_MODE_DAICLK          0x04                                                            //O
+
+#define GPIO36_MASK                 0x07
+#define GPIO36_MODE_IO              0x00                                                            //IO
+#define GPIO36_MODE_MCDA3           0x01                                                            //IO
+#define GPIO36_MODE_EINT19          0x02                                                            //I
+#define GPIO36_MODE_CLKO2           0x03                                                            //O
+#define GPIO36_MODE_DAIPCMOUT       0x04                                                            //O
+
+#define GPIO37_MASK                 0x07
+#define GPIO37_MODE_IO              0x00                                                            //IO
+#define GPIO37_MODE_SIM1_SIO        0x01                                                            //IO
+
+#define GPIO38_MASK                 0x07
+#define GPIO38_MODE_IO              0x00                                                            //IO
+#define GPIO38_MODE_SIM1_SRST       0x01                                                            //IO
+
+#define GPIO39_MASK                 0x07
+#define GPIO39_MODE_IO              0x00                                                            //IO
+#define GPIO39_MODE_SIM1_SCLK       0x01                                                            //IO
 
 #define GPIO_MODE5                  (*(volatile uint32_t*)(GPIO_Base + 0x0C50))
 #define GPIO_MODE5_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C54))
 #define GPIO_MODE5_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C58))
-#define GPIO_MODE5MASK              (GPIO40MASK|GPIO41MASK|GPIO42MASK|GPIO43MASK|\
-                                    GPIO44MASK|GPIO45MASK|GPIO46MASK|GPIO47MASK)
-//GPIO40
-#define GPIO40MASK                  0x07
-#define M40GPIO                     0x00                                                            //IO
-#define M40SIM2_SIO                 0x01                                                            //IO
-#define M40U2RTS                    0x03                                                            //O
-//GPIO41
-#define GPIO41MASK                  0x07
-#define M41GPIO                     0x00                                                            //IO
-#define M41SIM2_SRST                0x01                                                            //IO
-#define M41CLKO3                    0x02                                                            //IO
-#define M41U2CTS                    0x03                                                            //I
-//GPIO42
-#define GPIO42MASK                  0x07
-#define M42GPIO                     0x00                                                            //IO
-#define M42SIM2_SCLK                0x01                                                            //IO
-#define M42LSCE1_B1                 0x02                                                            //O
-//GPIO43
-#define GPIO43MASK                  0x07
-#define M43GPIO                     0x00                                                            //IO
-#define M43SCL                      0x01                                                            //IO
-//GPIO44
-#define GPIO44MASK                  0x07
-#define M44GPIO                     0x00                                                            //IO
-#define M44SDA                      0x01                                                            //IO
-//GPIO45
-#define GPIO45MASK                  0x07
-#define M45GPIO                     0x00                                                            //IO
-#define M45LSRSTB                   0x01                                                            //O
-#define M45CMRST                    0x03                                                            //O
-//GPIO46
-#define GPIO46MASK                  0x07
-#define M46GPIO                     0x00                                                            //IO
-#define M46LSCE_B0                  0x01                                                            //O
-#define M46EINT20                   0x02                                                            //I
-#define M46CMCSD0                   0x03                                                            //I
-#define M46CLKO4                    0x04                                                            //O
-//GPIO47
-#define GPIO47MASK                  0x07
-#define M47GPIO                     0x00                                                            //IO
-#define M47LSCK0                    0x01                                                            //O
-#define M47CMPDN                    0x03                                                            //O
+#define GPIO_MODE5MASK              (GPIO40_MASK|GPIO41_MASK|GPIO42_MASK|GPIO43_MASK|\
+                                    GPIO44_MASK|GPIO45_MASK|GPIO46_MASK|GPIO47_MASK)
+
+#define GPIO40_MASK                 0x07
+#define GPIO40_MODE_IO              0x00                                                            //IO
+#define GPIO40_MODE_SIM2_SIO        0x01                                                            //IO
+#define GPIO40_MODE_U2RTS           0x03                                                            //O
+
+#define GPIO41_MASK                 0x07
+#define GPIO41_MODE_IO              0x00                                                            //IO
+#define GPIO41_MODE_SIM2_SRST       0x01                                                            //IO
+#define GPIO41_MODE_CLKO3           0x02                                                            //IO
+#define GPIO41_MODE_U2CTS           0x03                                                            //I
+
+#define GPIO42_MASK                 0x07
+#define GPIO42_MODE_IO              0x00                                                            //IO
+#define GPIO42_MODE_SIM2_SCLK       0x01                                                            //IO
+#define GPIO42_MODE_LSCE1_B1        0x02                                                            //O
+
+#define GPIO43_MASK                 0x07
+#define GPIO43_MODE_IO              0x00                                                            //IO
+#define GPIO43_MODE_SCL             0x01                                                            //IO
+
+#define GPIO44_MASK                 0x07
+#define GPIO44_MODE_IO              0x00                                                            //IO
+#define GPIO44_MODE_SDA             0x01                                                            //IO
+
+#define GPIO45_MASK                 0x07
+#define GPIO45_MODE_IO              0x00                                                            //IO
+#define GPIO45_MODE_LSRSTB          0x01                                                            //O
+#define GPIO45_MODE_CMRST           0x03                                                            //O
+
+#define GPIO46_MASK                 0x07
+#define GPIO46_MODE_IO              0x00                                                            //IO
+#define GPIO46_MODE_LSCE_B0         0x01                                                            //O
+#define GPIO46_MODE_EINT20          0x02                                                            //I
+#define GPIO46_MODE_CMCSD0          0x03                                                            //I
+#define GPIO46_MODE_CLKO4           0x04                                                            //O
+
+#define GPIO47_MASK                 0x07
+#define GPIO47_MODE_IO              0x00                                                            //IO
+#define GPIO47_MODE_LSCK0           0x01                                                            //O
+#define GPIO47_MODE_CMPDN           0x03                                                            //O
 
 #define GPIO_MODE6                  (*(volatile uint32_t*)(GPIO_Base + 0x0C60))
 #define GPIO_MODE6_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C64))
 #define GPIO_MODE6_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C68))
-#define GPIO_MODE6MASK              (GPIO48MASK|GPIO49MASK|GPIO50MASK|GPIO51MASK|\
-                                    GPIO52MASK|GPIO53MASK|GPIO54MASK|GPIO55MASK)
-//GPIO48
-#define GPIO48MASK                  0x07
-#define M48GPIO                     0x00                                                            //IO
-#define M48LSDA0                    0x01                                                            //IO
-#define M48EINT21                   0x02                                                            //I
-#define M48CMCSD1                   0x03                                                            //I
-#define M48WIFITOBT                 0x04                                                            //I
-//GPIO49
-#define GPIO49MASK                  0x07
-#define M49GPIO                     0x00                                                            //IO
-#define M49LSA0DA0                  0x01                                                            //O
-#define M49LSCE1_B0                 0x02                                                            //O
-#define M49CMMCLK                   0x03                                                            //O
-//GPIO50
-#define GPIO50MASK                  0x0F
-#define M50GPIO                     0x00                                                            //IO
-#define M50LPTE                     0x01                                                            //I
-#define M50EINT22                   0x02                                                            //I
-#define M50CMCSK                    0x03                                                            //I
-#define M50CMCSD2                   0x04                                                            //I
-#define M50MCINS                    0x06                                                            //I
-#define M50CLKO5                    0x08                                                            //O
-//GPIO51
-#define GPIO51MASK                  0x07
-#define M51GPIO                     0x00                                                            //IO
-#define M51RESETB                   0x01                                                            //IO
-//GPIO52
-#define GPIO52MASK                  0x07
-#define M52AGPI                     0x00                                                            //AGI
-#define M52EINT23                   0x02                                                            //I
-//GPIO53
-#define GPIO53MASK                  0x07
-#define M53AGPI53                   0x00                                                            //AGI
-#define M53SRCLKENAI                0x01                                                            //I
-#define M53EINT24                   0x02                                                            //I
-//GPIO54
-#define GPIO54MASK                  0x07
-#define M54AGPIO                    0x00                                                            //AGIO
-//GPIO55
-#define GPIO55MASK                  0x07
-#define M55AGPIO                    0x00                                                            //AGIO
+#define GPIO_MODE6MASK              (GPIO48_MASK|GPIO49_MASK|GPIO50_MASK|GPIO51_MASK|\
+                                    GPIO52_MASK|GPIO53_MASK|GPIO54_MASK|GPIO55_MASK)
+
+#define GPIO48_MASK                 0x07
+#define GPIO48_MODE_IO              0x00                                                            //IO
+#define GPIO48_MODE_LSDA0           0x01                                                            //IO
+#define GPIO48_MODE_EINT21          0x02                                                            //I
+#define GPIO48_MODE_CMCSD1          0x03                                                            //I
+#define GPIO48_MODE_WIFITOBT        0x04                                                            //I
+
+#define GPIO49_MASK                 0x07
+#define GPIO49_MODE_IO              0x00                                                            //IO
+#define GPIO49_MODE_LSA0DA0         0x01                                                            //O
+#define GPIO49_MODE_LSCE1_B0        0x02                                                            //O
+#define GPIO49_MODE_CMMCLK          0x03                                                            //O
+
+#define GPIO50_MASK                 0x0F
+#define GPIO50_MODE_IO              0x00                                                            //IO
+#define GPIO50_MODE_LPTE            0x01                                                            //I
+#define GPIO50_MODE_EINT22          0x02                                                            //I
+#define GPIO50_MODE_CMCSK           0x03                                                            //I
+#define GPIO50_MODE_CMCSD2          0x04                                                            //I
+#define GPIO50_MODE_MCINS           0x06                                                            //I
+#define GPIO50_MODE_CLKO5           0x08                                                            //O
+
+#define GPIO51_MASK                 0x07
+#define GPIO51_MODE_IO              0x00                                                            //IO
+#define GPIO51_MODE_RESETB          0x01                                                            //IO
+
+#define GPIO52_MASK                 0x07
+#define GPIO52_MODE_AGPI            0x00                                                            //AGI
+#define GPIO52_MODE_EINT23          0x02                                                            //I
+
+#define GPIO53_MASK                 0x07
+#define GPIO53_MODE_AGPI53          0x00                                                            //AGI
+#define GPIO53_MODE_SRCLKENAI       0x01                                                            //I
+#define GPIO53_MODE_EINT24          0x02                                                            //I
+
+#define GPIO54_MASK                 0x07
+#define GPIO54_MODE_AGPIO           0x00                                                            //AGIO
+
+#define GPIO55_MASK                 0x07
+#define GPIO55_MODE_AGPIO           0x00                                                            //AGIO
 
 #define GPIO_SETMODE(Pin, Mode)     do\
                                     {\
                                         if ((Pin) <= GPIOMAX)\
                                         {\
                                             uint8_t  RegIdx = ((Pin) >> 3) & 0x07;                  /* Index of GPIO_MODE_XXX register */\
-                                            uint8_t  ModePos= ((Pin) & 0x07) << 2;                  /* Mode bits position */\
+                                            uint8_t  ModePos = ((Pin) & 0x07) << 2;                 /* Mode bits position */\
                                             uint32_t Mask = GPIO_MODEMASK;                          /* Bit field mask */\
-                                            GPIO_MODE_CLR(RegIdx) = (Mask) << ModePos;\
-                                            GPIO_MODE_SET(RegIdx) = ((Mode) & (Mask)) << ModePos;\
+                                            GPIO_MODE(RegIdx) = (GPIO_MODE(RegIdx) &\
+                                                                 ~(Mask << ModePos)) |\
+                                                                (((Mode) & Mask) << ModePos);\
                                         }\
                                     }\
                                     while(0)

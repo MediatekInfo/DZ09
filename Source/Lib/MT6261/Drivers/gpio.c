@@ -23,7 +23,7 @@ void GPIO_Initialize(void)
     GPIO_MODE5_CLR = GPIO_MODE5MASK;
     GPIO_MODE6_CLR = GPIO_MODE6MASK;
 
-    GPIO_SetupMode(GPIO51, GPMODE(M51RESETB));
+    GPIO_SetupMode(GPIO51, GPMODE(GPIO51_MODE_RESETB));
 }
 
 void GPIO_SetupMode(uint32_t Pin, uint32_t Flags)
