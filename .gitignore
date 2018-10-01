@@ -36,3 +36,5 @@ obj
 # Other files
 *.elay
 *.map
+*.save
+*.depend
