@@ -55,6 +55,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Bootloader\DZ09_boot.h" />
+		<Unit filename="Source\Bootloader\sha-1.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Bootloader\sha-1.h" />
 		<Unit filename="Source\Lib\bootheader.c">
 			<Option compilerVar="CC" />
 		</Unit>
