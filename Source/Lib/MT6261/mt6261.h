@@ -45,7 +45,7 @@
 #include "drivers\pctl.h"
 #include "drivers\rgu.h"
 #include "drivers\pmu.h"
-#include "usart.h"
+#include "drivers\usart.h"
 
 
 #include "drivers\auxadc.h"

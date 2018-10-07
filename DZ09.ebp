@@ -97,16 +97,16 @@
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\usart.h" />
 		<Unit filename="Source\Lib\MT6261\mt6261.h" />
+		<Unit filename="Source\Lib\Shared\debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\Shared\debug.h" />
 		<Unit filename="Source\startup_MT6261x.S">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\System\asmutils.s">
 			<Option compilerVar="ASM" />
 		</Unit>
-		<Unit filename="Source\System\debug.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\System\debug.h" />
 		<Unit filename="Source\System\dlist.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -126,6 +126,8 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\System\pmngr.h" />
+		<Unit filename="Source\System\systemconfig.h" />
+		<Unit filename="Source\System\systemlib.h" />
 		<Unit filename="Source\System\tlsf.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -134,8 +136,6 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\System\utils.h" />
-		<Unit filename="Source\systemconfig.h" />
-		<Unit filename="Source\systemlib.h" />
 		<Unit filename="Source\systypes.h" />
 		<Extensions>
 			<code_completion />

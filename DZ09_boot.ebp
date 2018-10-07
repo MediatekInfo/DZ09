@@ -60,9 +60,31 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Bootloader\sha-1.h" />
+		<Unit filename="Source\Bootloader\systemconfig.h" />
 		<Unit filename="Source\Lib\bootheader.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\gpio.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\gpio.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\pctl.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\pctl.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\pmu.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\usart.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\usart.h" />
+		<Unit filename="Source\Lib\MT6261\mt6261.h" />
+		<Unit filename="Source\Lib\Shared\debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\Shared\debug.h" />
 		<Unit filename="Source\startup_MT6261x.S">
 			<Option compilerVar="CC" />
 		</Unit>

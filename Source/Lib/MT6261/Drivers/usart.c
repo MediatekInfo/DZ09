@@ -33,7 +33,9 @@ boolean USART_Initialize(TUSART *USART, uint32_t Speed, void (*Handler)(void), u
 //        break;
     }
 
+#ifdef USEINTERRUPTS
     NVIC_UnregisterIRQ(IRQ_CODE);                                                                   //Disable USART Interrupts
+#endif
     PCTL_PowerUp(PD_CODE);                                                                          //Enable USART clock
 
     USART->LCR = U_WLS(WLS_8);                                                                      //DLAB = 0, LCR in default state
@@ -66,10 +68,11 @@ boolean USART_Initialize(TUSART *USART, uint32_t Speed, void (*Handler)(void), u
         return false;
     }
 
-    USART_EnableInterrupts(USART, Flags);                                                           //Check interrupt enable flags
-
     /* Enable HW flow control, if need */
 //    if (Flags & USART_HWFlow_EnFlag) USART->CR3 |= (USART_CR3_RTSE | USART_CR3_CTSE);             //TO DO!!!!!!
+
+#ifdef USEINTERRUPTS
+    USART_EnableInterrupts(USART, Flags);                                                           //Check interrupt enable flags
 
     if (Flags & (USART_TXInt_EnFlag | USART_RXInt_EnFlag | USART_ERRInt_EnFlag))                    //Configure NVIC
     {
@@ -78,6 +81,7 @@ boolean USART_Initialize(TUSART *USART, uint32_t Speed, void (*Handler)(void), u
             NVIC_RegisterIRQ(IRQ_CODE, Handler, IRQ_SENS_EDGE, true);
         }
     }
+#endif
 
     if (!(Flags & USART_EnFlag))
     {
@@ -90,6 +94,7 @@ void USART_EnableInterrupts(TUSART *USART, TUSART_FLAGS Flags)
 {
     if (USART != NULL)
     {
+#ifdef USEINTERRUPTS
         uint32_t intflags = DisableInterrupts();
         uint8_t  tmpLCR = USART->LCR;
 
@@ -99,7 +104,9 @@ void USART_EnableInterrupts(TUSART *USART, TUSART_FLAGS Flags)
         if (Flags & USART_RXInt_EnFlag)  USART->IER |= ERBFI;                                       //Enable receiver interrupt
         if (Flags & USART_ERRInt_EnFlag) USART->IER |= ELSI;                                        //Enable errors interrupt
         USART->LCR = tmpLCR; //-V519
+
         RestoreInterrupts(intflags);
+#endif
     }
 }
 
@@ -107,6 +114,7 @@ void USART_DisableInterrupts(TUSART *USART, TUSART_FLAGS Flags)
 {
     if (USART != NULL)
     {
+#ifdef USEINTERRUPTS
         uint32_t intflags = DisableInterrupts();
         uint8_t  tmpLCR = USART->LCR;
 
@@ -116,7 +124,9 @@ void USART_DisableInterrupts(TUSART *USART, TUSART_FLAGS Flags)
         if (Flags & USART_RXInt_EnFlag) USART->IER &= ~ERBFI;                                       //Disable receiver interrupt
         if (Flags & USART_ERRInt_EnFlag) USART->IER &= ~ELSI;                                       //Disable errors interrupt
         USART->LCR = tmpLCR; //-V519
+
         RestoreInterrupts(intflags);
+#endif
     }
 }
 

@@ -5,6 +5,7 @@
 
 #define _DEBUG_             (1)
 #define _USEBATTERY_        (0)
+#define USEINTERRUPTS
 #define VIBRVoltage         VIBR_VO18V
 
 #define SystemMemorySize    (3 * 1024 * 1024)
