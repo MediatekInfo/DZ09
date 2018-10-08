@@ -10,7 +10,7 @@
 #define USART3_base                 0xA00A0000                                                      //USART 3 add for MT6261
 //#define BTIF_base                   0xA00B0000                                                      //BT interface
 #define GPT_base                    0xA00C0000                                                      //General Purpose Timers
-//#define SFI_base                    0xA0140000                                                    //Serial flash interface
+#define SFI_base                    0xA0140000                                                      //Serial flash interface
 #define LCDIF_Base                  0xA0450000                                                      //LCD controller
 //#define ARM_CONFG_base              0xA0500000
 #define CACHE_Base                  0xA0530000                                                      //TCM Cache configuration
@@ -46,6 +46,7 @@
 #include "drivers\rgu.h"
 #include "drivers\pmu.h"
 #include "drivers\usart.h"
+#include "drivers\sfi.h"
 
 
 #include "drivers\auxadc.h"
