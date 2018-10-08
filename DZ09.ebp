@@ -88,6 +88,7 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\rtc.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\sfi.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.c">
 			<Option compilerVar="CC" />
 		</Unit>
