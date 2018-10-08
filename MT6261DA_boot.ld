@@ -37,6 +37,7 @@ SEARCH_DIR(.)
 /* Memory Spaces Definitions for MT6261A*/
 MEMORY
 {
+    ROM  (rx) : ORIGIN = 0x10000000, LENGTH = 8M
     TCM (rwx) : ORIGIN = 0x70006000, LENGTH = 0x00004000
 }
 
@@ -183,8 +184,8 @@ SECTIONS
 		*(.stack)
 	} > TCM
 
-    __rom_image_base = ORIGIN(TCM);
-    __rom_image_limit = __etext;
+    __rom_image_base = ORIGIN(ROM);
+    __rom_image_limit = ORIGIN(ROM) + LENGTH(ROM);
 
 
 	/* Set stack top to end of RAM, and stack limit move down by
