@@ -56,6 +56,10 @@
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\emi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\emi.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\gpio.c">
 			<Option compilerVar="CC" />
 		</Unit>

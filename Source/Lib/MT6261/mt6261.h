@@ -13,6 +13,7 @@
 #define SFI_base                    0xA0140000                                                      //Serial flash interface
 #define LCDIF_Base                  0xA0450000                                                      //LCD controller
 //#define ARM_CONFG_base              0xA0500000
+#define BOOT_ENG_base               0xA0510000                                                      //boot engine
 #define CACHE_Base                  0xA0530000                                                      //TCM Cache configuration
 #define MPU_Base                    0xA0540000                                                      //Memory protection unit
 #define PMU_base                    0xA0700000                                                      //PMU mixedsys
@@ -47,6 +48,7 @@
 #include "drivers\pmu.h"
 #include "drivers\usart.h"
 #include "drivers\sfi.h"
+#include "drivers\emi.h"
 
 
 #include "drivers\auxadc.h"

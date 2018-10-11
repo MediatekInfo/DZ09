@@ -64,6 +64,10 @@
 		<Unit filename="Source\Lib\bootheader.c">
 			<Option compilerVar="CC" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\emi.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\emi.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\gpio.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -76,6 +80,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\usart.c">
 			<Option compilerVar="CC" />
 		</Unit>
