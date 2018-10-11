@@ -27,4 +27,19 @@ int _write(int file, char *ptr, int len)
     return len;
 }
 
+void DBG_DumpMem32(uint32_t *Address, uint32_t Count)
+{
+    uint32_t x, y;
+
+    Address = (uint32_t *)((uint32_t)Address & ~(sizeof(uint32_t) - 1));
+
+    for(y = 0; y < Count; y += 16)
+    {
+        DebugPrint("%08X  ", (uint32_t)Address);
+        for(x = 0; x < 16; x += 4)
+            DebugPrint("%08X ", *Address++);
+        DebugPrint("\r\n");
+    }
+}
+
 #endif /* _DEBUG_ */
