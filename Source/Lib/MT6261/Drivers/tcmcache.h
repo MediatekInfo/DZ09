@@ -55,6 +55,18 @@
 #define CACHE_R14                   (1UL << 14)
 #define CACHE_R15                   (1UL << 15)
 
+#define REMAP_ADDR_MASK             0x1FF
+#define NCREMAP_HI0                 (*(volatile uint32*)(CACHE_Base + 0x1000))                      //Virtual address
+#define NCREMAP_EN                  (1 << 0)
+#define NCREMAP_SIZE(v)             (((v) & 0x3F) << 1)                                             //2^(size + 9) bytes
+#define NCREMAP_ADDR(v)             ((v) & ~REMAP_ADDR_MASK)
+#define NCREMAP_LO0                 (*(volatile uint32*)(CACHE_Base + 0x1004))                      //Physical address
+#define NCREMAP_ADDR(v)             ((v) & ~REMAP_ADDR_MASK)
+#define NCREMAP_HI1                 (*(volatile uint32*)(CACHE_Base + 0x1008))
+#define NCREMAP_LO1                 (*(volatile uint32*)(CACHE_Base + 0x100C))
+#define NCREMAP_HI2                 (*(volatile uint32*)(CACHE_Base + 0x1010))                      //MT6261
+#define NCREMAP_LO2                 (*(volatile uint32*)(CACHE_Base + 0x1014))                      //MT6261
+
 //MPU defines
 #define MPU_ADDR_MASK               0x00000FFF
 
@@ -122,5 +134,8 @@ typedef struct tag_MPUINFO
 
 extern void MPU_Initialize(void);
 extern boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheable, uint8_t AccessRights);
+extern boolean MPU_DisableCache(void);
+extern void MPU_EnableCache(void);
+extern void MPU_RestoreCacheEnState(boolean State);
 
 #endif /* _TCMCACHE_H_ */

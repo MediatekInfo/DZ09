@@ -12,7 +12,11 @@ void MPU_Initialize(void)
 {
     uint8_t i;
 
-    CACHE_CON = CACHESIZE(SysCacheSize);                                                            //Disable cache
+#ifdef SysCacheSize
+    CACHE_CON = CACHESIZE(SysCacheSize);
+#else
+    CACHESIZE(CACHE_NO);                                                                            //Disable cache
+#endif
     CACHE_OP = OP(OP_INVALL) | CMDEN;                                                               //Invalidate cache
     CACHE_EN = 0;                                                                                   //Disable regions
 
@@ -65,4 +69,28 @@ boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheabl
         }
     }
     return false;
+}
+
+boolean MPU_DisableCache(void)
+{
+    boolean IsCacheEnabled = CACHE_CON & MCEN;
+
+    CACHE_CON &= ~MCEN;
+
+    return IsCacheEnabled;
+}
+
+void MPU_EnableCache(void)
+{
+    CACHE_CON |= MCEN;
+}
+
+void MPU_RestoreCacheEnState(boolean State)
+{
+    uint16_t tmpCACHE_EN = CACHE_EN;
+
+    CACHE_EN = 0x0000;
+    CACHE_OP = OP(OP_INVALL) | CMDEN;
+    CACHE_CON = (CACHE_CON & ~MCEN) | ((State) ? MCEN : 0);
+    CACHE_EN = tmpCACHE_EN;
 }
