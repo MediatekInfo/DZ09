@@ -15,10 +15,9 @@
 				<Option projectDeviceOptionsRelation="0" />
 				<Compiler>
 					<Add option="-mthumb-interwork" />
-					<Add option="-eb_arm" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
-					<Add option="-O0" />
+					<Add option="-Os" />
 					<Add option="-g2" />
 					<Add option="-save-temps=obj" />
 				</Compiler>
