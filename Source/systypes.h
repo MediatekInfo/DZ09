@@ -6,6 +6,6 @@
 #include <string.h>
 
 typedef enum {false = 0, true = !false}     boolean;
-typedef uint8_t __attribute__((aligned(4))) uint8x32_t;
+typedef volatile uint8_t __attribute__((aligned(4))) uint8x32_t;
 
 #endif /* _SYSTYPES_H_ */
