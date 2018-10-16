@@ -71,10 +71,18 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\gpio.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\gpt.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\gpt.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\pctl.c">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\pctl.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\pll.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\pll.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\pmu.c">
 			<Option compilerVar="CC" />
 		</Unit>

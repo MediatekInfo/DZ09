@@ -11,6 +11,8 @@
 //#define BTIF_base                   0xA00B0000                                                      //BT interface
 #define GPT_base                    0xA00C0000                                                      //General Purpose Timers
 #define SFI_base                    0xA0140000                                                      //Serial flash interface
+#define MIXED_base                  0xA0170000                                                      //Analog Chip Interface Controller (PLL, CLKSQ, FH, CLKSW and SIMLS)
+#define PLL_base                    MIXED_base
 #define LCDIF_Base                  0xA0450000                                                      //LCD controller
 //#define ARM_CONFG_base              0xA0500000
 #define BOOT_ENG_base               0xA0510000                                                      //boot engine
@@ -20,7 +22,6 @@
 #define RTC_Base                    0xA0710000                                                      //Real Time Clock
 #define ANA_CFGSYS_base             0xA0730000                                                      //Analog die (MT6100) Configuration Registers (Clock, Reset, etc.)
 #define ADIE_CIRQ_base              0xA0760000                                                      //Interrupt Controller (16-bit)
-
 
 
 #define AUXADC_base                 0xA0790000                                                      //Auxiliary ADC Unit
@@ -49,6 +50,7 @@
 #include "drivers\usart.h"
 #include "drivers\sfi.h"
 #include "drivers\emi.h"
+#include "drivers\pll.h"
 
 
 #include "drivers\auxadc.h"

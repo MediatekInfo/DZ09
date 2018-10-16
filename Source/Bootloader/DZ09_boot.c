@@ -25,7 +25,6 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
     {
         pFILE_INFO_v1 FileInfo = (pFILE_INFO_v1)File.m_bl_begin_dev_addr;
 
-
         DebugPrint(" Ext bootloader base address: 0x%08X, boundary: 0x%08X\r\n",
                    File.m_bl_begin_dev_addr, File.m_bl_boundary_dev_addr);
 
@@ -87,10 +86,10 @@ int main(void)
     pSF_HEADER_v1 sf_header = (pSF_HEADER_v1)ROM_Image_Base;
 
     DBG_Initialize();                                                                               // Setup debug interface
+    GPT_InitializeTimers();
+    PLL_Initialize();
+
     DebugPrint("\r\n--1st bootloader runs--\r\n");
-
-    if (sf_header == NULL) return 0;
-
     EMI_MemoryRemap(MR_FB1RB0);                                                                     /*  Remap Flash to Bank1, RAM to Bank0.
                                                                                                         Now ROM starts from 0x10000000 */
 
