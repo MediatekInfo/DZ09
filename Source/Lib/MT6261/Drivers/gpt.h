@@ -42,6 +42,12 @@
 #define GPT4_LOCK                   (1 << 1)
 #define GPTIMER4_DAT                (*(volatile uint32_t*)(GPT_base + 0x002C))
 
+#define GPT4_MAX_TICK_CNT           (0xFFFFFFFFUL)
+#define GPT4_1US_TICK               (FREERUNFREQ / 1000000)                                         // 1000 / 38.4ns = 26.042
+                                                                                                    // 26MHz: 1us = 26.042 ticks
+#define GPT4_TIME_TO_TICK_US(us)    ((us)*GPT4_1US_TICK + ((us) * 42 + (1000 - 1)) / 1000)
+
+
 typedef enum tag_GPT
 {
     GP_TIMER1 = 0,
@@ -80,5 +86,6 @@ extern uint32_t GPT_Get26MTicksCount(void);
 extern boolean  GPT_SetupTimer(TGPT Index, uint16_t Freq, boolean Arepeat, void (*Handler)(void), boolean Start);
 extern void     GPT_SleepTimers(void);
 extern void     GPT_ResumeTimers(void);
+extern void     GPT4_Busy_Wait_us(uint32_t us);
 
 #endif /* _GPT_H_ */

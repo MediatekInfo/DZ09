@@ -45,7 +45,11 @@ static void GPT_InterruptHandler(void)
 
 static boolean GPT_RegisterInterrupt(void)
 {
+#ifdef USEINTERRUPTS
     GPTStatus.GPT.GPTIntsRegistered = NVIC_RegisterIRQ(IRQ_GPT_CODE, GPT_InterruptHandler, IRQ_SENS_EDGE, true);
+#else
+    GPTStatus.GPT.GPTIntsRegistered = false;
+#endif
 
     return GPTStatus.GPT.GPTIntsRegistered;
 }
@@ -57,7 +61,11 @@ static boolean GPT_TryUnregisterInterrupt(void)
             (GPTStatus.GPT.GPT2_Handler != NULL)) return false;
     GPTStatus.GPT.GPTIntsRegistered = false;
 
+#ifdef USEINTERRUPTS
     return NVIC_UnregisterIRQ(IRQ_GPT_CODE);
+#else
+    return true;
+#endif
 }
 
 void GPT_InitializeTimers(void)
@@ -216,7 +224,9 @@ void GPT_SleepTimers(void)
         if (GPTStatus.GPT.GPT2_Enabled) GPTIMER2_CON &= ~GPT_Enable;
         if (!(GPTIMER4_CON & GPT4_LOCK) && GPTStatus.GPT.GPT4_Enabled) GPTIMER4_CON &= ~GPT4_Enable;
         GPT_PowerDown();
+#ifdef USEINTERRUPTS
         if (GPTStatus.GPT.GPTIntsRegistered) NVIC_DisableIRQ(IRQ_GPT_CODE);
+#endif
     }
 }
 
@@ -228,6 +238,32 @@ void GPT_ResumeTimers(void)
         if (GPTStatus.GPT.GPT1_Enabled) GPTIMER1_CON |= GPT_Enable;
         if (GPTStatus.GPT.GPT2_Enabled) GPTIMER2_CON |= GPT_Enable;
         if (!(GPTIMER4_CON & GPT4_LOCK) && GPTStatus.GPT.GPT4_Enabled) GPTIMER4_CON |= GPT4_Enable;
+#ifdef USEINTERRUPTS
         if (GPTStatus.GPT.GPTIntsRegistered) NVIC_EnableIRQ(IRQ_GPT_CODE);
+#endif
     }
 }
+
+void GPT4_Busy_Wait_us(uint32_t us)
+{
+    uint32_t start_tick, timeout_tick;
+    uint32_t cur_tick, elapse_tick;
+    boolean  GPT4Enabled = GPTStatus.GPT.GPT4_Enabled;
+
+    if (!GPT4Enabled) GPT_StartTimer(GP_TIMER4);
+
+    timeout_tick = GPT4_TIME_TO_TICK_US(us);
+    start_tick   = GPT_Get26MTicksCount();
+
+    do
+    {
+        cur_tick = GPT_Get26MTicksCount();
+
+        if (start_tick <= cur_tick) elapse_tick = cur_tick - start_tick;
+        else elapse_tick = (GPT4_MAX_TICK_CNT - start_tick) + cur_tick;
+    }
+    while(timeout_tick > elapse_tick);
+
+    if (!GPT4Enabled) GPT_StopTimer(GP_TIMER4);
+}
+
