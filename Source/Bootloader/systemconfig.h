@@ -13,7 +13,7 @@
 //Debug USART interface
 #define DBG_USARTn          0
 #define DBG_USARTINF        USARTINFO[DBG_USARTn]
-#define DBG_BAUDRATE        230400                                                                  //Really 115200. Needs to fix this
+#define DBG_BAUDRATE        115200
 #define DBG_RXPIN           GPIO10
 #define DBG_RXPIN_MODE      GPIO10_MODE_U1RXD
 #define DBG_TXPIN           GPIO11
