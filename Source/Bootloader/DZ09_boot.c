@@ -56,17 +56,11 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
                 {
                     pMTK_PHASH FileHash = (pMTK_PHASH)(FileInfo->load_addr + SizeToCheck);
 
-                    CheckedHash->H0 = swab32(CheckedHash->H0);
-                    CheckedHash->H1 = swab32(CheckedHash->H1);
-                    CheckedHash->H2 = swab32(CheckedHash->H2);
-                    CheckedHash->H3 = swab32(CheckedHash->H3);
-                    CheckedHash->H4 = swab32(CheckedHash->H4);
-
-                    if ((CheckedHash->H0 == FileHash->H0) &&
-                            (CheckedHash->H1 == FileHash->H1) &&
-                            (CheckedHash->H2 == FileHash->H2) &&
-                            (CheckedHash->H3 == FileHash->H3) &&
-                            (CheckedHash->H4 == FileHash->H4))
+                    if ((swab32(CheckedHash->H0) == FileHash->H0) &&
+                            (swab32(CheckedHash->H1) == FileHash->H1) &&
+                            (swab32(CheckedHash->H2) == FileHash->H2) &&
+                            (swab32(CheckedHash->H3) == FileHash->H3) &&
+                            (swab32(CheckedHash->H4) == FileHash->H4))
                     {
                         ExtBLEntryPoint = (void *)(FileInfo->load_addr + FileInfo->jump_offset);
                         DebugPrint("complete\r\n");
