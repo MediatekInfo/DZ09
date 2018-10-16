@@ -20,7 +20,7 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
     File.m_bl_begin_dev_addr += ROM_Image_Base;
     File.m_bl_boundary_dev_addr += ROM_Image_Base;
 
-    while ((File.m_bl_begin_dev_addr > ROM_Image_Base) &&
+    if ((File.m_bl_begin_dev_addr > ROM_Image_Base) &&
             (File.m_bl_boundary_dev_addr < ROM_Image_Limit))
     {
         pFILE_INFO_v1 FileInfo = (pFILE_INFO_v1)File.m_bl_begin_dev_addr;
@@ -41,7 +41,7 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
             pSHA1    CheckedHash;
 
             DebugPrint(" File size: 0x%08X, load address: 0x%08X\r\n", SizeToCheck, FileInfo->load_addr);
-            DebugPrint(" Signature type: %d, size: %d, MTKEND: %08X\r\n", FileInfo->sig_type,
+            DebugPrint(" Signature type: %u, size: %u, MTKEND: %08X\r\n", FileInfo->sig_type,
                        FileInfo->sig_len, *(uint32_t *)(FileInfo->load_addr + SizeToCheck - 4));
 
             if (FileInfo->sig_type == SIG_NONE)
@@ -69,14 +69,13 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
                             (CheckedHash->H4 == FileHash->H4))
                     {
                         ExtBLEntryPoint = (void *)(FileInfo->load_addr + FileInfo->jump_offset);
-                        DebugPrint("complete\r\n", ExtBLEntryPoint);
+                        DebugPrint("complete\r\n");
                         DebugPrint("Entry point %p, jump to BL...\r\n\r\n", ExtBLEntryPoint);
                     }
-                    else DebugPrint("failed\r\n", ExtBLEntryPoint);
+                    else DebugPrint("failed\r\n");
                 }
             }
         }
-        break;
     }
     return ExtBLEntryPoint;
 }
