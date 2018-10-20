@@ -7,12 +7,18 @@
 		<Option pch_mode="2" />
 		<Option compiler="armgcc_eb" />
 		<Build>
-			<Target title="Release">
+			<Target title="SYSTEM">
 				<Option output="bin\Release\DZ09.elf" />
 				<Option object_output="obj\Release\" />
 				<Option type="0" />
 				<Option compiler="armgcc_eb" />
-				<Option projectDeviceOptionsRelation="0" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Device>
+					<Add option="$device=arm9e" />
+					<Add option="$arch=armv5te" />
+					<Add option="$lscript=MT6261DA.ld" />
+					<Add option="$heap=0x0000" />
+				</Device>
 				<Compiler>
 					<Add option="-mthumb-interwork" />
 					<Add option="-eb_arm" />
@@ -21,6 +27,7 @@
 					<Add option="-O0" />
 					<Add option="-g2" />
 					<Add option="-save-temps=obj" />
+					<Add symbol="TARGET_$(TARGET_NAME)" />
 				</Compiler>
 				<Assembler>
 					<Add option="-eb_arm" />
@@ -28,6 +35,46 @@
 				<Linker>
 					<Add option="-Wl,--gc-sections" />
 				</Linker>
+				<ExtraCommands>
+					<Add after="arm-none-eabi-objcopy -S -O binary $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+					<Add after="mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+					<Mode before="0" />
+					<Mode after="1" />
+				</ExtraCommands>
+			</Target>
+			<Target title="BOOTLOADER">
+				<Option output="bin\Release\DZ09_boot.elf" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="armgcc_eb" />
+				<Option projectCompilerOptionsRelation="1" />
+				<Device>
+					<Add option="$device=arm9e" />
+					<Add option="$arch=armv5te" />
+					<Add option="$lscript=MT6261DA_boot.ld" />
+					<Add option="$heap=0x0000" />
+				</Device>
+				<Compiler>
+					<Add option="-mthumb-interwork" />
+					<Add option="-fdata-sections" />
+					<Add option="-ffunction-sections" />
+					<Add option="-O0" />
+					<Add option="-g2" />
+					<Add option="-save-temps=obj" />
+					<Add symbol="TARGET_$(TARGET_NAME)" />
+				</Compiler>
+				<Assembler>
+					<Add option="-eb_arm" />
+				</Assembler>
+				<Linker>
+					<Add option="-Wl,--gc-sections" />
+				</Linker>
+				<ExtraCommands>
+					<Add after="arm-none-eabi-objcopy -S -O binary $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+					<Add after="mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+					<Mode before="0" />
+					<Mode after="1" />
+				</ExtraCommands>
 			</Target>
 		</Build>
 		<Device>
@@ -44,18 +91,37 @@
 			<Add option="-eb_lib=n" />
 			<Add option="-Wl,--gc-sections" />
 		</Linker>
-		<ExtraCommands>
-			<Add after="arm-none-eabi-objcopy -S -O binary $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
-			<Add after="mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
-			<Mode before="0" />
-			<Mode after="1" />
-		</ExtraCommands>
-		<Unit filename="MT6261DA.ld" />
+		<Unit filename="Source\Bootloader\DZ09_boot.c">
+			<Option compilerVar="CC" />
+			<Option target="BOOTLOADER" />
+		</Unit>
+		<Unit filename="Source\Bootloader\DZ09_boot.h">
+			<Option target="BOOTLOADER" />
+		</Unit>
+		<Unit filename="Source\Bootloader\mtktypes.h">
+			<Option target="BOOTLOADER" />
+		</Unit>
+		<Unit filename="Source\Bootloader\sha-1.c">
+			<Option compilerVar="CC" />
+			<Option target="BOOTLOADER" />
+		</Unit>
+		<Unit filename="Source\Bootloader\sha-1.h">
+			<Option target="BOOTLOADER" />
+		</Unit>
 		<Unit filename="Source\Lib\appheader.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.h" />
+		<Unit filename="Source\Lib\bootheader.c">
+			<Option compilerVar="CC" />
+			<Option target="BOOTLOADER" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\emi.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -70,12 +136,18 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\gpt.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\nvic.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\nvic.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\nvic.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\pctl.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -90,13 +162,21 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\rgu.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\rgu.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\rgu.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\rtc.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\rtc.h" />
-		<Unit filename="Source\Lib\MT6261\Drivers\sfi.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\rtc.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\sfi.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.c">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -115,41 +195,68 @@
 		</Unit>
 		<Unit filename="Source\System\asmutils.s">
 			<Option compilerVar="ASM" />
+			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\System\dlist.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\System\dlist.h" />
+		<Unit filename="Source\System\dlist.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\DZ09.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\System\init.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\System\init.h" />
+		<Unit filename="Source\System\init.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\memory.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\System\memory.h" />
+		<Unit filename="Source\System\memory.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\pmngr.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\System\pmngr.h" />
-		<Unit filename="Source\System\systemconfig.h" />
-		<Unit filename="Source\System\systemlib.h" />
+		<Unit filename="Source\System\pmngr.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\systemlib.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\tlsf.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\System\tlsf.h" />
+		<Unit filename="Source\System\tlsf.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\utils.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\System\utils.h" />
+		<Unit filename="Source\System\utils.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\systemconfig.h" />
 		<Unit filename="Source\systypes.h" />
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="Release" active_interface="Generic">
+				<target_debugging_settings target="SYSTEM" active_interface="Generic">
+					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
+						<family_options family_id="All" />
+					</debug_interface>
+				</target_debugging_settings>
+				<target_debugging_settings target="BOOTLOADER" active_interface="Generic">
 					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All" />
 					</debug_interface>
