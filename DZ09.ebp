@@ -186,16 +186,16 @@
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\usart.h" />
 		<Unit filename="Source\Lib\MT6261\mt6261.h" />
-		<Unit filename="Source\Lib\Shared\debug.c">
-			<Option compilerVar="CC" />
-		</Unit>
-		<Unit filename="Source\Lib\Shared\debug.h" />
 		<Unit filename="Source\startup_MT6261x.S">
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\System\asmutils.s">
 			<Option compilerVar="ASM" />
 		</Unit>
+		<Unit filename="Source\System\debug.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Source\System\debug.h" />
 		<Unit filename="Source\System\dlist.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
@@ -247,12 +247,12 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="BOOTLOADER" active_interface="Generic">
+				<target_debugging_settings target="SYSTEM" active_interface="Generic">
 					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All" />
 					</debug_interface>
 				</target_debugging_settings>
-				<target_debugging_settings target="SYSTEM" active_interface="Generic">
+				<target_debugging_settings target="BOOTLOADER" active_interface="Generic">
 					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All" />
 					</debug_interface>
