@@ -58,7 +58,7 @@
 					<Add option="-mthumb-interwork" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
-					<Add option="-O0" />
+					<Add option="-Os" />
 					<Add option="-g2" />
 					<Add option="-save-temps=obj" />
 					<Add symbol="TARGET_$(TARGET_NAME)" />
@@ -195,7 +195,6 @@
 		</Unit>
 		<Unit filename="Source\System\asmutils.s">
 			<Option compilerVar="ASM" />
-			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\System\dlist.c">
 			<Option compilerVar="CC" />
@@ -241,22 +240,19 @@
 		</Unit>
 		<Unit filename="Source\System\utils.c">
 			<Option compilerVar="CC" />
-			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\System\utils.h">
-			<Option target="SYSTEM" />
-		</Unit>
+		<Unit filename="Source\System\utils.h" />
 		<Unit filename="Source\systemconfig.h" />
 		<Unit filename="Source\systypes.h" />
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="SYSTEM" active_interface="Generic">
+				<target_debugging_settings target="BOOTLOADER" active_interface="Generic">
 					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All" />
 					</debug_interface>
 				</target_debugging_settings>
-				<target_debugging_settings target="BOOTLOADER" active_interface="Generic">
+				<target_debugging_settings target="SYSTEM" active_interface="Generic">
 					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All" />
 					</debug_interface>

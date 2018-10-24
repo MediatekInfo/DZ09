@@ -3,6 +3,7 @@
 #include "systemconfig.h"
 #include "mtktypes.h"
 #include "sha-1.h"
+#include "utils.h"
 #include "dz09_boot.h"
 
 #define swab32(x) ((uint32_t)(\
@@ -85,6 +86,10 @@ int main(void)
     DebugPrint("\r\n--1st bootloader runs--\r\n");
     EMI_MemoryRemap(MR_FB1RB0);                                                                     /*  Remap Flash to Bank1, RAM to Bank0.
                                                                                                         Now ROM starts from 0x10000000 */
+
+    GPT_StartTimer(GP_TIMER4);
+    DebugPrint("CPU measured frequency: %dMHz\r\n", GetCPUFrequency());
+    GPT_StopTimer(GP_TIMER4);
 
     /* Check SF header for validity */
     if (!strcmp(sf_header->m_identifier, SF_HEADER_ID) &&

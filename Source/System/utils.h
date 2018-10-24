@@ -10,5 +10,6 @@ extern uint32_t DisableInterrupts(void);                                        
 extern void RestoreInterrupts(uint32_t flags);                                                      //From asmutils.s
 extern uint32_t CTZ(uint32_t Value);                                                                //From asmutils.s
 extern uint32_t GetCPUFreqTicks(void);                                                              //from asmutils.s
+extern uint32_t GetCPUFrequency(void);
 
 #endif /* _UTILS_H_ */
