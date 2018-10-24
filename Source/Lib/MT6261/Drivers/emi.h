@@ -10,6 +10,7 @@ typedef enum
 
 
 #define EMI_REMAP                   (*(volatile uint16_t*)(BOOT_ENG_base))
+#define EMI_REMAP_MODE_MASK         0x03
 
 
 extern void EMI_MemoryRemap(MREMAP Mode);
