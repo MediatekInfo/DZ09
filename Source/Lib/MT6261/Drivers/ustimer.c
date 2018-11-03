@@ -22,7 +22,7 @@ void USC_Pause_us(uint32_t us)
 {
     if (USCNT_CON & USC_START)
     {
-        int32_t PrevTime = USC_GetCurrentTicks();
+        volatile int32_t PrevTime = USC_GetCurrentTicks();
 
         while(USC_GetCurrentTicks() - PrevTime < us);
     }
