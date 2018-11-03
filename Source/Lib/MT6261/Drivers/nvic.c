@@ -235,7 +235,7 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
         Masked = (EINT_MASK & (1 << SourceIdx)) ? true : false;                                     //Get the masked status
         if (!Masked) NVIC_MaskEINT2(SourceIdx);                                                     //1. Mask EINT
         EINT_CON(SourceIdx) = Debounce & ~EINT_DEBEN;                                               //2. Disable debounce
-        Delay_ms(1);                                                                                //3. Delay at least 5 32K cycles
+        USC_Pause_us(50);                                                                           //3. Delay at least 5 32K cycles
         EINT_CON(SourceIdx) = Debounce;                                                             //4. Enable the debounce (EN = 1) and change the debounce setting
         if (!Masked) NVIC_UnmaskEINT2(SourceIdx);                                                   //5. Unmask EINT
     }
@@ -246,11 +246,11 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
         Masked = (ADIE_EINT_MASK & (1 << SourceIdx)) ? true : false;                                //Get the masked status
         if (!Masked) NVIC_MaskEINT2(SourceIdx + NUM_EINT_SOURCES);                                  //1. Mask EINT
         ADIE_EINT_CON(SourceIdx) &= ~(ADIE_EINT_PSMASK | ADIE_EINT_DEBEN);                          //2. Clear original prescaler and disable debounce
-        Delay_ms(1);                                                                                //3. Delay at least 5 32K cycles
+        USC_Pause_us(50);                                                                           //3. Delay at least 5 32K cycles
         ADIE_EINT_CON(SourceIdx) = Debounce;                                                        //4. Enable the debounce (EN = 1) and change the debounce setting
-        Delay_ms(1);                                                                                //5. Delay at least 5 32K cycles
+        USC_Pause_us(50);                                                                           //5. Delay at least 5 32K cycles
         ADIE_EINT_DBCRST |= 1 << SourceIdx;                                                         //6. Reset debounce counter
-        Delay_ms(1);                                                                                //7. Delay at least 5 32K cycles
+        USC_Pause_us(50);                                                                           //7. Delay at least 5 32K cycles
         NVIC_SetAEINT_EOI(SourceIdx);                                                               //8. Ack spurious interrupt
         if (!Masked) NVIC_UnmaskEINT2(SourceIdx + NUM_EINT_SOURCES);                                //9. Unmask EINT
     }

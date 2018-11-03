@@ -80,16 +80,16 @@ int main(void)
     pSF_HEADER_v1 sf_header = (pSF_HEADER_v1)ROM_Image_Base;
 
     DBG_Initialize();                                                                               // Setup debug interface
-    GPT_InitializeTimers();
+    USC_StartCounter();
     PLL_Initialize();
 
     DebugPrint("\r\n--1st bootloader runs--\r\n");
     EMI_MemoryRemap(MR_FB1RB0);                                                                     /*  Remap Flash to Bank1, RAM to Bank0.
                                                                                                         Now ROM starts from 0x10000000 */
 
-    GPT_StartTimer(GP_TIMER4);
+//    GPT_StartTimer(GP_TIMER4);
     DebugPrint("CPU measured frequency: %uMHz\r\n", GetCPUFrequency());
-    GPT_StopTimer(GP_TIMER4);
+//    GPT_StopTimer(GP_TIMER4);
 
     /* Check SF header for validity */
     if (!strcmp(sf_header->m_identifier, SF_HEADER_ID) &&

@@ -89,11 +89,11 @@ GetCPUFreqTicks:
     bl      CPUFreqLoop                                                                             // Fake call for cache filling
 
     ldr     r1, FreqLoops
-    bl      GPT_Get26MTicksCount                                                                    // r0 = Ticks
+    bl      USC_GetCurrentTicks                                                                     // r0 = Ticks
     bl      CPUFreqLoop
 
     mov     r1, r0
-    bl      GPT_Get26MTicksCount                                                                    // r0 = Ticks
+    bl      USC_GetCurrentTicks                                                                     // r0 = Ticks
     sub     r0, r0, r1
 
     ldmfd   sp!,{r1, pc}

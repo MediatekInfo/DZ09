@@ -10,7 +10,7 @@ uint32_t GetCPUFrequency(void)
     uint32_t CPUTicks = GetCPUFreqTicks();
     uint32_t CPUFrequency;
 
-    CPUFrequency = (((FREERUNFREQ / 500000) * FreqLoopsCycles) / CPUTicks + 1) >> 1;
+    CPUFrequency = (((USC_FREQUENCY / 500000) * FreqLoopsCycles) / CPUTicks + 1) >> 1;
 
     return CPUFrequency;
 }

@@ -11,6 +11,7 @@ void Init(void)
     DBG_Initialize();                                                                               // Setup debug interface
 
     DebugPrint("\r\n--System initialization--\r\n");
+    USC_StartCounter();
 
 
 

@@ -16,7 +16,7 @@ void PLL_Initialize(void)                                                       
     PLL_PLLTD_CON0 = 0x0000;    //0x A0170700, bit 0 set to 0 to enable delay control
 
     //wait for 1us for TOPSM and delay (HW) control signal stable
-    GPT4_Busy_Wait_us(1);
+    USC_Pause_us(1);
 
     //enable and reset UPLL
     tmp = PLL_UPLL_CON0;
@@ -36,7 +36,7 @@ void PLL_Initialize(void)                                                       
     PLL_MPLL_CON0  = tmp;       //0xA0170100, bit 0 set to 1 to enable MPLL and generate reset of MPLL
 
     //wait 50us for PLL and DDS settle
-    GPT4_Busy_Wait_us(50);
+    USC_Pause_us(50);
 
     //Disable DDS LDO PG detector to save power
     tmp = PLL_PLL_CON4;
@@ -48,7 +48,7 @@ void PLL_Initialize(void)                                                       
 
     PLL_CLK_CONDC = 0x8008;     // 0xA001_0108, bit 15 set to 1 to enable digital frequency divider
     // wait for 2us to enable divider
-    GPT4_Busy_Wait_us(2);
+    USC_Pause_us(2);
 
 //        // 0xA001_0108,
 //        // sfc_gfmux_sel = 1'b0
@@ -58,5 +58,5 @@ void PLL_Initialize(void)                                                       
 //        // rg_pllck_sel  = 1'b1
     PLL_CLK_CONDC = 0xB620;
 
-    GPT4_Busy_Wait_us(50);
+    USC_Pause_us(50);
 }
