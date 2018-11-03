@@ -13,6 +13,7 @@
 #define SFI_base                    0xA0140000                                                      //Serial flash interface
 #define MIXED_base                  0xA0170000                                                      //Analog Chip Interface Controller (PLL, CLKSQ, FH, CLKSW and SIMLS)
 #define PLL_base                    MIXED_base
+#define TOPSM_base                  0xA0180000                                                      //TOPSM0
 #define LCDIF_Base                  0xA0450000                                                      //LCD controller
 //#define ARM_CONFG_base              0xA0500000
 #define BOOT_ENG_base               0xA0510000                                                      //boot engine
@@ -51,7 +52,7 @@
 #include "drivers\sfi.h"
 #include "drivers\emi.h"
 #include "drivers\pll.h"
-
+#include "drivers\ustimer.h"
 
 #include "drivers\auxadc.h"
 
