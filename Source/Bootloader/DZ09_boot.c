@@ -88,7 +88,7 @@ int main(void)
                                                                                                         Now ROM starts from 0x10000000 */
 
     GPT_StartTimer(GP_TIMER4);
-    DebugPrint("CPU measured frequency: %dMHz\r\n", GetCPUFrequency());
+    DebugPrint("CPU measured frequency: %uMHz\r\n", GetCPUFrequency());
     GPT_StopTimer(GP_TIMER4);
 
     /* Check SF header for validity */
