@@ -52,9 +52,8 @@ boolean USART_Initialize(TUSART *USART, uint32_t Speed, void (*Handler)(void), u
 
     if (Speed)
     {
-        uint32_t BR = (2 * USARTDEFCLOCK / USARTDEFOVS) / Speed;                                    //oversampling by 16, baud rate
+        uint32_t BR = ((2 * USARTDEFCLOCK / USARTDEFOVS) / Speed + 1) >> 1;                         //oversampling by 16, baud rate
 
-        BR = ((BR & 0x0001) ? BR + 1 : BR) >> 1;
         if (BR <= 1) return false;                                                                  //Divider can not be lower or equal 1
 
         USART->LCR |= U_DLAB;
