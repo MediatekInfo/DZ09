@@ -5,12 +5,12 @@
 
 void USC_StartCounter(void)
 {
-  USCNT_CON = USCNT_START_CODE;
+    USCNT_CON = USCNT_START_CODE;
 }
 
 void USC_StopCounter(void)
 {
-  USCNT_CON = USCNT_STOP_CODE;
+    USCNT_CON = USCNT_STOP_CODE;
 }
 
 int32_t USC_GetCurrentTicks(void)
