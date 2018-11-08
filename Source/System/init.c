@@ -13,13 +13,14 @@ void Init(void)
     DebugPrint("\r\n--System initialization--\r\n");
     USC_StartCounter();
 
+    DebugPrint("Initialize system memory pool - ");
+    {
+        size_t MemSize = InitializeMemoryPool();
 
+        if (MemSize != -1) DebugPrint("%u KiB available\r\n", MemSize / 1024);
+        else DebugPrint("failed!\r\n");
+    }
 
-
-//    USART_Initialize(DBG_USART, DBG_BAUDRATE, NULL, USART_EnFlag);
-//    DebugPrint("Initialization!\r\n");
-//
-//    InitializeMemoryPool();
 //
 //
 ////////////////////////////////////////////////////////////

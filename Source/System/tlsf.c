@@ -135,7 +135,7 @@ extern "C"
 /* Unlike the preview TLSF versions, now they are statics */
 #define BLOCK_ALIGN (sizeof(void *) * 2)
 
-#define MAX_FLI         (30)
+#define MAX_FLI         (22)                    //4MiB max memory
 #define MAX_LOG2_SLI    (5)
 #define MAX_SLI         (1 << MAX_LOG2_SLI)     /* MAX_SLI = 2^MAX_LOG2_SLI */
 

@@ -8,6 +8,8 @@ static uint8_t MemoryPool[SystemMemorySize] __attribute__ ((aligned (8), section
 
 size_t InitializeMemoryPool(void)
 {
+    destroy_memory_pool(MemoryPool);
+
     return init_memory_pool(SystemMemorySize, MemoryPool);
 }
 
