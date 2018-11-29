@@ -57,10 +57,12 @@
 
 //x - SelNum
 //v - SourceNum
-#define IRQ_SEL(x, v)   {\
-                        (*(volatile uint32_t*)(CIRQ_base + 0x0200 + 4 * ((x) >> 2))) &= ~(0xFF << (8 * ((x) & 0x03)));\
-                        (*(volatile uint32_t*)(CIRQ_base + 0x0200 + 4 * ((x) >> 2))) |= ((v) & 0x3F) << (8 * ((x) & 0x03));\
-                        }
+#define IRQ_SEL(x, v)   do\
+                        {\
+                            (*(volatile uint32_t*)(CIRQ_base + 0x0200 + 4 * ((x) >> 2))) &= ~(0xFF << (8 * ((x) & 0x03)));\
+                            (*(volatile uint32_t*)(CIRQ_base + 0x0200 + 4 * ((x) >> 2))) |= ((v) & 0x3F) << (8 * ((x) & 0x03));\
+                        }\
+                        while(0)
 
 //CIRQ Interrupt Sources
 #define IRQ_TDMA_CODE               0x00

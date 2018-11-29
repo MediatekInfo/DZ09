@@ -80,7 +80,8 @@
 #define ACFG_CLK_CON_CLR            (*(volatile uint16_t*)(ANA_CFGSYS_base + 0x0010))
 #define ACFG_CLK_MASK               0xFFFF
 
-#define PCTL_PowerDown(x)           {\
+#define PCTL_PowerDown(x)           do\
+                                    {\
                                         if ((x) <= PD_CNFG_MAX)\
                                         {\
                                             CNFG_PDN_CON_SET(x >> 4) = (1UL << ((x) & 0x0F));\
@@ -89,9 +90,11 @@
                                         {\
                                             ACFG_CLK_CON_SET = (1UL << ((x) & 0x0F));\
                                         }\
-                                    }
+                                    }\
+                                    while(0)
 
-#define PCTL_PowerUp(x)             {\
+#define PCTL_PowerUp(x)             do\
+                                    {\
                                         if ((x) <= PD_CNFG_MAX)\
                                         {\
                                             CNFG_PDN_CON_CLR(x >> 4) = (1UL << ((x) & 0x0F));\
@@ -100,7 +103,8 @@
                                         {\
                                             ACFG_CLK_CON_CLR = (1UL << ((x) & 0x0F));\
                                         }\
-                                    }
+                                    }\
+                                    while(0)
 
 extern void PCTL_Initialize(void);
 extern boolean PCTL_GetPeripheralPowerStatus(uint32_t Periph);

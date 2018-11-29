@@ -38,10 +38,12 @@
 
 //x - SelNum
 //v - SourceNum
-#define ADIE_IRQ_SEL(x, v)  {\
-                            (*(volatile uint16_t*)(ADIE_CIRQ_base + 0x0200 + 4 * ((x) >> 1))) &= ~(0x03 << (8 * ((x) & 0x01)));\
-                            (*(volatile uint16_t*)(ADIE_CIRQ_base + 0x0200 + 4 * ((x) >> 1))) |= ((v) & 0x03) << (8 * ((x) & 0x01));\
-                            }
+#define ADIE_IRQ_SEL(x, v)  do\
+                            {\
+                                (*(volatile uint16_t*)(ADIE_CIRQ_base + 0x0200 + 4 * ((x) >> 1))) &= ~(0x03 << (8 * ((x) & 0x01)));\
+                                (*(volatile uint16_t*)(ADIE_CIRQ_base + 0x0200 + 4 * ((x) >> 1))) |= ((v) & 0x03) << (8 * ((x) & 0x01));\
+                            }\
+                            while(0)
 //ADIE CIRQ Interrupt Sources
 #define IRQ_ADIE_EINT_CODE          (0x00 + TOTAL_IRQ_SOURCES)                                      //EINT
 #define IRQ_RTC_CODE                (0x01 + TOTAL_IRQ_SOURCES)                                      //RTC
