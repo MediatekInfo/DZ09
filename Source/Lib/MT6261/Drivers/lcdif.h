@@ -1,34 +1,20 @@
 #ifndef _LCDIF_H_
 #define _LCDIF_H_
 
-//#include    "gditypes.h"
-
 #define MAX_LCDQUEUE_SIZE           128
 
-//#if defined(MT6260)
-// #define LCD_SERIAL_CLOCK_MASK        0x180
-// #define LCD_SERIAL_CLOCK_OFFSET      7
-//#elif (defined(MT6261))
-//#define LCD_SERIAL_CLOCK_MASK           0x70
-//#define LCD_SERIAL_CLOCK_OFFSET         4
-//#endif
-/*
-#define SET_LCD_SERIAL_CLOCK(if_num, clk)
-{           \
-*((volatile unsigned int *)LCD_SERIAL_CLOCK_REG) &= (~LCD_SERIAL_CLOCK_MASK);
-*((volatile unsigned int *)LCD_SERIAL_CLOCK_REG) |= (clk << LCD_SERIAL_CLOCK_OFFSET);
-}
-*/
-
-#define LCD_SERIAL_CLOCK_REG        (*(volatile uint32_t*)(CONFIG_base + 0x11C))                    //0xA001011C bit[6,5,4]  000:156MHz,001:130MHz,010:104MHz,011:78MHz,1xx:52MHz
+#define LCD_SERIAL_CLOCK_REG        (*(volatile uint32_t*)(CONFIG_base + 0x11C))
 #define LCD_SERIAL_CLOCK_MASK       0x70
 #define LCD_SERIAL_CLOCK(v)         (((v) & 0x07) << 4)
-#define LCD_CLOCK_MPLL_DIV4         0
-#define LCD_CLOCK_MPLL_DIV5         1
-#define LCD_CLOCK_MPLL_DIV6         2
-#define LCD_CLOCK_MPLL_DIV7         3
-#define LCD_CLOCK_MPLL_DIV8         4
-#define LCD_CLOCK_13M               5
+typedef enum
+{
+    LCD_CLOCK_MPLL_DIV4 = 0,
+    LCD_CLOCK_MPLL_DIV5,
+    LCD_CLOCK_MPLL_DIV6,
+    LCD_CLOCK_MPLL_DIV7,
+    LCD_CLOCK_MPLL_DIV8,
+    LCD_CLOCK_13M
+} TLCDSCLOCK;
 
 #define LCDIF_STA                   (*(volatile uint16_t*)(LCDIF_Base + 0x0000))
 #define LCDIF_RUNNING               (1 << 0)
@@ -283,24 +269,15 @@ typedef enum tag_LAYNUM
 #define LCDIF_SDAT0                 (*(volatile uint32_t*)(LCDIF_Base + 0x0F90))
 #define LCDIF_SCMD1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FA0))
 #define LCDIF_SDAT1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FB0))
-/*
+
 typedef struct
 {
     uint32_t HWLCD_XMax;
     uint32_t HWLCD_YMax;
-    void     (*HW_LCD_Sleep)(void);
-    void     (*HW_LCD_Resume)(void);
     void     (*HWLCD_Command)(uint8_t);
     void     (*HWLCD_WRData)(uint8_t);
-    uint8    (*HWLCD_RDData)(void);
-} TLCDINF, *pLCDINF;
-
-typedef struct
-{
-    uint32_t CMDCount;
-    uint32_t *Commands;
-    TRECT    UpdateRect;
-} TLCDCMD, *pLCDCMD;
+    uint8_t  (*HWLCD_RDData)(void);
+} TLCDINFO, *pLCDINFO;
 
 typedef struct
 {
@@ -322,6 +299,19 @@ typedef struct
     uint32_t  ScreenIndex;
     TLCONTEXT VLayer[LCDIF_NUMLAYERS];
 } TSCREEN, *pSCREEN;
+
+/*
+
+typedef struct
+{
+    uint32_t CMDCount;
+    uint32_t *Commands;
+    TRECT    UpdateRect;
+} TLCDCMD, *pLCDCMD;
+
+
+
+
 
 extern TDRVHEADER LCDIFHeader;
 extern TLCDINF    LCDInf;

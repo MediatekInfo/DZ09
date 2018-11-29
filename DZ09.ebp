@@ -91,6 +91,9 @@
 			<Add option="-eb_lib=n" />
 			<Add option="-Wl,--gc-sections" />
 		</Linker>
+		<Unit filename="Source\Application\appconfig.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Bootloader\DZ09_boot.c">
 			<Option compilerVar="CC" />
 			<Option target="BOOTLOADER" />
