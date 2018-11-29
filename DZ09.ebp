@@ -108,6 +108,12 @@
 		<Unit filename="Source\Bootloader\sha-1.h">
 			<Option target="BOOTLOADER" />
 		</Unit>
+		<Unit filename="Source\GUI\gditypes.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\guilib.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\appheader.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
