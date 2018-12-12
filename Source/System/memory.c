@@ -43,3 +43,8 @@ boolean IsDynamicMemory(void *Memory)
     return (((uintptr_t)Memory >= (uintptr_t)&MemoryPool[0]) &&
             ((uintptr_t)Memory <= (uintptr_t)&MemoryPool[SystemMemorySize - 1])) ? true : false;
 }
+
+size_t GetTotalUsedMemory(void)
+{
+    return get_used_size(MemoryPool);
+}

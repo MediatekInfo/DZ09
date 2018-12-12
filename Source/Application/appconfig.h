@@ -4,7 +4,13 @@
 /* LCD interface settings */
 #define LCD_XRESOLUTION 240
 #define LCD_YRESOLUTION 240
-
+#define LCD_SIF_TIMINGS (LCDIF_WR_2ND(0) | LCDIF_WR_1ST(0) | LCDIF_RD_2ND(0) |\
+                         LCDIF_RD_1ST(0) | LCDIF_CSH(0) | LCDIF_CSS(0))
+#define LCD_SIF_CON     (LCDIF_SIF0_SIZE8B | LCDIF_SIF0_3WIRE | LCDIF_SIF0_DIV2 | LCDIF_SIF0_HW_CS) //LCD serial interface configuration
+#define LCD_SIF_WROI    (LCDIF_F_RGB | LCDIF_F_PADDLSB | LCDIF_F_RGB888 | LCDIF_F_ITF_8B)           //LCD module data format
+#define LCD_BACKCOLOR   clBlack
+//#define _ILI9341_LCD_DRIVER_
+#define _NO_LCD_DRIVER_
 
 /* Application pins configuration */
 
@@ -17,5 +23,11 @@
 #define LCD_SCK_MODE    GPIO47_MODE_LSCK0
 #define LCD_SDA         GPIO48                                                                      //LCDIF Data IO line 0
 #define LCD_SDA_MODE    GPIO48_MODE_LSDA0
+//#define LCD_SDA1        GPIO49
+//#define LCD_SDA1_MODE   GPIO49_MODE_LSA0DA0                                                       //LCDIF Data IO line 1
+//#define LCD_LPTE        GPIO50
+//#define LCD_LPTE_MODE   GPIO50_MODE_LPTE                                                          //LCDIF Tearing input
+
+#include "appdrivers.h"
 
 #endif /* _APPCONFIG_H_ */

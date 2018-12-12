@@ -53,6 +53,7 @@
 #include "drivers\emi.h"
 #include "drivers\pll.h"
 #include "drivers\ustimer.h"
+#include "drivers\lcdif.h"
 
 #include "drivers\auxadc.h"
 

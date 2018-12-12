@@ -94,6 +94,16 @@
 		<Unit filename="Source\Application\appconfig.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Application\appinit.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\appinit.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\Drivers\appdrivers.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Application\Drivers\ili9341.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

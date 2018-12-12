@@ -259,8 +259,8 @@ typedef enum tag_LAYNUM
 
 #define LCDIF_COMD(v)               (*(volatile uint32_t*)(LCDIF_Base + 0x0C00 + 4 * (v)))
 #define LCDIF_COMM(v)               (((v) & 0x7FFFFF) << 0)
-#define LCDIF_C0                    (1 << 23)
-#define LCDIF_D0                    (0 << 23)
+#define LCDIF_CMD                   (1 << 23)
+#define LCDIF_DATA                  (0 << 23)
 #define LCDIF_PCMD0                 (*(volatile uint32_t*)(LCDIF_Base + 0x0F00))
 #define LCDIF_PDAT0                 (*(volatile uint32_t*)(LCDIF_Base + 0x0F10))
 #define LCDIF_PCMD1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0F20))
@@ -269,15 +269,6 @@ typedef enum tag_LAYNUM
 #define LCDIF_SDAT0                 (*(volatile uint32_t*)(LCDIF_Base + 0x0F90))
 #define LCDIF_SCMD1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FA0))
 #define LCDIF_SDAT1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FB0))
-
-typedef struct
-{
-    uint32_t HWLCD_XMax;
-    uint32_t HWLCD_YMax;
-    void     (*HWLCD_Command)(uint8_t);
-    void     (*HWLCD_WRData)(uint8_t);
-    uint8_t  (*HWLCD_RDData)(void);
-} TLCDINFO, *pLCDINFO;
 
 typedef struct
 {
@@ -309,19 +300,11 @@ typedef struct
     TRECT    UpdateRect;
 } TLCDCMD, *pLCDCMD;
 
-
-
-
-
-extern TDRVHEADER LCDIFHeader;
-extern TLCDINF    LCDInf;
-extern TSCREEN    LCDScreen;
-
-extern void UpdateLCDRectangle(TRECT Rct);
-extern void UpdateLCDRectangleBlocked(pRECT Rct);
-extern boolean SetupVLayer(uint8_t LIndex, TPOINT LOffset, uint32_t SizeX, uint32_t SizeY, TCFORMAT CFormat, uint8_t Alpha);
-extern boolean SetVLayerEnabled(uint8_t LIndex, boolean Enabled, boolean UpdateScreen);
-extern void SetVLayerOffset(uint8_t LIndex, TPOINT LOffset, boolean UpdateScreen);
-extern boolean SetVLayerAlpha(uint8_t LIndex, uint8_t Alpha, boolean UpdateScreen);
 */
+
+extern boolean LCDIF_Initialize(void);
+extern void LCDIF_WriteCommand(uint8_t Cmd);
+extern void LCDIF_WriteData(uint8_t Data);
+extern uint8_t LCDIF_ReadData(void);
+
 #endif /* _LCDIF_H_ */
