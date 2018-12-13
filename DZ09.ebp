@@ -128,9 +128,7 @@
 		<Unit filename="Source\Bootloader\sha-1.h">
 			<Option target="BOOTLOADER" />
 		</Unit>
-		<Unit filename="Source\GUI\gditypes.h">
-			<Option target="SYSTEM" />
-		</Unit>
+		<Unit filename="Source\GUI\gditypes.h" />
 		<Unit filename="Source\GUI\gdiutils.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

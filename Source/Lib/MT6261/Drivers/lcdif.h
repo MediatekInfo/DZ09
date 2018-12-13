@@ -1,6 +1,8 @@
 #ifndef _LCDIF_H_
 #define _LCDIF_H_
 
+#include "gditypes.h"
+
 #define MAX_LCDQUEUE_SIZE           128
 
 #define LCD_SERIAL_CLOCK_REG        (*(volatile uint32_t*)(CONFIG_base + 0x11C))
