@@ -70,7 +70,7 @@ extern "C"
 #endif
 
 #ifndef TLSF_STATISTIC
-#define	TLSF_STATISTIC 	(0)
+#define	TLSF_STATISTIC 	(1)
 #endif
 
 #ifndef USE_MMAP
