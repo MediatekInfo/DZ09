@@ -22,6 +22,10 @@ void Init(void)
         else DebugPrint("failed!\r\n");
     }
 
+    DebugPrint("Initialize NVICs...");
+    NVIC_Initialize();
+    DebugPrint("Complete.\r\n");
+
 //
 //
 ////////////////////////////////////////////////////////////

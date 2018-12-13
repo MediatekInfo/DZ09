@@ -9,8 +9,8 @@
 #define LCD_SIF_CON     (LCDIF_SIF0_SIZE8B | LCDIF_SIF0_3WIRE | LCDIF_SIF0_DIV2 | LCDIF_SIF0_HW_CS) //LCD serial interface configuration
 #define LCD_SIF_WROI    (LCDIF_F_RGB | LCDIF_F_PADDLSB | LCDIF_F_RGB888 | LCDIF_F_ITF_8B)           //LCD module data format
 #define LCD_BACKCOLOR   clBlack
-//#define _ILI9341_LCD_DRIVER_
-#define _NO_LCD_DRIVER_
+#define _ILI9341_LCD_DRIVER_
+//#define _NO_LCD_DRIVER_
 
 /* Application pins configuration */
 
