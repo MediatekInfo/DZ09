@@ -90,7 +90,7 @@ boolean LCDIF_Initialize(void)
             DebugPrint("Failed! (Insufficient memory)\r\n");
             DebugPrint(" Total used %uKiB\r\n", GetTotalUsedMemory() >> 10);
         }
-        else DebugPrint("Failed! (Can't register LCD ISR %02X)\r\n", IRQ_LCD_CODE);
+        else DebugPrint("Failed! (Unable to register LCD ISR 0x%02X)\r\n", IRQ_LCD_CODE);
         LCDIF_DisableInterface();
         return false;
     }
@@ -112,7 +112,7 @@ boolean LCDIF_Initialize(void)
     if (LCDDRV_Initialize())
     {
         LCDIF_INTEN = LCDIF_CPL;                                                                    //Enable LCD interrupts
-        DebugPrint("Complete!\r\n");
+        DebugPrint("Complete.\r\n");
         return true;
     }
 
