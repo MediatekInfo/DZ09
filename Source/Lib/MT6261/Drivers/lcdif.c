@@ -130,8 +130,6 @@ void LCDIF_ISR(void)
     uint16_t IntID;
 
     LCDIF_START = 0;
-    DebugPrint("LCD_ISR\r\n");
-
     if ((IntID = LCDIF_INTSTA) & LCDIF_CPL)
     {
         if (LCDIF_GetCommandFromQueue()) LCDIF_START = LCDIF_RUN;

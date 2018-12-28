@@ -65,7 +65,7 @@ Prefetch_Address:
 Abort_Address:
     .long   Abort_Handler
 IRQ_Address:
-    .long   IRQ_Handler
+    .long   NVIC_IRQ_Handler
 FIQ_Address:
     .long   FIQ_Handler
 
@@ -156,7 +156,7 @@ Reset_Handler:
     def_irq_handler    SWI_Handler
     def_irq_handler    Prefetch_Handler
     def_irq_handler    Abort_Handler
-    def_irq_handler    IRQ_Handler
+    def_irq_handler    NVIC_IRQ_Handler
     def_irq_handler    FIQ_Handler
 
     .end
