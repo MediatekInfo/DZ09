@@ -42,7 +42,7 @@ void LCDIF_StartLCDTransfer(void)
 
 boolean LCDIF_IsQueueRunning(void)
 {
-    return (!DL_GetItemsCount(LCDIFQueue) && !(LCDIF_START & LCDIF_RUN)) ? false : true;
+    return (LCDIF_START & LCDIF_RUN) != 0;
 }
 
 void LCDIF_DeleteCommandFromQueue(void)
@@ -130,6 +130,7 @@ void LCDIF_ISR(void)
     uint16_t IntID;
 
     LCDIF_START = 0;
+    DebugPrint("LCD_ISR\r\n");
 
     if ((IntID = LCDIF_INTSTA) & LCDIF_CPL)
     {
@@ -267,4 +268,53 @@ boolean LCDIF_SetupLayer(uint32_t Index, TPOINT Offset, uint32_t SizeX, uint32_t
         }
     }
     return LCDScreen.VLayer[Index].Initialized;
+}
+
+boolean LCDIF_SetLayerEnabled(uint32_t Index, boolean Enabled, boolean UpdateScreen)
+{
+    TRECT LayerRect;
+
+    if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return false;
+
+    if (LCDScreen.VLayer[Index].Enabled != Enabled)
+    {
+        if (Enabled) LCDIF_WROICON |= LCDScreen.VLayer[Index].LayerEnMask;
+        else LCDIF_WROICON &= ~LCDScreen.VLayer[Index].LayerEnMask;
+
+        LCDScreen.VLayer[Index].Enabled = Enabled;
+
+        if (UpdateScreen)
+        {
+            LayerRect = LCDScreen.VLayer[Index].LayerRgn;
+            LayerRect.l += LCDScreen.VLayer[Index].LayerOffset.x - LCDScreen.ScreenOffset.x;
+            LayerRect.r += LCDScreen.VLayer[Index].LayerOffset.x - LCDScreen.ScreenOffset.x;
+            LayerRect.t += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
+            LayerRect.b += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
+//            if (ANDRects(&LayerRect, &LCDScreen.ScreenRgn))
+                LCDIF_UpdateRectangle(LayerRect);
+        }
+    }
+    return LCDScreen.VLayer[Index].Enabled;
+}
+
+void LCDIF_UpdateRectangle(TRECT Rct)
+{
+    uint32_t *Commands, CmdCount;
+
+//    if (ANDRects(&Rct, &LCDScreen.ScreenRgn))
+//    {
+        Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
+        if (Commands != NULL)
+        {
+            LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
+        }
+//    }
+}
+
+void LCDIF_UpdateRectangleBlocked(pRECT Rct)
+{
+    if (Rct == NULL) return;
+
+    LCDIF_UpdateRectangle(*Rct);
+    while(LCDIF_IsQueueRunning());
 }

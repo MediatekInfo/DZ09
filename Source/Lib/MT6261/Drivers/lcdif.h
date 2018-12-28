@@ -8,7 +8,7 @@
 #define LCD_SERIAL_CLOCK_REG        (*(volatile uint32_t*)(CONFIG_base + 0x11C))
 #define LCD_SERIAL_CLOCK_MASK       0x70
 #define LCD_SERIAL_CLOCK(v)         (((v) & 0x07) << 4)
-typedef enum
+typedef enum tag_TLCDSCLOCK
 {
     LCD_CLOCK_MPLL_DIV4 = 0,
     LCD_CLOCK_MPLL_DIV5,
@@ -273,7 +273,7 @@ typedef enum tag_LAYNUM
 #define LCDIF_SCMD1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FA0))
 #define LCDIF_SDAT1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FB0))
 
-typedef struct
+typedef struct// tag_TLCONTEXT
 {
     boolean  Enabled;
     boolean  Initialized;
@@ -282,10 +282,10 @@ typedef struct
     uint32_t LayerEnMask;
     uint8_t  BPP;
     TCFORMAT ColorFormat;
-    void     *VideoBuf;
+    void     *FrameBuffer;
 } TLCONTEXT, *pLCONTEXT;
 
-typedef struct
+typedef struct tag_TSCREEN
 {
     TRECT     ScreenRgn;                                                                            //TFT screen resolution
     TPOINT    ScreenOffset;
@@ -301,6 +301,8 @@ typedef struct tag_TLCDCMD
     uint32_t  Commands[];
 } TLCDCMD, *pLCDCMD;
 
+extern TSCREEN LCDScreen;
+
 extern boolean LCDIF_Initialize(void);
 extern void LCDIF_WriteCommand(uint8_t Cmd);
 extern void LCDIF_WriteData(uint8_t Data);
@@ -308,5 +310,8 @@ extern uint8_t LCDIF_ReadData(void);
 extern boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect);
 extern boolean LCDIF_SetupLayer(uint32_t Index, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
                                 TCFORMAT CFormat, uint8_t Alpha);
+extern boolean LCDIF_SetLayerEnabled(uint32_t Index, boolean Enabled, boolean UpdateScreen);
+extern void LCDIF_UpdateRectangle(TRECT Rct);
+extern void LCDIF_UpdateRectangleBlocked(pRECT Rct);
 
 #endif /* _LCDIF_H_ */
