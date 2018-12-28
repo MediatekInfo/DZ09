@@ -306,5 +306,7 @@ extern void LCDIF_WriteCommand(uint8_t Cmd);
 extern void LCDIF_WriteData(uint8_t Data);
 extern uint8_t LCDIF_ReadData(void);
 extern boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect);
+extern boolean LCDIF_SetupLayer(uint32_t Index, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
+                                TCFORMAT CFormat, uint8_t Alpha);
 
 #endif /* _LCDIF_H_ */

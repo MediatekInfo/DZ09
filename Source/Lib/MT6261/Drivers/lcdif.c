@@ -3,6 +3,8 @@
 #include "systemconfig.h"
 #include "lcdif.h"
 
+const uint8_t CFormatToBPP[] = {1, 2, 0, 3, 4, 4, 4};
+
 pLAYER LCDIF_LAYER[LCDIF_NUMLAYERS] = {(volatile pLAYER) &LCDIF_LAYER0BASE,
                                        (volatile pLAYER) &LCDIF_LAYER1BASE,
                                        (volatile pLAYER) &LCDIF_LAYER2BASE,
@@ -220,3 +222,49 @@ boolean LCDIF_Initialize(void)
     return false;
 }
 
+boolean LCDIF_SetupLayer(uint32_t Index, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
+                         TCFORMAT CFormat, uint8_t Alpha)
+{
+    if (Index >= LCDIF_NUMLAYERS) return false;
+
+    LCDScreen.VLayer[Index].Enabled = false;
+    LCDScreen.VLayer[Index].Initialized = false;
+    LCDIF_WROICON &= ~LCDScreen.VLayer[Index].LayerEnMask;
+    if (LCDScreen.VLayer[Index].FrameBuffer != NULL)
+    {
+        free(LCDScreen.VLayer[Index].FrameBuffer);
+        LCDScreen.VLayer[Index].FrameBuffer = NULL;
+    }
+
+    if (SizeX && SizeY && (CFormat < CF_NUM))
+    {
+        uint32_t n;
+
+        LCDScreen.VLayer[Index].LayerRgn = Rect(0, 0, SizeX - 1, SizeY - 1);
+        LCDScreen.VLayer[Index].LayerOffset = Offset;
+        LCDScreen.VLayer[Index].ColorFormat = CFormat;
+        LCDScreen.VLayer[Index].BPP = CFormatToBPP[CFormat];
+
+        n = SizeX * SizeY * LCDScreen.VLayer[Index].BPP;
+        if (n)
+        {
+            LCDScreen.VLayer[Index].FrameBuffer = malloc(n);
+            if (LCDScreen.VLayer[Index].FrameBuffer != NULL)
+            {
+                LCDIF_LAYER[Index]->LCDIF_LWINCON = LCDIF_LROTATE(LCDIF_LR_NO) | LCDIF_LCF(CFormat);
+                if ((CFormat == LCDIF_LCF_ARGB8888) || (CFormat == LCDIF_LCF_PARGB8888) || (Alpha != 0xFF))
+                    LCDIF_LAYER[Index]->LCDIF_LWINCON |= LCDIF_LALPHA(Alpha) | LCDIF_LALPHA_EN;
+
+                LCDIF_LAYER[Index]->LCDIF_LWINOFFS  = LCDIF_LWINOF_X(Offset.x) | LCDIF_LWINOF_Y(Offset.y);
+                LCDIF_LAYER[Index]->LCDIF_LWINADD   = (uint32_t)LCDScreen.VLayer[Index].FrameBuffer;
+                LCDIF_LAYER[Index]->LCDIF_LWINSIZE  = LCDIF_LCOLS(SizeX) | LCDIF_LROWS(SizeY);
+                LCDIF_LAYER[Index]->LCDIF_LWINSCRL  = LCDIF_LSCCOL(0) | LCDIF_LSCROW(0);
+                LCDIF_LAYER[Index]->LCDIF_LWINMOFS  = LCDIF_LMOFCOL(0) | LCDIF_LMOFROW(0);
+                LCDIF_LAYER[Index]->LCDIF_LWINPITCH = LCDScreen.VLayer[Index].BPP * SizeX;
+
+                LCDScreen.VLayer[Index].Initialized = true;
+            }
+        }
+    }
+    return LCDScreen.VLayer[Index].Initialized;
+}
