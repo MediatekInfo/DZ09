@@ -148,7 +148,8 @@ typedef enum
 #define LCDIF_F_ITF_9B              (2 << 6)
 #define LCDIF_F_ITF_18B             (3 << 6)
 #define LCDIF_COMMAND(v)            (((v) & 0x003F) << 8)
-#define LCDIF_COMMAND_MASK          (0x3F << 8)
+#define LCDIF_MAXCOMMANDS           64
+#define LCDIF_COMMAND_MASK          ((LCDIF_MAXCOMMANDS - 1) << 8)
 #define LCDIF_W2M                   (1 << 14)
 #define LCDIF_ENC                   (1 << 15)
 #define LCDIF_PERIOD(v)             (((v) & 0x00FF) << 16)
@@ -293,20 +294,17 @@ typedef struct
     TLCONTEXT VLayer[LCDIF_NUMLAYERS];
 } TSCREEN, *pSCREEN;
 
-/*
-
-typedef struct
+typedef struct tag_TLCDCMD
 {
-    uint32_t CMDCount;
-    uint32_t *Commands;
-    TRECT    UpdateRect;
+    TRECT     UpdateRect;
+    uint32_t  CMDCount;
+    uint32_t  Commands[];
 } TLCDCMD, *pLCDCMD;
-
-*/
 
 extern boolean LCDIF_Initialize(void);
 extern void LCDIF_WriteCommand(uint8_t Cmd);
 extern void LCDIF_WriteData(uint8_t Data);
 extern uint8_t LCDIF_ReadData(void);
+extern boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect);
 
 #endif /* _LCDIF_H_ */

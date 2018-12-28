@@ -32,9 +32,108 @@ void LCDIF_SetClock(TLCDSCLOCK Clock)
     LCD_SERIAL_CLOCK_REG = (LCD_SERIAL_CLOCK_REG & ~LCD_SERIAL_CLOCK_MASK) | LCD_SERIAL_CLOCK(Clock);
 }
 
+void LCDIF_StartLCDTransfer(void)
+{
+    LCDIF_START = 0;
+    LCDIF_START = LCDIF_RUN;
+}
+
+boolean LCDIF_IsQueueRunning(void)
+{
+    return (!DL_GetItemsCount(LCDIFQueue) && !(LCDIF_START & LCDIF_RUN)) ? false : true;
+}
+
+void LCDIF_DeleteCommandFromQueue(void)
+{
+    pDLITEM tmpItem = DL_GetFirstItem(LCDIFQueue);
+
+    if (tmpItem != NULL)
+    {
+        if (tmpItem->Data != NULL) free(tmpItem->Data);
+        DL_DeleteFirstItem(LCDIFQueue);
+    }
+}
+
+boolean LCDIF_GetCommandFromQueue(void)
+{
+    pDLITEM tmpItem;
+
+    while((tmpItem = DL_GetFirstItem(LCDIFQueue)) != NULL)
+    {
+        pLCDCMD CMD = tmpItem->Data;
+
+        if (CMD != NULL)
+        {
+            LCDIF_WROIOFS   = LCDIF_WROIOFX(CMD->UpdateRect.l + LCDScreen.ScreenOffset.x) |
+                              LCDIF_WROIOFY(CMD->UpdateRect.t + LCDScreen.ScreenOffset.y);
+            LCDIF_WROISIZE  = LCDIF_WROICOL(CMD->UpdateRect.r - CMD->UpdateRect.l + 1) |
+                              LCDIF_WROIROW(CMD->UpdateRect.b - CMD->UpdateRect.t + 1);
+
+            if (CMD->CMDCount)
+            {
+                uint32_t i;
+
+                for(i = 0; i < CMD->CMDCount; i++) LCDIF_COMD(i) = CMD->Commands[i];
+                LCDIF_WROICON &= ~LCDIF_COMMAND_MASK;
+                LCDIF_WROICON |= LCDIF_COMMAND(CMD->CMDCount - 1) | LCDIF_ENC;
+            }
+            else LCDIF_WROICON &= ~LCDIF_ENC;
+
+            LCDIF_DeleteCommandFromQueue();
+            return true;
+        }
+        LCDIF_DeleteCommandFromQueue();
+    }
+    return false;
+}
+
+void LCDIF_RestartQueue(void)
+{
+    uint32_t flags = DisableInterrupts();
+
+    if (!LCDIF_IsQueueRunning() && LCDIF_GetCommandFromQueue()) LCDIF_StartLCDTransfer();
+
+    RestoreInterrupts(flags);
+}
+
+boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect)
+{
+    pLCDCMD CMD;
+
+    if (!CmdCount || (CmdArray == NULL)) return false;
+
+    CMD = malloc(sizeof(TLCDCMD) + CmdCount * sizeof(uint32_t));
+    if (CMD != NULL)
+    {
+        CMD->CMDCount = CmdCount;
+        CMD->UpdateRect = (UpdateRect != NULL) ? *UpdateRect : Rect(0, 0, 0, 0);
+
+        memcpy(CMD->Commands, CmdArray, CmdCount * sizeof(uint32_t));
+        if (!DL_AddItem(LCDIFQueue, CMD))
+        {
+            free(CMD);
+            return false;
+        }
+
+        LCDIF_RestartQueue();
+        while(DL_GetItemsCount(LCDIFQueue) >= MAX_LCDQUEUE_SIZE);
+
+        return true;
+    }
+    return false;
+}
+
 void LCDIF_ISR(void)
 {
+    uint16_t IntID;
 
+    LCDIF_START = 0;
+
+    if ((IntID = LCDIF_INTSTA) & LCDIF_CPL)
+    {
+        if (LCDIF_GetCommandFromQueue()) LCDIF_START = LCDIF_RUN;
+    }
+    else DebugPrint("Unsolicited LCDIF interrupt code 0x%04X!)\r\n", IntID);
 }
 
 boolean RegisterLCDIF_ISR(void)
