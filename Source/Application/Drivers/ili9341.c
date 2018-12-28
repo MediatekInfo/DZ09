@@ -6,9 +6,6 @@
 
 boolean ILI9341_Initialize(void)
 {
-    LCDIF_WriteCommand(ILI9341_SWRESET);
-    USC_Pause_us(ILI9341_RESETTIME);
-
     LCDIF_WriteCommand(ILI9341_PCONTROL1);
     LCDIF_WriteData(VRH(0x23));
 

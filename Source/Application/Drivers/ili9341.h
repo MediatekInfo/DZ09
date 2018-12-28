@@ -3,7 +3,6 @@
 
 #define ILI9341_ROWSHIFT            0x00
 #define ILI9341_SETWINCMDSIZE       11
-#define ILI9341_RESETTIME           5000
 
 #define ILI9341_NOP                 0x00
 #define ILI9341_SWRESET             0x01
