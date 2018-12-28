@@ -21,8 +21,9 @@
 
 #define SystemMemorySize    (3 * 1024 * 1024)
 #define SysCacheSize        CACHE_32kB
-#include "guilib.h"
 #include "systemlib.h"
+#include "guilib.h"
+
 #include "appconfig.h"
 
 #elif defined(TARGET_BOOTLOADER)

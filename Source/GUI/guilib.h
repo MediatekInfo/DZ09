@@ -3,6 +3,7 @@
 
 #include "gditypes.h"
 #include "gdiutils.h"
+#include "gdi.h"
 
 
 #endif /* _GUILIB_H_ */
