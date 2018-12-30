@@ -17,6 +17,36 @@ TRECT Rect(int16_t l, int16_t t, int16_t r, int16_t b)
     return Result;
 }
 
+boolean IsRectsOverlaps(pRECT a, pRECT b)
+{
+    if ((a != NULL) && (b != NULL))
+    {
+        if ((a->l > b->r) || (a->r < b->l)) return false;
+        if ((a->t > b->b) || (a->b < b->t)) return false;
+        return true;
+    }
+    return false;
+}
+
+//a = a & b
+boolean ANDRectangles(pRECT a, pRECT b)
+{
+    boolean Res = false;
+
+    if ((a != NULL) && (b != NULL))
+    {
+        if (IsRectsOverlaps(a, b))
+        {
+            a->l = max(a->l, b->l);
+            a->r = min(a->r, b->r);
+            a->t = max(a->t, b->t);
+            a->b = min(a->b, b->b);
+            Res = (((a->r - a->l) >= 0) && ((a->b - a->t) >= 0)) ? true : false;
+        }
+    }
+    return Res;
+}
+
 uint8_t *GDI_GetPixelPtr(pLCONTEXT lc, TPOINT pt)
 {
     uint8_t *p = (uint8_t *)lc->FrameBuffer;

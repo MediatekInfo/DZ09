@@ -288,8 +288,8 @@ boolean LCDIF_SetLayerEnabled(uint32_t Index, boolean Enabled, boolean UpdateScr
             LayerRect.r += LCDScreen.VLayer[Index].LayerOffset.x - LCDScreen.ScreenOffset.x;
             LayerRect.t += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
             LayerRect.b += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
-//            if (ANDRects(&LayerRect, &LCDScreen.ScreenRgn))
-            LCDIF_UpdateRectangle(LayerRect);
+            if (ANDRectangles(&LayerRect, &LCDScreen.ScreenRgn))
+                LCDIF_UpdateRectangle(LayerRect);
         }
     }
     return LCDScreen.VLayer[Index].Enabled;
@@ -299,14 +299,14 @@ void LCDIF_UpdateRectangle(TRECT Rct)
 {
     uint32_t *Commands, CmdCount;
 
-//    if (ANDRects(&Rct, &LCDScreen.ScreenRgn))
-//    {
-    Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
-    if (Commands != NULL)
+    if (ANDRectangles(&Rct, &LCDScreen.ScreenRgn))
     {
-        LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
+        Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
+        if (Commands != NULL)
+        {
+            LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
+        }
     }
-//    }
 }
 
 void LCDIF_UpdateRectangleBlocked(pRECT Rct)

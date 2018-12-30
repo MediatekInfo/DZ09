@@ -21,6 +21,6 @@ void FillRectangle(uint8_t Index, TRECT Rct, uint32_t Color)
     if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return;
 
     lc = &LCDScreen.VLayer[Index];
-    if (/*ANDRects(&Rct, &lc->LayerRgn) && */FillRectangleX[lc->ColorFormat] != NULL)
+    if (ANDRectangles(&Rct, &lc->LayerRgn) && FillRectangleX[lc->ColorFormat] != NULL)
         FillRectangleX[lc->ColorFormat](lc, &Rct, Color);
 }
