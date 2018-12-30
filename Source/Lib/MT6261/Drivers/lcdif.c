@@ -289,7 +289,7 @@ boolean LCDIF_SetLayerEnabled(uint32_t Index, boolean Enabled, boolean UpdateScr
             LayerRect.t += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
             LayerRect.b += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
 //            if (ANDRects(&LayerRect, &LCDScreen.ScreenRgn))
-                LCDIF_UpdateRectangle(LayerRect);
+            LCDIF_UpdateRectangle(LayerRect);
         }
     }
     return LCDScreen.VLayer[Index].Enabled;
@@ -301,11 +301,11 @@ void LCDIF_UpdateRectangle(TRECT Rct)
 
 //    if (ANDRects(&Rct, &LCDScreen.ScreenRgn))
 //    {
-        Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
-        if (Commands != NULL)
-        {
-            LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
-        }
+    Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
+    if (Commands != NULL)
+    {
+        LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
+    }
 //    }
 }
 
