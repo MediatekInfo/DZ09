@@ -256,7 +256,7 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
     }
 }
 
-void NVIC_IRQ_Handler(void)
+void NVIC_C_IRQ_Handler(void)
 {
     uint32_t IRQSrcIdx  = NVIC_GetIRQStatus2();
     uint32_t AIRQSrcIdx = NVIC_GetAIRQStatus2();
