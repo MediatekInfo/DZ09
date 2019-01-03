@@ -252,6 +252,10 @@
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\System\exchandlers.s">
+			<Option compilerVar="ASM" />
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\init.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
