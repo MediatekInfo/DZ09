@@ -8,29 +8,54 @@ static uint8_t MemoryPool[SystemMemorySize] __attribute__ ((aligned (8), section
 
 size_t InitializeMemoryPool(void)
 {
+    uint32_t iflags = DisableInterrupts();
+    size_t   Result;
+
     destroy_memory_pool(MemoryPool);
 
-    return init_memory_pool(SystemMemorySize, MemoryPool);
+    Result = init_memory_pool(SystemMemorySize, MemoryPool);
+    RestoreInterrupts(iflags);
+
+    return Result;
 }
 
 void *malloc(size_t size)
 {
-    return tlsf_malloc(size);
+    uint32_t iflags = DisableInterrupts();
+    void     *Result = tlsf_malloc(size);
+
+    RestoreInterrupts(iflags);
+
+    return Result;
 }
 
 void free(void *ptr)
 {
+    uint32_t iflags = DisableInterrupts();
+
     tlsf_free(ptr);
+
+    RestoreInterrupts(iflags);
 }
 
 void *realloc(void *ptr, size_t size)
 {
-    return tlsf_realloc(ptr, size);
+    uint32_t iflags = DisableInterrupts();
+    void     *Result = tlsf_realloc(ptr, size);
+
+    RestoreInterrupts(iflags);
+
+    return Result;
 }
 
 void *calloc(size_t nelem, size_t elem_size)
 {
-    return tlsf_calloc(nelem, elem_size);
+    uint32_t iflags = DisableInterrupts();
+    void     *Result = tlsf_calloc(nelem, elem_size);
+
+    RestoreInterrupts(iflags);
+
+    return Result;
 }
 
 uint32_t GetSysMemoryAddress(void)
