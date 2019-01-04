@@ -28,6 +28,34 @@ boolean IsRectsOverlaps(pRECT a, pRECT b)
     return false;
 }
 
+boolean IsPointInRect(int16_t x, int16_t y, pRECT Rct)
+{
+    return ((Rct != NULL) &&
+            (x >= Rct->l) && (x <= Rct->r) &&
+            (y >= Rct->t) && (y <= Rct->b)) ? true : false;
+}
+
+//a in b or b in a, a = larger rectangle
+boolean IsRectInRect(pRECT a, pRECT b)
+{
+    if ((a == NULL) || (b == NULL)) return false;
+    if (!IsRectsOverlaps(a, b)) return false;
+
+    if (IsPointInRect(a->l, a->t, b) && IsPointInRect(a->r, a->t, b) &&
+            IsPointInRect(a->l, a->b, b) && IsPointInRect(a->r, a->b, b))
+    {
+        memcpy(a, b, sizeof(TRECT));
+        return true;
+    }
+    else if (IsPointInRect(b->l, b->t, a) && IsPointInRect(b->r, b->t, a) &&
+             IsPointInRect(b->l, b->b, a) && IsPointInRect(b->r, b->b, a))
+    {
+        return true;
+    }
+    return false;
+}
+
+
 //a = a & b
 boolean ANDRectangles(pRECT a, pRECT b)
 {
@@ -47,11 +75,73 @@ boolean ANDRectangles(pRECT a, pRECT b)
     return Res;
 }
 
+//a + b
+pDLIST ADDRectangles(pRECT a, pRECT b)
+{
+    pDLIST ResRects = NULL;
+    pRECT  tmpRectA, tmpRectB;
+
+    if ((a == NULL) || (b == NULL)) return NULL;
+    if (!IsRectsOverlaps(a, b))
+    {
+        ResRects = DL_Create(0);
+        if (ResRects != NULL)
+        {
+            tmpRectA = malloc(sizeof(TRECT));
+            tmpRectB = malloc(sizeof(TRECT));
+            if ((tmpRectA == NULL) || (tmpRectB == NULL))
+            {
+                if (tmpRectA != NULL) free(tmpRectA);
+                if (tmpRectB != NULL) free(tmpRectB);
+                free(ResRects);
+                return NULL;
+            }
+            *tmpRectA = *a;
+            *tmpRectB = *b;
+            DL_AddItem(ResRects, tmpRectA);
+            DL_AddItem(ResRects, tmpRectB);
+        }
+    }
+    else
+    {
+        if (IsRectInRect(a, b))
+        {
+            tmpRectA = malloc(sizeof(TRECT));
+            if (tmpRectA != NULL)
+            {
+                ResRects = DL_Create(0);
+                *tmpRectA = *a;
+                if (ResRects != NULL) DL_AddItem(ResRects, tmpRectA);
+                else
+                {
+                    free(tmpRectA);
+                    return NULL;
+                }
+            }
+        }
+        else
+        {
+            ResRects = SUBRectangles(a, b);
+            if (ResRects == NULL) ResRects = DL_Create(0);
+            if (ResRects != NULL)
+            {
+                tmpRectB = malloc(sizeof(TRECT));
+                if (tmpRectB != NULL)
+                {
+                    *tmpRectB = *b;
+                    DL_AddItem(ResRects, tmpRectB);
+                }
+            }
+        }
+    }
+    return ResRects;
+}
+
 //a - b
 pDLIST SUBRectangles(pRECT a, pRECT b)
 {
-    pDLIST  Rlist = DL_Create(0);
-    pRECT   Rct;
+    pDLIST Rlist = DL_Create(0);
+    pRECT  Rct;
 
     if (Rlist == NULL) return NULL;
     if ((a == NULL) || (b == NULL)) return Rlist;
