@@ -7,6 +7,7 @@ extern TPOINT Point(int16_t x, int16_t y);
 extern TRECT Rect(int16_t l, int16_t t, int16_t r, int16_t b);
 extern boolean IsRectsOverlaps(pRECT a, pRECT b);
 extern boolean ANDRectangles(pRECT a, pRECT b);
+extern pDLIST SUBRectangles(pRECT a, pRECT b);
 extern void GDI_FillRectangle16(pLCONTEXT lc, pRECT Rct, uint32_t Color);
 extern void GDI_FillRectangle32(pLCONTEXT lc, pRECT Rct, uint32_t Color);
 
