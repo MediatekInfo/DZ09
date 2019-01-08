@@ -8,6 +8,7 @@
 #include "utils.h"
 #include "dlist.h"
 #include "pmngr.h"
+#include "evmngr.h"
 
 
 #endif /* _SYSTEMLIB_H_ */

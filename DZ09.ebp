@@ -252,6 +252,13 @@
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\System\evmngr.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\evmngr.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\exchandlers.s">
 			<Option compilerVar="ASM" />
 			<Option target="SYSTEM" />
@@ -296,12 +303,12 @@
 		<Extensions>
 			<code_completion />
 			<debugger>
-				<target_debugging_settings target="SYSTEM" active_interface="Generic">
+				<target_debugging_settings target="BOOTLOADER" active_interface="Generic">
 					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All" />
 					</debug_interface>
 				</target_debugging_settings>
-				<target_debugging_settings target="BOOTLOADER" active_interface="Generic">
+				<target_debugging_settings target="SYSTEM" active_interface="Generic">
 					<debug_interface interface_id="Generic" ip_address="" ip_port="" path="" executable="" description="" dont_start_server="false" backoff_time="" options="0" reg_filter="0" active_family="All" gdb_before_conn="" gdb_after_conn="">
 						<family_options family_id="All" />
 					</debug_interface>
