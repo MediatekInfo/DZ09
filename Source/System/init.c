@@ -6,12 +6,12 @@
 
 void Init(void)
 {
+    DBG_Initialize();                                                                               // Setup debug interface
+    DebugPrint("\r\n--System initialization--\r\n");
     MPU_Initialize();                                                                               // Setup system cache
     PCTL_Initialize();                                                                              // Power down peripherals by default
     GPIO_Initialize();                                                                              // Set GPIO to default state
-    DBG_Initialize();                                                                               // Setup debug interface
 
-    DebugPrint("\r\n--System initialization--\r\n");
     USC_StartCounter();
 
     DebugPrint("Initialize system memory pool - ");
@@ -23,7 +23,7 @@ void Init(void)
     }
 
     DebugPrint("Initialize event manager...");
-    DebugPrint((EM_Initialize()) ? "Complete\r\n" : "Failed\r\n");
+    DebugPrint((EM_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
 
     DebugPrint("Initialize NVICs...");
     NVIC_Initialize();

@@ -10,6 +10,25 @@ TUSART_CONTEXT USARTINFO[3] =
     {(TUSART *)USART3}
 };
 
+int32_t USART_GetPDCode(TUSART *USART)
+{
+    switch ((uint32_t)USART)
+    {
+    case USART1_base:
+        return PD_UART1;
+//        break;
+    case USART2_base:
+        return PD_UART2;
+//        break;
+    case USART3_base:
+        return PD_UART3;
+//        break;
+    default:
+        return -1;
+//        break;
+    }
+}
+
 boolean USART_Initialize(TUSART *USART, uint32_t Speed, void (*Handler)(void), uint32_t Flags)
 {
     uint32_t IRQ_CODE, PD_CODE;

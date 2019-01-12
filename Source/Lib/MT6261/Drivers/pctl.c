@@ -9,6 +9,14 @@ void PCTL_Initialize(void)
     CNFG_PDN_CON1_SET = CNFG_PDN1_MASK;
     CNFG_PDN_CON2_SET = CNFG_PDN2_MASK;
 
+#if _DEBUG_
+    {
+        int32_t PDCode = USART_GetPDCode(DBG_USARTINF.USART);
+
+        if (PDCode != -1) PCTL_PowerUp(PDCode);
+    }
+#endif
+
 // TODO (scorp#1#): Analog CFGSYS needs to be researched
     ACFG_CLK_CON_SET = ACFG_CLK_MASK;
 }

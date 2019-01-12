@@ -6,6 +6,19 @@
 extern uint32_t ROM_Image_Base;
 extern uint32_t ROM_Image_Limit;
 
+#if _DEBUG_
+const char *AccRightsStr[] =
+{
+    "PRW_URW",
+    "PRW_UNA",
+    "PRW_URO",
+    "PRW_UWO",
+    "PRO_URO",
+    "NACC",
+    "PRO_UNA"
+};
+#endif
+
 static TMPUINFO MpuInfo;
 
 void MPU_Initialize(void)
@@ -65,9 +78,12 @@ boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheabl
             MpuInfo.MPURegions[FreeRegionIdx].RegionEnd = RegionEnd;
             MpuInfo.MPURegions[FreeRegionIdx].Used = true;
             MpuInfo.RegionsUsed++;
+            DebugPrint("Region 0x%08X...0x%08X added to cache. Rights: %s\r\n",
+                       RegionStart, RegionEnd, AccRightsStr[AccessRights]);
             return true;
         }
     }
+    DebugPrint("Unable to add region 0x%08X...0x%08X to cache.\r\n", RegionStart, RegionEnd);
     return false;
 }
 

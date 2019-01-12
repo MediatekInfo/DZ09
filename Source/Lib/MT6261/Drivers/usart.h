@@ -208,6 +208,7 @@ typedef struct tag_USART_CONTEXT
 
 extern TUSART_CONTEXT USARTINFO[3];
 
+extern int32_t USART_GetPDCode(TUSART *USART);
 extern boolean USART_Initialize(TUSART *USART, uint32_t Speed, void (*Handler)(void), uint32_t Flags);
 extern void USART_EnableInterrupts(TUSART *USART, TUSART_FLAGS Flags);
 extern void USART_DisableInterrupts(TUSART *USART, TUSART_FLAGS Flags);
