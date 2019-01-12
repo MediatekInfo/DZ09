@@ -32,13 +32,15 @@ boolean EM_Initialize(void)
 
 boolean EM_PostEvent(TEVTYPE Type, void *Object, void *Param, uint32_t ParamSz)
 {
-    pEVENT tmpEvent = malloc(sizeof(TEVENT) + ParamSz);
+    pEVENT tmpEvent;
 
+    if (Param == NULL) ParamSz = 0;
+
+    tmpEvent = malloc(sizeof(TEVENT) + ParamSz);
     if (tmpEvent != NULL)
     {
         tmpEvent->Event = Type;
         tmpEvent->Object = Object;
-        tmpEvent->Param = (void *)((uint32_t)tmpEvent + sizeof(TEVENT));
         tmpEvent->ParamSz = ParamSz;
         if (Param != NULL) memcpy(tmpEvent->Param, Param, ParamSz);
         if (EM_AddEvent(tmpEvent)) return true;
@@ -70,7 +72,6 @@ void EM_ProcessEvents(void)
         default:
             break;
         }
-        free(tmpEvent);
         EM_DeleleEvent();
     }
 }

@@ -19,8 +19,8 @@ typedef struct tag_EVENT
 {
     TEVTYPE  Event;
     void     *Object;
-    void     *Param;
     uint32_t ParamSz;
+    uint8_t  Param[];
 } TEVENT, *pEVENT;
 
 extern boolean EM_Initialize(void);
