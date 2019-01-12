@@ -130,7 +130,7 @@ void LCDIF_ISR(void)
     {
         if (LCDIF_GetCommandFromQueue()) LCDIF_START = LCDIF_RUN;
     }
-    else DebugPrint("Unsolicited LCDIF interrupt code 0x%04X!)\r\n", IntID);
+    else DebugPrint("Unsolicited LCDIF interrupt code 0x%04X!\r\n", IntID);
 }
 
 boolean RegisterLCDIF_ISR(void)
