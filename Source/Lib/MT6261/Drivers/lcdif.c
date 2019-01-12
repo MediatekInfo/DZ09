@@ -49,11 +49,7 @@ void LCDIF_DeleteCommandFromQueue(void)
 {
     pDLITEM tmpItem = DL_GetFirstItem(LCDIFQueue);
 
-    if (tmpItem != NULL)
-    {
-        if (tmpItem->Data != NULL) free(tmpItem->Data);
-        DL_DeleteFirstItem(LCDIFQueue);
-    }
+    if (tmpItem != NULL) DL_DeleteFirstItem(LCDIFQueue);
 }
 
 boolean LCDIF_GetCommandFromQueue(void)
