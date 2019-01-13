@@ -1,4 +1,4 @@
-    .syntax unified
+    .syntax divided
     .arch armv5te
 
     .equ    _I_, 0x80                                                                               //when I bit is set, IRQ is disabled
@@ -16,7 +16,7 @@ NVIC_IRQ_Handler:
     mrs     r0, SPSR                                                                                ;//An interrupt may trigger when an MSR is executed to set I-bit.
     tst     r0, #_I_
     ldmfd   sp!, {r0}
-    subne   pc, lr, #4
+    subnes  pc, lr, #4
 
     sub     lr, lr, #4
     stmfd   sp!, {r0-r12, lr}
