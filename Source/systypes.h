@@ -7,5 +7,12 @@
 
 typedef enum {false = 0, true = !false}     boolean;
 typedef volatile uint8_t __attribute__((aligned(4))) uint8x32_t;
+typedef void* pHANDLE;                                                                              //A temporary definition, may not be necessary in the future.
+
+typedef enum tag_TSYSOBJECT
+{
+    SO_UNDEFINED = 0x00000000,
+    SO_TIMER     = 0x00010000
+} TSYSOBJECT;
 
 #endif /* _SYSTYPES_H_ */

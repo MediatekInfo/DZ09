@@ -270,6 +270,13 @@
 		<Unit filename="Source\System\init.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\System\lrtimer.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\lrtimer.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\memory.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

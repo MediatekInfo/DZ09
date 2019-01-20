@@ -9,6 +9,7 @@
 #include "dlist.h"
 #include "pmngr.h"
 #include "evmngr.h"
+#include "lrtimer.h"
 
 
 #endif /* _SYSTEMLIB_H_ */

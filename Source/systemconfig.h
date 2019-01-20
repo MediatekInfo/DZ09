@@ -21,6 +21,8 @@
 
 #define SystemMemorySize    (3 * 1024 * 1024)
 #define SysCacheSize        CACHE_32kB
+#define LRTMRHWTIMER        GP_TIMER1
+#define LRTMRFrequency      100
 #include "systemlib.h"
 #include "guilib.h"
 
