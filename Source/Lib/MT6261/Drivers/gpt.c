@@ -59,13 +59,13 @@ static boolean GPT_TryUnregisterInterrupt(void)
     if (!GPTStatus.GPT.GPTIntsRegistered) return true;
     if ((GPTStatus.GPT.GPT1_Handler != NULL) ||
             (GPTStatus.GPT.GPT2_Handler != NULL)) return false;
-    GPTStatus.GPT.GPTIntsRegistered = false;
 
 #ifdef USEINTERRUPTS
-    return NVIC_UnregisterIRQ(IRQ_GPT_CODE);
+    GPTStatus.GPT.GPTIntsRegistered = !NVIC_UnregisterIRQ(IRQ_GPT_CODE);
 #else
-    return true;
+    GPTStatus.GPT.GPTIntsRegistered = false;
 #endif
+    return !GPTStatus.GPT.GPTIntsRegistered;
 }
 
 void GPT_InitializeTimers(void)
@@ -90,15 +90,15 @@ boolean GPT_StartTimer(TGPT Index)
     {
     case GP_TIMER1:
         GPTIMER1_CON |= GPT_Enable;
-        Result = GPTStatus.GPT.GPT1_Enabled = GPTIMER2_CON & GPT_Enable;
+        Result = GPTStatus.GPT.GPT1_Enabled = (GPTIMER1_CON & GPT_Enable) ? true : false;
         break;
     case GP_TIMER2:
         GPTIMER2_CON |= GPT_Enable;
-        Result = GPTStatus.GPT.GPT2_Enabled = GPTIMER2_CON & GPT_Enable;
+        Result = GPTStatus.GPT.GPT2_Enabled = (GPTIMER2_CON & GPT_Enable) ? true : false;
         break;
     case GP_TIMER4:
         if (!(GPTIMER4_CON & GPT4_LOCK)) GPTIMER4_CON |= GPT4_Enable;                               //Try to enable timer
-        Result = GPTStatus.GPT.GPT4_Enabled = GPTIMER4_CON & GPT4_Enable;
+        Result = GPTStatus.GPT.GPT4_Enabled = (GPTIMER4_CON & GPT4_Enable) ? true : false;
         break;
     }
 
