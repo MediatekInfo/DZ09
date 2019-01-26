@@ -19,6 +19,6 @@ typedef struct tag_TIMER
 } TTIMER, *pTIMER;
 
 extern boolean LRT_Initialize(void);
-extern pTIMER LRT_CreateTimer(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), TMRFLAGS Flags);
+extern pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), TMRFLAGS Flags);
 
 #endif /* _LRTIMER_H_ */

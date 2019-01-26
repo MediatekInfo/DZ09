@@ -71,7 +71,7 @@ boolean LRT_Initialize(void)
     return false;
 }
 
-pTIMER LRT_CreateTimer(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), TMRFLAGS Flags)
+pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), TMRFLAGS Flags)
 {
     pTIMER tmpTimer = NULL;
 
