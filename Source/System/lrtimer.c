@@ -93,3 +93,54 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), T
     return tmpTimer;
 }
 
+boolean LRT_Destroy(pTIMER Timer)
+{
+    if ((Timer != NULL) && (Timer->Type == SO_TIMER))
+    {
+        pDLITEM tmpItem = DL_FindItemByData(TimersList, Timer, NULL);
+
+        if (tmpItem != NULL)
+        {
+            DL_DeleteItem(TimersList, tmpItem);
+            Timer->Type = SO_UNDEFINED;
+            free(Timer);
+            free(tmpItem);
+            return true;
+        }
+    }
+    return false;
+}
+
+boolean LRT_Start(pTIMER Timer)
+{
+    if ((Timer != NULL) && (Timer->Type == SO_TIMER))
+    {
+        if (Timer->Flags & TF_ENABLED)
+        {
+            uint32_t iflags = DisableInterrupts();
+
+            Timer->Flags &= ~TF_ENABLED;
+            RestoreInterrupts(iflags);
+        }
+        Timer->StartTicks = USC_GetCurrentTicks();
+        Timer->Flags |= TF_ENABLED;
+        return true;
+    }
+    return false;
+}
+
+boolean LRT_Stop(pTIMER Timer)
+{
+    if ((Timer != NULL) && (Timer->Type == SO_TIMER))
+    {
+        if (Timer->Flags & TF_ENABLED)
+        {
+            uint32_t iflags = DisableInterrupts();
+
+            Timer->Flags &= ~TF_ENABLED;
+            RestoreInterrupts(iflags);
+        }
+        return true;
+    }
+    return false;
+}

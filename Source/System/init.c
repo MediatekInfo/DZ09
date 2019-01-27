@@ -29,6 +29,8 @@ void Init(void)
     NVIC_Initialize();
     DebugPrint("Complete.\r\n");
 
+    DebugPrint("Initialize low resolution timers pool...");
+    DebugPrint((LRT_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
 //
 //
 ////////////////////////////////////////////////////////////
