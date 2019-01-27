@@ -11,6 +11,8 @@ void Init(void)
     MPU_Initialize();                                                                               // Setup system cache
     PCTL_Initialize();                                                                              // Power down peripherals by default
     GPIO_Initialize();                                                                              // Set GPIO to default state
+    DebugPrint("Initialize real time clock...");
+    RTC_Initialize();
 
     USC_StartCounter();
 
