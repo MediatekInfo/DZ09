@@ -31,13 +31,7 @@ void LRT_GPTHandler(void)
                             if (tmpLRT->Flags & TF_DIRECT) tmpLRT->Handler(tmpLRT);
                             else EM_PostEvent(ET_ONTIMER, tmpLRT->Parent, &tmpLRT, sizeof(pTIMER));
                         }
-                        if (tmpLRT->Flags & TF_AUTOREPEAT)
-                        {
-                            DeltaTicks = USC_GetCurrentTicks() - CurrTicks + tmpLRT->Interval;
-
-                            if (DeltaTicks < LRTMININTERVAL) tmpLRT->StartTicks = USC_GetCurrentTicks() + LRTMININTERVAL;
-                            else  tmpLRT->StartTicks = CurrTicks + tmpLRT->Interval;
-                        }
+                        if (tmpLRT->Flags & TF_AUTOREPEAT) tmpLRT->StartTicks = CurrTicks;
                         else tmpLRT->Flags &= ~TF_ENABLED;
                     }
                 }
