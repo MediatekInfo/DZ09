@@ -85,16 +85,16 @@
 
 typedef struct tag_TIME
 {
-    uint16_t Sec;
-    uint16_t Min;
-    uint16_t Hour;
+    uint8_t Sec;
+    uint8_t Min;
+    uint8_t Hour;
 } TTIME, *pTIME;
 
 typedef struct tag_DATE
 {
-    uint16_t Day;
-    uint16_t DoW;
-    uint16_t Month;
+    uint8_t Day;
+    uint8_t DoW;
+    uint8_t Month;
     uint16_t Year;
 } TDATE, *pDATE;
 
