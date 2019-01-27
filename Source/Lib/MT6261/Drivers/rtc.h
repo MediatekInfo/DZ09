@@ -58,6 +58,8 @@
 #define XOSCCALI(v)                 (((v) & 0x1F) << 0)
 #define XOSC32_ENB                  (1 << 5)
 #define EMB_MODE(v)                 (((v) & 0x07) << 6)
+#define OSC32KEY1                   0x1A57
+#define OSC32KEY2                   0x2B68
 #define RTC_POWERKEY1               (*(volatile uint16_t*)(RTC_Base + 0x0050))
 #define POWERKEY1                   0xA357
 #define RTC_POWERKEY2               (*(volatile uint16_t*)(RTC_Base + 0x0054))

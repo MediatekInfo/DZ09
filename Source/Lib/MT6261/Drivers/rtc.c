@@ -26,6 +26,17 @@ static void RTC_SetPowerkey(void)
     UpdateRTCContext();
 }
 
+static void RTC_SetOSC32CON(uint16_t Data)
+{
+    RTC_OSC32CON = OSC32KEY1;
+    while(RTC_BBPU & CBUSY);
+    RTC_OSC32CON = OSC32KEY2;
+    while(RTC_BBPU & CBUSY);
+    RTC_OSC32CON = Data;
+    while(RTC_BBPU & CBUSY);
+    UpdateRTCContext();
+}
+
 static uint8_t RTC_DayOfWeek(pDATE Date)
 {
     uint32_t a, y, m, dow;
@@ -42,13 +53,14 @@ boolean RTC_Initialize(void)
 {
     TDATETIME DateTime;
 
+    if (RTC_OSC32CON != 0x042F) RTC_SetOSC32CON(0x042F);                                            //Set OSC32CON default value
     RTC_Unprotect();
     RTC_SetPowerkey();
 
     if (!RTC_IsValidState())
     {
 //Initial configure RTC
-        DebugPrint(" - !RTC settings invalid...");
+        DebugPrint("settings invalid - ");
         RTC_CON = LPEN(1) | LPSTA_RAW;
         UpdateRTCContext();                                                                         //Enable Low Power Detection
         RTC_CON = LPEN(1) | LPRST; //-V525
@@ -71,8 +83,10 @@ boolean RTC_Initialize(void)
 
         RTC_AL_MASK = YEA_MSK | MTH_MSK | DOM_MSK | DOW_MSK | HOU_MSK | MIN_MSK | SEC_MSK;          //Disable Alarm
         UpdateRTCContext();
-        DebugPrint("reconfigured");
+        DebugPrint("reconfigured!\r\n");
+        return true;
     }
+    DebugPrint("Complete.\r\n");
     return true;
 }
 
