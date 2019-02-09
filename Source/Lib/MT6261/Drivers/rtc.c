@@ -5,36 +5,40 @@
 
 static const uint8_t DayInMonth[13] = {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-static void UpdateRTCContext(void)
+static void RTC_WaitCBUSY(void)
+{
+    while(RTC_BBPU & CBUSY);
+}
+
+static void RTC_UpdateContext(void)
 {
     RTC_WRTGR = WRTGR;
-    while(RTC_BBPU & CBUSY);
+    RTC_WaitCBUSY();
 }
 
 static void RTC_Unprotect(void)
 {
     RTC_PROT = PROT1;
-    UpdateRTCContext();
+    RTC_UpdateContext();
     RTC_PROT = PROT2;
-    UpdateRTCContext();
+    RTC_UpdateContext();
 }
 
 static void RTC_SetPowerkey(void)
 {
     RTC_POWERKEY1 = POWERKEY1;
     RTC_POWERKEY2 = POWERKEY2;
-    UpdateRTCContext();
+    RTC_UpdateContext();
 }
 
 static void RTC_SetOSC32CON(uint16_t Data)
 {
     RTC_OSC32CON = OSC32KEY1;
-    while(RTC_BBPU & CBUSY);
+    RTC_WaitCBUSY();
     RTC_OSC32CON = OSC32KEY2;
-    while(RTC_BBPU & CBUSY);
+    RTC_WaitCBUSY();
     RTC_OSC32CON = Data;
-    while(RTC_BBPU & CBUSY);
-    UpdateRTCContext();
+    RTC_WaitCBUSY();
 }
 
 static uint8_t RTC_DayOfWeek(pDATE Date)
@@ -51,26 +55,33 @@ static uint8_t RTC_DayOfWeek(pDATE Date)
 
 boolean RTC_Initialize(void)
 {
-    TDATETIME DateTime;
-
-    if (RTC_OSC32CON != 0x042F) RTC_SetOSC32CON(0x042F);                                            //Set OSC32CON default value
+    RTC_SetOSC32CON(OSC32_RSV | EMB_MODE(0) | XOSCCALI(0x0F));                                      //Set OSC32CON to default value
     RTC_Unprotect();
-    RTC_SetPowerkey();
 
     if (!RTC_IsValidState())
     {
+        TDATETIME DateTime;
+
 //Initial configure RTC
         DebugPrint("settings invalid - ");
-        RTC_CON = LPEN(1) | LPSTA_RAW;
-        UpdateRTCContext();                                                                         //Enable Low Power Detection
-        RTC_CON = LPEN(1) | LPRST; //-V525
-        UpdateRTCContext();
-        RTC_CON = LPEN(1);
-        UpdateRTCContext();
 
-        RTC_IRQ_EN  = 0;                                                                            //Disable IRQ
-        UpdateRTCContext();
-        RTC_IRQ_STA = RTC_IRQ_STA;                                                                  //Clear interrupts
+        RTC_SetPowerkey();
+
+        RTC_BBPU = KEY_BBPU;
+        RTC_UpdateContext();                                                                            //Set RTC_BBPU to default value
+
+        RTC_CON = LPEN(1) | LPSTA_RAW;
+        RTC_UpdateContext();                                                                        //Enable Low Power Detection
+        RTC_CON = LPEN(1) | LPRST; //-V525
+        RTC_UpdateContext();
+        RTC_CON = LPEN(1);
+        RTC_UpdateContext();
+
+        RTC_CII_EN = 0;                                                                             //Disable periodical interrupts
+        RTC_IRQ_EN = 0;                                                                             //Disable RTC interrupts
+        RTC_AL_MASK = YEA_MSK | MTH_MSK | DOM_MSK | DOW_MSK | HOU_MSK | MIN_MSK | SEC_MSK;          //Disable Alarms
+        RTC_UpdateContext();
+        if (RTC_IRQ_STA);                                                                           //Clear interrupts
 
         memset(&DateTime, 0x00, sizeof(DateTime));                                                  //Set default Date/Time values
         DateTime.Date.Day = 1;
@@ -81,8 +92,6 @@ boolean RTC_Initialize(void)
         RTC_SetDate(&DateTime.Date);
         RTC_SetAlarmDateTime(&DateTime, false);
 
-        RTC_AL_MASK = YEA_MSK | MTH_MSK | DOM_MSK | DOW_MSK | HOU_MSK | MIN_MSK | SEC_MSK;          //Disable Alarm
-        UpdateRTCContext();
         DebugPrint("reconfigured!\r\n");
         return true;
     }
@@ -93,34 +102,36 @@ boolean RTC_Initialize(void)
 boolean RTC_LockBBPower(void)
 {
     RTC_BBPU = KEY_BBPU | AUTO | ((RTC_BBPU | BBPU) & 0xFF);
-    UpdateRTCContext();
+    RTC_UpdateContext();
     return (RTC_BBPU & BBPU) ? true : false;
 }
 
 boolean RTC_UnlockBBPower(void)
 {
     RTC_BBPU = KEY_BBPU | ((RTC_BBPU & ~BBPU) & 0xFF);
-    UpdateRTCContext();
+    RTC_UpdateContext();
     return (RTC_BBPU & BBPU) ? false : true;
 }
 
 boolean RTC_EnablePowerUp(void)
 {
     RTC_BBPU = KEY_BBPU | ((RTC_BBPU | PWREN) & 0xFF);
-    UpdateRTCContext();
+    RTC_UpdateContext();
     return (RTC_BBPU & PWREN) ? true : false;
 }
 
 boolean RTC_DisablePowerUp(void)
 {
     RTC_BBPU = KEY_BBPU | ((RTC_BBPU & ~PWREN) & 0xFF);
-    UpdateRTCContext();
+    RTC_UpdateContext();
     return (RTC_BBPU & PWREN) ? false : true;
 }
 
 boolean RTC_IsValidState(void)
 {
-    return (RTC_CON & VBAT_LPSTA_RAW) ? false : true;
+    return ((RTC_CON & VBAT_LPSTA_RAW) ||
+            (RTC_POWERKEY1 != POWERKEY1) ||
+            (RTC_POWERKEY2 != POWERKEY2)) ? false : true;
 }
 
 boolean RTC_IsAlarmActive(void)
@@ -162,7 +173,7 @@ boolean RTC_SetTime(pTIME Time)
         RTC_TC_MIN = Time->Min;
         RTC_TC_SEC = Time->Sec;
 
-        UpdateRTCContext();
+        RTC_UpdateContext();
         return true;
     }
     return false;
@@ -187,7 +198,7 @@ boolean RTC_SetDate(pDATE Date)
         RTC_TC_DOW = RTC_DayOfWeek(Date);
         RTC_TC_DOM = Date->Day;
 
-        UpdateRTCContext();
+        RTC_UpdateContext();
         return true;
     }
 
@@ -242,7 +253,7 @@ boolean RTC_SetAlarmDateTime(pDATETIME DateTime, boolean UseInterrupt)
             RTC_IRQ_EN = (UseInterrupt) ? RTC_IRQ_EN | AL_EN : RTC_IRQ_EN & ~AL_EN;
             RTC_AL_MASK = ~(YEA_MSK | MTH_MSK | DOM_MSK | HOU_MSK | MIN_MSK | SEC_MSK) & 0xFF;
 
-            UpdateRTCContext();
+            RTC_UpdateContext();
             return true;
         }
     }
