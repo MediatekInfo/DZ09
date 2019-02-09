@@ -10,6 +10,7 @@
 #include "pmngr.h"
 #include "evmngr.h"
 #include "lrtimer.h"
+#include "sw_i2c.h"
 
 
 #endif /* _SYSTEMLIB_H_ */

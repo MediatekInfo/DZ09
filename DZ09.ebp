@@ -291,6 +291,9 @@
 		<Unit filename="Source\System\pmngr.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\System\sw_i2c.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\systemlib.h">
 			<Option target="SYSTEM" />
 		</Unit>
