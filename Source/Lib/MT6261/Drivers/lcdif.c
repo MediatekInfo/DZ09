@@ -133,12 +133,12 @@ void LCDIF_ISR(void)
     else DebugPrint("Unsolicited LCDIF interrupt code 0x%04X!\r\n", IntID);
 }
 
-boolean RegisterLCDIF_ISR(void)
+boolean LCDIF_RegisterISR(void)
 {
     return NVIC_RegisterIRQ(IRQ_LCD_CODE, LCDIF_ISR, IRQ_SENS_LEVEL, true);
 }
 
-boolean UnregisterLCDIF_ISR(void)
+boolean LCDIF_UnregisterISR(void)
 {
     return NVIC_UnregisterIRQ(IRQ_LCD_CODE);
 }
@@ -148,7 +148,7 @@ void LCDIF_DisableInterface(void)
     LCDIF_INTEN = 0;                                                                                //Disable LCDIF interrupts
     LCDIF_START = LCDIF_INT_RESET;
 
-    UnregisterLCDIF_ISR();
+    LCDIF_UnregisterISR();
 
     LCDDRV_Sleep();
     PCTL_PowerDown(PD_LCD);                                                                         //Power down LCD controller
@@ -179,7 +179,7 @@ boolean LCDIF_Initialize(void)
     LCDIF_START = 0;                                                                                //Release LCD controller internal Reset
 
     if (LCDIFQueue == NULL)  LCDIFQueue = DL_Create(0);
-    if ((LCDIFQueue == NULL) || !RegisterLCDIF_ISR())
+    if ((LCDIFQueue == NULL) || !LCDIF_RegisterISR())
     {
         if (LCDIFQueue == NULL)
         {
@@ -284,7 +284,7 @@ boolean LCDIF_SetLayerEnabled(uint32_t Index, boolean Enabled, boolean UpdateScr
             LayerRect.r += LCDScreen.VLayer[Index].LayerOffset.x - LCDScreen.ScreenOffset.x;
             LayerRect.t += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
             LayerRect.b += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
-            if (ANDRectangles(&LayerRect, &LCDScreen.ScreenRgn))
+            if (GDI_ANDRectangles(&LayerRect, &LCDScreen.ScreenRgn))
                 LCDIF_UpdateRectangle(LayerRect);
         }
     }
@@ -295,7 +295,7 @@ void LCDIF_UpdateRectangle(TRECT Rct)
 {
     uint32_t *Commands, CmdCount;
 
-    if (ANDRectangles(&Rct, &LCDScreen.ScreenRgn))
+    if (GDI_ANDRectangles(&Rct, &LCDScreen.ScreenRgn))
     {
         Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
         if (Commands != NULL)

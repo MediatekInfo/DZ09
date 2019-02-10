@@ -14,13 +14,13 @@ void (*FillRectangleX[CF_NUM])(pLCONTEXT, pRECT, uint32_t) =
     &GDI_FillRectangle32
 };
 
-void FillRectangle(uint8_t Index, TRECT Rct, uint32_t Color)
+void GDI_FillRectangle(uint8_t Index, TRECT Rct, uint32_t Color)
 {
     pLCONTEXT lc;
 
     if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return;
 
     lc = &LCDScreen.VLayer[Index];
-    if (ANDRectangles(&Rct, &lc->LayerRgn) && FillRectangleX[lc->ColorFormat] != NULL)
+    if (GDI_ANDRectangles(&Rct, &lc->LayerRgn) && FillRectangleX[lc->ColorFormat] != NULL)
         FillRectangleX[lc->ColorFormat](lc, &Rct, Color);
 }

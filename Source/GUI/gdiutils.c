@@ -57,7 +57,7 @@ boolean IsRectInRect(pRECT a, pRECT b)
 
 
 //a = a & b
-boolean ANDRectangles(pRECT a, pRECT b)
+boolean GDI_ANDRectangles(pRECT a, pRECT b)
 {
     boolean Res = false;
 
@@ -76,7 +76,7 @@ boolean ANDRectangles(pRECT a, pRECT b)
 }
 
 //a + b
-pDLIST ADDRectangles(pRECT a, pRECT b)
+pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
 {
     pDLIST ResRects = NULL;
     pRECT  tmpRectA, tmpRectB;
@@ -121,7 +121,7 @@ pDLIST ADDRectangles(pRECT a, pRECT b)
         }
         else
         {
-            ResRects = SUBRectangles(a, b);
+            ResRects = GDI_SUBRectangles(a, b);
             if (ResRects == NULL) ResRects = DL_Create(0);
             if (ResRects != NULL)
             {
@@ -138,7 +138,7 @@ pDLIST ADDRectangles(pRECT a, pRECT b)
 }
 
 //a - b
-pDLIST SUBRectangles(pRECT a, pRECT b)
+pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
 {
     pDLIST Rlist = DL_Create(0);
     pRECT  Rct;
