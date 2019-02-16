@@ -12,6 +12,10 @@
 #define _ILI9341_LCD_DRIVER_
 //#define _NO_LCD_DRIVER_
 
+/* Touch screen interface settings */
+#define _FT6236_TS_DRIVER_
+//#define _NO_TS_DRIVER_
+
 /* Application pins configuration */
 
 /* LCD interface */
@@ -27,6 +31,17 @@
 //#define LCD_SDA1_MODE   GPIO49_MODE_LSA0DA0                                                       //LCDIF Data IO line 1
 //#define LCD_LPTE        GPIO50
 //#define LCD_LPTE_MODE   GPIO50_MODE_LPTE                                                          //LCDIF Tearing input
+
+/* Touch screen pins configuration */
+#define CPT_SCL         GPIO14
+#define CPT_SCL_MODE    GPIO14_MODE_IO
+#define CPT_SDA         GPIO15
+#define CPT_SDA_MODE    GPIO15_MODE_IO
+#define CPT_RST         GPIO20
+#define CPT_RST_MODE    GPIO20_MODE_IO
+#define CPT_INT         GPIO52
+#define CPT_INT_MODE    GPIO52_MODE_EINT23
+#define CPT_INT_NUM     EINT23
 
 #include "appdrivers.h"
 
