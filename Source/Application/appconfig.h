@@ -33,13 +33,13 @@
 //#define LCD_LPTE_MODE   GPIO50_MODE_LPTE                                                          //LCDIF Tearing input
 
 /* Touch screen pins configuration */
-#define CPT_SCL         GPIO14
+#define CPT_SCL         GPIO14                                                                      //Touch panel I2C clock line
 #define CPT_SCL_MODE    GPIO14_MODE_IO
-#define CPT_SDA         GPIO15
+#define CPT_SDA         GPIO15                                                                      //Touch panel I2C data line
 #define CPT_SDA_MODE    GPIO15_MODE_IO
-#define CPT_RST         GPIO20
+#define CPT_RST         GPIO20                                                                      //Touch panel reset
 #define CPT_RST_MODE    GPIO20_MODE_IO
-#define CPT_INT         GPIO52
+#define CPT_INT         GPIO52                                                                      //Touch panel interrupt
 #define CPT_INT_MODE    GPIO52_MODE_EINT23
 #define CPT_INT_NUM     EINT23
 
