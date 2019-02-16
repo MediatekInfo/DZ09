@@ -58,11 +58,38 @@ void EM_ProcessEvents(void)
         switch(tmpEvent->Event)
         {
         case ET_PENPRESSED:
-            break;
+        {
+            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
+
+            if (tmpEvent->ParamSz)
+            {
+//                GUI_OnPenPressed(TSEvent);
+                DebugPrint("Pen %u Pressed x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
+            }
+        }
+        break;
         case ET_PENRELEASED:
-            break;
+        {
+            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
+
+            if (tmpEvent->ParamSz)
+            {
+//                GUI_OnPenReleased(TSEvent);
+                DebugPrint("Pen %u Released x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
+            }
+        }
+        break;
         case ET_PENMOVED:
-            break;
+        {
+            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
+
+            if (tmpEvent->ParamSz)
+            {
+//                GUI_OnPenMoved(TSEvent);
+                DebugPrint("Pen %u Moved x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
+            }
+        }
+        break;
         case ET_ONPAINT:
             break;
         case ET_PWRKEY:

@@ -21,6 +21,7 @@
 #define SWI2C_BITDELAY  (2 * SWI2C_HALFBIT)
 
 boolean FT6236_PenPressed[FT6236_NUMPOFOINTS];
+TPOINT  FT6326_PenCoordinates[FT6236_NUMPOFOINTS];
 
 boolean FT6236_ReadData(uint8_t Register, uint8_t *Data, uint32_t Count)
 {
@@ -69,12 +70,23 @@ void FT6236_ISR(void)
             switch (PEventVal(TPData[p + 0x00]))
             {
             case PE_PRESS:
+                FT6326_PenCoordinates[TSEvent.PenIndex] = TSEvent.PXY;
                 FT6236_PenPressed[TSEvent.PenIndex] = true;
+                EM_PostEvent(ET_PENPRESSED, NULL, &TSEvent, sizeof(TPENEVENT));
                 break;
             case PE_LIFTUP:
+                if (FT6236_PenPressed[TSEvent.PenIndex])
+                    EM_PostEvent(ET_PENRELEASED, NULL, &TSEvent, sizeof(TPENEVENT));
                 FT6236_PenPressed[TSEvent.PenIndex] = false;
                 break;
             case PE_CONTACT:
+                if (FT6236_PenPressed[TSEvent.PenIndex] &&
+                        (FT6326_PenCoordinates[TSEvent.PenIndex].x != TSEvent.PXY.x) &&
+                        (FT6326_PenCoordinates[TSEvent.PenIndex].y != TSEvent.PXY.y))
+                {
+                    FT6326_PenCoordinates[TSEvent.PenIndex] = TSEvent.PXY;
+                    EM_PostEvent(ET_PENMOVED, NULL, &TSEvent, sizeof(TPENEVENT));
+                }
                 break;
             case PE_NOEVENT:
                 break;
