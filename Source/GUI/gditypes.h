@@ -39,7 +39,7 @@ typedef enum
     CF_NUM
 } TCFORMAT, *pCFORMAT;
 
-#define clAlpha(v)      ((((uint32)v) & 0xFF) << 24)
+#define clAlpha(v)      ((((uint32_t)v) & 0xFF) << 24)
 
 typedef struct
 {
