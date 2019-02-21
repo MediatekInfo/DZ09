@@ -55,12 +55,9 @@ boolean IsRectInRect(pRECT a, pRECT b)
     return false;
 }
 
-
 //a = a & b
 boolean GDI_ANDRectangles(pRECT a, pRECT b)
 {
-    boolean Res = false;
-
     if ((a != NULL) && (b != NULL))
     {
         if (IsRectsOverlaps(a, b))
@@ -69,10 +66,10 @@ boolean GDI_ANDRectangles(pRECT a, pRECT b)
             a->r = min(a->r, b->r);
             a->t = max(a->t, b->t);
             a->b = min(a->b, b->b);
-            Res = (((a->r - a->l) >= 0) && ((a->b - a->t) >= 0)) ? true : false;
+            return true;
         }
     }
-    return Res;
+    return false;
 }
 
 //a + b
