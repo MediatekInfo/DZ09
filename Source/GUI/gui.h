@@ -7,4 +7,6 @@ typedef struct tag_PENEVENT
     TPOINT   PXY;
 } TPENEVENT, *pPENEVENT;
 
+extern boolean GUI_Initialize(void);
+
 #endif /* _GUI_H_ */

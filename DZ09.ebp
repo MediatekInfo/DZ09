@@ -150,6 +150,10 @@
 		<Unit filename="Source\GUI\gdiutils.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\GUI\gui.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\GUI\gui.h">
 			<Option target="SYSTEM" />
 		</Unit>
