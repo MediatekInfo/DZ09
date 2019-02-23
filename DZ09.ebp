@@ -160,6 +160,13 @@
 		<Unit filename="Source\GUI\guilib.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\GUI\guiobject.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\guiobject.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\appheader.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

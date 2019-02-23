@@ -3,6 +3,7 @@
 
 #include "gditypes.h"
 #include "gdiutils.h"
+#include "guiobject.h"
 #include "gdi.h"
 #include "gui.h"
 
