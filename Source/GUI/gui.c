@@ -40,4 +40,6 @@ boolean GUI_Initialize(void)
     }
     if (Result) TSDRV_Initialize();
     else DebugPrint("GUI initialization failed!\r\n");
+
+    return Result;
 }
