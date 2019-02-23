@@ -9,7 +9,7 @@
 		<Build>
 			<Target title="SYSTEM">
 				<Option output="bin\Release\DZ09.elf" />
-				<Option object_output="obj\Release\" />
+				<Option object_output="obj\System\" />
 				<Option type="0" />
 				<Option compiler="armgcc_eb" />
 				<Option projectCompilerOptionsRelation="1" />
@@ -44,7 +44,7 @@
 			</Target>
 			<Target title="BOOTLOADER">
 				<Option output="bin\Release\DZ09_boot.elf" />
-				<Option object_output="obj\Release\" />
+				<Option object_output="obj\Boot\" />
 				<Option type="0" />
 				<Option compiler="armgcc_eb" />
 				<Option projectCompilerOptionsRelation="1" />
