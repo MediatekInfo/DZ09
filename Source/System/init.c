@@ -42,7 +42,7 @@ void Init(void)
 //    PMU_SetISINKParameters(ISINK_CH0, IC_8mA, true);
 ////////////////////////////////////////////////////////////
 //
-
+    EnableInterrupts();
     APP_Initialize();
 
 }
