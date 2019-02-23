@@ -109,7 +109,7 @@ boolean FT6236_Initialize(void)
 {
     boolean DeviceFound;
 
-    DebugPrint("Initialize TS driver...");
+    DebugPrint(" TS driver initialization...");
 
     SetupSW_I2C_SCL(CPT_SCL, CPT_SCL_MODE);
     SetupSW_I2C_SDA(CPT_SDA, CPT_SDA_MODE);

@@ -303,6 +303,7 @@ typedef struct tag_TLCDCMD
 
 extern TSCREEN LCDScreen;
 
+extern void LCDIF_DisableInterface(void);
 extern boolean LCDIF_Initialize(void);
 extern void LCDIF_WriteCommand(uint8_t Cmd);
 extern void LCDIF_WriteData(uint8_t Data);
