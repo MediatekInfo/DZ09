@@ -57,34 +57,40 @@ boolean IsRectInRect(pRECT a, pRECT b)
 
 TPOINT GDI_LocalToGlobal(pPOINT pt, pPOINT Offset)
 {
-    TPOINT Res;
+    TPOINT Res = {0};
 
-    if (Offset != NULL)
+    if (pt != NULL)
     {
-        Res.x = Offset->x + pt->x;
-        Res.y = Offset->y + pt->y;
-    }
-    else
-    {
-        Res.x = pt->x;
-        Res.y = pt->y;
+        if (Offset != NULL)
+        {
+            Res.x = Offset->x + pt->x;
+            Res.y = Offset->y + pt->y;
+        }
+        else
+        {
+            Res.x = pt->x;
+            Res.y = pt->y;
+        }
     }
     return Res;
 }
 
 TPOINT GDI_GlobalToLocal(pPOINT pt, pPOINT Offset)
 {
-    TPOINT Res;
+    TPOINT Res = {0};
 
-    if (Offset != NULL)
+    if (pt != NULL)
     {
-        Res.x = pt->x - Offset->x;
-        Res.y = pt->y - Offset->y;
-    }
-    else
-    {
-        Res.x = pt->x;
-        Res.y = pt->y;
+        if (Offset != NULL)
+        {
+            Res.x = pt->x - Offset->x;
+            Res.y = pt->y - Offset->y;
+        }
+        else
+        {
+            Res.x = pt->x;
+            Res.y = pt->y;
+        }
     }
     return Res;
 }
