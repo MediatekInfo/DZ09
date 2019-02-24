@@ -12,6 +12,10 @@ static boolean EM_AddEvent(pEVENT Event)
 
 static boolean EM_DeleleEvent(void)
 {
+    pDLITEM tmpItem = DL_GetFirstItem(EventsList);
+
+    if (tmpItem != NULL) free(tmpItem->Data);
+
     return DL_DeleteFirstItem(EventsList);
 }
 

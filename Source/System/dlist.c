@@ -472,7 +472,6 @@ boolean DL_DeleteItemByIndex(pDLIST DList, uint32_t Index)
         else DList->Last = tmpItem->Prev;
 
         DList->Count--;
-        if (tmpItem->Data != NULL) free(tmpItem->Data);
         free(tmpItem);
         Result = true;
     }
@@ -497,7 +496,6 @@ boolean DL_DeleteFirstItem(pDLIST DList)
         else DList->Last = NULL;
 
         DList->Count--;
-        if (tmpItem->Data != NULL) free(tmpItem->Data);
         free(tmpItem);
         Result = true;
     }
@@ -522,7 +520,6 @@ boolean DL_DeleteLastItem(pDLIST DList)
         else DList->First = NULL;
 
         DList->Count--;
-        if (tmpItem->Data != NULL) free(tmpItem->Data);
         free(tmpItem);
         Result = true;
     }
