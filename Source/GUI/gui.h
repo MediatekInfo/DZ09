@@ -7,6 +7,8 @@ typedef struct tag_PENEVENT
     TPOINT   PXY;
 } TPENEVENT, *pPENEVENT;
 
+extern pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
+
 extern boolean GUI_Initialize(void);
 
 #endif /* _GUI_H_ */

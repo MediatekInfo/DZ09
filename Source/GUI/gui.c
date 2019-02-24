@@ -3,7 +3,7 @@
 #include "systemconfig.h"
 #include "gui.h"
 
-static pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
+pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
 
 boolean GUI_Initialize(void)
 {

@@ -31,6 +31,7 @@ typedef struct tag_WIN
     TGUIHEADER  Head;
     TSYSOBJECT  SOType;
     boolean     Topmost;
+    uint32_t    Layer;
     uint32_t    ForeColor;
     uint32_t    BackColor;
     TDLIST      ChildObjects;
