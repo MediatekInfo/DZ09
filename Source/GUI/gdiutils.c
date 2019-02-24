@@ -55,6 +55,41 @@ boolean IsRectInRect(pRECT a, pRECT b)
     return false;
 }
 
+TPOINT GDI_LocalToGlobal(pPOINT pt, pPOINT Offset)
+{
+    TPOINT Res;
+
+    if (Offset != NULL)
+    {
+        Res.x = Offset->x + pt->x;
+        Res.y = Offset->y + pt->y;
+    }
+    else
+    {
+        Res.x = pt->x;
+        Res.y = pt->y;
+    }
+    return Res;
+}
+
+TPOINT GDI_GlobalToLocal(pPOINT pt, pPOINT Offset)
+{
+    TPOINT Res;
+
+    if (Offset != NULL)
+    {
+        Res.x = pt->x - Offset->x;
+        Res.y = pt->y - Offset->y;
+    }
+    else
+    {
+        Res.x = pt->x;
+        Res.y = pt->y;
+    }
+    return Res;
+}
+
+
 //a = a & b
 boolean GDI_ANDRectangles(pRECT a, pRECT b)
 {
