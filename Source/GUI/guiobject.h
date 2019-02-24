@@ -28,8 +28,8 @@ typedef struct tag_GUIHEADER
 typedef struct tag_WIN *pWIN;
 typedef struct tag_WIN
 {
-    TSYSOBJECT  Type;
     TGUIHEADER  Head;
+    TSYSOBJECT  SOType;
     boolean     Topmost;
     uint32_t    ForeColor;
     uint32_t    BackColor;
