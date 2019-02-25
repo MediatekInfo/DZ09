@@ -10,7 +10,7 @@ static boolean EM_AddEvent(pEVENT Event)
     return ((Event == NULL) || (DL_AddItem(EventsList, Event) == NULL)) ? false : true;
 }
 
-static boolean EM_DeleleEvent(void)
+static boolean EM_DeleteEvent(void)
 {
     pDLITEM tmpItem = DL_GetFirstItem(EventsList);
 
@@ -103,7 +103,7 @@ void EM_ProcessEvents(void)
         default:
             break;
         }
-        EM_DeleleEvent();
+        EM_DeleteEvent();
     }
 }
 
