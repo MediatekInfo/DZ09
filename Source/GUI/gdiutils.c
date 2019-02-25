@@ -374,7 +374,6 @@ uint8_t *GDI_GetPixelPtr(pLCONTEXT lc, TPOINT pt)
 
 void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, uint32_t Color)
 {
-    uint32_t *p;
     int32_t  x, y, dpx;
 
     if ((lc == NULL) || (Rct == NULL) || (lc->FrameBuffer == NULL)) return;
