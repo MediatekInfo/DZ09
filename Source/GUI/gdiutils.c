@@ -95,7 +95,6 @@ TPOINT GDI_GlobalToLocal(pPOINT pt, pPOINT Offset)
     return Res;
 }
 
-
 //a = a & b
 boolean GDI_ANDRectangles(pRECT a, pRECT b)
 {
@@ -243,6 +242,127 @@ pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
         }
     }
     return Rlist;
+}
+
+boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct)
+{
+    pRECT tmpRect;
+
+    if ((Region == NULL) || (Rct == NULL)) return false;
+
+    if (DL_GetItemsCount(Region))
+    {
+        pDLITEM tmpItem = DL_GetFirstItem(Region);
+
+        while(tmpItem != NULL)
+        {
+            pRECT tmpRect = (pRECT)tmpItem->Data;
+
+            if (IsRectsOverlaps(tmpRect, Rct))
+            {
+                pDLIST tmpList = GDI_SUBRectangles(tmpRect, Rct);
+
+                if (tmpList != NULL)
+                {
+                    pDLITEM tmpSUBItem;
+
+                    if (DL_GetItemsCount(tmpList))
+                    {
+                        tmpSUBItem = DL_GetFirstItem(tmpList);
+
+                        *tmpRect = *(pRECT)tmpSUBItem->Data;
+                        free(tmpSUBItem->Data);
+                        DL_DeleteFirstItem(tmpList);
+
+                        while((tmpSUBItem = DL_GetFirstItem(tmpList)) != NULL)
+                        {
+                            DL_InsertItemBefore(Region, tmpItem, tmpSUBItem->Data);
+                            DL_DeleteFirstItem(tmpList);
+                        }
+                    }
+                    else
+                    {
+                        tmpSUBItem = DL_GetNextItem(tmpItem);
+
+                        DL_DeleteItem(Region, tmpItem);
+                        free(tmpItem->Data);
+                        free(tmpItem);
+
+                        tmpItem = tmpSUBItem;
+                        free(tmpList);
+                        continue;
+                    }
+                    free(tmpList);
+                }
+            }
+            tmpItem = DL_GetNextItem(tmpItem);
+        }
+    }
+    tmpRect = malloc(sizeof(TRECT));
+    if (tmpRect != NULL)
+    {
+        *tmpRect = *Rct;
+        DL_AddItem(Region, tmpRect);
+        return true;
+    }
+    return false;
+}
+
+boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct)
+{
+    if ((Region == NULL) || (Rct == NULL)) return false;
+
+    if (DL_GetItemsCount(Region))
+    {
+        pDLITEM tmpItem = DL_GetFirstItem(Region);
+
+        while(tmpItem != NULL)
+        {
+            pRECT tmpRect = (pRECT)tmpItem->Data;
+
+            if (IsRectsOverlaps(tmpRect, Rct))
+            {
+                pDLIST tmpList = GDI_SUBRectangles(tmpRect, Rct);
+
+                if (tmpList != NULL)
+                {
+                    pDLITEM tmpSUBItem;
+
+                    if (DL_GetItemsCount(tmpList))
+                    {
+                        tmpSUBItem = DL_GetFirstItem(tmpList);
+
+                        *tmpRect = *(pRECT)tmpSUBItem->Data;
+                        free(tmpSUBItem->Data);
+                        DL_DeleteFirstItem(tmpList);
+
+                        while((tmpSUBItem = DL_GetFirstItem(tmpList)) != NULL)
+                        {
+                            DL_InsertItemBefore(Region, tmpItem, tmpSUBItem->Data);
+                            DL_DeleteFirstItem(tmpList);
+                        }
+                    }
+                    else
+                    {
+                        tmpSUBItem = DL_GetNextItem(tmpItem);
+
+                        DL_DeleteItem(Region, tmpItem);
+                        free(tmpItem->Data);
+                        free(tmpItem);
+
+                        tmpItem = tmpSUBItem;
+                        free(tmpList);
+                        continue;
+                    }
+                    free(tmpList);
+                }
+            }
+            tmpItem = DL_GetNextItem(tmpItem);
+        }
+    }
+    else return false;
+
+    return true;
 }
 
 uint8_t *GDI_GetPixelPtr(pLCONTEXT lc, TPOINT pt)
