@@ -3,17 +3,6 @@
 #include "systemconfig.h"
 #include "gdi.h"
 
-void (*FillRectangleX[CF_NUM])(pLCONTEXT, pRECT, uint32_t) =
-{
-    NULL,
-    &GDI_FillRectangle16,
-    NULL,
-    NULL,
-    &GDI_FillRectangle32,
-    &GDI_FillRectangle32,
-    &GDI_FillRectangle32
-};
-
 void GDI_FillRectangle(uint8_t Index, TRECT Rct, uint32_t Color)
 {
     pLCONTEXT lc;
@@ -21,8 +10,7 @@ void GDI_FillRectangle(uint8_t Index, TRECT Rct, uint32_t Color)
     if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return;
 
     lc = &LCDScreen.VLayer[Index];
-    if (GDI_ANDRectangles(&Rct, &lc->LayerRgn) && FillRectangleX[lc->ColorFormat] != NULL)
-        FillRectangleX[lc->ColorFormat](lc, &Rct, Color);
+    if (GDI_ANDRectangles(&Rct, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
 }
 
 void GDI_DrawLine(uint8_t Index, TPOINT P0, TPOINT P1, uint32_t Color)
@@ -38,8 +26,7 @@ void GDI_DrawLine(uint8_t Index, TPOINT P0, TPOINT P1, uint32_t Color)
         Rct.rb = P1;
 
         lc = &LCDScreen.VLayer[Index];
-        if (GDI_ANDRectangles(&Rct, &lc->LayerRgn) && FillRectangleX[lc->ColorFormat] != NULL)
-            FillRectangleX[lc->ColorFormat](lc, &Rct, Color);
+        if (GDI_ANDRectangles(&Rct, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
     }
 }
 
@@ -53,6 +40,5 @@ void GDI_SetPixel(uint8_t Index, TPOINT P, uint32_t Color)
     Rct.lt = Rct.rb = P;
 
     lc = &LCDScreen.VLayer[Index];
-    if (IsPointInRect(P.x, P.y, &lc->LayerRgn) && FillRectangleX[lc->ColorFormat] != NULL)
-        FillRectangleX[lc->ColorFormat](lc, &Rct, Color);
+    if (IsPointInRect(P.x, P.y, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
 }

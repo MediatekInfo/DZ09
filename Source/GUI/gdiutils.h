@@ -14,7 +14,6 @@ extern pDLIST GDI_ADDRectangles(pRECT a, pRECT b);
 extern pDLIST GDI_SUBRectangles(pRECT a, pRECT b);
 extern boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct);
 extern boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct);
-extern void GDI_FillRectangle16(pLCONTEXT lc, pRECT Rct, uint32_t Color);
-extern void GDI_FillRectangle32(pLCONTEXT lc, pRECT Rct, uint32_t Color);
+extern void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, uint32_t Color);
 
 #endif /* _GDIUTILS_H_ */
