@@ -10,15 +10,6 @@ static boolean EM_AddEvent(pEVENT Event)
     return ((Event == NULL) || (DL_AddItem(EventsList, Event) == NULL)) ? false : true;
 }
 
-static boolean EM_DeleteEvent(void)
-{
-    pDLITEM tmpItem = DL_GetFirstItem(EventsList);
-
-    if (tmpItem != NULL) free(tmpItem->Data);
-
-    return DL_DeleteFirstItem(EventsList);
-}
-
 static pEVENT EM_GetTopEvent(void)
 {
     pDLITEM tmpItem = DL_GetFirstItem(EventsList);
@@ -59,6 +50,8 @@ void EM_ProcessEvents(void)
 
     while((tmpEvent = EM_GetTopEvent()) != NULL)
     {
+        DL_DeleteFirstItem(EventsList);
+
         switch(tmpEvent->Event)
         {
         case ET_PENPRESSED:
@@ -103,7 +96,7 @@ void EM_ProcessEvents(void)
         default:
             break;
         }
-        EM_DeleteEvent();
+        free(tmpEvent);
     }
 }
 
