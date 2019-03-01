@@ -7,7 +7,7 @@ int32_t GIU_GetWindowZIndex(pWIN Win)
 {
     int32_t ZL = -1;
 
-    if ((Win != NULL) && (Win->Head.Type == GO_WINDOW))
+    if ((Win != NULL) && (Win->Head.Type == GO_WINDOW) && (Win->Layer < LCDIF_NUMLAYERS))
     {
         DL_FindItemByData(GUIWinZOrder[Win->Layer], Win, &ZL);
     }
