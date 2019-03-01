@@ -3,6 +3,55 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
+pWIN GUI_CreateWindow(pGUIHEADER Head, boolean (*Handler)(pEVENT, pWIN), uint8_t Layer, uint32_t ForeColor, boolean Topmost)
+{
+    pWIN    Win;
+    boolean Result;
+
+    if ((Layer >= LCDIF_NUMLAYERS) || ((Head != NULL) && (Head->Type != GO_WINDOW))) return NULL;
+
+    Win = malloc(sizeof(TWIN));
+    if (Win != NULL)
+    {
+        memset(Win, 0x00, sizeof(TWIN));
+
+        if (Head != NULL) Win->Head = *Head;
+        else Win->Head.Type = GO_WINDOW;
+
+        Win->SOType  = SO_UNDEFINED;
+        Win->Topmost = Topmost;
+        Win->Layer = Layer;
+        Win->ForeColor = ForeColor;
+        Win->EventHandler = Handler;
+
+        if (Topmost) Result = DL_AddItem(GUIWinZOrder[Layer], Win) != NULL;                         // Put the handle directly to the top of the list
+        else
+        {                                                                                           // Looking for top window among non-topmost windows
+            pDLITEM tmpItem = DL_GetLastItem(GUIWinZOrder[Layer]);
+
+            while(tmpItem != NULL)
+            {
+                pWIN tmpWIN = (pWIN)tmpItem->Data;
+
+                if ((tmpWIN != NULL) && !tmpWIN->Topmost)
+                {
+                    Result = DL_InsertItemAfter(GUIWinZOrder[Layer], tmpItem, Win) != NULL;
+                    break;
+                }
+                tmpItem = DL_GetPrevItem(tmpItem);
+            }
+            if (tmpItem == NULL) Result = DL_AddItem(GUIWinZOrder[Layer], Win) != NULL;
+        }
+        if (Result) Win->SOType = SO_GUI;
+        else
+        {
+            free(Win);
+            Win = NULL;
+        }
+    }
+    return Win;
+}
+
 int32_t GUI_GetWindowZIndex(pWIN Win)
 {
     int32_t ZL = -1;
