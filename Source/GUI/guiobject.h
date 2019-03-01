@@ -33,7 +33,6 @@ typedef struct tag_WIN
     boolean     Topmost;
     uint32_t    Layer;
     uint32_t    ForeColor;
-    uint32_t    BackColor;
     TDLIST      ChildObjects;
     boolean     (*EventHandler)(pEVENT, pWIN);
 } TWIN, *pWIN;
