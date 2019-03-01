@@ -3,7 +3,7 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
-int32_t GIU_GetWindowZIndex(pWIN Win)
+int32_t GUI_GetWindowZIndex(pWIN Win)
 {
     int32_t ZL = -1;
 
