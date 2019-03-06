@@ -221,78 +221,78 @@ boolean LCDIF_Initialize(void)
     return false;
 }
 
-boolean LCDIF_SetupLayer(uint32_t Index, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
+boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
                          TCFORMAT CFormat, uint8_t Alpha)
 {
-    if (Index >= LCDIF_NUMLAYERS) return false;
+    if (Layer >= LCDIF_NUMLAYERS) return false;
 
-    LCDScreen.VLayer[Index].Enabled = false;
-    LCDScreen.VLayer[Index].Initialized = false;
-    LCDIF_WROICON &= ~LCDScreen.VLayer[Index].LayerEnMask;
-    if (LCDScreen.VLayer[Index].FrameBuffer != NULL)
+    LCDScreen.VLayer[Layer].Enabled = false;
+    LCDScreen.VLayer[Layer].Initialized = false;
+    LCDIF_WROICON &= ~LCDScreen.VLayer[Layer].LayerEnMask;
+    if (LCDScreen.VLayer[Layer].FrameBuffer != NULL)
     {
-        free(LCDScreen.VLayer[Index].FrameBuffer);
-        LCDScreen.VLayer[Index].FrameBuffer = NULL;
+        free(LCDScreen.VLayer[Layer].FrameBuffer);
+        LCDScreen.VLayer[Layer].FrameBuffer = NULL;
     }
 
     if (SizeX && SizeY && (CFormat < CF_NUM))
     {
         uint32_t n;
 
-        LCDScreen.VLayer[Index].LayerRgn = Rect(0, 0, SizeX - 1, SizeY - 1);
-        LCDScreen.VLayer[Index].LayerOffset = Offset;
-        LCDScreen.VLayer[Index].ColorFormat = CFormat;
-        LCDScreen.VLayer[Index].BPP = CFormatToBPP[CFormat];
+        LCDScreen.VLayer[Layer].LayerRgn = Rect(0, 0, SizeX - 1, SizeY - 1);
+        LCDScreen.VLayer[Layer].LayerOffset = Offset;
+        LCDScreen.VLayer[Layer].ColorFormat = CFormat;
+        LCDScreen.VLayer[Layer].BPP = CFormatToBPP[CFormat];
 
-        n = SizeX * SizeY * LCDScreen.VLayer[Index].BPP;
+        n = SizeX * SizeY * LCDScreen.VLayer[Layer].BPP;
         if (n)
         {
-            LCDScreen.VLayer[Index].FrameBuffer = malloc(n);
-            if (LCDScreen.VLayer[Index].FrameBuffer != NULL)
+            LCDScreen.VLayer[Layer].FrameBuffer = malloc(n);
+            if (LCDScreen.VLayer[Layer].FrameBuffer != NULL)
             {
-                LCDIF_LAYER[Index]->LCDIF_LWINCON = LCDIF_LROTATE(LCDIF_LR_NO) | LCDIF_LCF(CFormat);
+                LCDIF_LAYER[Layer]->LCDIF_LWINCON = LCDIF_LROTATE(LCDIF_LR_NO) | LCDIF_LCF(CFormat);
                 if ((CFormat == LCDIF_LCF_ARGB8888) || (CFormat == LCDIF_LCF_PARGB8888) || (Alpha != 0xFF))
-                    LCDIF_LAYER[Index]->LCDIF_LWINCON |= LCDIF_LALPHA(Alpha) | LCDIF_LALPHA_EN;
+                    LCDIF_LAYER[Layer]->LCDIF_LWINCON |= LCDIF_LALPHA(Alpha) | LCDIF_LALPHA_EN;
 
-                LCDIF_LAYER[Index]->LCDIF_LWINOFFS  = LCDIF_LWINOF_X(Offset.x) | LCDIF_LWINOF_Y(Offset.y);
-                LCDIF_LAYER[Index]->LCDIF_LWINADD   = (uint32_t)LCDScreen.VLayer[Index].FrameBuffer;
-                LCDIF_LAYER[Index]->LCDIF_LWINSIZE  = LCDIF_LCOLS(SizeX) | LCDIF_LROWS(SizeY);
-                LCDIF_LAYER[Index]->LCDIF_LWINSCRL  = LCDIF_LSCCOL(0) | LCDIF_LSCROW(0);
-                LCDIF_LAYER[Index]->LCDIF_LWINMOFS  = LCDIF_LMOFCOL(0) | LCDIF_LMOFROW(0);
-                LCDIF_LAYER[Index]->LCDIF_LWINPITCH = LCDScreen.VLayer[Index].BPP * SizeX;
+                LCDIF_LAYER[Layer]->LCDIF_LWINOFFS  = LCDIF_LWINOF_X(Offset.x) | LCDIF_LWINOF_Y(Offset.y);
+                LCDIF_LAYER[Layer]->LCDIF_LWINADD   = (uint32_t)LCDScreen.VLayer[Layer].FrameBuffer;
+                LCDIF_LAYER[Layer]->LCDIF_LWINSIZE  = LCDIF_LCOLS(SizeX) | LCDIF_LROWS(SizeY);
+                LCDIF_LAYER[Layer]->LCDIF_LWINSCRL  = LCDIF_LSCCOL(0) | LCDIF_LSCROW(0);
+                LCDIF_LAYER[Layer]->LCDIF_LWINMOFS  = LCDIF_LMOFCOL(0) | LCDIF_LMOFROW(0);
+                LCDIF_LAYER[Layer]->LCDIF_LWINPITCH = LCDScreen.VLayer[Layer].BPP * SizeX;
 
-                LCDScreen.VLayer[Index].Initialized = true;
+                LCDScreen.VLayer[Layer].Initialized = true;
             }
         }
     }
-    return LCDScreen.VLayer[Index].Initialized;
+    return LCDScreen.VLayer[Layer].Initialized;
 }
 
-boolean LCDIF_SetLayerEnabled(uint32_t Index, boolean Enabled, boolean UpdateScreen)
+boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScreen)
 {
     TRECT LayerRect;
 
-    if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return false;
+    if ((Layer >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Layer].Initialized) return false;
 
-    if (LCDScreen.VLayer[Index].Enabled != Enabled)
+    if (LCDScreen.VLayer[Layer].Enabled != Enabled)
     {
-        if (Enabled) LCDIF_WROICON |= LCDScreen.VLayer[Index].LayerEnMask;
-        else LCDIF_WROICON &= ~LCDScreen.VLayer[Index].LayerEnMask;
+        if (Enabled) LCDIF_WROICON |= LCDScreen.VLayer[Layer].LayerEnMask;
+        else LCDIF_WROICON &= ~LCDScreen.VLayer[Layer].LayerEnMask;
 
-        LCDScreen.VLayer[Index].Enabled = Enabled;
+        LCDScreen.VLayer[Layer].Enabled = Enabled;
 
         if (UpdateScreen)
         {
-            LayerRect = LCDScreen.VLayer[Index].LayerRgn;
-            LayerRect.l += LCDScreen.VLayer[Index].LayerOffset.x - LCDScreen.ScreenOffset.x;
-            LayerRect.r += LCDScreen.VLayer[Index].LayerOffset.x - LCDScreen.ScreenOffset.x;
-            LayerRect.t += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
-            LayerRect.b += LCDScreen.VLayer[Index].LayerOffset.y - LCDScreen.ScreenOffset.y;
+            LayerRect = LCDScreen.VLayer[Layer].LayerRgn;
+            LayerRect.l += LCDScreen.VLayer[Layer].LayerOffset.x - LCDScreen.ScreenOffset.x;
+            LayerRect.r += LCDScreen.VLayer[Layer].LayerOffset.x - LCDScreen.ScreenOffset.x;
+            LayerRect.t += LCDScreen.VLayer[Layer].LayerOffset.y - LCDScreen.ScreenOffset.y;
+            LayerRect.b += LCDScreen.VLayer[Layer].LayerOffset.y - LCDScreen.ScreenOffset.y;
             if (GDI_ANDRectangles(&LayerRect, &LCDScreen.ScreenRgn))
                 LCDIF_UpdateRectangle(LayerRect);
         }
     }
-    return LCDScreen.VLayer[Index].Enabled;
+    return LCDScreen.VLayer[Layer].Enabled;
 }
 
 void LCDIF_UpdateRectangle(TRECT Rct)

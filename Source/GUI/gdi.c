@@ -3,19 +3,19 @@
 #include "systemconfig.h"
 #include "gdi.h"
 
-void GDI_FillRectangle(uint8_t Index, TRECT Rct, uint32_t Color)
+void GDI_FillRectangle(TVLINDEX Layer, TRECT Rct, uint32_t Color)
 {
     pLCONTEXT lc;
 
-    if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return;
+    if ((Layer >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Layer].Initialized) return;
 
-    lc = &LCDScreen.VLayer[Index];
+    lc = &LCDScreen.VLayer[Layer];
     if (GDI_ANDRectangles(&Rct, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
 }
 
-void GDI_DrawLine(uint8_t Index, TPOINT P0, TPOINT P1, uint32_t Color)
+void GDI_DrawLine(TVLINDEX Layer, TPOINT P0, TPOINT P1, uint32_t Color)
 {
-    if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return;
+    if ((Layer >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Layer].Initialized) return;
 
     if ((P0.x == P1.x) || (P0.y == P1.y))
     {
@@ -25,20 +25,20 @@ void GDI_DrawLine(uint8_t Index, TPOINT P0, TPOINT P1, uint32_t Color)
         Rct.lt = P0;
         Rct.rb = P1;
 
-        lc = &LCDScreen.VLayer[Index];
+        lc = &LCDScreen.VLayer[Layer];
         if (GDI_ANDRectangles(&Rct, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
     }
 }
 
-void GDI_SetPixel(uint8_t Index, TPOINT P, uint32_t Color)
+void GDI_SetPixel(TVLINDEX Layer, TPOINT P, uint32_t Color)
 {
     TRECT     Rct;
     pLCONTEXT lc;
 
-    if ((Index >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Index].Initialized) return;
+    if ((Layer >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Layer].Initialized) return;
 
     Rct.lt = Rct.rb = P;
 
-    lc = &LCDScreen.VLayer[Index];
+    lc = &LCDScreen.VLayer[Layer];
     if (IsPointInRect(P.x, P.y, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
 }

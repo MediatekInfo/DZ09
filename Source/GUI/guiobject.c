@@ -25,8 +25,8 @@ pWIN GUI_CreateWindow(pGUIHEADER Head, boolean (*Handler)(pEVENT, pWIN), uint8_t
         Win->EventHandler = Handler;
 
         if (Topmost) Result = DL_AddItem(GUIWinZOrder[Layer], Win) != NULL;                         // Put the handle directly to the top of the list
-        else
-        {                                                                                           // Looking for top window among non-topmost windows
+        else                                                                                        // Looking for top window among non-topmost windows
+        {
             pDLITEM tmpItem = DL_GetLastItem(GUIWinZOrder[Layer]);
 
             while(tmpItem != NULL)

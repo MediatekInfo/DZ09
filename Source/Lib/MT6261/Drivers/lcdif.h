@@ -233,14 +233,14 @@ typedef struct tag_LAYER
 #define LCDIF_LAYER2BASE            (*(volatile TLAYER*)(LCDIF_Base + 0x0110))
 #define LCDIF_LAYER3BASE            (*(volatile TLAYER*)(LCDIF_Base + 0x0140))
 
-typedef enum tag_LAYNUM
+typedef enum tag_VLINDEX
 {
     LCDIF_LAYER0,
     LCDIF_LAYER1,
     LCDIF_LAYER2,
     LCDIF_LAYER3,
     LCDIF_NUMLAYERS
-} LAYNUM;
+} TVLINDEX;
 
 #define LCDIF_DITHER_CON_REG        (*(volatile uint32_t*)(LCDIF_Base + 0x0170)
 
@@ -273,7 +273,7 @@ typedef enum tag_LAYNUM
 #define LCDIF_SCMD1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FA0))
 #define LCDIF_SDAT1                 (*(volatile uint32_t*)(LCDIF_Base + 0x0FB0))
 
-typedef struct// tag_TLCONTEXT
+typedef struct tag_TLCONTEXT
 {
     boolean  Enabled;
     boolean  Initialized;
@@ -309,9 +309,9 @@ extern void LCDIF_WriteCommand(uint8_t Cmd);
 extern void LCDIF_WriteData(uint8_t Data);
 extern uint8_t LCDIF_ReadData(void);
 extern boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect);
-extern boolean LCDIF_SetupLayer(uint32_t Index, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
+extern boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
                                 TCFORMAT CFormat, uint8_t Alpha);
-extern boolean LCDIF_SetLayerEnabled(uint32_t Index, boolean Enabled, boolean UpdateScreen);
+extern boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScreen);
 extern void LCDIF_UpdateRectangle(TRECT Rct);
 extern void LCDIF_UpdateRectangleBlocked(pRECT Rct);
 
