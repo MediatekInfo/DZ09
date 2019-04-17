@@ -125,9 +125,6 @@
 		<Unit filename="Source\Bootloader\DZ09_boot.h">
 			<Option target="BOOTLOADER" />
 		</Unit>
-		<Unit filename="Source\Bootloader\mtktypes.h">
-			<Option target="BOOTLOADER" />
-		</Unit>
 		<Unit filename="Source\Bootloader\sha-1.c">
 			<Option compilerVar="CC" />
 			<Option target="BOOTLOADER" />
@@ -252,6 +249,7 @@
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\ustimer.h" />
 		<Unit filename="Source\Lib\MT6261\mt6261.h" />
+		<Unit filename="Source\Lib\mtktypes.h" />
 		<Unit filename="Source\startup_MT6261x.S">
 			<Option compilerVar="CC" />
 		</Unit>
