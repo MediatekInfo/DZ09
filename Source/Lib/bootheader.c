@@ -17,11 +17,11 @@ extern uint32_t __boot_header_size;
 volatile const APP_HEADER boot_header __attribute__ ((section (".boot_header"))) =
 {
     {
-        {0x014D4D4D, sizeof(FILE_INFO_v1), 0},
+        {GFH_HDR_MAGIC, sizeof(FILE_INFO_v1), GFH_FILE_INFO},
         "FILE_INFO",
         1,
-        0x0001,
-        7,
+        ARM_BL,
+        F_SF,
         1,
         (uint32_t)(&__boot_header_base),
         0xffffffff,
@@ -31,15 +31,15 @@ volatile const APP_HEADER boot_header __attribute__ ((section (".boot_header")))
         (uint32_t)(&__boot_header_size),
         1
     },
-    {   {0x014D4D4D, sizeof(GFH_BROM_CFG_v3), 0x0007},
+    {   {GFH_HDR_MAGIC, sizeof(GFH_BROM_CFG_v3), GFH_BROM_CFG},
         0x02, 0x00, 0x00, 0x00, 0xB8, 0x0B
     },
     {
-        {0x014D4D4D, sizeof(GFH_BL_INFO_v1), 1},
+        {GFH_HDR_MAGIC, sizeof(GFH_BL_INFO_v1), GFH_BL_INFO},
         1
     },
     {
-        {0x014D4D4D, sizeof(GFH_ARM_BL_INFO_v1), 0x209},
+        {GFH_HDR_MAGIC, sizeof(GFH_ARM_BL_INFO_v1), GFH_ARM_BL_INFO},
         0x00000001,
         0x00000560,
         0x00000000,

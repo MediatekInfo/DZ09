@@ -15,11 +15,11 @@ extern uint32_t __app_header_size;
 volatile const APP_HEADER app_header __attribute__ ((section (".app_header"))) =
 {
     {
-        {0x014D4D4D, sizeof(FILE_INFO_v1), 0},
+        {GFH_HDR_MAGIC, sizeof(FILE_INFO_v1), GFH_FILE_INFO},
         "FILE_INFO",
         1,
-        0x0002,
-        7,
+        ARM_EXT_BL,
+        F_SF,
         1,
         (uint32_t)(&__app_header_base),
         0xffffffff,
@@ -30,7 +30,7 @@ volatile const APP_HEADER app_header __attribute__ ((section (".app_header"))) =
         3
     },
     {
-        {0x014D4D4D, sizeof(GFH_BL_INFO_v1), 1},
+        {GFH_HDR_MAGIC, sizeof(GFH_BL_INFO_v1), GFH_BL_INFO},
         0
     }
 };
