@@ -1,3 +1,21 @@
+/*
+* This file is part of the DZ09 project.
+*
+* Copyright (C) 2019 AJScorp
+*
+* This program is free software; you can redistribute it and/or modify 
+* it under the terms of the GNU General Public License as published by 
+* the Free Software Foundation; version 2 of the License.
+*
+* This program is distributed in the hope that it will be useful, 
+* but WITHOUT ANY WARRANTY; without even the implied warranty of 
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License 
+* along with this program; if not, write to the Free Software 
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+*/
     .syntax divided
     .arch armv5te
 
@@ -12,8 +30,8 @@
     .type   NVIC_IRQ_Handler, %function
     .func   NVIC_IRQ_Handler
 NVIC_IRQ_Handler:
-    stmfd   sp!, {r0}                                                                               ;//NoteXXX: SW workaround for ARM7 family common bug
-    mrs     r0, SPSR                                                                                ;//An interrupt may trigger when an MSR is executed to set I-bit.
+    stmfd   sp!, {r0}                                                                               //NoteXXX: SW workaround for ARM7 family common bug
+    mrs     r0, SPSR                                                                                //An interrupt may trigger when an MSR is executed to set I-bit.
     tst     r0, #_I_
     ldmfd   sp!, {r0}
     subnes  pc, lr, #4
