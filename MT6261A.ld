@@ -27,7 +27,7 @@
 /* ---------------------------------------------------------------------------- */
 
 /*------------------------------------------------------------------------------
- *      Linker script for running in internal FLASH on the MT6261DA
+ *      Linker script for running in internal FLASH on the MT6261A
  *----------------------------------------------------------------------------*/
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
@@ -39,7 +39,7 @@ MEMORY
 {
     ROM  (rx) : ORIGIN = 0x10006000, LENGTH = 8M - 0x6000
     RAM (rwx) : ORIGIN = 0x00000000, LENGTH = 4M
-    TCM (rwx) : ORIGIN = 0x70000000, LENGTH = 0x0000D000
+    TCM (rwx) : ORIGIN = 0x70000000, LENGTH = 0x0000B000
 }
 
 /* Linker script to place sections and symbol values. Should be used together

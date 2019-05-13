@@ -27,7 +27,7 @@
 /* ---------------------------------------------------------------------------- */
 
 /*------------------------------------------------------------------------------
- *      Linker script for running in internal TCM on the MT6261DA
+ *      Linker script for running in internal TCM on the MT6261A
  *----------------------------------------------------------------------------*/
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
@@ -38,7 +38,7 @@ SEARCH_DIR(.)
 MEMORY
 {
     ROM  (rx) : ORIGIN = 0x10000000, LENGTH = 8M
-    TCM (rwx) : ORIGIN = 0x70006000, LENGTH = 0x00004000
+    TCM (rwx) : ORIGIN = 0x70006000, LENGTH = 0xB000 - 0x6000
 }
 
 /* Linker script to place sections and symbol values. Should be used together

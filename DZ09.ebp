@@ -16,7 +16,7 @@
 				<Device>
 					<Add option="$device=arm9e" />
 					<Add option="$arch=armv5te" />
-					<Add option="$lscript=MT6261DA.ld" />
+					<Add option="$lscript=MT6261A.ld" />
 					<Add option="$heap=0x0000" />
 				</Device>
 				<Compiler>
@@ -51,7 +51,7 @@
 				<Device>
 					<Add option="$device=arm9e" />
 					<Add option="$arch=armv5te" />
-					<Add option="$lscript=MT6261DA_boot.ld" />
+					<Add option="$lscript=MT6261A_boot.ld" />
 					<Add option="$heap=0x0000" />
 				</Device>
 				<Compiler>
@@ -80,7 +80,7 @@
 		<Device>
 			<Add option="$device=arm9e" />
 			<Add option="$arch=armv5te" />
-			<Add option="$lscript=MT6261DA.ld" />
+			<Add option="$lscript=MT6261A.ld" />
 			<Add option="$heap=0x0000" />
 		</Device>
 		<Compiler>
