@@ -8,3 +8,4 @@
 * IDE:        Embitz v1.11
 * Compliler:  gcc arm-none-eabi 5.4.1 (As part of IDE)
 * PCB photo:  PCB_back.jpg, PCB_label.jpg
+* Flashing instructions:      howto.pdf
