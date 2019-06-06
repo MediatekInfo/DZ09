@@ -37,7 +37,7 @@
 				</Linker>
 				<ExtraCommands>
 					<Add after="arm-none-eabi-objcopy -S -O binary $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
-					<Add after="mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+					<Add after="tools\mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
 					<Mode before="0" />
 					<Mode after="1" />
 				</ExtraCommands>
@@ -71,7 +71,7 @@
 				</Linker>
 				<ExtraCommands>
 					<Add after="arm-none-eabi-objcopy -S -O binary $(TARGET_OUTPUT_FILE) $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
-					<Add after="mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
+					<Add after="tools\mtk_sign $(TARGET_OUTPUT_DIR)$(TARGET_OUTPUT_BASENAME).bin" />
 					<Mode before="0" />
 					<Mode after="1" />
 				</ExtraCommands>
