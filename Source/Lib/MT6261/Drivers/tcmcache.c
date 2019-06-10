@@ -33,7 +33,8 @@ const char *AccRightsStr[] =
     "PRW_UWO",
     "PRO_URO",
     "NACC",
-    "PRO_UNA"
+    "PRO_UNA",
+    "ACR_UNK"                                                                                       //Access rights unknown
 };
 #endif
 
@@ -97,7 +98,7 @@ boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheabl
             MpuInfo.MPURegions[FreeRegionIdx].Used = true;
             MpuInfo.RegionsUsed++;
             DebugPrint("Region 0x%08X...0x%08X added to cache. Rights: %s\r\n",
-                       RegionStart, RegionEnd, AccRightsStr[AccessRights]);
+                       RegionStart, RegionEnd, AccRightsStr[AccessRights & MPU_ATTR_MASK]);
             return true;
         }
     }

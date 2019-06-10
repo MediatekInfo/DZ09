@@ -107,7 +107,8 @@
 #define MPU_R15START                (*(volatile uint32_t*)(MPU_Base + 0x003C))
 // #define Bits 4-0 unknown
 
-#define MPU_ATTR(v)                 (((v) & 0x07) << 5)
+#define MPU_ATTR_MASK               0x07
+#define MPU_ATTR(v)                 (((v) & MPU_ATTR_MASK) << 5)
 #define PRIV_RW_USER_RW             0 //= 0x00,
 #define PRIV_RW                     1 //= 0x20,
 #define PRIV_RW_USER_RO             2 //= 0x40,
