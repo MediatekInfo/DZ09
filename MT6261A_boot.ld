@@ -72,11 +72,11 @@ SECTIONS
 {
 	.text :
 	{
-        __boot_header_base = .;
-        KEEP(*(.boot_header))
-        __boot_header_end = .;
-        KEEP(*(.isr_vectors))
-        KEEP(*(.reset_handler))
+		__boot_header_base = .;
+		KEEP(*(.boot_header))
+		__boot_header_end = .;
+		KEEP(*(.isr_vectors))
+		KEEP(*(.reset_handler))
 		*(.text*)
 
 		KEEP(*(.init))
@@ -90,18 +90,18 @@ SECTIONS
 		*(.ctors)
 
 		/* .dtors */
- 		*crtbegin.o(.dtors)
- 		*crtbegin?.o(.dtors)
- 		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
- 		*(SORT(.dtors.*))
- 		*(.dtors)
+		*crtbegin.o(.dtors)
+		*crtbegin?.o(.dtors)
+		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+		*(SORT(.dtors.*))
+		*(.dtors)
 
 		*(.rodata*)
 
 		KEEP(*(.eh_frame*))
 	} > TCM
 
-    __boot_header_size = __boot_header_end - __boot_header_base;
+	__boot_header_size = __boot_header_end - __boot_header_base;
 
 	.ARM.extab :
 	{
@@ -115,7 +115,7 @@ SECTIONS
 	} > TCM
 	__exidx_end = .;
 
-  . = ALIGN(4);
+	. = ALIGN(4);
 	__etext = .;
 
 	.data : AT (__etext)
@@ -158,12 +158,12 @@ SECTIONS
 		__bss_end__ = .;
 	} > TCM
 
-    .noinit (NOLOAD):
-    {
+	.noinit (NOLOAD):
+	{
 		__noinit_start__ = .;
 		*(.noinit*)
 		__noinit_end__ = .;
-    } > TCM
+	} > TCM
 
 	.heap (NOLOAD):
 	{
@@ -184,8 +184,8 @@ SECTIONS
 		*(.stack)
 	} > TCM
 
-    __rom_image_base = ORIGIN(ROM);
-    __rom_image_limit = ORIGIN(ROM) + LENGTH(ROM);
+	__rom_image_base = ORIGIN(ROM);
+	__rom_image_limit = ORIGIN(ROM) + LENGTH(ROM);
 
 
 	/* Set stack top to end of RAM, and stack limit move down by

@@ -73,11 +73,11 @@ SECTIONS
 {
 	.text :
 	{
-        __app_header_base = .;
-        KEEP(*(.app_header))
-        __app_header_end = .;
-/*        KEEP(*(.isr_vector)) */
-        KEEP(*(.reset_handler))
+		__app_header_base = .;
+		KEEP(*(.app_header))
+		__app_header_end = .;
+/*		KEEP(*(.isr_vector)) */
+		KEEP(*(.reset_handler))
 		*(.text*)
 
 		KEEP(*(.init))
@@ -91,18 +91,18 @@ SECTIONS
 		*(.ctors)
 
 		/* .dtors */
- 		*crtbegin.o(.dtors)
- 		*crtbegin?.o(.dtors)
- 		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
- 		*(SORT(.dtors.*))
- 		*(.dtors)
+		*crtbegin.o(.dtors)
+		*crtbegin?.o(.dtors)
+		*(EXCLUDE_FILE(*crtend?.o *crtend.o) .dtors)
+		*(SORT(.dtors.*))
+		*(.dtors)
 
 		*(.rodata*)
 
 		KEEP(*(.eh_frame*))
 	} > ROM
 
-    __app_header_size = __app_header_end - __app_header_base;
+	__app_header_size = __app_header_end - __app_header_base;
 
 	.ARM.extab :
 	{
@@ -116,13 +116,13 @@ SECTIONS
 	} > ROM
 	__exidx_end = .;
 
-  . = ALIGN(4);
+	. = ALIGN(4);
 	__etext = .;
 
 	.data : AT (__etext)
 	{
 		__data_start__ = .;
-        KEEP(*(.isr_vectors))
+		KEEP(*(.isr_vectors))
 		*(vtable)
 		KEEP(*(.data*))
 
@@ -160,12 +160,12 @@ SECTIONS
 		__bss_end__ = .;
 	} > RAM
 
-    .noinit (NOLOAD):
-    {
+	.noinit (NOLOAD):
+	{
 		__noinit_start__ = .;
 		*(.noinit*)
 		__noinit_end__ = .;
-    } > RAM
+	} > RAM
 
 	.heap (NOLOAD):
 	{
@@ -186,8 +186,8 @@ SECTIONS
 		*(.stack)
 	} > RAM
 
-    __rom_image_base = ORIGIN(ROM);
-    __rom_image_limit = __etext + __data_end__ - __data_start__;
+	__rom_image_base = ORIGIN(ROM);
+	__rom_image_limit = __etext + __data_end__ - __data_start__;
 
 
 	/* Set stack top to end of RAM, and stack limit move down by
