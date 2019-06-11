@@ -31,10 +31,6 @@ boolean GUI_Initialize(void)
     DebugPrint("GUI subsystem initialization:\r\n");
 
     DebugPrint(" LCD interface initialization...");
-    GPIO_SetupMode(LCD_RESET, GPMODE(LCD_RESET_MODE));                                              //Setup Reset pin
-    GPIO_SetupMode(   LCD_CE, GPMODE(LCD_CE_MODE));                                                 //Setup CS pin
-    GPIO_SetupMode(  LCD_SCK, GPMODE(LCD_SCK_MODE));                                                //Setup Clock pin
-    GPIO_SetupMode(  LCD_SDA, GPMODE(LCD_SDA_MODE));                                                //Setup Data pin
     Result = LCDIF_Initialize();                                                                    //Initialize subsystem
 
     if (Result)
