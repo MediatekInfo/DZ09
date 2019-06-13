@@ -835,6 +835,6 @@
 #define CLKO_32kHz                  4
 
 extern void GPIO_Initialize(void);
-extern void GPIO_SetupMode(uint32_t Pin, uint32_t Flags);
+extern void GPIO_Setup(uint32_t Pin, uint32_t Flags);
 
 #endif /* _GPIO_H_ */

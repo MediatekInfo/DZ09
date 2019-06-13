@@ -41,14 +41,14 @@ void GPIO_Initialize(void)
     GPIO_MODE5_CLR = GPIO_MODE5MASK;
     GPIO_MODE6_CLR = GPIO_MODE6MASK;
 
-    GPIO_SetupMode(GPIO51, GPMODE(GPIO51_MODE_RESETB));
+    GPIO_Setup(GPIO51, GPMODE(GPIO51_MODE_RESETB));
 #if _DEBUG_
-    GPIO_SetupMode(DBG_RXPIN, GPMODE(DBG_RXPIN_MODE));
-    GPIO_SetupMode(DBG_TXPIN, GPMODE(DBG_TXPIN_MODE));
+    GPIO_Setup(DBG_RXPIN, GPMODE(DBG_RXPIN_MODE));
+    GPIO_Setup(DBG_TXPIN, GPMODE(DBG_TXPIN_MODE));
 #endif
 }
 
-void GPIO_SetupMode(uint32_t Pin, uint32_t Flags)
+void GPIO_Setup(uint32_t Pin, uint32_t Flags)
 {
     if (Pin <= GPIOMAX)
     {

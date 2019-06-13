@@ -182,10 +182,10 @@ boolean LCDIF_Initialize(void)
 {
     memset(&LCDScreen, 0x00, sizeof(LCDScreen));
 
-    GPIO_SetupMode(LCD_RESET, GPMODE(LCD_RESET_MODE));                                              //Setup Reset pin
-    GPIO_SetupMode(   LCD_CE, GPMODE(LCD_CE_MODE));                                                 //Setup CS pin
-    GPIO_SetupMode(  LCD_SCK, GPMODE(LCD_SCK_MODE));                                                //Setup Clock pin
-    GPIO_SetupMode(  LCD_SDA, GPMODE(LCD_SDA_MODE));                                                //Setup Data pin
+    GPIO_Setup(LCD_RESET, GPMODE(LCD_RESET_MODE));                                                  //Setup Reset pin
+    GPIO_Setup(   LCD_CE, GPMODE(LCD_CE_MODE));                                                     //Setup CS pin
+    GPIO_Setup(  LCD_SCK, GPMODE(LCD_SCK_MODE));                                                    //Setup Clock pin
+    GPIO_Setup(  LCD_SDA, GPMODE(LCD_SDA_MODE));                                                    //Setup Data pin
 
     LCDIF_SetClock(LCD_CLOCK_MPLL_DIV4);
     PCTL_PowerUp(PD_SLCD);                                                                          //Power up LCD serial interface
