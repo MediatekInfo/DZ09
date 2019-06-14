@@ -57,3 +57,31 @@ boolean GUI_Initialize(void)
 
     return Result;
 }
+
+boolean GUI_IsObjectVisibleBackwards(pGUIHEADER Object, TGUIHEADER **Parent, pRECT Rct)
+{
+    TRECT      tmpRect;
+    boolean    IsStillVisible = false;
+
+    if (Object != NULL)
+    {
+        tmpRect = (Rct != NULL) ? *Rct : Object->Position;
+        IsStillVisible = Object->Visible &&
+                         GDI_ANDRectangles(&tmpRect, &Object->Position);
+
+        while(IsStillVisible && (Object->Parent != NULL))
+        {
+            tmpRect.lt = GDI_LocalToGlobal(&tmpRect.lt, &Object->Parent->Position.lt);
+            tmpRect.rb = GDI_LocalToGlobal(&tmpRect.rb, &Object->Parent->Position.rb);
+
+            IsStillVisible = Object->Visible &&
+                             GDI_ANDRectangles(&tmpRect, &Object->Position);
+
+            Object = Object->Parent;
+        }
+    }
+    if ((Parent != NULL) && (*Parent != NULL) && IsStillVisible) *Parent = Object;
+    if ((Rct != NULL) && IsStillVisible) *Rct = tmpRect;
+
+    return IsStillVisible;
+}
