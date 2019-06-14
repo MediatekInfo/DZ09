@@ -38,7 +38,7 @@ static boolean GUI_IsObjectVisibleBackwards(pGUIHEADER Object, TGUIHEADER **Pare
         while(IsStillVisible && (Object->Parent != NULL))
         {
             tmpRect.lt = GDI_LocalToGlobal(&tmpRect.lt, &Object->Parent->Position.lt);
-            tmpRect.rb = GDI_LocalToGlobal(&tmpRect.rb, &Object->Parent->Position.rb);
+            tmpRect.rb = GDI_LocalToGlobal(&tmpRect.rb, &Object->Parent->Position.lt);
 
             IsStillVisible = Object->Visible &&
                              GDI_ANDRectangles(&tmpRect, &Object->Parent->Position) &&
