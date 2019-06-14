@@ -82,8 +82,8 @@ boolean GUI_IsObjectVisibleBackwards(pGUIHEADER Object, TGUIHEADER **Parent, pRE
             Object = Object->Parent;
         }
     }
-    if ((Parent != NULL) && (*Parent != NULL) && IsStillVisible) *Parent = Object;
-    if ((Rct != NULL) && IsStillVisible) *Rct = tmpRect;
+    if (IsStillVisible && (Parent != NULL) && (*Parent != NULL)) *Parent = Object;
+    if (IsStillVisible && (Rct != NULL)) *Rct = tmpRect;
 
     return IsStillVisible;
 }
