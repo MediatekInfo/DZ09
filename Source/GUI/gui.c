@@ -67,7 +67,8 @@ boolean GUI_IsObjectVisibleBackwards(pGUIHEADER Object, TGUIHEADER **Parent, pRE
     {
         tmpRect = (Rct != NULL) ? *Rct : Object->Position;
         IsStillVisible = Object->Visible &&
-                         GDI_ANDRectangles(&tmpRect, &Object->Position);
+                         GDI_ANDRectangles(&tmpRect, &Object->Position) &&
+                         ((Object->Parent != NULL) || (Object->Type == GO_WINDOW));                 // The topmost object in the hierarchy must be a TWIN object.
 
         while(IsStillVisible && (Object->Parent != NULL))
         {
@@ -75,7 +76,8 @@ boolean GUI_IsObjectVisibleBackwards(pGUIHEADER Object, TGUIHEADER **Parent, pRE
             tmpRect.rb = GDI_LocalToGlobal(&tmpRect.rb, &Object->Parent->Position.rb);
 
             IsStillVisible = Object->Visible &&
-                             GDI_ANDRectangles(&tmpRect, &Object->Position);
+                             GDI_ANDRectangles(&tmpRect, &Object->Parent->Position) &&
+                             (Object->Parent->Type == GO_WINDOW);                                   // Only a TWIN object can be a parent.
 
             Object = Object->Parent;
         }
