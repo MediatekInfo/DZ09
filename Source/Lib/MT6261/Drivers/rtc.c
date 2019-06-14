@@ -86,7 +86,7 @@ boolean RTC_Initialize(void)
         RTC_SetPowerkey();
 
         RTC_BBPU = KEY_BBPU;
-        RTC_UpdateContext();                                                                            //Set RTC_BBPU to default value
+        RTC_UpdateContext();                                                                        //Set RTC_BBPU to default value
 
         RTC_CON = LPEN(1) | LPSTA_RAW;
         RTC_UpdateContext();                                                                        //Enable Low Power Detection
