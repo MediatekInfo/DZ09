@@ -86,3 +86,39 @@ boolean GUI_Initialize(void)
 
     return Result;
 }
+
+/*
+1. If Object != NULL - Rct coordinates relative to the object.
+   If Rct == NULL - Invalidate whole object
+2. If Object == NULL - Rct coordinates relative to the screen.
+   If Rct == NULL - Invalidate whole screen
+*/
+void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
+{
+    TRECT UpdRect;
+
+    if (Object != NULL)
+    {
+        pGUIHEADER Parent;
+
+        UpdRect = (Rct != NULL) ? *Rct : Object->Position;
+        if (GUI_IsObjectVisibleBackwards(Object, &Parent, &UpdRect))
+        {
+            TPAINTEV PaintEvent;
+
+            PaintEvent.Object = Object;
+            PaintEvent.Parent = (Parent != NULL) ? Parent : Object;
+            PaintEvent.UpdateRect = UpdRect;
+
+            EM_PostEvent(ET_ONPAINT, Parent, &PaintEvent, sizeof(TPAINTEV));
+        }
+    }
+    else
+    {
+        UpdRect = (Rct != NULL) ? *Rct : LCDScreen.ScreenRgn;
+
+        EM_PostEvent(ET_ONPAINT, NULL, &UpdRect, sizeof(TRECT));
+    }
+}
+
+

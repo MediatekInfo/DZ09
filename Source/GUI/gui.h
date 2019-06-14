@@ -25,8 +25,17 @@ typedef struct tag_PENEVENT
     TPOINT   PXY;
 } TPENEVENT, *pPENEVENT;
 
+typedef struct tag_PAINTEV
+{
+    pGUIHEADER Object;
+    pGUIHEADER Parent;
+    TRECT      UpdateRect;
+} TPAINTEV, *pPAINTEV;
+
+
 extern pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
 
 extern boolean GUI_Initialize(void);
+extern void GUI_Invalidate(pGUIHEADER Object, pRECT Rct);
 
 #endif /* _GUI_H_ */
