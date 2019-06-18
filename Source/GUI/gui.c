@@ -107,7 +107,7 @@ void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
             TPAINTEV PaintEvent;
 
             PaintEvent.Object = Object;
-            PaintEvent.Parent = (Parent != NULL) ? Parent : Object;
+            PaintEvent.Parent = Parent;
             PaintEvent.UpdateRect = UpdRect;
 
             EM_PostEvent(ET_ONPAINT, Parent, &PaintEvent, sizeof(TPAINTEV));
