@@ -139,7 +139,7 @@ void USART_EnableInterrupts(TUSART *USART, TUSART_FLAGS Flags)
         if (Flags & USART_TXInt_EnFlag)  USART->IER |= ETBEI;                                       //Enable transmitter interrupt
         if (Flags & USART_RXInt_EnFlag)  USART->IER |= ERBFI;                                       //Enable receiver interrupt
         if (Flags & USART_ERRInt_EnFlag) USART->IER |= ELSI;                                        //Enable errors interrupt
-        USART->LCR = tmpLCR; //-V519
+        USART->LCR = tmpLCR;
 
         RestoreInterrupts(intflags);
 #endif
@@ -159,7 +159,7 @@ void USART_DisableInterrupts(TUSART *USART, TUSART_FLAGS Flags)
         if (Flags & USART_TXInt_EnFlag) USART->IER &= ~ETBEI;                                       //Disable transmitter interrupt
         if (Flags & USART_RXInt_EnFlag) USART->IER &= ~ERBFI;                                       //Disable receiver interrupt
         if (Flags & USART_ERRInt_EnFlag) USART->IER &= ~ELSI;                                       //Disable errors interrupt
-        USART->LCR = tmpLCR; //-V519
+        USART->LCR = tmpLCR;
 
         RestoreInterrupts(intflags);
 #endif
