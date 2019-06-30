@@ -328,9 +328,9 @@ boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct)
 
 boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct)
 {
-    if ((Region == NULL) || (Rct == NULL)) return false;
+    if (Region == NULL) return false;
 
-    if (DL_GetItemsCount(Region))
+    if (DL_GetItemsCount(Region) && (Rct != NULL))
     {
         pDLITEM tmpItem = DL_GetFirstItem(Region);
 
@@ -378,9 +378,8 @@ boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct)
             tmpItem = DL_GetNextItem(tmpItem);
         }
     }
-    else return false;
 
-    return true;
+    return DL_GetItemsCount(Region) != 0;
 }
 
 uint8_t *GDI_GetPixelPtr(pLCONTEXT lc, TPOINT pt)
