@@ -106,6 +106,7 @@ void EM_ProcessEvents(void)
         }
         break;
         case ET_ONPAINT:
+            GUI_OnPaintHandler((pPAINTEV)tmpEvent->Param);
             break;
         case ET_PWRKEY:
             break;

@@ -37,5 +37,6 @@ extern pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
 
 extern boolean GUI_Initialize(void);
 extern void GUI_Invalidate(pGUIHEADER Object, pRECT Rct);
+extern void GUI_OnPaintHandler(pPAINTEV Event);
 
 #endif /* _GUI_H_ */

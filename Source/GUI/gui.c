@@ -120,4 +120,95 @@ void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
     }
 }
 
+void GUI_OnPaintHandler(pPAINTEV Event)
+{
+    if (Event != NULL)
+    {
+        if (Event->RootParent != NULL)                                                              // Invalidate by object
+        {
+            if ((Event->RootParent->Type == GO_WINDOW) &&
+                    GDI_ANDRectangles(&Event->UpdateRect,
+                                      &LCDScreen.VLayer[((pWIN)Event->RootParent)->Layer].LayerRgn))
+            {
+                pDLIST UpdateRgn = DL_Create(0);
+                pRECT  SeedRect = malloc(sizeof(TRECT));
 
+                if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
+                        (DL_AddItem(UpdateRgn, &SeedRect) != NULL))
+                {
+                    pDLITEM tmpDLItem;
+
+                    SeedRect->lt = GDI_GlobalToLocal(&Event->UpdateRect.lt, &Event->GlobalShift);
+                    SeedRect->rb = GDI_GlobalToLocal(&Event->UpdateRect.rb, &Event->GlobalShift);
+
+                    if (Event->Object->Parent != NULL)
+                    {
+                        pDLIST ChildList = &((pWIN)Event->Object->Parent)->ChildObjects;
+
+                        /* Subtract the positions of topmost child objects from the update region. */
+                        tmpDLItem = DL_GetLastItem(ChildList);
+                        while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
+                        {
+                            pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
+
+                            if ((uintptr_t)tmpObject == (uintptr_t)Event->Object) break;
+                            if ((tmpObject != NULL) &&
+                                    (!GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position))) break;
+                            tmpDLItem = DL_GetPrevItem(tmpDLItem);
+                        }
+                    }
+
+                    /* Subtract the positions of topmost windows from the update region. */
+                    tmpDLItem = DL_GetLastItem(GUIWinZOrder[((pWIN)Event->RootParent)->Layer]);
+                    while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
+                    {
+                        pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
+                        TRECT      tmpObjectRect;
+
+                        if ((uintptr_t)tmpObject == (uintptr_t)Event->RootParent) break;
+                        if (tmpObject != NULL)
+                        {
+                            tmpObjectRect.lt = GDI_GlobalToLocal(&tmpObject->Position.lt, &Event->GlobalShift);
+                            tmpObjectRect.rb = GDI_GlobalToLocal(&tmpObject->Position.rb, &Event->GlobalShift);
+                            if (!GDI_SUBRectFromRegion(UpdateRgn, &tmpObjectRect)) break;
+                        }
+                        tmpDLItem = DL_GetPrevItem(tmpDLItem);
+                    }
+
+                    if (DL_GetItemsCount(UpdateRgn))
+                    {
+                        TPOINT LayerOffset = LCDScreen.VLayer[((pWIN)Event->RootParent)->Layer].LayerOffset;
+
+                        /* Draw parts of the object */
+                        while(((tmpDLItem = DL_GetFirstItem(UpdateRgn)) != NULL) &&
+                                DL_GetItemsCount(UpdateRgn))
+                        {
+                            pRECT tmpObjectRect = (pRECT)tmpDLItem->Data;
+
+                            if (tmpObjectRect != NULL)
+                            {
+                                GDI_DrawObjectDefault(Event->Object, tmpObjectRect, &Event->GlobalShift);
+
+                                tmpObjectRect->lt = GDI_LocalToGlobal(&tmpObjectRect->lt, &Event->GlobalShift);
+                                tmpObjectRect->lt = GDI_LocalToGlobal(&tmpObjectRect->lt, &LayerOffset);
+                                tmpObjectRect->rb = GDI_LocalToGlobal(&tmpObjectRect->rb, &Event->GlobalShift);
+                                tmpObjectRect->rb = GDI_LocalToGlobal(&tmpObjectRect->rb, &LayerOffset);
+                                LCDIF_UpdateRectangle(*tmpObjectRect);
+
+                                free(tmpDLItem->Data);
+                            }
+                            DL_DeleteFirstItem(UpdateRgn);
+                        }
+                    }
+                }
+                else if (SeedRect != NULL) free(SeedRect);
+
+                DL_Delete(UpdateRgn, false);
+            }
+        }
+        else                                                                                        // Invalidate by screen
+        {
+
+        }
+    }
+}
