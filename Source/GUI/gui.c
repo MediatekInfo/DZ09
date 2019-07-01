@@ -23,35 +23,41 @@
 
 pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
 
-static boolean GUI_IsObjectVisibleBackwards(pGUIHEADER Object, TGUIHEADER **Parent, pRECT Rct)
+static boolean GUI_IsObjectVisibleBackwards(pPAINTEV PEvent)
 {
-    TRECT      tmpRect;
+    TPOINT     tmpPoint = {0, 0};
     boolean    IsStillVisible = false;
+    pGUIHEADER Object;
 
-    if (Object != NULL)
+    if ((PEvent != NULL) && ((Object = PEvent->Object) != NULL))
     {
-        tmpRect = (Rct != NULL) ? *Rct : Object->Position;
         IsStillVisible = Object->Visible &&
-                         GDI_ANDRectangles(&tmpRect, &Object->Position) &&
+                         GDI_ANDRectangles(&PEvent->UpdateRect, &Object->Position) &&
                          ((Object->Parent != NULL) || (Object->Type == GO_WINDOW));                 // The topmost object in the hierarchy must be a TWIN object.
 
         while(IsStillVisible && (Object->Parent != NULL))
         {
-            tmpRect.lt = GDI_LocalToGlobal(&tmpRect.lt, &Object->Parent->Position.lt);
-            tmpRect.rb = GDI_LocalToGlobal(&tmpRect.rb, &Object->Parent->Position.lt);
+            TPOINT ParentBase = Object->Parent->Position.lt;
+
+            PEvent->UpdateRect.lt = GDI_LocalToGlobal(&PEvent->UpdateRect.lt, &ParentBase);
+            PEvent->UpdateRect.rb = GDI_LocalToGlobal(&PEvent->UpdateRect.rb, &ParentBase);
+            tmpPoint = GDI_LocalToGlobal(&tmpPoint, &Object->Parent->Position.lt);
 
             IsStillVisible = Object->Visible &&
-                             GDI_ANDRectangles(&tmpRect, &Object->Parent->Position) &&
+                             GDI_ANDRectangles(&PEvent->UpdateRect, &Object->Parent->Position) &&
                              (Object->Parent->Type == GO_WINDOW);                                   // Only a TWIN object can be a parent.
 
             Object = Object->Parent;
         }
     }
-    if (IsStillVisible && (Parent != NULL) && (*Parent != NULL)) *Parent = Object;
-    if (IsStillVisible && (Rct != NULL)) *Rct = tmpRect;
+    if (IsStillVisible)
+    {
+        PEvent->RootParent = Object;
+        PEvent->GlobalShift = tmpPoint;
+    }
 
     return IsStillVisible;
-}
+}
 boolean GUI_Initialize(void)
 {
     uint32_t i;

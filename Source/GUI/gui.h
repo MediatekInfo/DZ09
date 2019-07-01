@@ -28,10 +28,10 @@ typedef struct tag_PENEVENT
 typedef struct tag_PAINTEV
 {
     pGUIHEADER Object;
-    pGUIHEADER Parent;
+    pGUIHEADER RootParent;
     TRECT      UpdateRect;
+    TPOINT     GlobalShift;
 } TPAINTEV, *pPAINTEV;
-
 
 extern pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
 
