@@ -58,6 +58,7 @@ static boolean GUI_IsObjectVisibleBackwards(pPAINTEV PEvent)
 
     return IsStillVisible;
 }
+
 boolean GUI_Initialize(void)
 {
     uint32_t i;
@@ -101,29 +102,21 @@ boolean GUI_Initialize(void)
 */
 void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
 {
-    TRECT UpdRect;
+    TPAINTEV PaintEvent = {0};
 
     if (Object != NULL)
     {
-        pGUIHEADER Parent;
+        PaintEvent.Object = Object;
+        PaintEvent.UpdateRect = (Rct != NULL) ? *Rct : Object->Position;
 
-        UpdRect = (Rct != NULL) ? *Rct : Object->Position;
-        if (GUI_IsObjectVisibleBackwards(Object, &Parent, &UpdRect))
-        {
-            TPAINTEV PaintEvent;
-
-            PaintEvent.Object = Object;
-            PaintEvent.Parent = Parent;
-            PaintEvent.UpdateRect = UpdRect;
-
-            EM_PostEvent(ET_ONPAINT, Parent, &PaintEvent, sizeof(TPAINTEV));
-        }
+        if (GUI_IsObjectVisibleBackwards(&PaintEvent))
+            EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
     }
     else
     {
-        UpdRect = (Rct != NULL) ? *Rct : LCDScreen.ScreenRgn;
+        PaintEvent.UpdateRect = (Rct != NULL) ? *Rct : LCDScreen.ScreenRgn;
 
-        EM_PostEvent(ET_ONPAINT, NULL, &UpdRect, sizeof(TRECT));
+        EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
     }
 }
 
