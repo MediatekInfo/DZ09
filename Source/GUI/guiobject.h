@@ -27,6 +27,13 @@ typedef enum tag_GOTYPE
     GO_NUMTYPES
 } TGOTYPE;
 
+typedef enum tag_GOFLAGS
+{
+    GF_ENABLED  = (1 << 0),
+    GF_VISIBLE  = (1 << 1),
+    GF_TOPMOST  = (1 << 2)
+} TGOFLAGS;
+
 typedef struct tag_GUIHEADER *pGUIHEADER;
 typedef struct tag_GUIHEADER
 {
@@ -55,7 +62,8 @@ typedef struct tag_WIN
     boolean     (*EventHandler)(pEVENT, pWIN);
 } TWIN, *pWIN;
 
-extern pWIN GUI_CreateWindow(pGUIHEADER Head, boolean (*Handler)(pEVENT, pWIN), uint8_t Layer, uint32_t ForeColor, boolean Topmost);
+extern pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
+                             uint8_t Layer, uint32_t ForeColor, TGOFLAGS Flags);
 extern void GDI_DrawObjectDefault(pGUIHEADER Object, pRECT ClipRect, pPOINT GlbShift);
 
 #endif /* _GUIOBJECT_H_ */

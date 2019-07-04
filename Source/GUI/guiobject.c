@@ -21,46 +21,52 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
-pWIN GUI_CreateWindow(pGUIHEADER Head, boolean (*Handler)(pEVENT, pWIN), uint8_t Layer, uint32_t ForeColor, boolean Topmost)
+pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
+                      uint8_t Layer, uint32_t ForeColor, TGOFLAGS Flags)
 {
     pWIN    Win;
     boolean Result;
 
-    if ((Layer >= LCDIF_NUMLAYERS) || ((Head != NULL) && (Head->Type != GO_WINDOW))) return NULL;
+    if ((Layer >= LCDIF_NUMLAYERS) ||
+            ((Parent != NULL) && (Parent->Type != GO_WINDOW))) return NULL;
 
     Win = malloc(sizeof(TWIN));
     if (Win != NULL)
     {
+        pDLIST ObjectsList = (Parent == NULL) ? GUIWinZOrder[Layer] : &((pWIN)Parent)->ChildObjects;
+
         memset(Win, 0x00, sizeof(TWIN));
 
-        if (Head != NULL) Win->Head = *Head;
-        else Win->Head.Type = GO_WINDOW;
+        Win->Head.Position = Position;
+        Win->Head.Parent = Parent;
+        Win->Head.Enabled = (Flags & GF_ENABLED) != 0;
+        Win->Head.Visible = (Flags & GF_VISIBLE) != 0;
 
-        Win->SOType  = SO_UNDEFINED;
-        Win->Topmost = Topmost;
+        Win->Topmost = (Flags & GF_TOPMOST) != 0;
         Win->Layer = Layer;
         Win->ForeColor = ForeColor;
         Win->EventHandler = Handler;
 
-        if (Topmost) Result = DL_AddItem(GUIWinZOrder[Layer], Win) != NULL;                         // Put the handle directly to the top of the list
-        else                                                                                        // Looking for top window among non-topmost windows
+        if (Win->Topmost) Result = DL_AddItem(ObjectsList, Win) != NULL;                            // Put the handle directly to the top of the list
+        else                                                                                        // Looking for top window among non-topmost objects
         {
-            pDLITEM tmpItem = DL_GetLastItem(GUIWinZOrder[Layer]);
+            pDLITEM tmpItem = DL_GetLastItem(ObjectsList);
 
             while(tmpItem != NULL)
             {
-                pWIN tmpWIN = (pWIN)tmpItem->Data;
+                pGUIHEADER tmpObject = tmpItem->Data;
 
-                if ((tmpWIN != NULL) && !tmpWIN->Topmost)
+                if ((tmpObject != NULL) &&
+                        ((tmpObject->Type != GO_WINDOW) || !((pWIN)tmpObject)->Topmost))
                 {
-                    Result = DL_InsertItemAfter(GUIWinZOrder[Layer], tmpItem, Win) != NULL;
+                    Result = DL_InsertItemAfter(ObjectsList, tmpItem, Win) != NULL;
                     break;
                 }
                 tmpItem = DL_GetPrevItem(tmpItem);
             }
-            if (tmpItem == NULL) Result = DL_AddItem(GUIWinZOrder[Layer], Win) != NULL;
+            if (tmpItem == NULL) Result = DL_AddItemAtIndex(ObjectsList, 0, Win) != NULL;
         }
-        if (Result) Win->SOType = SO_GUI;
+        if (Result) Win->Head.Type = GO_WINDOW;
         else
         {
             free(Win);
