@@ -23,7 +23,7 @@
 
 pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
 
-static boolean GUI_IsObjectVisibleBackwards(pPAINTEV PEvent)
+static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 {
     TPOINT     tmpPoint = {0, 0};
     boolean    IsStillVisible = false;
@@ -53,7 +53,7 @@ static boolean GUI_IsObjectVisibleBackwards(pPAINTEV PEvent)
     if (IsStillVisible)
     {
         PEvent->RootParent = Object;
-        PEvent->GlobalShift = tmpPoint;
+        PEvent->ParentLayerBase = tmpPoint;
     }
 
     return IsStillVisible;
@@ -109,7 +109,7 @@ void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
         PaintEvent.Object = Object;
         PaintEvent.UpdateRect = (Rct != NULL) ? *Rct : Object->Position;
 
-        if (GUI_IsObjectVisibleBackwards(&PaintEvent))
+        if (GUI_IsObjectVisibleAcrossParents(&PaintEvent))
             EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
     }
     else
@@ -168,8 +168,8 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         if ((uintptr_t)tmpObject == (uintptr_t)Event->RootParent) break;
                         if (tmpObject != NULL)
                         {
-                            tmpObjectRect.lt = GDI_GlobalToLocal(&tmpObject->Position.lt, &Event->GlobalShift);
-                            tmpObjectRect.rb = GDI_GlobalToLocal(&tmpObject->Position.rb, &Event->GlobalShift);
+                            tmpObjectRect.lt = GDI_GlobalToLocal(&tmpObject->Position.lt, &Event->ParentLayerBase);
+                            tmpObjectRect.rb = GDI_GlobalToLocal(&tmpObject->Position.rb, &Event->ParentLayerBase);
                             if (!GDI_SUBRectFromRegion(UpdateRgn, &tmpObjectRect)) break;
                         }
                         tmpDLItem = DL_GetPrevItem(tmpDLItem);
@@ -187,7 +187,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
                             if (tmpObjectRect != NULL)
                             {
-                                GDI_DrawObjectDefault(Event->Object, tmpObjectRect, &Event->GlobalShift);
+                                GDI_DrawObjectDefault(Event->Object, tmpObjectRect, &Event->ParentLayerBase);
 
                                 tmpObjectRect->lt = GDI_LocalToGlobal(&tmpObjectRect->lt, &Event->GlobalShift);
                                 tmpObjectRect->lt = GDI_LocalToGlobal(&tmpObjectRect->lt, &LayerOffset);

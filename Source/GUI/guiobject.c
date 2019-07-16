@@ -146,7 +146,7 @@ pWIN GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
     return NULL;
 }
 
-void GDI_DrawObjectDefault(pGUIHEADER Object, pRECT ClipRect, pPOINT GlbShift)
+void GDI_DrawObjectDefault(pGUIHEADER Object, pRECT ClipRect, pPOINT ParentLayerBase)
 {
 
 }

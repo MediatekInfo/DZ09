@@ -64,6 +64,6 @@ typedef struct tag_WIN
 
 extern pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
                              uint8_t Layer, uint32_t ForeColor, TGOFLAGS Flags);
-extern void GDI_DrawObjectDefault(pGUIHEADER Object, pRECT ClipRect, pPOINT GlbShift);
+extern void GDI_DrawObjectDefault(pGUIHEADER Object, pRECT ClipRect, pPOINT ParentLayerBase);
 
 #endif /* _GUIOBJECT_H_ */
