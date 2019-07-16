@@ -49,6 +49,9 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 
             Object = Object->Parent;
         }
+
+        PEvent->UpdateRect.lt = GDI_GlobalToLocal(&PEvent->UpdateRect.lt, &tmpPoint);
+        PEvent->UpdateRect.rb = GDI_GlobalToLocal(&PEvent->UpdateRect.rb, &tmpPoint);
     }
     if (IsStillVisible)
     {
@@ -57,6 +60,37 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
     }
 
     return IsStillVisible;
+}
+
+static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object, pPOINT Shift)
+{
+    if ((Region != NULL) && Region->Count && (Object != NULL) && (Shift != NULL))
+    {
+        if (Object->Parent != NULL)
+        {
+            pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
+            pDLITEM tmpDLItem = DL_GetLastItem(ChildList);
+
+            /* Subtract the positions of topmost child objects from the update region. */
+            while((tmpDLItem != NULL) && DL_GetItemsCount(Region))
+            {
+                pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
+
+                if ((uintptr_t)tmpObject == (uintptr_t)Object) break;
+
+                if ((tmpObject != NULL) && tmpObject->Visible)
+                {
+                    tmpObject->Position.lt = GDI_GlobalToLocal(&tmpObject->Position.lt, Shift);
+                    tmpObject->Position.rb = GDI_GlobalToLocal(&tmpObject->Position.rb, Shift);
+
+                    if (!GDI_SUBRectFromRegion(Region, &tmpObject->Position)) break;
+                }
+                tmpDLItem = DL_GetPrevItem(tmpDLItem);
+            }
+        }
+        return Region->Count != 0;
+    }
+    return false;
 }
 
 boolean GUI_Initialize(void)
@@ -138,25 +172,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                 {
                     pDLITEM tmpDLItem;
 
-                    SeedRect->lt = GDI_GlobalToLocal(&Event->UpdateRect.lt, &Event->GlobalShift);
-                    SeedRect->rb = GDI_GlobalToLocal(&Event->UpdateRect.rb, &Event->GlobalShift);
-
-                    if (Event->Object->Parent != NULL)
-                    {
-                        pDLIST ChildList = &((pWIN)Event->Object->Parent)->ChildObjects;
-
-                        /* Subtract the positions of topmost child objects from the update region. */
-                        tmpDLItem = DL_GetLastItem(ChildList);
-                        while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
-                        {
-                            pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
-
-                            if ((uintptr_t)tmpObject == (uintptr_t)Event->Object) break;
-                            if ((tmpObject != NULL) &&
-                                    (!GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position))) break;
-                            tmpDLItem = DL_GetPrevItem(tmpDLItem);
-                        }
-                    }
+                    *SeedRect = Event->UpdateRect;
 
                     /* Subtract the positions of topmost windows from the update region. */
                     tmpDLItem = DL_GetLastItem(GUIWinZOrder[((pWIN)Event->RootParent)->Layer]);
@@ -175,6 +191,21 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         tmpDLItem = DL_GetPrevItem(tmpDLItem);
                     }
 
+                    /* Subtract the positions of the topmost child back through the parent tree. */
+                    if (UpdateRgn->Count && (Event->Object->Parent != NULL))
+                    {
+                        pGUIHEADER tmpObject = Event->Object;
+                        TPOINT     tmpShift = {0};
+
+                        while (tmpObject->Parent != NULL)
+                        {
+                            if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject, &tmpShift)) break;
+
+                            tmpShift = GDI_LocalToGlobal(&tmpShift, &tmpObject->Parent->Position.lt);
+                            tmpObject = tmpObject->Parent;
+                        }
+                    }
+
                     if (DL_GetItemsCount(UpdateRgn))
                     {
                         TPOINT LayerOffset = LCDScreen.VLayer[((pWIN)Event->RootParent)->Layer].LayerOffset;
@@ -189,10 +220,11 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             {
                                 GDI_DrawObjectDefault(Event->Object, tmpObjectRect, &Event->ParentLayerBase);
 
-                                tmpObjectRect->lt = GDI_LocalToGlobal(&tmpObjectRect->lt, &Event->GlobalShift);
-                                tmpObjectRect->lt = GDI_LocalToGlobal(&tmpObjectRect->lt, &LayerOffset);
-                                tmpObjectRect->rb = GDI_LocalToGlobal(&tmpObjectRect->rb, &Event->GlobalShift);
-                                tmpObjectRect->rb = GDI_LocalToGlobal(&tmpObjectRect->rb, &LayerOffset);
+                                tmpObjectRect->l += Event->ParentLayerBase.x + LayerOffset.x;
+                                tmpObjectRect->t += Event->ParentLayerBase.y + LayerOffset.y;
+                                tmpObjectRect->r += Event->ParentLayerBase.x + LayerOffset.x;
+                                tmpObjectRect->b += Event->ParentLayerBase.y + LayerOffset.y;
+
                                 LCDIF_UpdateRectangle(*tmpObjectRect);
 
                                 free(tmpDLItem->Data);
