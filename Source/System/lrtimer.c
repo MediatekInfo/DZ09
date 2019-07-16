@@ -58,7 +58,6 @@ void LRT_GPTHandler(void)
             {
                 pDLITEM tmpItem = tmrItem;
 
-                if (tmpLRT != NULL) free(tmpLRT);
                 tmrItem = DL_GetNextItem(tmpItem);
                 DL_DeleteItem(TimersList, tmpItem);
                 continue;
