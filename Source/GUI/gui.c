@@ -134,7 +134,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                 pRECT  SeedRect = malloc(sizeof(TRECT));
 
                 if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
-                        (DL_AddItem(UpdateRgn, &SeedRect) != NULL))
+                        (DL_AddItem(UpdateRgn, SeedRect) != NULL))
                 {
                     pDLITEM tmpDLItem;
 
@@ -166,7 +166,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         TRECT      tmpObjectRect;
 
                         if ((uintptr_t)tmpObject == (uintptr_t)Event->RootParent) break;
-                        if (tmpObject != NULL)
+                        if ((tmpObject != NULL) && tmpObject->Visible)
                         {
                             tmpObjectRect.lt = GDI_GlobalToLocal(&tmpObject->Position.lt, &Event->ParentLayerBase);
                             tmpObjectRect.rb = GDI_GlobalToLocal(&tmpObject->Position.rb, &Event->ParentLayerBase);
