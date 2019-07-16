@@ -28,7 +28,6 @@ typedef enum tag_MRFLAGS
 
 typedef struct tag_TIMER
 {
-    TSYSOBJECT Type;
     TMRFLAGS   Flags;
     uint32_t   Interval;
     int32_t    StartTicks;

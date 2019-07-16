@@ -35,7 +35,7 @@ void LRT_GPTHandler(void)
         {
             pTIMER tmpLRT = tmrItem->Data;
 
-            if ((tmpLRT != NULL) && (tmpLRT->Type == SO_TIMER))
+            if (tmpLRT != NULL)
             {
                 if (tmpLRT->Flags & TF_ENABLED)
                 {
@@ -100,7 +100,6 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), T
             tmpTimer->StartTicks = USC_GetCurrentTicks();
             tmpTimer->Parent = Parent;
             tmpTimer->Handler = Handler;
-            tmpTimer->Type = SO_TIMER;
             if (!DL_AddItem(TimersList, tmpTimer))
             {
                 free(tmpTimer);
@@ -113,14 +112,13 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), T
 
 boolean LRT_Destroy(pTIMER Timer)
 {
-    if ((Timer != NULL) && (Timer->Type == SO_TIMER))
+    if (Timer != NULL)
     {
         pDLITEM tmpItem = DL_FindItemByData(TimersList, Timer, NULL);
 
         if (tmpItem != NULL)
         {
             DL_DeleteItem(TimersList, tmpItem);
-            Timer->Type = SO_UNDEFINED;
             free(Timer);
             free(tmpItem);
             return true;
@@ -131,7 +129,7 @@ boolean LRT_Destroy(pTIMER Timer)
 
 boolean LRT_Start(pTIMER Timer)
 {
-    if ((Timer != NULL) && (Timer->Type == SO_TIMER))
+    if (Timer != NULL)
     {
         if (Timer->Flags & TF_ENABLED)
         {
@@ -149,7 +147,7 @@ boolean LRT_Start(pTIMER Timer)
 
 boolean LRT_Stop(pTIMER Timer)
 {
-    if ((Timer != NULL) && (Timer->Type == SO_TIMER))
+    if (Timer != NULL)
     {
         if (Timer->Flags & TF_ENABLED)
         {
