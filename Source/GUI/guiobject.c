@@ -126,7 +126,7 @@ pWIN GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
     {
         pDLITEM tmpItem;
         int32_t ItemIndex;
-        TPOINT  lp = GDI_GlobalToLocal(pt, &LCDScreen.VLayer[i].LayerOffset);
+        TPOINT  lp = GDI_GlobalToLocalPt(pt, &LCDScreen.VLayer[i].LayerOffset);
 
         tmpItem = DL_GetLastItem(GUIWinZOrder[i]);
         ItemIndex = DL_GetItemsCount(GUIWinZOrder[i]) - 1;

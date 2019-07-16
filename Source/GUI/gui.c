@@ -39,9 +39,8 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
         {
             TPOINT ParentBase = Object->Parent->Position.lt;
 
-            PEvent->UpdateRect.lt = GDI_LocalToGlobal(&PEvent->UpdateRect.lt, &ParentBase);
-            PEvent->UpdateRect.rb = GDI_LocalToGlobal(&PEvent->UpdateRect.rb, &ParentBase);
-            tmpPoint = GDI_LocalToGlobal(&tmpPoint, &Object->Parent->Position.lt);
+            PEvent->UpdateRect = GDI_LocalToGlobalRct(&PEvent->UpdateRect, &ParentBase);
+            tmpPoint = GDI_LocalToGlobalPt(&tmpPoint, &Object->Parent->Position.lt);
 
             IsStillVisible = Object->Visible &&
                              GDI_ANDRectangles(&PEvent->UpdateRect, &Object->Parent->Position) &&
@@ -50,8 +49,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
             Object = Object->Parent;
         }
 
-        PEvent->UpdateRect.lt = GDI_GlobalToLocal(&PEvent->UpdateRect.lt, &tmpPoint);
-        PEvent->UpdateRect.rb = GDI_GlobalToLocal(&PEvent->UpdateRect.rb, &tmpPoint);
+        PEvent->UpdateRect = GDI_GlobalToLocalRct(&PEvent->UpdateRect, &tmpPoint);
     }
     if (IsStillVisible)
     {
@@ -80,8 +78,7 @@ static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object
 
                 if ((tmpObject != NULL) && tmpObject->Visible)
                 {
-                    tmpObject->Position.lt = GDI_GlobalToLocal(&tmpObject->Position.lt, Shift);
-                    tmpObject->Position.rb = GDI_GlobalToLocal(&tmpObject->Position.rb, Shift);
+                    tmpObject->Position = GDI_GlobalToLocalRct(&tmpObject->Position, Shift);
 
                     if (!GDI_SUBRectFromRegion(Region, &tmpObject->Position)) break;
                 }
@@ -184,8 +181,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         if ((uintptr_t)tmpObject == (uintptr_t)Event->RootParent) break;
                         if ((tmpObject != NULL) && tmpObject->Visible)
                         {
-                            tmpObjectRect.lt = GDI_GlobalToLocal(&tmpObject->Position.lt, &Event->ParentLayerBase);
-                            tmpObjectRect.rb = GDI_GlobalToLocal(&tmpObject->Position.rb, &Event->ParentLayerBase);
+                            tmpObjectRect = GDI_GlobalToLocalRct(&tmpObject->Position, &Event->ParentLayerBase);
                             if (!GDI_SUBRectFromRegion(UpdateRgn, &tmpObjectRect)) break;
                         }
                         tmpDLItem = DL_GetPrevItem(tmpDLItem);
@@ -201,7 +197,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         {
                             if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject, &tmpShift)) break;
 
-                            tmpShift = GDI_LocalToGlobal(&tmpShift, &tmpObject->Parent->Position.lt);
+                            tmpShift = GDI_LocalToGlobalPt(&tmpShift, &tmpObject->Parent->Position.lt);
                             tmpObject = tmpObject->Parent;
                         }
                     }

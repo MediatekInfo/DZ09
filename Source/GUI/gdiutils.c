@@ -73,7 +73,7 @@ boolean IsRectInRect(pRECT a, pRECT b)
     return false;
 }
 
-TPOINT GDI_LocalToGlobal(pPOINT pt, pPOINT Offset)
+TPOINT GDI_LocalToGlobalPt(pPOINT pt, pPOINT Offset)
 {
     TPOINT Res = {0};
 
@@ -93,7 +93,7 @@ TPOINT GDI_LocalToGlobal(pPOINT pt, pPOINT Offset)
     return Res;
 }
 
-TPOINT GDI_GlobalToLocal(pPOINT pt, pPOINT Offset)
+TPOINT GDI_GlobalToLocalPt(pPOINT pt, pPOINT Offset)
 {
     TPOINT Res = {0};
 
@@ -108,6 +108,54 @@ TPOINT GDI_GlobalToLocal(pPOINT pt, pPOINT Offset)
         {
             Res.x = pt->x;
             Res.y = pt->y;
+        }
+    }
+    return Res;
+}
+
+TRECT GDI_LocalToGlobalRct(pRECT rct, pPOINT Offset)
+{
+    TRECT Res = {0};
+
+    if (rct != NULL)
+    {
+        if (Offset != NULL)
+        {
+            Res.l = Offset->x + rct->l;
+            Res.t = Offset->y + rct->t;
+            Res.r = Offset->x + rct->r;
+            Res.b = Offset->y + rct->b;
+        }
+        else
+        {
+            Res.l = rct->l;
+            Res.t = rct->t;
+            Res.r = rct->l;
+            Res.b = rct->t;
+        }
+    }
+    return Res;
+}
+
+TRECT GDI_GlobalToLocalRct(pRECT rct, pPOINT Offset)
+{
+    TRECT Res = {0};
+
+    if (rct != NULL)
+    {
+        if (Offset != NULL)
+        {
+            Res.l = rct->l - Offset->x;
+            Res.t = rct->t - Offset->y;
+            Res.r = rct->r - Offset->x;
+            Res.b = rct->b - Offset->y;
+        }
+        else
+        {
+            Res.l = rct->l;
+            Res.t = rct->t;
+            Res.r = rct->l;
+            Res.b = rct->t;
         }
     }
     return Res;
