@@ -328,6 +328,7 @@ void LCDIF_UpdateRectangle(TRECT Rct)
         if (Commands != NULL)
         {
             LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
+            free(Commands);
         }
     }
 }
