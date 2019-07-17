@@ -21,6 +21,43 @@
 #include "systemconfig.h"
 #include "gdiutils.h"
 
+static void GDI_MergeRectsInRegion(pDLIST Region)
+{
+    pDLITEM ModItem, CmpItem;
+    pRECT   ModRect, CmpRect;
+
+    if ((Region == NULL) || (DL_GetItemsCount(Region) <= 1)) return;
+
+    ModItem = DL_GetFirstItem(Region);
+    CmpItem = DL_GetNextItem(ModItem);
+
+    while((ModItem != NULL) && (CmpItem != NULL))
+    {
+        ModRect = (pRECT)ModItem->Data;
+        while ((ModRect != NULL) && (CmpItem != NULL))
+        {
+            CmpRect = (pRECT)CmpItem->Data;
+
+            if ((CmpRect != NULL) && (ModRect->t == CmpRect->t) && (ModRect->b == CmpRect->b) &&
+                    ((ModRect->l - CmpRect->r == 1) || (CmpRect->l - ModRect->r == 1)))
+            {
+                pDLITEM tmpItem = DL_GetNextItem(CmpItem);
+
+                ModRect->l = min(ModRect->l, CmpRect->l);
+                ModRect->r = max(ModRect->r, CmpRect->r);
+
+                free(CmpRect);
+                DL_DeleteItem(Region, CmpItem);
+                CmpItem = tmpItem;
+                continue;
+            }
+            CmpItem = DL_GetNextItem(CmpItem);
+        }
+        ModItem = DL_GetNextItem(ModItem);
+        CmpItem = DL_GetNextItem(ModItem);
+    }
+}
+
 TPOINT Point(int16_t x, int16_t y)
 {
     TPOINT Result = {x, y};
@@ -425,8 +462,8 @@ boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct)
             }
             tmpItem = DL_GetNextItem(tmpItem);
         }
+        GDI_MergeRectsInRegion(Region);
     }
-
     return DL_GetItemsCount(Region) != 0;
 }
 
