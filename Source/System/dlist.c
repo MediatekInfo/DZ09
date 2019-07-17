@@ -439,6 +439,7 @@ boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
         else DList->Last = Item->Prev;
 
         DList->Count--;
+        free(Item);
         Result = true;
     }
     RestoreInterrupts(intflags);
