@@ -62,32 +62,28 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 
 static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object, pPOINT Shift)
 {
-    if ((Region != NULL) && Region->Count && (Object != NULL) && (Shift != NULL))
+    if (Object->Parent != NULL)
     {
-        if (Object->Parent != NULL)
+        pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
+        pDLITEM tmpDLItem = DL_GetLastItem(ChildList);
+
+        /* Subtract the positions of topmost child objects from the update region. */
+        while((tmpDLItem != NULL) && DL_GetItemsCount(Region))
         {
-            pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
-            pDLITEM tmpDLItem = DL_GetLastItem(ChildList);
+            pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
 
-            /* Subtract the positions of topmost child objects from the update region. */
-            while((tmpDLItem != NULL) && DL_GetItemsCount(Region))
+            if ((uintptr_t)tmpObject == (uintptr_t)Object) break;
+
+            if ((tmpObject != NULL) && tmpObject->Visible)
             {
-                pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
+                tmpObject->Position = GDI_GlobalToLocalRct(&tmpObject->Position, Shift);
 
-                if ((uintptr_t)tmpObject == (uintptr_t)Object) break;
-
-                if ((tmpObject != NULL) && tmpObject->Visible)
-                {
-                    tmpObject->Position = GDI_GlobalToLocalRct(&tmpObject->Position, Shift);
-
-                    if (!GDI_SUBRectFromRegion(Region, &tmpObject->Position)) break;
-                }
-                tmpDLItem = DL_GetPrevItem(tmpDLItem);
+                if (!GDI_SUBRectFromRegion(Region, &tmpObject->Position)) break;
             }
+            tmpDLItem = DL_GetPrevItem(tmpDLItem);
         }
-        return Region->Count != 0;
     }
-    return false;
+    return DL_GetItemsCount(Region) != 0;
 }
 
 static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIHEADER Object, pPOINT ParentLayerBase)
