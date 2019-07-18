@@ -69,6 +69,8 @@ void LCDIF_DeleteCommandFromQueue(void)
 
     if (tmpItem != NULL)
     {
+        if (((pLCDCMD)tmpItem->Data)->Commands != NULL)
+            free(((pLCDCMD)tmpItem->Data)->Commands);
         free(tmpItem->Data);
         DL_DeleteFirstItem(LCDIFQueue);
     }
@@ -120,26 +122,26 @@ boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT Upd
 {
     pLCDCMD CMD;
 
-    if (!CmdCount || (CmdArray == NULL)) return false;
-
-    CMD = malloc(sizeof(TLCDCMD) + CmdCount * sizeof(uint32_t));
-    if (CMD != NULL)
+    if (CmdCount && (CmdArray != NULL))
     {
-        CMD->CMDCount = CmdCount;
-        CMD->UpdateRect = (UpdateRect != NULL) ? *UpdateRect : Rect(0, 0, 0, 0);
-
-        memcpy(CMD->Commands, CmdArray, CmdCount * sizeof(uint32_t));
-        if (!DL_AddItem(LCDIFQueue, CMD))
+        CMD = malloc(sizeof(TLCDCMD));
+        if (CMD != NULL)
         {
+            CMD->CMDCount = CmdCount;
+            CMD->UpdateRect = (UpdateRect != NULL) ? *UpdateRect : Rect(0, 0, 0, 0);
+            CMD->Commands = CmdArray;
+
+            if (DL_AddItem(LCDIFQueue, CMD))
+            {
+                LCDIF_RestartQueue();
+                while(DL_GetItemsCount(LCDIFQueue) >= MAX_LCDQUEUE_SIZE);
+                return true;
+            }
             free(CMD);
-            return false;
         }
-
-        LCDIF_RestartQueue();
-        while(DL_GetItemsCount(LCDIFQueue) >= MAX_LCDQUEUE_SIZE);
-
-        return true;
     }
+    if (CmdArray != NULL) free(CmdArray);
+
     return false;
 }
 
@@ -326,10 +328,7 @@ void LCDIF_UpdateRectangle(TRECT Rct)
     {
         Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
         if (Commands != NULL)
-        {
             LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
-            free(Commands);
-        }
     }
 }
 

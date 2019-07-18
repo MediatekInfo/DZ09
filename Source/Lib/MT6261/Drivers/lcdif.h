@@ -316,7 +316,7 @@ typedef struct tag_TLCDCMD
 {
     TRECT     UpdateRect;
     uint32_t  CMDCount;
-    uint32_t  Commands[];
+    uint32_t  *Commands;
 } TLCDCMD, *pLCDCMD;
 
 extern TSCREEN LCDScreen;
