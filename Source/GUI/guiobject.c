@@ -43,7 +43,7 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
         Win->Head.Visible = (Flags & GF_VISIBLE) != 0;
 
         Win->Topmost = (Flags & GF_TOPMOST) != 0;
-        Win->Layer = Layer;
+        Win->Layer = (Parent != NULL) ? ((pWIN)Parent)->Layer : Layer;
         Win->ForeColor = ForeColor;
         Win->EventHandler = Handler;
 
