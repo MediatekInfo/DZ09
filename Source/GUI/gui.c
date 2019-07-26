@@ -48,8 +48,6 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 
             Object = Object->Parent;
         }
-
-        PEvent->UpdateRect = GDI_GlobalToLocalRct(&PEvent->UpdateRect, &tmpPoint);
     }
     if (IsStillVisible)
     {
@@ -60,7 +58,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
     return IsStillVisible;
 }
 
-static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object, pPOINT Shift)
+static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object, pPOINT ParentLayerBase)
 {
     if (Object->Parent != NULL)
     {
@@ -76,9 +74,9 @@ static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object
 
             if ((tmpObject != NULL) && tmpObject->Visible)
             {
-                tmpObject->Position = GDI_GlobalToLocalRct(&tmpObject->Position, Shift);
+                TRECT tmpRect = GDI_LocalToGlobalRct(&tmpObject->Position, ParentLayerBase);
 
-                if (!GDI_SUBRectFromRegion(Region, &tmpObject->Position)) break;
+                if (!GDI_SUBRectFromRegion(Region, &tmpRect)) break;
             }
             tmpDLItem = DL_GetPrevItem(tmpDLItem);
         }
@@ -113,6 +111,7 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pPOINT ParentLayerBa
         TRECT tmpRect;
 
         *ParentLayerBase = GDI_LocalToGlobalPt(ParentLayerBase, &Win->Head.Position.lt);
+
         if (tmpObject->Type == GO_WINDOW)
         {
             if (!GUI_UpdateChildTree(Region, (pWIN)tmpObject, ParentLayerBase)) break;
@@ -122,6 +121,9 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pPOINT ParentLayerBa
         tmpRect = GDI_LocalToGlobalRct(&tmpObject->Position, ParentLayerBase);
         GDI_SUBRectFromRegion(Region, &tmpRect);
         *ParentLayerBase = GDI_GlobalToLocalPt(ParentLayerBase, &Win->Head.Position.lt);
+
+        if (!DL_GetItemsCount(Region)) break;
+
         tmpItem = DL_GetPrevItem(tmpItem);
     }
     GUI_UpdateObjectByRegion(Region, &Win->Head, ParentLayerBase);
@@ -215,42 +217,44 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                     tmpDLItem = DL_GetLastItem(GUIWinZOrder[((pWIN)Event->RootParent)->Layer]);
                     while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
                     {
-                        TRECT      tmpObjectRect;
-
                         tmpObject = (pGUIHEADER)tmpDLItem->Data;
 
                         if ((uintptr_t)tmpObject == (uintptr_t)Event->RootParent) break;
-                        if ((tmpObject != NULL) && tmpObject->Visible)
-                        {
-                            tmpObjectRect = GDI_GlobalToLocalRct(&tmpObject->Position, &Event->ParentLayerBase);
-                            if (!GDI_SUBRectFromRegion(UpdateRgn, &tmpObjectRect)) break;
-                        }
+                        if ((tmpObject != NULL) && tmpObject->Visible &&
+                                !GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position)) break;
+
                         tmpDLItem = DL_GetPrevItem(tmpDLItem);
                     }
 
                     if (DL_GetItemsCount(UpdateRgn))
                     {
                         TPOINT LayerOffset = LCDScreen.VLayer[((pWIN)Event->RootParent)->Layer].LayerOffset;
+                        TPOINT tmpParentBase;
 
-                        if (Event->Object->Type != GO_WINDOW)
+                        if (Event->Object->Parent != NULL)
                         {
-                            TPOINT     tmpShift = {0};
-
+                            tmpParentBase = Event->ParentLayerBase;
                             tmpObject = Event->Object;
                             /* Subtract the positions of the topmost child back through the parent tree. */
                             while (tmpObject->Parent != NULL)
                             {
-                                if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject, &tmpShift)) break;
+                                if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject, &tmpParentBase)) break;
 
-                                tmpShift = GDI_LocalToGlobalPt(&tmpShift, &tmpObject->Parent->Position.lt);
+                                tmpParentBase = GDI_GlobalToLocalPt(&tmpParentBase, &tmpObject->Parent->Position.lt);
                                 tmpObject = tmpObject->Parent;
                             }
                         }
-                        else
+
+                        if ((Event->Object->Type == GO_WINDOW) && DL_GetItemsCount(UpdateRgn))
                         {
-                            TPOINT tmpParentBase = Event->ParentLayerBase;
+                            TRECT  tmpObjectRect;
+
+                            tmpParentBase = Event->ParentLayerBase;
                             /* Update the tree of child objects. */
                             GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object, &tmpParentBase);
+
+                            tmpObjectRect = GDI_LocalToGlobalRct(&Event->Object->Position, &tmpParentBase);
+                            GDI_SUBRectFromRegion(UpdateRgn, &tmpObjectRect);
                         }
 
                         /* Draw parts of the object */
@@ -260,14 +264,8 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
                             if (tmpObjectRect != NULL)
                             {
+                                *tmpObjectRect = GDI_GlobalToLocalRct(tmpObjectRect, &Event->ParentLayerBase);
                                 GDI_DrawObjectDefault(Event->Object, tmpObjectRect, &Event->ParentLayerBase);
-
-                                tmpObjectRect->l += Event->ParentLayerBase.x + LayerOffset.x;
-                                tmpObjectRect->t += Event->ParentLayerBase.y + LayerOffset.y;
-                                tmpObjectRect->r += Event->ParentLayerBase.x + LayerOffset.x;
-                                tmpObjectRect->b += Event->ParentLayerBase.y + LayerOffset.y;
-
-                                LCDIF_UpdateRectangle(*tmpObjectRect);
 
                                 free(tmpDLItem->Data);
                             }
