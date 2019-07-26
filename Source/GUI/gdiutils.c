@@ -387,9 +387,8 @@ boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct)
                     {
                         tmpSUBItem = DL_GetNextItem(tmpItem);
 
-                        DL_DeleteItem(Region, tmpItem);
                         free(tmpItem->Data);
-                        free(tmpItem);
+                        DL_DeleteItem(Region, tmpItem);
 
                         tmpItem = tmpSUBItem;
                         free(tmpList);
@@ -449,9 +448,8 @@ boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct)
                     {
                         tmpSUBItem = DL_GetNextItem(tmpItem);
 
-                        DL_DeleteItem(Region, tmpItem);
                         free(tmpItem->Data);
-                        free(tmpItem);
+                        DL_DeleteItem(Region, tmpItem);
 
                         tmpItem = tmpSUBItem;
                         free(tmpList);
