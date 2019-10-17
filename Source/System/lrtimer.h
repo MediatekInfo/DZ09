@@ -26,17 +26,18 @@ typedef enum tag_MRFLAGS
     TF_DIRECT     = (1 << 2)
 } TMRFLAGS;
 
+typedef struct tag_TIMER *pTIMER;
 typedef struct tag_TIMER
 {
     TMRFLAGS   Flags;
     uint32_t   Interval;
     int32_t    StartTicks;
     pHANDLE    Parent;
-    void       (*Handler)(pHANDLE);
+    void       (*Handler)(pTIMER);
 } TTIMER, *pTIMER;
 
 extern boolean LRT_Initialize(void);
-extern pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), TMRFLAGS Flags);
+extern pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TMRFLAGS Flags);
 extern boolean LRT_Destroy(pTIMER Timer);
 extern boolean LRT_Start(pTIMER Timer);
 extern boolean LRT_Stop(pTIMER Timer);

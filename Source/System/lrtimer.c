@@ -82,13 +82,13 @@ boolean LRT_Initialize(void)
     return false;
 }
 
-pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), TMRFLAGS Flags)
+pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TMRFLAGS Flags)
 {
     pTIMER tmpTimer = NULL;
 
     if (Interval)
     {
-        Interval *= 1000;                                                                           //Set interval to us
+        Interval *= 1000;                                                                           // Set interval to us
 
         if (Interval < LRTMININTERVAL) Interval = LRTMININTERVAL;
         tmpTimer = malloc(sizeof(TTIMER));
