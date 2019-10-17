@@ -117,9 +117,8 @@ boolean LRT_Destroy(pTIMER Timer)
 
         if (tmpItem != NULL)
         {
+            free(tmpItem->Data);
             DL_DeleteItem(TimersList, tmpItem);
-            free(Timer);
-            free(tmpItem);
             return true;
         }
     }
