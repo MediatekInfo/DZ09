@@ -109,7 +109,7 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pHANDLE), T
     return tmpTimer;
 }
 
-boolean LRT_Destroy(pTIMER Timer)
+boolean LRT_Destroy(pTIMER Timer)                                                                   // Do not use this method in the timer handler in TFDIRECT mode!!!
 {
     if (Timer != NULL)
     {
