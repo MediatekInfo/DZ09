@@ -111,6 +111,12 @@ void EM_ProcessEvents(void)
         case ET_PWRKEY:
             break;
         case ET_ONTIMER:
+            if (tmpEvent->ParamSz)
+            {
+                pTIMER EvTimer = *(pTIMER *)tmpEvent->Param;
+
+                if (EvTimer->Handler != NULL) EvTimer->Handler(EvTimer);
+            }
             break;
         default:
             break;
