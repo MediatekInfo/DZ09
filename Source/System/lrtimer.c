@@ -158,3 +158,18 @@ boolean LRT_Stop(pTIMER Timer)
     }
     return false;
 }
+
+boolean LRT_SetMode(pTIMER Timer, TMRFLAGS Flags)
+{
+    if (Timer != NULL)
+    {
+        uint32_t iflags = DisableInterrupts();
+
+        Timer->Flags = Flags;
+        if (Flags & TF_ENABLED) Timer->StartTicks = USC_GetCurrentTicks();
+        RestoreInterrupts(iflags);
+
+        return true;
+    }
+    return false;
+}

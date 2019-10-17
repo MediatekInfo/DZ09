@@ -41,5 +41,6 @@ extern pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIM
 extern boolean LRT_Destroy(pTIMER Timer);
 extern boolean LRT_Start(pTIMER Timer);
 extern boolean LRT_Stop(pTIMER Timer);
+extern boolean LRT_SetMode(pTIMER Timer, TMRFLAGS Flags);
 
 #endif /* _LRTIMER_H_ */
