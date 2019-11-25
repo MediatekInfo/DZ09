@@ -42,7 +42,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
             PEvent->UpdateRect = GDI_LocalToGlobalRct(&PEvent->UpdateRect, &ParentBase);
             tmpPoint = GDI_LocalToGlobalPt(&tmpPoint, &Object->Parent->Position.lt);
 
-            IsStillVisible = Object->Visible &&
+            IsStillVisible = Object->Parent->Visible &&
                              GDI_ANDRectangles(&PEvent->UpdateRect, &Object->Parent->Position) &&
                              (Object->Parent->Type == GO_WINDOW);                                   // Only a TWIN object can be a parent.
 
