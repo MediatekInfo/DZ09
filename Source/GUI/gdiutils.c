@@ -76,6 +76,8 @@ boolean IsRectsOverlaps(pRECT a, pRECT b)
 {
     if ((a != NULL) && (b != NULL))
     {
+        if ((a->l > a->r) || (a->t > a->b)) return false;
+        if ((b->l > b->r) || (b->t > b->b)) return false;
         if ((a->l > b->r) || (a->r < b->l)) return false;
         if ((a->t > b->b) || (a->b < b->t)) return false;
         return true;
