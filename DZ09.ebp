@@ -21,7 +21,6 @@
 				</Device>
 				<Compiler>
 					<Add option="-mthumb-interwork" />
-					<Add option="-eb_arm" />
 					<Add option="-fdata-sections" />
 					<Add option="-ffunction-sections" />
 					<Add option="-O0" />
@@ -29,9 +28,6 @@
 					<Add option="-save-temps=obj" />
 					<Add symbol="TARGET_$(TARGET_NAME)" />
 				</Compiler>
-				<Assembler>
-					<Add option="-eb_arm" />
-				</Assembler>
 				<Linker>
 					<Add option="-Wl,--gc-sections" />
 				</Linker>
@@ -63,9 +59,6 @@
 					<Add option="-save-temps=obj" />
 					<Add symbol="TARGET_$(TARGET_NAME)" />
 				</Compiler>
-				<Assembler>
-					<Add option="-eb_arm" />
-				</Assembler>
 				<Linker>
 					<Add option="-Wl,--gc-sections" />
 				</Linker>
