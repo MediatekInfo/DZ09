@@ -406,8 +406,8 @@ boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct)
     if (tmpRect != NULL)
     {
         *tmpRect = *Rct;
-        DL_AddItem(Region, tmpRect);
-        return true;
+        if (!DL_AddItem(Region, tmpRect)) free(tmpRect);
+        else return true;
     }
     return false;
 }
