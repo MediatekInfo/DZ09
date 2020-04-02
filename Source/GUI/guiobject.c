@@ -21,6 +21,31 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
+static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
+{
+    pWIN  Win = (pWIN)Object;
+    TRECT WinRect;
+
+    if ((Object == NULL) || !Object->Visible ||
+            !IsWindowObject((pGUIHEADER)Object) || (Clip == NULL)) return;
+
+    WinRect = Object->Position;
+    if (Win->Framed)
+    {
+        GDI_DrawFrame(Win->Layer, &WinRect, Clip, clWhite);
+        WinRect.l++;
+        WinRect.t++;
+        WinRect.r--;
+        WinRect.b--;
+    }
+
+    if ((WinRect.l <= WinRect.r) && (WinRect.t <= WinRect.b) &&
+            GDI_ANDRectangles(&WinRect, Clip))
+    {
+        GDI_FillRectangle(Win->Layer, WinRect, Win->ForeColor);
+    }
+}
+
 pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
                       TVLINDEX Layer, uint32_t ForeColor, TGOFLAGS Flags)
 {
@@ -171,6 +196,7 @@ void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip)
         else switch(Object->Type)
             {
             case GO_WINDOW:
+                GUI_DrawDefaultWindow(Object, Clip);
                 break;
             default:
                 return;
