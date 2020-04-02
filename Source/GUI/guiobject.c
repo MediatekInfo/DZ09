@@ -205,6 +205,7 @@ void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip)
         Layer = (Object->Parent != NULL) ?
                 ((pWIN)Object->Parent)->Layer : ((pWIN)Object)->Layer;
         UpdateRect = GDI_LocalToGlobalRct(Clip, &LCDScreen.VLayer[Layer].LayerOffset);
+        UpdateRect = GDI_GlobalToLocalRct(&UpdateRect, &LCDScreen.ScreenOffset);
         LCDIF_UpdateRectangle(UpdateRect);
     }
 }
