@@ -31,7 +31,8 @@ typedef enum tag_GOFLAGS
 {
     GF_ENABLED  = (1 << 0),
     GF_VISIBLE  = (1 << 1),
-    GF_TOPMOST  = (1 << 2)
+    GF_TOPMOST  = (1 << 2),
+    GF_FRAMED   = (1 << 3)
 } TGOFLAGS;
 
 typedef struct tag_GUIHEADER *pGUIHEADER;
@@ -55,6 +56,7 @@ typedef struct tag_WIN
 {
     TGUIHEADER  Head;
     boolean     Topmost;
+    boolean     Framed;
     uint32_t    Layer;
     uint32_t    ForeColor;
     TDLIST      ChildObjects;
