@@ -60,3 +60,31 @@ void GDI_SetPixel(TVLINDEX Layer, TPOINT P, uint32_t Color)
     lc = &LCDScreen.VLayer[Layer];
     if (IsPointInRect(P.x, P.y, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
 }
+
+void GDI_DrawFrame(TVLINDEX Layer, pRECT Client, pRECT Clip, uint32_t Color)
+{
+    if ((Layer >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Layer].Initialized) return;
+    if ((Client != NULL) && (Clip != NULL))
+    {
+        TRECT tmpClient = *Client;
+
+        if (GDI_ANDRectangles(&tmpClient, &LCDScreen.VLayer[Layer].LayerRgn) &&
+                GDI_ANDRectangles(&tmpClient, Clip))
+        {
+            TRECT  DrwRect;
+
+            DrwRect = Rect(Client->l, Client->t, Client->r, Client->t);                             // Top line
+            if (GDI_ANDRectangles(&DrwRect, &tmpClient))
+                GDI_FillRectangle(Layer, DrwRect, Color);
+            DrwRect = Rect(Client->l, Client->t, Client->l, Client->b);                             // Left line
+            if (GDI_ANDRectangles(&DrwRect, &tmpClient))
+                GDI_FillRectangle(Layer, DrwRect, Color);
+            DrwRect = Rect(Client->l + 1, Client->b, Client->r, Client->b);                         // Bottom line
+            if (GDI_ANDRectangles(&DrwRect, &tmpClient))
+                GDI_FillRectangle(Layer, DrwRect, Color);
+            DrwRect = Rect(Client->r, Client->t + 1, Client->r, Client->b);                         // Right line
+            if (GDI_ANDRectangles(&DrwRect, &tmpClient))
+                GDI_FillRectangle(Layer, DrwRect, Color);
+        }
+    }
+}
