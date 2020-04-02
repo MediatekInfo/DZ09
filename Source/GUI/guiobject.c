@@ -162,5 +162,23 @@ pWIN GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
 
 void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip)
 {
+    if ((Object != NULL) && (Clip != NULL))
+    {
+        TRECT    UpdateRect;
+        TVLINDEX Layer;
 
+        if (Object->OnPaint != NULL) Object->OnPaint(Object, Clip);
+        else switch(Object->Type)
+            {
+            case GO_WINDOW:
+                break;
+            default:
+                return;
+            }
+
+        Layer = (Object->Parent != NULL) ?
+                ((pWIN)Object->Parent)->Layer : ((pWIN)Object)->Layer;
+        UpdateRect = GDI_LocalToGlobalRct(Clip, &LCDScreen.VLayer[Layer].LayerOffset);
+        LCDIF_UpdateRectangle(UpdateRect);
+    }
 }
