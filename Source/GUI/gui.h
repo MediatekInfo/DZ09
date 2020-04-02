@@ -30,7 +30,6 @@ typedef struct tag_PAINTEV
     pGUIHEADER Object;
     pGUIHEADER RootParent;
     TRECT      UpdateRect;
-    TPOINT     ParentLayerBase;
 } TPAINTEV, *pPAINTEV;
 
 extern pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];

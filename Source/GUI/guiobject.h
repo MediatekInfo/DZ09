@@ -61,8 +61,9 @@ typedef struct tag_WIN
     boolean     (*EventHandler)(pEVENT, pWIN);
 } TWIN, *pWIN;
 
+extern boolean IsWindowObject(pGUIHEADER Object);
 extern pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
                              uint8_t Layer, uint32_t ForeColor, TGOFLAGS Flags);
-extern void GDI_DrawObjectDefault(pGUIHEADER Object, pRECT ClipRect, pPOINT ParentLayerBase);
+extern void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip);
 
 #endif /* _GUIOBJECT_H_ */
