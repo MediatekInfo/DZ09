@@ -93,12 +93,21 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pRECT Clip)
 {
     pDLITEM    tmpItem = DL_GetLastItem(&Win->ChildObjects);
     pGUIHEADER tmpObject;
+    TRECT      tmpWinRect = Win->Head.Position;
+
+    if (Win->Framed)
+    {
+        tmpWinRect.l++;                                                                             // Here you can change the size of the client area of the window.
+        tmpWinRect.t++;
+        tmpWinRect.r--;
+        tmpWinRect.b--;
+    }
 
     while((tmpItem != NULL) && ((tmpObject = (pGUIHEADER)tmpItem->Data) != NULL))
     {
         TRECT tmpObjectRect = tmpObject->Position;
 
-        if ((tmpObject->Visible) && GDI_ANDRectangles(&tmpObjectRect, &Win->Head.Position))
+        if ((tmpObject->Visible) && GDI_ANDRectangles(&tmpObjectRect, &tmpWinRect))
         {
             if (IsWindowObject(tmpObject))
             {
