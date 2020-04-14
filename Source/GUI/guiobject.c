@@ -46,6 +46,33 @@ static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
     }
 }
 
+static void GUI_UpdateChildPositions(pGUIHEADER Object, pPOINT dXY)
+{
+    pDLIST ChildList = &((pWIN)Object)->ChildObjects;
+
+    if (DL_GetItemsCount(ChildList))
+    {
+        pDLITEM tmpItem = DL_GetFirstItem(ChildList);
+
+        while (tmpItem != NULL)
+        {
+            pGUIHEADER tmpObject = (pGUIHEADER)tmpItem->Data;
+
+            if (tmpObject != NULL)
+            {
+                tmpObject->Position.l += dXY->x;
+                tmpObject->Position.r += dXY->x;
+                tmpObject->Position.t += dXY->y;
+                tmpObject->Position.b += dXY->y;
+
+                if (IsWindowObject(tmpObject))
+                    GUI_UpdateChildPositions(tmpObject, dXY);
+            }
+            tmpItem = DL_GetNextItem(tmpItem);
+        }
+    }
+}
+
 TRECT GUI_CalculateClientArea(pGUIHEADER Object)
 {
     TRECT ObjectRect = Object->Position;
@@ -66,6 +93,37 @@ TRECT GUI_CalculateClientArea(pGUIHEADER Object)
     }
 
     return ObjectRect;
+}
+
+void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position)
+{
+    TRECT NewPosition;
+
+    if ((Object == NULL) || (Position == NULL)) return;
+
+    NewPosition = (Object->Parent == NULL) ? *Position :
+                  GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
+    if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)))
+    {
+        TPOINT dXY = GDI_GlobalToLocalPt(&NewPosition.lt, &Object->Position.lt);
+        pDLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
+
+        Object->Position = NewPosition;
+
+        if (IsWindowObject(Object))
+            GUI_UpdateChildPositions(Object, &dXY);
+        GUI_Invalidate(Object, NULL);
+
+        while (DL_GetItemsCount(UpdateRects))
+        {
+            pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+
+            if (tmpDLItem->Data != NULL)
+                GUI_Invalidate(Object->Parent, (pRECT)tmpDLItem->Data);
+            DL_DeleteFirstItem(UpdateRects);
+        }
+        DL_Delete(UpdateRects, false);
+    }
 }
 
 pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
