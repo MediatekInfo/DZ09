@@ -95,6 +95,19 @@ TRECT GUI_CalculateClientArea(pGUIHEADER Object)
     return ObjectRect;
 }
 
+boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position)
+{
+    if (Object == NULL) return false;
+
+    if (Position != NULL)
+    {
+        *Position = (Object->Parent != NULL) ?
+                    GDI_GlobalToLocalRct(&Object->Position, &Object->Parent->Position.lt) :
+                    Object->Position;
+    }
+    return true;
+}
+
 void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position)
 {
     TRECT NewPosition;

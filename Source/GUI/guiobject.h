@@ -64,6 +64,7 @@ typedef struct tag_WIN
 } TWIN, *pWIN;
 
 extern TRECT GUI_CalculateClientArea(pGUIHEADER Object);
+extern boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position);
 extern void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position);
 extern boolean IsWindowObject(pGUIHEADER Object);
 extern pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
