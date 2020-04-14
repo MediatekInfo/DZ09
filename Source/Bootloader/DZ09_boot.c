@@ -69,7 +69,7 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
                      (FileInfo->sig_len == sizeof(MTK_PHASH)) &&
                      (*(uint32_t *)(FileInfo->load_addr + SizeToCheck - 4) == MTK_FEND))
             {
-                DebugPrint(" Prosessing SHA-1 - ");
+                DebugPrint(" Processing SHA-1 - ");
                 CheckedHash = SHA1_ProcessData((uint8_t *)FileInfo->load_addr, SizeToCheck);
                 if (CheckedHash != NULL)
                 {
