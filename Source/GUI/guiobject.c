@@ -46,6 +46,28 @@ static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
     }
 }
 
+TRECT GUI_CalculateClientArea(pGUIHEADER Object)
+{
+    TRECT ObjectRect = Object->Position;
+
+    switch (Object->Type)
+    {
+    case GO_WINDOW:
+        if (((pWIN)Object)->Framed)
+        {
+            ObjectRect.l++;
+            ObjectRect.t++;
+            ObjectRect.r--;
+            ObjectRect.b--;
+        }
+        break;
+    default:
+        break;
+    }
+
+    return ObjectRect;
+}
+
 pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
                       TVLINDEX Layer, uint32_t ForeColor, TGOFLAGS Flags)
 {
