@@ -125,6 +125,9 @@
 		<Unit filename="Source\Bootloader\sha-1.h">
 			<Option target="BOOTLOADER" />
 		</Unit>
+		<Unit filename="Source\GUI\bfcfont.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\GUI\gdi.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

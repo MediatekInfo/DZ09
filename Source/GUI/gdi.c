@@ -19,6 +19,7 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
 */
 #include "systemconfig.h"
+#include "bfcfont.h"
 #include "gdi.h"
 
 void GDI_FillRectangle(TVLINDEX Layer, TRECT Rct, uint32_t Color)
