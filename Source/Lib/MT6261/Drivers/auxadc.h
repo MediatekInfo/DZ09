@@ -3,18 +3,18 @@
 *
 * Copyright (C) 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #ifndef _AUXADC_H_
 #define _AUXADC_H_
@@ -31,10 +31,12 @@
 #define ADC_YM_Ext                  14
 #define ADC_XM_Ext                  15
 
+#define AUXADCCHNLMASK              0xF23F
+
 #define AUXADC_CON0                 (*(volatile uint16_t*)(AUXADC_base + 0x0000))                   //AuxiliaryADC Control Register 0
-#define SYN0(i)                     ((1 << (i)) & 0xF23F)
+#define SYN0(i)                     ((1 << (i)) & AUXADCCHNLMASK)
 #define AUXADC_CON1                 (*(volatile uint16_t*)(AUXADC_base + 0x0004))                   //AuxiliaryADC Control Register 1
-#define IMM0(i)                     ((1 << (i)) & 0xF23F)
+#define IMM0(i)                     ((1 << (i)) & AUXADCCHNLMASK)
 #define AUXADC_CON2                 (*(volatile uint16_t*)(AUXADC_base + 0x0008))                   //AuxiliaryADC Control Register 2
 #define AUXADCEN                    (1 << 0)
 #define AUXADC_CON3                 (*(volatile uint16_t*)(AUXADC_base + 0x000C))                   //AuxiliaryADC Control Register 3
@@ -60,5 +62,10 @@
 #define TS_SPL_STA                  (1 << 15)
 #define AUX_TS_CMD1                 (*(volatile uint16_t*)(AUXADC_base + 0x00D4))                   //Touch Screen Sample Command 1
 #define AUX_TS_DAT1                 (*(volatile uint16_t*)(AUXADC_base + 0x00D8))                   //Touch Screen Sample Data 1
+
+extern boolean AUXADC_Enable(void);
+extern void AUXADC_Disable(void);
+extern uint16_t AUXADC_MeasureChannel(uint16_t Channel);
+extern boolean AUXADC_MeasureMultiple(uint16_t *DataArray, uint16_t ChannelsMask);
 
 #endif /* _AUXADC_H_ */

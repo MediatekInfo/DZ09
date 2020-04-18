@@ -171,6 +171,10 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.h">
 			<Option target="SYSTEM" />
 		</Unit>
