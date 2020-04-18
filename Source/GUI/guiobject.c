@@ -116,7 +116,7 @@ void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position)
 
     NewPosition = (Object->Parent == NULL) ? *Position :
                   GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
-    if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)))
+    if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
     {
         TPOINT dXY = GDI_GlobalToLocalPt(&NewPosition.lt, &Object->Position.lt);
         pDLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
