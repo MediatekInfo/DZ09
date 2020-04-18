@@ -21,7 +21,7 @@
 #include "systemconfig.h"
 #include "auxadc.h"
 
-#define AUXADCBUSYMAX               500000                                                           // 50 ms must be enough
+#define AUXADCBUSYMAX               50000                                                           // 50 ms must be enough
 
 static boolean AUXADC_WaitBusy(void)
 {
