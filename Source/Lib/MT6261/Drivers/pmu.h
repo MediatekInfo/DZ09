@@ -568,23 +568,33 @@ typedef enum tag_ICVAL
 #define KPLED_MODE_SINK             (1 << 1)
 #define NI_KPLED_STATUS             (1 << 15)
 
-#define SPK_CON0                    (*(volatile uint16_t*)(PMU_base + 0x0D00))                      //Not defined in datasheet
-#define SPK_GAIN(v)                 (((v) & 0x03) << 4)                                             //UpdateSPKGain() afe_6260.c
-//#define SPK_CON1                    (*(volatile uint16_t*)(PMU_base + 0x0D04))
+#define SPK_CON0                    (*(volatile uint16_t*)(PMU_base + 0x0D00))                      //Defined in afe_def.h
+#define SPK_ENABLE                  (1 << 0)                                                        //afe_6261.h
+#define SPK_GAIN(v)                 (((v) & 0x03) << 4)                                             //0: -6db, 1: 3db, 2: 6db, 3: 12db
+#define SPK_OC_AUTOFF               (1 << 12)
+#define SPK_OC_FLAG                 (1 << 14)
+#define SPK_CON1                    (*(volatile uint16_t*)(PMU_base + 0x0D04))                      //Defined in afe_def.h
 //#define SPK_CON2                    (*(volatile uint16_t*)(PMU_base + 0x0D08))
-#define SPK_CON3                    (*(volatile uint16_t*)(PMU_base + 0x0D0C))                      //Not defined in datasheet
-//#define SPK_CON4                    (*(volatile uint16_t*)(PMU_base + 0x0D10))
-//#define SPK_CON5                    (*(volatile uint16_t*)(PMU_base + 0x0D14))
-//#define SPK_CON6                    (*(volatile uint16_t*)(PMU_base + 0x0D18))
-//#define SPK_CON7                    (*(volatile uint16_t*)(PMU_base + 0x0D1C))
-#define SPK_CON8                    (*(volatile uint16_t*)(PMU_base + 0x0D20))                      //Not defined in datasheet
+#define SPK_CON3                    (*(volatile uint16_t*)(PMU_base + 0x0D0C))                      //Defined in afe_def.h
+#define SPK_CON4                    (*(volatile uint16_t*)(PMU_base + 0x0D10))                      //Defined in afe_def.h
+#define SPK_CON5                    (*(volatile uint16_t*)(PMU_base + 0x0D14))                      //Defined in afe_def.h
+#define SPK_CON6                    (*(volatile uint16_t*)(PMU_base + 0x0D18))                      //Defined in afe_def.h
+//*SPK_CON6  = 0x0988; //bypass mode
+//*SPK_CON6  = 0x098C; //boost mode
+#define SPK_CON7                    (*(volatile uint16_t*)(PMU_base + 0x0D1C))                      //Defined in afe_def.h
+#define SPK_CLASSAB_OC_EN           (1 << 8)
+#define SPK_CON8                    (*(volatile uint16_t*)(PMU_base + 0x0D20))                      //Calibration
+#define SPK_DC_CALIB_EN             (1 << 6)
+#define SPK_SPKP                    (1 << 9)
+#define SPK_SPKN                    (0 << 9)
+#define SPK_CON9                    (*(volatile uint16_t*)(PMU_base + 0x0D24))                      //Current sensor register
 
 #define VBST_CON0                   (*(volatile uint16_t*)(PMU_base + 0x0D28))
 #define QI_VSBST_EN                 (1 << 0)
 #define RG_VVSBST_BP                (1 << 1)
 #define NI_VSBST_SSBP               (1 << 5)
 #define VSBST_VIO28_PG_STAT         (1 << 10)
-//#define VBST_CON1                   (*(volatile uint16_t*)(PMU_base + 0x0D2C))
+#define VBST_CON1                   (*(volatile uint16_t*)(PMU_base + 0x0D2C))                      //From afe_def.h
 #define VBST_CON2                   (*(volatile uint16_t*)(PMU_base + 0x0D30))
 #define VSBST_SLEW_NMOS(v)          (((v) & 0x03) << 10)
 #define SLEW_NMOS1_0                0
@@ -606,7 +616,7 @@ typedef enum tag_ICVAL
 #define RG_VSBST_OVP_ENB            (1 << 0)
 #define QI_VSBST_PG_STATUS          (1 << 9)
 #define QI_VSBST_OC_STATUS          (1 << 14)
-//#define VBST_CON5                   (*(volatile uint16_t*)(PMU_base + 0x0D3C))
+#define VBST_CON5                   (*(volatile uint16_t*)(PMU_base + 0x0D3C))                      //From afe-def.h
 #define VBST_CON6                   (*(volatile uint16_t*)(PMU_base + 0x0D40))
 #define VSBST_OC_FLAG               (1 << 11)
 
