@@ -36,7 +36,6 @@ static boolean AUXADC_WaitBusy(void)
 
 boolean AUXADC_Enable(void)
 {
-//    PCTL_PowerUp(PD_AUXADC);                                                                        // It is not known what this affects (another ADC?).
     PCTL_PowerUp(PD_AUXADC_BCLK);                                                                   // Power up AUXADC
 
     AUXADC_CON3 = ADC_SOFT_RST;
