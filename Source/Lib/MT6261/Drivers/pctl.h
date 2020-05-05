@@ -55,7 +55,7 @@
 #define PD_BTIF                     (0x21)
 #define PD_GPT                      (0x22)
 #define PD_I2C_18V                  (0x23)
-#define PD_PWM4                     (0x24)                                                          //spec : PWM1
+#define PD_PWM4                     (0x24)
 #define PD_ROM                      (0x25)
 #define PD_EFUSE                    (0x26)
 #define PD_SW_LPM                   (0x27)
