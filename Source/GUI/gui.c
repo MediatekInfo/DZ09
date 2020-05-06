@@ -52,10 +52,10 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
                              IsWindowObject(Object->Parent);                                        // Only a TWIN object can be a parent.
             Object = Object->Parent;
         }
-    }
-    if (IsStillVisible)
-        PEvent->RootParent = Object;
 
+        if (IsStillVisible)
+            PEvent->RootParent = Object;
+    }
     return IsStillVisible;
 }
 
