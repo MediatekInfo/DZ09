@@ -41,8 +41,8 @@ void PCTL_Initialize(void)
 
 boolean PCTL_GetPeripheralPowerStatus(uint32_t Periph)
 {
-    if      (Periph <= PD_CNFG_MAX) return CNFG_PDN_CON(Periph >> 4) & (1 << (Periph & 0x0F));
-    else if (Periph <= PD_ACFG_MAX) return ACFG_CLK_CON & (1 << (Periph & 0x0F));
+    if      (Periph <= PD_CNFG_MAX) return !(CNFG_PDN_CON(Periph >> 4) & (1 << (Periph & 0x0F)));
+    else if (Periph <= PD_ACFG_MAX) return !(ACFG_CLK_CON & (1 << (Periph & 0x0F)));
 
     return false;
 }
