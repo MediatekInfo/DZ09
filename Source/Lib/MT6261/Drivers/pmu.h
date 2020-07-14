@@ -1,20 +1,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #ifndef _PMU_H_
 #define _PMU_H_
@@ -27,7 +27,6 @@
 #define AUX_PWDB                    (1 << 8)
 
 #define AFUNC_XOSC_CON0             (*(volatile uint32_t*)(PMU_base + 0x0010))
-
 
 #define ABIST_CON0                  (*(volatile uint32_t*)(PMU_base + 0x0020))
 #define ABIST_MON_CFG               (1 << 8)
@@ -589,13 +588,13 @@ typedef enum tag_ICVAL
 #define SPK_SPKN                    (0 << 9)
 #define SPK_CON9                    (*(volatile uint16_t*)(PMU_base + 0x0D24))                      //Current sensor register
 
-#define VBST_CON0                   (*(volatile uint16_t*)(PMU_base + 0x0D28))
+#define VSBST_CON0                  (*(volatile uint16_t*)(PMU_base + 0x0D28))
 #define QI_VSBST_EN                 (1 << 0)
 #define RG_VVSBST_BP                (1 << 1)
 #define NI_VSBST_SSBP               (1 << 5)
 #define VSBST_VIO28_PG_STAT         (1 << 10)
-#define VBST_CON1                   (*(volatile uint16_t*)(PMU_base + 0x0D2C))                      //From afe_def.h
-#define VBST_CON2                   (*(volatile uint16_t*)(PMU_base + 0x0D30))
+#define VSBST_CON1                  (*(volatile uint16_t*)(PMU_base + 0x0D2C))                      //From afe_def.h
+#define VSBST_CON2                  (*(volatile uint16_t*)(PMU_base + 0x0D30))
 #define VSBST_SLEW_NMOS(v)          (((v) & 0x03) << 10)
 #define SLEW_NMOS1_0                0
 #define SLEW_NMOS3_4                1
@@ -606,18 +605,18 @@ typedef enum tag_ICVAL
 #define VSBST_SLEW3_4               1
 #define VSBST_SLEW2_4               2
 #define VSBST_SLEW1_4               3
-#define VBST_CON3                   (*(volatile uint16_t*)(PMU_base + 0x0D34))
+#define VSBST_CON3                  (*(volatile uint16_t*)(PMU_base + 0x0D34))
 #define RG_VSBST_VOSEL(v)           (((v) & 0x03) << 14)
 #define RG_VSBST_VO53               0
 #define RG_VSBST_VO525              1
 #define RG_VSBST_VO52               2
 #define RG_VSBST_VO535              3
-#define VBST_CON4                   (*(volatile uint16_t*)(PMU_base + 0x0D38))
+#define VSBST_CON4                  (*(volatile uint16_t*)(PMU_base + 0x0D38))
 #define RG_VSBST_OVP_ENB            (1 << 0)
 #define QI_VSBST_PG_STATUS          (1 << 9)
 #define QI_VSBST_OC_STATUS          (1 << 14)
-#define VBST_CON5                   (*(volatile uint16_t*)(PMU_base + 0x0D3C))                      //From afe-def.h
-#define VBST_CON6                   (*(volatile uint16_t*)(PMU_base + 0x0D40))
+#define VSBST_CON5                  (*(volatile uint16_t*)(PMU_base + 0x0D3C))                      //From afe-def.h
+#define VSBST_CON6                  (*(volatile uint16_t*)(PMU_base + 0x0D40))
 #define VSBST_OC_FLAG               (1 << 11)
 
 #define OC_CON8                     (*(volatile uint16_t*)(PMU_base + 0x0E20))

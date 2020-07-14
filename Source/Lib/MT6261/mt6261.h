@@ -1,20 +1,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #ifndef _MT6261_H_
 #define _MT6261_H_
@@ -39,6 +39,7 @@
 #define MPU_Base                    0xA0540000                                                      //Memory protection unit
 #define PMU_base                    0xA0700000                                                      //PMU mixedsys
 #define RTC_Base                    0xA0710000                                                      //Real Time Clock
+#define ABBSYS_SD_base              0xA0720000                                                      //Analog baseband (ABB) controller
 #define ANA_CFGSYS_base             0xA0730000                                                      //Analog die (MT6100) Configuration Registers (Clock, Reset, etc.)
 #define ADIE_CIRQ_base              0xA0760000                                                      //Interrupt Controller (16-bit)
 
@@ -54,8 +55,8 @@
 //#define BT_CONFG_base               0xA3300000
 //#define AHB2DSPIO_base              0x82800000
 //#define PATCH_base                  0x82CC0000
+#define AFE_base                    0x82CD0000                                                      //Analog front-end
 //#define BT_BTIF_base                0xA3330000
-
 
 //Drivers
 #include "drivers\rtc.h"
@@ -72,7 +73,7 @@
 #include "drivers\pll.h"
 #include "drivers\ustimer.h"
 #include "drivers\lcdif.h"
-
 #include "drivers\auxadc.h"
+#include "drivers\afe.h"
 
 #endif /* _MT6261_H_ */
