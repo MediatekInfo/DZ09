@@ -54,7 +54,7 @@
 #define SDM_CK_PHASE                (1 << 0)
 #define SDMLP_DLTOUL                (1 << 4)
 #define VSDN_DATA_MONO              (1 << 5)
-#define SDMLP_ULTODL                (1 << 8)
+#define VSDMLP_ULTODL               (1 << 8)
 
 #define AFE_AMCU_CON0               (*(volatile uint16_t*)(AFE_base + 0x0020))
 #define AIRQON                      (1 << 0)
@@ -110,7 +110,7 @@
 #define UNMUTE_DONE_L               (1 << 3)
 #define AFE_AMCU_CON5               (*(volatile uint16_t*)(AFE_base + 0x0180))
 #define SDM_CK_PHASE                (1 << 0)
-#define SDMLP_ULTODL                (1 << 4)
+#define ASDMLP_ULTODL               (1 << 4)
 #define ASDM_DATA_MONO              (1 << 5)
 #define SDMLP_ULTODL                (1 << 8)
 #define AFE_AMCU_CON6               (*(volatile uint16_t*)(AFE_base + 0x0184))
