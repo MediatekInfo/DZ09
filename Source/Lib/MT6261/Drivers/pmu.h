@@ -568,25 +568,43 @@ typedef enum tag_ICVAL
 #define NI_KPLED_STATUS             (1 << 15)
 
 #define SPK_CON0                    (*(volatile uint16_t*)(PMU_base + 0x0D00))                      //Defined in afe_def.h
-#define SPK_ENABLE                  (1 << 0)                                                        //afe_6261.h
+#define RG_SPK_EN                   (1 << 0)                                                        //afe_6261.h
 #define SPK_GAIN(v)                 (((v) & 0x03) << 4)                                             //0: -6db, 1: 3db, 2: 6db, 3: 12db
 #define SPK_OC_AUTOFF               (1 << 12)
 #define SPK_OC_FLAG                 (1 << 14)
 #define SPK_CON1                    (*(volatile uint16_t*)(PMU_base + 0x0D04))                      //Defined in afe_def.h
 //#define SPK_CON2                    (*(volatile uint16_t*)(PMU_base + 0x0D08))
 #define SPK_CON3                    (*(volatile uint16_t*)(PMU_base + 0x0D0C))                      //Defined in afe_def.h
+#define SPK_OC_CTRL(v)              (((v) & 0x03) << 2)
+#define RG_SPK_OUT_FLOAT_B          (1 << 11)
+#define RG_SPK_IN_TIE_HIGH          (1 << 12)
+#define RG_SPK_IN_FLOAT_B           (1 << 14)
 #define SPK_CON4                    (*(volatile uint16_t*)(PMU_base + 0x0D10))                      //Defined in afe_def.h
 #define SPK_CON5                    (*(volatile uint16_t*)(PMU_base + 0x0D14))                      //Defined in afe_def.h
 #define SPK_CON6                    (*(volatile uint16_t*)(PMU_base + 0x0D18))                      //Defined in afe_def.h
-//*SPK_CON6  = 0x0988; //bypass mode
-//*SPK_CON6  = 0x098C; //boost mode
+#define RG_SPK_IN_CM_CTRL_EN        (1 << 4)
+#define RG_SPK_VCM_DIV_SEL          (1 << 3)
+#define RG_SPK_ISENSE_PD_RESET      (1 << 4)
+#define RG_SPK_SPK_OCP_ABIST        (1 << 5)
+#define RG_SPK_SPK_OCN_ABIST        (1 << 6)
+#define RG_SPK_DAMPING_EN           (1 << 7)
+#define RG_SPK_RSV(v)               (((v) & 0x0F) << 8)
 #define SPK_CON7                    (*(volatile uint16_t*)(PMU_base + 0x0D1C))                      //Defined in afe_def.h
+#define RG_SPK_OBIAS(v)             (((v) & 0x03) << 4)
+#define RG_VCM_IBSEL                (1 << 6)
+#define RG_SPK_VCM_SEL              (1 << 7)
 #define SPK_CLASSAB_OC_EN           (1 << 8)
+#define RG_SPK_PBIAS                (1 << 10)
 #define SPK_CON8                    (*(volatile uint16_t*)(PMU_base + 0x0D20))                      //Calibration
+#define RG_SPK_CHANNELSEL(v)        (((v) & 0x03) << 2)
 #define SPK_DC_CALIB_EN             (1 << 6)
 #define SPK_SPKP                    (1 << 9)
 #define SPK_SPKN                    (0 << 9)
 #define SPK_CON9                    (*(volatile uint16_t*)(PMU_base + 0x0D24))                      //Current sensor register
+#define RG_SPK_ISENSE_TEST_EN       (1 << 4)
+#define RG_SPK_ISENSE_REFSEL(v)     (((v) & 0x07) << 8)
+#define RG_SPK_ISENSE_GAINSEL(v)    (((v) & 0x07) << 11)
+#define RG_SPK_ISENSE_EN            (1 << 15)
 
 #define VSBST_CON0                  (*(volatile uint16_t*)(PMU_base + 0x0D28))
 #define QI_VSBST_EN                 (1 << 0)
