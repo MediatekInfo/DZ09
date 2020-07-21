@@ -590,7 +590,7 @@ typedef enum tag_ICVAL
 
 #define VSBST_CON0                  (*(volatile uint16_t*)(PMU_base + 0x0D28))
 #define QI_VSBST_EN                 (1 << 0)
-#define RG_VVSBST_BP                (1 << 1)
+#define RG_VSBST_BP                 (1 << 1)
 #define NI_VSBST_SSBP               (1 << 5)
 #define VSBST_VIO28_PG_STAT         (1 << 10)
 #define VSBST_CON1                  (*(volatile uint16_t*)(PMU_base + 0x0D2C))                      //From afe_def.h
