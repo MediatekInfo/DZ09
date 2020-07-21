@@ -591,10 +591,28 @@ typedef enum tag_ICVAL
 #define VSBST_CON0                  (*(volatile uint16_t*)(PMU_base + 0x0D28))
 #define QI_VSBST_EN                 (1 << 0)
 #define RG_VSBST_BP                 (1 << 1)
+#define NI_VSBST_MODESET            (1 << 2)
+#define NI_VSBST_SSBST              (1 << 3)
+#define NI_VSBST_SSV2P5             (1 << 4)
 #define NI_VSBST_SSBP               (1 << 5)
+#define VSBST_CTRL_EN               (1 << 6)
+#define VSBST_VIO28_PG_CTRL         (1 << 7)
+#define VSBST_VIO28_PG_STATUS_TD(v) (((v) & 0x03) << 8)
 #define VSBST_VIO28_PG_STAT         (1 << 10)
+#define VSBST_EN_SEL                (1 << 11)
+#define VSBST_MODESET_SEL           (1 << 12)
+#define VSBST_SS_SEL                (1 << 13)
+#define VSBST_SSV2P5_DLY_SEL_R      (1 << 14)
+#define VSBST_SSV2P5_DLY_SEL_F      (1 << 15)
 #define VSBST_CON1                  (*(volatile uint16_t*)(PMU_base + 0x0D2C))                      //From afe_def.h
+#define RG_VSBST_CSL(v)             (((v) & 0x0F) << 0)
+#define RG_VSBST_CSM(v)             (((v) & 0x07) << 4)
+#define RG_VSBST_CSR(v)             (((v) & 0x03) << 7)
+#define RG_VSBST_CC(v)              (((v) & 0x07) << 9)
+#define RG_VSBST_RC                 (1 << 12)
 #define VSBST_CON2                  (*(volatile uint16_t*)(PMU_base + 0x0D30))
+#define RG_VSBST_RSV(v)             (((v) & 0xFF) << 0)
+#define RG_VSBST_SLP(v)             (((v) & 0x03) << 8)
 #define VSBST_SLEW_NMOS(v)          (((v) & 0x03) << 10)
 #define SLEW_NMOS1_0                0
 #define SLEW_NMOS3_4                1
@@ -605,7 +623,13 @@ typedef enum tag_ICVAL
 #define VSBST_SLEW3_4               1
 #define VSBST_SLEW2_4               2
 #define VSBST_SLEW1_4               3
+#define RG_VSBST_OVP_SEL            (1 << 14)
 #define VSBST_CON3                  (*(volatile uint16_t*)(PMU_base + 0x0D34))
+#define RG_VSBST_FASYNC             (1 << 0)
+#define RG_VSBST_ZX_OS(v)           (((v) & 0x0F) << 1)
+#define RG_VSBST_BURSTL(v)          (((v) & 0x03) << 5)
+#define RG_VSBST_BURSTH(v)          (((v) & 0x03) << 7)
+#define RG_VSBST_TRIM(v)            (((v) & 0x1F) << 9)
 #define RG_VSBST_VOSEL(v)           (((v) & 0x03) << 14)
 #define RG_VSBST_VO53               0
 #define RG_VSBST_VO525              1
@@ -613,11 +637,24 @@ typedef enum tag_ICVAL
 #define RG_VSBST_VO535              3
 #define VSBST_CON4                  (*(volatile uint16_t*)(PMU_base + 0x0D38))
 #define RG_VSBST_OVP_ENB            (1 << 0)
+#define RG_VSBST_FPWM_CKDIVB        (1 << 1)
+#define RG_VSBST_FB_SOURCE          (1 << 2)
+#define RG_VSBST_VPGNND_SEL(v)      (((v) & 0x03) << 3)
+#define RGS_VSBST_ENPWM_STATUS      (1 << 8)
 #define QI_VSBST_PG_STATUS          (1 << 9)
+#define QI_VSBST_DIG_MON(v)         (((v) & 0x0F) << 10)
 #define QI_VSBST_OC_STATUS          (1 << 14)
 #define VSBST_CON5                  (*(volatile uint16_t*)(PMU_base + 0x0D3C))                      //From afe-def.h
+#define VSBST_CKS_PRG(v)            (((v) & 0xFF) << 0)
+#define VSBST_CKS_CHG               (1 << 15)
 #define VSBST_CON6                  (*(volatile uint16_t*)(PMU_base + 0x0D40))
+#define VSBST_OC_CKS_PRG(v)         (((v) & 0xFF) << 0)
+#define VSBST_CTRL_STATUS           (1 << 8)
+#define VSBST_THERMAL_AUTOFF        (1 << 9)
+#define VSBST_OC_AUTOFF             (1 << 10)
 #define VSBST_OC_FLAG               (1 << 11)
+#define VSBST_OC_CTRL               (1 << 12)
+#define VSBST_OC_CKS_CHG            (1 << 15)
 
 #define OC_CON8                     (*(volatile uint16_t*)(PMU_base + 0x0E20))
 #define QI_VRF_OC_STATUS            (1 << 0)
