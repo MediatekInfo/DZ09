@@ -572,16 +572,12 @@ typedef enum tag_ICVAL
 #define SPK_GAIN(v)                 (((v) & 0x03) << 4)                                             //0: -6db, 1: 3db, 2: 6db, 3: 12db
 #define SPK_OC_AUTOFF               (1 << 12)
 #define SPK_OC_FLAG                 (1 << 14)
-#define SPK_CON1                    (*(volatile uint16_t*)(PMU_base + 0x0D04))                      //Defined in afe_def.h
-//#define SPK_CON2                    (*(volatile uint16_t*)(PMU_base + 0x0D08))
 #define SPK_CON3                    (*(volatile uint16_t*)(PMU_base + 0x0D0C))                      //Defined in afe_def.h
 #define SPK_OC_CTRL(v)              (((v) & 0x03) << 2)
 #define RG_SPK_OUT_FLOAT_B          (1 << 11)
 #define RG_SPK_IN_TIE_HIGH          (1 << 12)
 #define RG_SPK_IN_FLOAT_B           (1 << 14)
-#define SPK_CON4                    (*(volatile uint16_t*)(PMU_base + 0x0D10))                      //Defined in afe_def.h
-#define SPK_CON5                    (*(volatile uint16_t*)(PMU_base + 0x0D14))                      //Defined in afe_def.h
-#define SPK_CON6                    (*(volatile uint16_t*)(PMU_base + 0x0D18))                      //Defined in afe_def.h
+#define SPK_CON6                    (*(volatile uint16_t*)(PMU_base + 0x0D18))
 #define RG_SPK_IN_CM_CTRL_EN        (1 << 4)
 #define RG_SPK_VCM_DIV_SEL          (1 << 3)
 #define RG_SPK_ISENSE_PD_RESET      (1 << 4)
