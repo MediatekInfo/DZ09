@@ -578,7 +578,7 @@ typedef enum tag_ICVAL
 #define RG_SPK_IN_TIE_HIGH          (1 << 12)
 #define RG_SPK_IN_FLOAT_B           (1 << 14)
 #define SPK_CON6                    (*(volatile uint16_t*)(PMU_base + 0x0D18))
-#define RG_SPK_IN_CM_CTRL_EN        (1 << 4)
+#define RG_SPK_IN_CM_CTRL_EN        (1 << 2)
 #define RG_SPK_VCM_DIV_SEL          (1 << 3)
 #define RG_SPK_ISENSE_PD_RESET      (1 << 4)
 #define RG_SPK_SPK_OCP_ABIST        (1 << 5)
