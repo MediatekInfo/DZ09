@@ -68,10 +68,10 @@
 #define VCORE_SRCLKENA_SEL(v)       (((v) & 0x03) << 10)
 #define VMC_SRCLKENA_SEL(v)         (((v) & 0x03) << 12)
 #define VUSB_SRCLKENA_SEL(v)        (((v) & 0x03) << 14)
-#define LDO_CON1                    (*(volatile uint16_t*)(PMU_base + 0x00C0))
+#define LDO_CON1                    (*(volatile uint16_t*)(PMU_base + 0x00C4))
 #define RG_DLDO_RESERVE             0xFF00
 #define RG_ALDOS_RESER              0x00FF
-#define LDO_CON2                    (*(volatile uint16_t*)(PMU_base + 0x00C0))
+#define LDO_CON2                    (*(volatile uint16_t*)(PMU_base + 0x00C8))
 #define VIBR_SRCLKENA_SEL(v)        (((v) & 0x03) << 2)
 #define VCAMA_SRCLKENA_SEL(v)       (((v) & 0x03) << 4)
 #define VSIM2_SRCLKENA_SEL(v)       (((v) & 0x03) << 8)
