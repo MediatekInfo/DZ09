@@ -401,12 +401,12 @@
 #define GPIO_MODE_SET(x)            (*(volatile uint32_t*)(GPIO_Base + 0x0C04 + 0x10 * (x)))
 #define GPIO_MODE_CLR(x)            (*(volatile uint32_t*)(GPIO_Base + 0x0C08 + 0x10 * (x)))
 
-#define GPIO_MODEMASK               0x0F
 #define GPIO_MODE0                  (*(volatile uint32_t*)(GPIO_Base + 0x0C00))
 #define GPIO_MODE0_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C04))
 #define GPIO_MODE0_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C08))
-#define GPIO_MODE0MASK              (GPIO00_MASK|GPIO01_MASK|GPIO02_MASK|GPIO03_MASK|\
-                                    GPIO04_MASK|GPIO05_MASK|GPIO06_MASK|GPIO07_MASK)
+#define GPIO_MODE0MASK              ((GPIO00_MASK <<  0) | (GPIO01_MASK <<  4) | (GPIO02_MASK <<  8) |\
+                                     (GPIO03_MASK << 12) | (GPIO04_MASK << 16) | (GPIO05_MASK << 20) |\
+                                     (GPIO06_MASK << 24) | (GPIO07_MASK << 28))
 
 #define GPIO00_MASK                 0x0F
 #define GPIO00_MODE_IO              0x00                                                            //IO
@@ -479,8 +479,9 @@
 #define GPIO_MODE1                  (*(volatile uint32_t*)(GPIO_Base + 0x0C10))
 #define GPIO_MODE1_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C14))
 #define GPIO_MODE1_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C18))
-#define GPIO_MODE1MASK              (GPIO08_MASK|GPIO09_MASK|GPIO10_MASK|GPIO11_MASK|\
-                                    GPIO12_MASK|GPIO13_MASK|GPIO14_MASK|GPIO15_MASK)
+#define GPIO_MODE1MASK              ((GPIO08_MASK <<  0) | (GPIO09_MASK <<  4) | (GPIO10_MASK <<  8) |\
+                                     (GPIO11_MASK << 12) | (GPIO12_MASK << 16) | (GPIO13_MASK << 20) |\
+                                     (GPIO14_MASK << 24) | (GPIO15_MASK << 28))
 
 #define GPIO08_MASK                 0x07
 #define GPIO08_MODE_IO              0x00                                                            //IO
@@ -541,8 +542,9 @@
 #define GPIO_MODE2                  (*(volatile uint32_t*)(GPIO_Base + 0x0C20))
 #define GPIO_MODE2_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C24))
 #define GPIO_MODE2_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C28))
-#define GPIO_MODE2MASK              (GPIO16_MASK|GPIO17_MASK|GPIO18_MASK|GPIO19_MASK|\
-                                    GPIO20_MASK|GPIO21_MASK|GPIO22_MASK|GPIO23_MASK)
+#define GPIO_MODE2MASK              ((GPIO16_MASK <<  0) | (GPIO17_MASK <<  4) | (GPIO18_MASK <<  8) |\
+                                     (GPIO19_MASK << 12) | (GPIO20_MASK << 16) | (GPIO21_MASK << 20) |\
+                                     (GPIO22_MASK << 24) | (GPIO23_MASK << 28))
 
 #define GPIO16_MASK                 0x07
 #define GPIO16_MODE_IO              0x00                                                            //IO
@@ -598,8 +600,9 @@
 #define GPIO_MODE3                  (*(volatile uint32_t*)(GPIO_Base + 0x0C30))
 #define GPIO_MODE3_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C34))
 #define GPIO_MODE3_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C38))
-#define GPIO_MODE3MASK              (GPIO24_MASK|GPIO25_MASK|GPIO26_MASK|GPIO27_MASK|\
-                                    GPIO28_MASK|GPIO29_MASK|GPIO30_MASK|GPIO31_MASK)
+#define GPIO_MODE3MASK              ((GPIO24_MASK <<  0) | (GPIO25_MASK <<  4) | (GPIO26_MASK <<  8) |\
+                                     (GPIO27_MASK << 12) | (GPIO28_MASK << 16) | (GPIO29_MASK << 20) |\
+                                     (GPIO30_MASK << 24) | (GPIO31_MASK << 28))
 
 #define GPIO24_MASK                 0x07
 #define GPIO24_MODE_IO              0x00                                                            //IO
@@ -669,8 +672,9 @@
 #define GPIO_MODE4                  (*(volatile uint32_t*)(GPIO_Base + 0x0C40))
 #define GPIO_MODE4_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C44))
 #define GPIO_MODE4_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C48))
-#define GPIO_MODE4MASK              (GPIO32_MASK|GPIO33_MASK|GPIO34_MASK|GPIO35_MASK|\
-                                    GPIO36_MASK|GPIO37_MASK|GPIO38_MASK|GPIO39_MASK)
+#define GPIO_MODE4MASK              ((GPIO32_MASK <<  0) | (GPIO33_MASK <<  4) | (GPIO34_MASK <<  8) |\
+                                     (GPIO35_MASK << 12) | (GPIO36_MASK << 16) | (GPIO37_MASK << 20) |\
+                                     (GPIO38_MASK << 24) | (GPIO39_MASK << 28))
 
 #define GPIO32_MASK                 0x07
 #define GPIO32_MODE_IO              0x00                                                            //IO
@@ -716,8 +720,9 @@
 #define GPIO_MODE5                  (*(volatile uint32_t*)(GPIO_Base + 0x0C50))
 #define GPIO_MODE5_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C54))
 #define GPIO_MODE5_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C58))
-#define GPIO_MODE5MASK              (GPIO40_MASK|GPIO41_MASK|GPIO42_MASK|GPIO43_MASK|\
-                                    GPIO44_MASK|GPIO45_MASK|GPIO46_MASK|GPIO47_MASK)
+#define GPIO_MODE5MASK              ((GPIO40_MASK <<  0) | (GPIO41_MASK <<  4) | (GPIO42_MASK <<  8) |\
+                                     (GPIO43_MASK << 12) | (GPIO44_MASK << 16) | (GPIO45_MASK << 20) |\
+                                     (GPIO46_MASK << 24) | (GPIO47_MASK << 28))
 
 #define GPIO40_MASK                 0x07
 #define GPIO40_MODE_IO              0x00                                                            //IO
@@ -763,8 +768,9 @@
 #define GPIO_MODE6                  (*(volatile uint32_t*)(GPIO_Base + 0x0C60))
 #define GPIO_MODE6_SET              (*(volatile uint32_t*)(GPIO_Base + 0x0C64))
 #define GPIO_MODE6_CLR              (*(volatile uint32_t*)(GPIO_Base + 0x0C68))
-#define GPIO_MODE6MASK              (GPIO48_MASK|GPIO49_MASK|GPIO50_MASK|GPIO51_MASK|\
-                                    GPIO52_MASK|GPIO53_MASK|GPIO54_MASK|GPIO55_MASK)
+#define GPIO_MODE6MASK              ((GPIO48_MASK <<  0) | (GPIO49_MASK <<  4) | (GPIO50_MASK <<  8) |\
+                                     (GPIO51_MASK << 12) | (GPIO52_MASK << 16) | (GPIO53_MASK << 20) |\
+                                     (GPIO54_MASK << 24) | (GPIO55_MASK << 28))
 
 #define GPIO48_MASK                 0x07
 #define GPIO48_MODE_IO              0x00                                                            //IO
