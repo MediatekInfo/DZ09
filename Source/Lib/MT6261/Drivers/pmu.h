@@ -612,7 +612,7 @@ typedef enum tag_ICVAL
 #define VSBST_CTRL_EN               (1 << 6)
 #define VSBST_VIO28_PG_CTRL         (1 << 7)
 #define VSBST_VIO28_PG_STATUS_TD(v) (((v) & 0x03) << 8)
-#define VSBST_VIO28_PG_STAT         (1 << 10)
+#define VSBST_VIO28_PG_STATUS       (1 << 10)
 #define VSBST_EN_SEL                (1 << 11)
 #define VSBST_MODESET_SEL           (1 << 12)
 #define VSBST_SS_SEL                (1 << 13)
@@ -670,6 +670,8 @@ typedef enum tag_ICVAL
 #define VSBST_OC_CTRL               (1 << 12)
 #define VSBST_OC_CKS_CHG            (1 << 15)
 
+#define OC_CON0                     (*(volatile uint16_t*)(PMU_base + 0x0E00))
+#define OC_CON7                     (*(volatile uint16_t*)(PMU_base + 0x0E1C))
 #define OC_CON8                     (*(volatile uint16_t*)(PMU_base + 0x0E20))
 #define QI_VRF_OC_STATUS            (1 << 0)
 #define QI_VA_OC_STATUS             (1 << 2)
@@ -684,7 +686,6 @@ typedef enum tag_ICVAL
 #define OC_CON9                     (*(volatile uint16_t*)(PMU_base + 0x0E24))
 #define QI_VCORE_OC_STATUS          (1 << 0)
 #define QI_VIO18_OC_STATUS          (1 << 1)
-//#define OC_CON10                    (*(volatile uint16_t*)(PMU_base + 0x0E28))
 #define OC_CON11                    (*(volatile uint16_t*)(PMU_base + 0x0E2C))                      //Not defined in datasheet
 
 #define TEST_CON0                   (*(volatile uint16_t*)(PMU_base + 0x0F00))
