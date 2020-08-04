@@ -819,9 +819,16 @@
                                         {\
                                             uint8_t  RegIdx = ((Pin) >> 3) & 0x07;                  /* Index of GPIO_MODE_XXX register */\
                                             uint8_t  ModePos = ((Pin) & 0x07) << 2;                 /* Mode bits position */\
-                                            uint32_t Mask = GPIO_MODEMASK;                          /* Bit field mask */\
-                                            GPIO_MODE(RegIdx) = (GPIO_MODE(RegIdx) &\
-                                                                 ~(Mask << ModePos)) |\
+                                            uint32_t Mask = 0;                                      /* Bit field mask */\
+\
+                                            if (Pin < 8) Mask = GPIO_MODE0MASK;\
+                                            else if (Pin < 16) Mask = GPIO_MODE1MASK;\
+                                            else if (Pin < 24) Mask = GPIO_MODE2MASK;\
+                                            else if (Pin < 32) Mask = GPIO_MODE3MASK;\
+                                            else if (Pin < 40) Mask = GPIO_MODE4MASK;\
+                                            else if (Pin < 48) Mask = GPIO_MODE5MASK;\
+                                            else if (Pin < 56) Mask = GPIO_MODE6MASK;\
+                                            GPIO_MODE(RegIdx) = (GPIO_MODE(RegIdx) & Mask) |\
                                                                 (((Mode) & Mask) << ModePos);\
                                         }\
                                     }\

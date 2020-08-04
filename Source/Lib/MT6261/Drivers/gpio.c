@@ -67,6 +67,6 @@ void GPIO_Setup(uint32_t Pin, uint32_t Flags)
         if (Flags & GPSMT) GPIO_SMTENABLE(Pin);
         else GPIO_SMTDISABLE(Pin);
 
-        GPIO_SETMODE(Pin, (Flags >> 8) & GPIO_MODEMASK);
+        GPIO_SETMODE(Pin, (Flags >> 8));
     }
 }
