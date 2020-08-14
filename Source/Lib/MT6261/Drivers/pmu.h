@@ -85,6 +85,8 @@
 #define RG_VRF_NDIS_EN              (1 << 10)
 #define QI_VRF_STATAUS              (1 << 15)
 #define VRF_CON1                    (*(volatile uint16_t*)(PMU_base + 0x0104))
+#define QI_VRF_LP_EN                (1 << 0)
+#define VRF_MODE_SEL                (1 << 4)
 #define RG_VRF_CAL(v)               (((v) & 0x0F) << 4)
 
 #define VA_CON0                     (*(volatile uint16_t*)(PMU_base + 0x0120))
@@ -92,6 +94,8 @@
 #define RG_VA_NDIS_EN               (1 << 10)
 #define QI_VA_STATUS                (1 << 15)
 #define VA_CON1                     (*(volatile uint16_t*)(PMU_base + 0x0124))
+#define QI_VA_LP_EN                 (1 << 0)
+#define VA_MODE_SEL                 (1 << 4)
 #define RG_VA_CAL(v)                (((v) & 0x0F) << 4)
 
 #define VCAMA_CON0                  (*(volatile uint16_t*)(PMU_base + 0x0130))
