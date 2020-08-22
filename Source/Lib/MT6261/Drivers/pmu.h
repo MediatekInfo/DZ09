@@ -747,6 +747,18 @@ typedef enum tag_ICVAL
 #define BP_OLT_CTRL_ISINKS          (1 << 3)
 #define RG_TS_G                     (1 << 15)
 
+/* Frequency meter registers */
+#define FQMTR_CON0                  (*(volatile uint16_t*)(PMU_base + 0x0FF0))
+#define FQMTR_MODE                  (1 << 12)
+#define FQMTR_RST                   (1 << 13)
+#define FQMTR_EN                    (1 << 14)
+#define FQMTR_BUSY                  (1 << 15)
+#define FQMTR_CON1                  (*(volatile uint16_t*)(PMU_base + 0x0FF4))
+#define FQMTR_TCKSEL(v)             (((v) & 0x07) << 0)
+#define FQMTR_FCKSEL(v)             (((v) & 0x03) << 8)
+#define FQMTR_CON2                  (*(volatile uint16_t*)(PMU_base + 0x0FF8))                      // FQMTR_DATA mask 0xFFFF
+#define FQMTR_CON3                  (*(volatile uint16_t*)(PMU_base + 0x0FFC))                      // FQMTR_WINSET mask 0xFFFF
+
 extern void PMU_DisablePCHR_WDT(void);
 extern void PMU_EnablePCHR_WDT(uint8_t Interval);
 extern void PMU_EnableUSBDownloaderWDT(void);
