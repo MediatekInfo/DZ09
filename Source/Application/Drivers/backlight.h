@@ -1,9 +1,7 @@
-// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,16 +16,19 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#include "systemconfig.h"
-#include "appinit.h"
+#ifndef _BACKLIGHT_H_
+#define _BACKLIGHT_H_
 
-boolean APP_Initialize(void)
+typedef struct tag_BLSTATE
 {
-    boolean Result = true;
+    uint32_t Value;
+    boolean  Enabled;
+    boolean  Reduced;
+} TBLSTATE;
 
-    GUI_Initialize();
+extern void PMUBL_Initialize(void);
+extern void PMUBL_SetupValue(uint32_t Value);
+extern void PMUBL_TurnOn(boolean TurnOn);
+extern void PMUBL_RestartReduceTimer(void);
 
-    BL_TurnOn(true);
-
-    return Result;
-}
+#endif /* _BACKLIGHT_H_ */

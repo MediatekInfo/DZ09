@@ -97,6 +97,13 @@
 		<Unit filename="Source\Application\Drivers\appdrivers.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Application\Drivers\backlight.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\Drivers\backlight.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Application\Drivers\ft6236.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

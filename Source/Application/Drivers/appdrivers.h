@@ -1,20 +1,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #ifndef _APPDRIVERS_H_
 #define _APPDRIVERS_H_
@@ -30,6 +30,7 @@
 #define LCDDRV_Resume()                     ILI9341_ResumeLCD()
 #define LCDDRV_SetOutputWindow(a, b, c, d)  ILI9341_SetOutputWindow(a, b, c, d)
 #define _LCD_DRIVER_ASSIGNED_
+#define _BACKLIGHT_DRIVER_
 #endif
 #if defined(_NO_LCD_DRIVER_)
 #if defined(_LCD_DRIVER_ASSIGNED_)
@@ -69,6 +70,19 @@
 #endif
 #if !defined(_TS_DRIVER_ASSIGNED_)
 #error Touch screen driver not assigned!
+#endif
+
+#if defined(_BACKLIGHT_DRIVER_)
+#include "backlight.h"
+#define BL_Initialize()                     PMUBL_Initialize()
+#define BL_SetupValue(v)                    PMUBL_SetupValue(v)
+#define BL_TurnOn(v)                        PMUBL_TurnOn(v)
+#define BL_RestartReduceTimer()             PMUBL_RestartReduceTimer()
+#else
+#define BL_Initialize()
+#define BL_SetupValue(v)
+#define BL_TurnOn(v)
+#define BL_RestartReduceTimer()
 #endif
 
 #endif /* _APPDRIVERS_H_ */

@@ -156,6 +156,9 @@ boolean GUI_Initialize(void)
             }
         }
     }
+
+    BL_Initialize();
+
     if (Result)
     {
         TSDRV_Initialize();

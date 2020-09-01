@@ -35,6 +35,13 @@
 #define _FT6236_TS_DRIVER_
 //#define _NO_TS_DRIVER_
 
+/* Backlight driver */
+#define BACKLIGHTCHNL   ISINK_CH0
+#define BACKLIGHTPWM    false
+#define BACKLIGHTREDUCE 10000                                                                       // ms
+#define BACKLIGHTOFF    30000                                                                       // ms
+#define BACKLIGHTDEFVAL 100                                                                         // In percents
+
 /* Application pins configuration */
 
 /* LCD interface */
