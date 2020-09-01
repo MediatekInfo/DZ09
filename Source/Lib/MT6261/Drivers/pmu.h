@@ -766,6 +766,7 @@ extern void PMU_DisableUSBDownloaderWDT(void);
 extern boolean PMU_IsChargerDetected(void);
 extern boolean PMU_IsPowerKeyPressed(void);
 extern void PMU_SetVibrationOutput(boolean Enable);
+extern void PMU_DisableISINKs(void);
 extern void PMU_SetISINKMode(boolean UsePWM);
 extern void PMU_SetISINKOutput(ISINKCHNL Channel, boolean Enable);
 extern void PMU_SetISINKParameters(ISINKCHNL Channel, ICVAL Value, boolean Enable);
