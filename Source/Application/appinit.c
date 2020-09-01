@@ -23,11 +23,15 @@
 
 boolean APP_Initialize(void)
 {
-    boolean Result = true;
+    do
+    {
+        if (!GUI_Initialize()) break;
 
-    GUI_Initialize();
+        BL_TurnOn(true);
 
-    BL_TurnOn(true);
+        return true;
+    }
+    while(0);
 
-    return Result;
+    return false;
 }
