@@ -38,3 +38,4 @@ obj
 *.map
 *.save
 *.depend
+doc
