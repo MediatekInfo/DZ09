@@ -19,14 +19,23 @@
 #ifndef _BACKLIGHT_H_
 #define _BACKLIGHT_H_
 
+typedef enum tag_BLMODE
+{
+    BM_ISINK,
+    BM_PWM,
+    BM_MODES
+} TBLMODE;
+
 typedef struct tag_BLSTATE
 {
     uint32_t Value;
     boolean  Enabled;
     boolean  Reduced;
+    TBLMODE  Mode;
 } TBLSTATE;
 
 extern void PMUBL_Initialize(void);
+extern void PMUBL_SetBacklightMode(TBLMODE Mode);
 extern void PMUBL_SetupValue(uint32_t Value);
 extern void PMUBL_TurnOn(boolean TurnOn);
 extern void PMUBL_RestartReduceTimer(void);

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,11 +26,32 @@ pTIMER   BLReduceTimer;
 
 static void PMUBL_UpdateValues(uint32_t Value, boolean TurnOn)
 {
-    if      (Value < 20) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_4mA, TurnOn);
-    else if (Value < 40) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_8mA, TurnOn);
-    else if (Value < 60) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_12mA, TurnOn);
-    else if (Value < 80) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_16mA, TurnOn);
-    else PMU_SetISINKParameters(BACKLIGHTCHNL, IC_20mA, TurnOn);
+    Value = min(Value, 100);
+
+    if (BLState.Mode == BM_ISINK)
+    {
+        if      (Value < 20) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_4mA, TurnOn);
+        else if (Value < 40) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_8mA, TurnOn);
+        else if (Value < 60) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_12mA, TurnOn);
+        else if (Value < 80) PMU_SetISINKParameters(BACKLIGHTCHNL, IC_16mA, TurnOn);
+        else PMU_SetISINKParameters(BACKLIGHTCHNL, IC_20mA, TurnOn);
+    }
+    else if (BLState.Mode == BM_PWM)
+    {
+#if (BLMINVALUE >= 100)
+#warning the BLMINVALUE value is set to >100%, redefined to 100%
+#undef  BLMINVALUE
+#define BLMINVALUE    100
+#endif
+        PMU_SetISINKParameters(BACKLIGHTCHNL, IC_20mA, TurnOn);
+        if (!TurnOn) PWM_SetPowerDown(LCD_PWMCHANNEL, true);
+        else
+        {
+            Value = BLMINVALUE + (Value * (100 - BLMINVALUE)) / 100;
+            PWM_SetDutyCycle(LCD_PWMCHANNEL, Value);
+            PWM_SetPowerDown(LCD_PWMCHANNEL, false);
+        }
+    }
 }
 
 static void PMUBL_HideTimerHandler(pTIMER Timer)
@@ -54,10 +75,20 @@ void PMUBL_Initialize(void)
     memset(&BLState, 0x00, sizeof(TBLSTATE));
 
     PMU_DisableISINKs();
-    PMU_SetISINKMode(BACKLIGHTPWM);
+    PWM_SetupChannel(LCD_PWMCHANNEL, BASKLIGHTCOUNT, 0, PWF_FSEL_32K | PWF_CLKDIV1);
+    PMUBL_SetBacklightMode(BACKLIGHTMODE);
 
     PMUBL_TurnOn(false);
     PMUBL_SetupValue(BACKLIGHTDEFVAL);
+}
+
+void PMUBL_SetBacklightMode(TBLMODE Mode)
+{
+    if (Mode < BM_MODES)
+    {
+        BLState.Mode = Mode;
+        PMU_SetISINKMode((BLState.Mode == BM_ISINK) ? false : true);
+    }
 }
 
 void PMUBL_SetupValue(uint32_t Value)

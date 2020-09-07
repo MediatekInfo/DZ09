@@ -37,10 +37,12 @@
 
 /* Backlight driver */
 #define BACKLIGHTCHNL   ISINK_CH0
-#define BACKLIGHTPWM    false
+#define BACKLIGHTMODE   BM_PWM
+#define BLMINVALUE      10                                                                          // % for PWM mode
 #define BACKLIGHTREDUCE 10000                                                                       // ms
 #define BACKLIGHTOFF    30000                                                                       // ms
 #define BACKLIGHTDEFVAL 100                                                                         // In percents
+#define BASKLIGHTCOUNT  163                                                                         // 199.8 Hz
 
 /* Application pins configuration */
 
