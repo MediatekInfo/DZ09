@@ -28,10 +28,12 @@
 #define USART3_base                 0xA00A0000                                                      //USART 3 add for MT6261
 //#define BTIF_base                   0xA00B0000                                                      //BT interface
 #define GPT_base                    0xA00C0000                                                      //General Purpose Timers
+#define PWM1_base                   0xA00E0000                                                      //Pulse-Width Modulation Outputs
 #define SFI_base                    0xA0140000                                                      //Serial flash interface
 #define MIXED_base                  0xA0170000                                                      //Analog Chip Interface Controller (PLL, CLKSQ, FH, CLKSW and SIMLS)
 #define PLL_base                    MIXED_base
 #define TOPSM_base                  0xA0180000                                                      //TOPSM0
+#define PWM4_base                   0xA0280000                                                      //Pulse-Width Modulation Outputs
 #define LCDIF_Base                  0xA0450000                                                      //LCD controller
 //#define ARM_CONFG_base              0xA0500000
 #define BOOT_ENG_base               0xA0510000                                                      //boot engine
@@ -41,8 +43,8 @@
 #define RTC_Base                    0xA0710000                                                      //Real Time Clock
 #define ABBSYS_SD_base              0xA0720000                                                      //Analog baseband (ABB) controller
 #define ANA_CFGSYS_base             0xA0730000                                                      //Analog die (MT6100) Configuration Registers (Clock, Reset, etc.)
+#define PWM_2CH_base                0xA0740000                                                      //Pulse-Width Modulation (2 channel)
 #define ADIE_CIRQ_base              0xA0760000                                                      //Interrupt Controller (16-bit)
-
 
 #define AUXADC_base                 0xA0790000                                                      //Auxiliary ADC Unit
 //#define USB_base                    0xA0900000                                                      //USB Controller
@@ -75,5 +77,6 @@
 #include "drivers\lcdif.h"
 #include "drivers\auxadc.h"
 #include "drivers\afe.h"
+#include "drivers\pwm.h"
 
 #endif /* _MT6261_H_ */

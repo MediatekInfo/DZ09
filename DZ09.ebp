@@ -227,8 +227,18 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\pll.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\pmu.c">
 			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\pmu.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\pwm.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\pwm.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\rgu.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
