@@ -114,7 +114,7 @@ boolean PWM_SetThreshold(TPWM Index, uint16_t Threshold)
 boolean PWM_SetDutyCycle(TPWM Index, uint32_t Duty)                                                 // Duty in percents [0..100]
 {
     if (Index >= PWM_CHANNELS) return false;
-    else if (Index >= PWM_CHANNEL2)
+    else if (Index == PWM_CHANNEL2)
     {
         if (Duty < 50) PWMINFO[Index].Threshold = PWM2_DUTY_0;
         else if (Duty < 100) PWMINFO[Index].Threshold = PWM2_DUTY_50;
