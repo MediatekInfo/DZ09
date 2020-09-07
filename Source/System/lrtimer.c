@@ -99,7 +99,7 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TM
             tmpTimer->StartTicks = USC_GetCurrentTicks();
             tmpTimer->Parent = Parent;
             tmpTimer->Handler = Handler;
-            if (!DL_AddItem(TimersList, tmpTimer))
+            if (DL_AddItem(TimersList, tmpTimer) == NULL)
             {
                 free(tmpTimer);
                 tmpTimer = NULL;
