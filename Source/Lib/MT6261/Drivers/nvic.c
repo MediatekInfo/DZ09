@@ -3,29 +3,27 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
 #include "nvic.h"
 
-static TIRQSOURCE   IRQTable[MAX_IRQ_SELECTIONS];
 static TIRQHANDLER  IRQHandlers[NUM_IRQ_SOURCES];
 static TEINTHANDLER EINTHandlers[NUM_EINT_SOURCES];
 
-static TIRQSOURCE   AIRQTable[MAX_ADIE_IRQ_SELECTIONS];
 static TIRQHANDLER  AIRQHandlers[ADIE_NUM_IRQ_SOURCES];
 static TEINTHANDLER AEINTHandlers[NUM_ADIE_EINT_SOURCES];
 
@@ -243,7 +241,6 @@ static void NVIC_DisableEINT_D0Event2(uint32_t SourceIdx)
     }
 }
 
-// TODO (scorp#1#): Check the debounce configuration algorithm again!!!
 static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
 {
     boolean Masked;
@@ -358,18 +355,14 @@ void NVIC_Initialize(void)
     ADIE_EINT_D0EN = 0;
 
     for(i = 0; i < MAX_IRQ_SELECTIONS; i++)
-    {
         IRQ_SEL(i, i);
-        IRQTable[i].SourceIdx = -1;
-    }
+
     memset(IRQHandlers, 0x00, sizeof(IRQHandlers));
     memset(EINTHandlers, 0x00, sizeof(EINTHandlers));
 
     for(i = 0; i < MAX_ADIE_IRQ_SELECTIONS; i++)
-    {
         ADIE_IRQ_SEL(i, i);
-        AIRQTable[i].SourceIdx = -1;
-    }
+
     memset(AIRQHandlers, 0x00, sizeof(AIRQHandlers));
     memset(AEINTHandlers, 0x00, sizeof(AEINTHandlers));
 
@@ -387,74 +380,40 @@ void NVIC_Initialize(void)
 
 boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense, boolean Enable)
 {
-    uint32_t  i;
-    int32_t   FreeIdx = -1;
-
     if (SourceIdx < NUM_IRQ_SOURCES)
     {
-        if (Handler == NULL)
-        {
-            NVIC_UnregisterIRQ(SourceIdx);
-            return true;
-        }
-
-        for(i = 0; i < MAX_IRQ_SELECTIONS; i++)
-        {
-            if ((FreeIdx == -1) && (IRQTable[i].SourceIdx == -1)) FreeIdx = i;
-            if (IRQTable[i].SourceIdx == SourceIdx)
-            {
-                FreeIdx = i;
-                break;
-            }
-        }
-
-        if (FreeIdx != -1)
+        if (Handler == NULL)  NVIC_UnregisterIRQ(SourceIdx);
+        else
         {
             uint32_t intflags = DisableInterrupts();
 
-            IRQTable[FreeIdx].SourceIdx = SourceIdx;
             IRQHandlers[SourceIdx].Handler = Handler;
             if (Sense == IRQ_SENS_EDGE) NVIC_SetIRQSenseEdge(SourceIdx);
             else NVIC_SetIRQSenseLevel(SourceIdx);
             (Enable) ? NVIC_UnmaskIRQ2(SourceIdx) : NVIC_MaskIRQ2(SourceIdx);
+
             RestoreInterrupts(intflags);
-            return true;
         }
-        return false;
+        return true;
     }
     else if ((SourceIdx >= TOTAL_IRQ_SOURCES) && (SourceIdx < GLB_IRQ_SOURCES))
     {
-        if (Handler == NULL)
-        {
-            NVIC_UnregisterIRQ(SourceIdx);
-            return true;
-        }
-
-        SourceIdx -= TOTAL_IRQ_SOURCES;
-
-        for(i = 0; i < MAX_ADIE_IRQ_SELECTIONS; i++)
-        {
-            if ((FreeIdx == -1) && (AIRQTable[i].SourceIdx == -1)) FreeIdx = i;
-            if (AIRQTable[i].SourceIdx == SourceIdx)
-            {
-                FreeIdx = i;
-                break;
-            }
-        }
-
-        if (FreeIdx != -1)
+        if (Handler == NULL) NVIC_UnregisterIRQ(SourceIdx);
+        else
         {
             uint32_t intflags = DisableInterrupts();
 
-            AIRQTable[FreeIdx].SourceIdx = SourceIdx;
+            SourceIdx -= TOTAL_IRQ_SOURCES;
             AIRQHandlers[SourceIdx].Handler = Handler;
+
             SourceIdx += TOTAL_IRQ_SOURCES;
             if (Sense == IRQ_SENS_EDGE) NVIC_SetIRQSenseEdge(SourceIdx);
             else NVIC_SetIRQSenseLevel(SourceIdx);
             (Enable) ? NVIC_UnmaskIRQ2(SourceIdx) : NVIC_MaskIRQ2(SourceIdx);
+
             RestoreInterrupts(intflags);
-            return true;
         }
+        return true;
     }
     return false;
 }
