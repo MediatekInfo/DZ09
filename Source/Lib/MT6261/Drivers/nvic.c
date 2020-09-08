@@ -418,9 +418,26 @@ boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sens
     return false;
 }
 
-// TODO (scorp#1#): When will this function be written?
 boolean NVIC_UnregisterIRQ(uint32_t SourceIdx)
 {
+    uint32_t intflags;
+
+    if (SourceIdx < NUM_IRQ_SOURCES)
+    {
+        intflags = DisableInterrupts();
+        NVIC_MaskIRQ2(SourceIdx);
+        IRQHandlers[SourceIdx].Handler = NULL;
+        RestoreInterrupts(intflags);
+        return true;
+    }
+    if ((SourceIdx >= TOTAL_IRQ_SOURCES) && (SourceIdx < GLB_IRQ_SOURCES))
+    {
+        intflags = DisableInterrupts();
+        NVIC_MaskIRQ2(SourceIdx);
+        AIRQHandlers[SourceIdx - TOTAL_IRQ_SOURCES].Handler = NULL;
+        RestoreInterrupts(intflags);
+        return true;
+    }
     return false;
 }
 
