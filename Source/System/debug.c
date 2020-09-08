@@ -3,20 +3,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
 #include "debug.h"
@@ -28,19 +28,20 @@ void DBG_Initialize(void)
     GPIO_Setup(DBG_RXPIN, GPMODE(DBG_RXPIN_MODE));
     GPIO_Setup(DBG_TXPIN, GPMODE(DBG_TXPIN_MODE));
 
-    USART_Initialize(DBG_USARTINF.USART, DBG_BAUDRATE, NULL, USART_EnFlag);
+    USART_Initialize(DBG_USARTn, DBG_BAUDRATE, NULL, USART_EnFlag);
 }
 
 int _write(int file, char *ptr, int len)
 {
-    int32_t Count = len;
+    int32_t        Count = len;
+    pUSART_CONTEXT USARTInf = USART_GetContext(DBG_USARTn);
 
-    if (Count && (file == 1))                                                                       // stdout
+    if ((USARTInf != NULL) && Count && (file == 1))                                                 // stdout
     {
-        DBG_USARTINF.USART_TX_Buffer = ptr;
-        DBG_USARTINF.USART_TX_Count  = Count;
-        DBG_USARTINF.USART_TX_Index = 0;
-        USART_SendBufferPoll(&DBG_USARTINF);
+        USARTInf->USART_TX_Buffer = ptr;
+        USARTInf->USART_TX_Count  = Count;
+        USARTInf->USART_TX_Index = 0;
+        USART_SendBufferPoll(DBG_USARTn);
     }
     return len;
 }
