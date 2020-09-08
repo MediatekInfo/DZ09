@@ -133,7 +133,7 @@
 #define IRQ_I2C_18V_CODE            0x33
 #define IRQ_RESERVED_47_CODE        0x34
 
-#define NUM_IRQ_SOURCES             0x30
+#define NUM_IRQ_SOURCES             0x35
 #define MAX_IRQ_SELECTIONS          0x12
 #define TOTAL_IRQ_SOURCES           0x40
 
@@ -230,7 +230,7 @@
 #define PMU_OC_EINT_PIN             0x16               //Charger external interrupt is fixed (!!!)
 #define EINT23                      0x17
 #define EINT24                      0x18
-#define NUM_EINT_SOURCES            0x20
+#define NUM_EINT_SOURCES            0x19
 
 typedef struct tag_IRQHANDLER
 {
