@@ -264,6 +264,9 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\usart.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\usb.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\ustimer.c">
 			<Option compilerVar="CC" />
 		</Unit>

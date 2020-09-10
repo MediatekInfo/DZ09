@@ -47,7 +47,7 @@
 #define ADIE_CIRQ_base              0xA0760000                                                      //Interrupt Controller (16-bit)
 
 #define AUXADC_base                 0xA0790000                                                      //Auxiliary ADC Unit
-//#define USB_base                    0xA0900000                                                      //USB Controller
+#define USB_base                    0xA0900000                                                      // USB Controller
 
 //#define KP_base                     0xA00D0000                                                      //Keypad controller
 //#define MDCONFIG_base               0x83000000
@@ -78,5 +78,6 @@
 #include "drivers\auxadc.h"
 #include "drivers\afe.h"
 #include "drivers\pwm.h"
+#include "drivers\usb.h"
 
 #endif /* _MT6261_H_ */
