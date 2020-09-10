@@ -123,4 +123,11 @@
 #define UPHY_NULLPKT_FIX            (1 << 5)
 #define USB_DUMMY                   (*(volatile uint8_t *)(USB_base + 0x0244))
 
+#define USB_U1PHYCR0                (*(volatile uint32_t *)(USB_SIFSLV_base + 0x08C0))               // USB1.1 PHY Control Registers
+#define U1PHYCR0_USB11_FSLS_ENBGRI  (1 << 11)
+#define U1PHYCR0_USB11_RST          (1 << 23)
+#define USB_U1PHYCR1                (*(volatile uint32_t *)(USB_SIFSLV_base + 0x08C4))               // USB1.1 PHY Control Registers
+#define U1PHYCR1_RG_USB11_PHY_REV_7 (1 << 15)
+#define USB_U1PHYCR2                (*(volatile uint32_t *)(USB_SIFSLV_base + 0x08C8))               // USB1.1 PHY Control Registers
+
 #endif /* _USB_H_ */

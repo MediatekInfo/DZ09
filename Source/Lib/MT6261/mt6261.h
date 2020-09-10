@@ -48,6 +48,7 @@
 
 #define AUXADC_base                 0xA0790000                                                      //Auxiliary ADC Unit
 #define USB_base                    0xA0900000                                                      // USB Controller
+#define USB_SIFSLV_base             0xA0910000                                                      // USB SIFSLV
 
 //#define KP_base                     0xA00D0000                                                      //Keypad controller
 //#define MDCONFIG_base               0x83000000
