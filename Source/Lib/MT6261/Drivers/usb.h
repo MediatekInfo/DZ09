@@ -108,7 +108,7 @@
 #define USB_EP0_COUNT               (*(volatile uint8_t *)(USB_Base + 0x0016))
 #define USB_EP_COUNTL               (*(volatile uint8_t *)(USB_Base + 0x0016))
 #define USB_EP_COUNTH               (*(volatile uint8_t *)(USB_Base + 0x0017))
-#define UCOUNTH(v)                  ((v) & 0x0x7)
+#define UCOUNTH(v)                  ((v) & 0x07)
 #define USB_EP0_FIFO                (*(volatile uint8_t *)(USB_Base + 0x0020))
 #define USB_EP1_FIFO                (*(volatile uint8_t *)(USB_Base + 0x0024))
 #define USB_EP2_FIFO                (*(volatile uint8_t *)(USB_Base + 0x0028))
