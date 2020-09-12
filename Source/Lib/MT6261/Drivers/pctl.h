@@ -1,33 +1,33 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #ifndef _PCTL_H_
 #define _PCTL_H_
 
-//CON0
-#define PD_LCD                      (0x00)                                                          //LCD controller
+// CON0
+#define PD_LCD                      (0x00)                                                          // LCD controller
 #define PD_RESIZER                  (0x01)
 #define PD_ROTDMA                   (0x02)
 #define PD_CAM_BCLK                 (0x03)
 #define PD_PAD2CAM                  (0x04)
 #define PD_G2D                      (0x05)
 #define PD_MM_COLOR                 (0x06)
-#define PD_SLCD                     (0x07)                                                          //Serial LCD interface
+#define PD_SLCD                     (0x07)                                                          // Serial LCD interface
 #define PD_MD2G_26M                 (0x08)
 #define PD_BT_26M                   (0x09)
 #define PD_CAM_48M                  (0x0A)
@@ -35,7 +35,7 @@
 #define PD_2GDMA2SFC                (0x0C)
 #define PD_BT_BUS                   (0x0D)
 #define PD_BT_ARM7                  (0x0F)
-//CON1
+// CON1
 #define PD_SEJ                      (0x10)
 #define PD_DMA                      (0x11)
 #define PD_USB                      (0x12)
@@ -50,8 +50,8 @@
 #define PD_UART1                    (0x1D)
 #define PD_UART2                    (0x1E)
 #define PD_UART3                    (0x1F)
-//CON2
-#define PD_PWM1                     (0x20)                                                          //spec : PWM1
+// CON2
+#define PD_PWM1                     (0x20)
 #define PD_BTIF                     (0x21)
 #define PD_GPT                      (0x22)
 #define PD_I2C_18V                  (0x23)
@@ -68,35 +68,35 @@
 #define PD_FM_BCLK                  (0x2E)
 #define PD_CNFG_MAX                 (0x2E)
 
-#define CNFG_PDN_CON(x)             (*(volatile uint16_t*)(CONFIG_base + 0x0300 + 0x04 * (x)))
-#define CNFG_PDN_CON0               (*(volatile uint16_t*)(CONFIG_base + 0x0300))
-#define CNFG_PDN_CON1               (*(volatile uint16_t*)(CONFIG_base + 0x0304))
-#define CNFG_PDN_CON2               (*(volatile uint16_t*)(CONFIG_base + 0x0308))
+#define CNFG_PDN_CON(x)             (*(volatile uint16_t *)(CONFIG_base + 0x0300 + 0x04 * (x)))
+#define CNFG_PDN_CON0               (*(volatile uint16_t *)(CONFIG_base + 0x0300))
+#define CNFG_PDN_CON1               (*(volatile uint16_t *)(CONFIG_base + 0x0304))
+#define CNFG_PDN_CON2               (*(volatile uint16_t *)(CONFIG_base + 0x0308))
 #define CNFG_PDN0_MASK              0xFFFF
 
-#define CNFG_PDN_CON_SET(x)         (*(volatile uint16_t*)(CONFIG_base + 0x0310 + 0x04 * (x)))
-#define CNFG_PDN_CON0_SET           (*(volatile uint16_t*)(CONFIG_base + 0x0310))
-#define CNFG_PDN_CON1_SET           (*(volatile uint16_t*)(CONFIG_base + 0x0314))
-#define CNFG_PDN_CON2_SET           (*(volatile uint16_t*)(CONFIG_base + 0x0318))
+#define CNFG_PDN_CON_SET(x)         (*(volatile uint16_t *)(CONFIG_base + 0x0310 + 0x04 * (x)))
+#define CNFG_PDN_CON0_SET           (*(volatile uint16_t *)(CONFIG_base + 0x0310))
+#define CNFG_PDN_CON1_SET           (*(volatile uint16_t *)(CONFIG_base + 0x0314))
+#define CNFG_PDN_CON2_SET           (*(volatile uint16_t *)(CONFIG_base + 0x0318))
 #define CNFG_PDN1_MASK              0xFFFF
 
-#define CNFG_PDN_CON_CLR(x)         (*(volatile uint16_t*)(CONFIG_base + 0x0320 + 0x04 * (x)))
-#define CNFG_PDN_CON0_CLR           (*(volatile uint16_t*)(CONFIG_base + 0x0320))
-#define CNFG_PDN_CON1_CLR           (*(volatile uint16_t*)(CONFIG_base + 0x0324))
-#define CNFG_PDN_CON2_CLR           (*(volatile uint16_t*)(CONFIG_base + 0x0328))
-#define CNFG_PDN2_MASK              0xF7FF                                                          //Disable all peripherals, except serial flash controller
+#define CNFG_PDN_CON_CLR(x)         (*(volatile uint16_t *)(CONFIG_base + 0x0320 + 0x04 * (x)))
+#define CNFG_PDN_CON0_CLR           (*(volatile uint16_t *)(CONFIG_base + 0x0320))
+#define CNFG_PDN_CON1_CLR           (*(volatile uint16_t *)(CONFIG_base + 0x0324))
+#define CNFG_PDN_CON2_CLR           (*(volatile uint16_t *)(CONFIG_base + 0x0328))
+#define CNFG_PDN2_MASK              0xF7FF                                                          // Disable all peripherals, except serial flash controller
 
-//Analog power control
-#define PD_PWM3                     (0x30)                                                          //spec : PWM3
-#define PD_PWM2                     (0x31)                                                          //spec : PWM2
+// Analog power control
+#define PD_PWM3                     (0x30)
+#define PD_PWM2                     (0x31)
 #define PD_AUXADC_BCLK              (0x32)
 #define PD_TP_BCLK                  (0x33)
 #define PD_PMU_F26M                 (0x34)
 #define PD_ACFG_MAX                 (0x34)
 
-#define ACFG_CLK_CON                (*(volatile uint16_t*)(ANA_CFGSYS_base + 0x0008))
-#define ACFG_CLK_CON_SET            (*(volatile uint16_t*)(ANA_CFGSYS_base + 0x000C))
-#define ACFG_CLK_CON_CLR            (*(volatile uint16_t*)(ANA_CFGSYS_base + 0x0010))
+#define ACFG_CLK_CON                (*(volatile uint16_t *)(ANA_CFGSYS_base + 0x0008))
+#define ACFG_CLK_CON_SET            (*(volatile uint16_t *)(ANA_CFGSYS_base + 0x000C))
+#define ACFG_CLK_CON_CLR            (*(volatile uint16_t *)(ANA_CFGSYS_base + 0x0010))
 #define ACFG_CLK_MASK               0xFFFF
 
 #define PCTL_PowerDown(x)           do\

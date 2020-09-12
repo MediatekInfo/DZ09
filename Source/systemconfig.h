@@ -21,7 +21,7 @@
 
 #include "systypes.h"
 
-//Debug USART interface
+// Debug USART interface
 #define DBG_USARTn          USART_MODULE1
 #define DBG_BAUDRATE        115200
 #define DBG_RXPIN           GPIO10

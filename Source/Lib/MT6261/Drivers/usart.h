@@ -99,7 +99,7 @@ typedef struct tag_USART_CONTEXT
     volatile uint32_t USART_TX_Index;
 } TUSART_CONTEXT, *pUSART_CONTEXT;
 
-//IER
+// IER
 #define ERBFI                       (1 << 0)  /* RX interrupt */
 #define ETBEI                       (1 << 1)  /* TX empty interrupt */
 #define ELSI                        (1 << 2)  /* Error interrupt */
@@ -107,7 +107,7 @@ typedef struct tag_USART_CONTEXT
 #define XOFFI                       (1 << 5)
 #define RTSI                        (1 << 6)
 #define CTSI                        (1 << 7)
-//IIR
+// IIR
 #define INTID(v)                    (((v) & 0x3F) << 0)
 #define U_NOINT                     0x01
 #define U_LSINT                     0x06
@@ -118,7 +118,7 @@ typedef struct tag_USART_CONTEXT
 #define U_SWFLOW                    0x10
 #define U_HWFLOW                    0x20
 #define FIFOE(v)                    (((v) & 0x03) << 6)
-//FCR
+// FCR
 #define FIFOEN                      (1 << 0)
 #define CLRR                        (1 << 1)
 #define CLRT                        (1 << 2)
@@ -132,14 +132,14 @@ typedef struct tag_USART_CONTEXT
 #define RXFIFO_6                    1
 #define RXFIFO_12                   2
 #define RX_TRIG                     3
-//EFR
+// EFR
 #define SW_FLOW_CONT(v)             (((v) & 0x0F) << 0)
 #define SWFLOW_TX                   0x08
 #define SWFLOW_RX                   0x02
 #define ENABLE_EFR                  (1 << 4)
 #define AUTO_RTS                    (1 << 6)
 #define AUTO_CTS                    (1 << 7)
-//LCR
+// LCR
 #define U_WLS(v)                    (((v) & 0x03) << 0)
 #define WLS_5                       0
 #define WLS_6                       1
@@ -151,11 +151,11 @@ typedef struct tag_USART_CONTEXT
 #define U_SP                        (1 << 5)
 #define U_SB                        (1 << 6)
 #define U_DLAB                      (1 << 7)
-//MCR
+// MCR
 #define RTS                         (1 << 1)
 #define LOOP                        (1 << 4)
 #define XOFF_STATUS                 (1 << 7)
-//LSR
+// LSR
 #define U_DR                        (1 << 0)
 #define U_OE                        (1 << 1)
 #define U_PE                        (1 << 2)
@@ -164,17 +164,17 @@ typedef struct tag_USART_CONTEXT
 #define U_THRE                      (1 << 5)
 #define U_TEMT                      (1 << 6)
 #define FIFOERR                     (1 << 7)
-//AUTOBAUD_EN
+// AUTOBAUD_EN
 #define AUTOBAUDEN                  (1 << 0)
 #define AUTOBAUD_SEL                (1 << 1)
 #define SLEEP_ACK_SEL               (1 << 2)
-//HIGHSPEED
+// HIGHSPEED
 #define USPEED(v)                   (((v) & 0x03) << 0)
 #define USPEED_16                   0
 #define USPEED_8                    1
 #define USPEED_4                    2
 #define USPEED_SC                   3
-//AUTOBAUD_REG
+// AUTOBAUD_REG
 #define ABAUD_RATE(v)               (((v) & 0x0F) >> 0)
 #define ABAUD_115200                0
 #define ABAUD_57600                 1
@@ -201,31 +201,31 @@ typedef struct tag_USART_CONTEXT
 #define at_8E1                      11
 #define at_8O1                      12
 #define ABAUD_FAILS                 13
-//RATEFIX_AD
+// RATEFIX_AD
 #define RATEFIX_52                  (0 << 0)
 #define RATEFIX_FS                  (1 << 0)
 #define AUTOBAUDRATEFIX_52          (0 << 1)
 #define AUTOBAUDRATEFIX_FS          (1 << 1)
 #define FREQ_SEL_26                 (0 << 2)
 #define FREQ_SEL_13                 (1 << 2)
-//AUTOBAUDSAMPLE
+// AUTOBAUDSAMPLE
 #define AUTOBAUDSAMPLE_52           27
 #define AUTOBAUDSAMPLE_26           13
 #define AUTOBAUDSAMPLE_13           6
 #define AUTOBAUDSAMPLE_NS           15
-//GUARD
+// GUARD
 #define GUARD_CNT(v)                (((v) & 0x0F) << 0)
 #define GUARD_EN                    (1 << 4)
-//ESCAPE_EN
+// ESCAPE_EN
 #define ESC_EN                      (1 << 0)
-//SLEEP_EN
+// SLEEP_EN
 #define SLEEPEN                     (1 << 0)
-//DMA_EN
+// DMA_EN
 #define RX_DMA_EN                   (1 << 0)
 #define TX_DMA_EN                   (1 << 1)
 #define TO_CNT_AUTORST              (1 << 2)
 #define FIFO_ISR_SEL                (1 << 3)
-//RXTRI_AD
+// RXTRI_AD
 #define RXTRIG(v)                   (((v) & 0x0F) << 0)
 
 #define USART1  ((volatile TUSART *) USART1_base)

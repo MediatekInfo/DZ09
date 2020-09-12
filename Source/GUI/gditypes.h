@@ -1,20 +1,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #ifndef _GDITYPES_H_
 #define _GDITYPES_H_
@@ -47,13 +47,13 @@
 
 typedef enum
 {
-    CF_8IDX,                                                                                        //1BPP
-    CF_RGB565,                                                                                      //2BPP
-    CF_YUYV422,                                                                                     //Not supported
-    CF_RGB888,                                                                                      //3BPP
-    CF_ARGB8888,                                                                                    //4BPP
-    CF_PARGB8888,                                                                                   //4BPP
-    CF_xRGB8888,                                                                                    //4BPP
+    CF_8IDX,                                                                                        // 1BPP
+    CF_RGB565,                                                                                      // 2BPP
+    CF_YUYV422,                                                                                     // Not supported
+    CF_RGB888,                                                                                      // 3BPP
+    CF_ARGB8888,                                                                                    // 4BPP
+    CF_PARGB8888,                                                                                   // 4BPP
+    CF_xRGB8888,                                                                                    // 4BPP
     CF_NUM
 } TCFORMAT, *pCFORMAT;
 

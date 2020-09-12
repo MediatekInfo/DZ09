@@ -1,20 +1,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #ifndef _MTKTYPES_H_
 #define _MTKTYPES_H_
@@ -39,8 +39,8 @@
 
 /* MTK signature types */
 #define SIG_NONE        0
-#define SIG_PHASH       1                                                                           //SHA-1 hash
-#define MTK_FEND        0x454E4400                                                                  //"END" in reversed order
+#define SIG_PHASH       1                                                                           // SHA-1 hash
+#define MTK_FEND        0x454E4400                                                                  // "END" in reversed order
 
 typedef enum
 {
@@ -70,9 +70,9 @@ typedef enum
 
     GFH_MAUI_INFO          = 0x0200,
     GFH_MAUI_SEC           = 0x0201,
-    GFH_MAUI_CODE_KEY      = 0x0202,   //MAUI_SEC_KEY for code part
-    GFH_MAUI_SECURE_RO_KEY = 0x0203,   //MAUI_SEC_KEY for secure ro part
-    GFH_MAUI_RESOURCE_KEY  = 0x0204,   //MAUI_SEC_KEY for resource part
+    GFH_MAUI_CODE_KEY      = 0x0202,                                                                // MAUI_SEC_KEY for code part
+    GFH_MAUI_SECURE_RO_KEY = 0x0203,                                                                // MAUI_SEC_KEY for secure ro part
+    GFH_MAUI_RESOURCE_KEY  = 0x0204,                                                                // MAUI_SEC_KEY for resource part
 
     GFH_SECURE_RO_INFO     = 0x0205,
 
