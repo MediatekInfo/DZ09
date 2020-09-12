@@ -169,14 +169,14 @@ boolean LCDIF_UnregisterISR(void)
 
 void LCDIF_DisableInterface(void)
 {
-    LCDIF_INTEN = 0;                                                                                //Disable LCDIF interrupts
+    LCDIF_INTEN = 0;                                                                                // Disable LCDIF interrupts
     LCDIF_START = LCDIF_INT_RESET;
 
     LCDIF_UnregisterISR();
 
     LCDDRV_Sleep();
-    PCTL_PowerDown(PD_LCD);                                                                         //Power down LCD controller
-    PCTL_PowerDown(PD_SLCD);                                                                        //Power down serial interface
+    PCTL_PowerDown(PD_LCD);                                                                         // Power down LCD controller
+    PCTL_PowerDown(PD_SLCD);                                                                        // Power down serial interface
     LCDIFQueue = DL_Delete(LCDIFQueue, true);
 }
 
@@ -184,14 +184,14 @@ boolean LCDIF_Initialize(void)
 {
     memset(&LCDScreen, 0x00, sizeof(LCDScreen));
 
-    GPIO_Setup(LCD_RESET, GPMODE(LCD_RESET_MODE));                                                  //Setup Reset pin
-    GPIO_Setup(   LCD_CE, GPMODE(LCD_CE_MODE));                                                     //Setup CS pin
-    GPIO_Setup(  LCD_SCK, GPMODE(LCD_SCK_MODE));                                                    //Setup Clock pin
-    GPIO_Setup(  LCD_SDA, GPMODE(LCD_SDA_MODE));                                                    //Setup Data pin
+    GPIO_Setup(LCD_RESET, GPMODE(LCD_RESET_MODE));                                                  // Setup Reset pin
+    GPIO_Setup(   LCD_CE, GPMODE(LCD_CE_MODE));                                                     // Setup CS pin
+    GPIO_Setup(  LCD_SCK, GPMODE(LCD_SCK_MODE));                                                    // Setup Clock pin
+    GPIO_Setup(  LCD_SDA, GPMODE(LCD_SDA_MODE));                                                    // Setup Data pin
 
     LCDIF_SetClock(LCD_CLOCK_MPLL_DIV4);
-    PCTL_PowerUp(PD_SLCD);                                                                          //Power up LCD serial interface
-    PCTL_PowerUp(PD_LCD);                                                                           //Power up LCD controller
+    PCTL_PowerUp(PD_SLCD);                                                                          // Power up LCD serial interface
+    PCTL_PowerUp(PD_LCD);                                                                           // Power up LCD controller
 
     LCDScreen.ScreenRgn = Rect(0, 0, LCD_XRESOLUTION - 1, LCD_YRESOLUTION - 1);
     LCDScreen.ScreenOffset = Point(0, 0);
@@ -203,9 +203,9 @@ boolean LCDIF_Initialize(void)
     LCDScreen.VLayer[2].LayerEnMask = LCDIF_L2EN;
     LCDScreen.VLayer[3].LayerEnMask = LCDIF_L3EN;
 
-    LCDIF_INTEN = 0;                                                                                //Disable LCDIF interrupts
-    LCDIF_START = LCDIF_INT_RESET;                                                                  //Assert LCD controller internal Reset
-    LCDIF_START = 0;                                                                                //Release LCD controller internal Reset
+    LCDIF_INTEN = 0;                                                                                // Disable LCDIF interrupts
+    LCDIF_START = LCDIF_INT_RESET;                                                                  // Assert LCD controller internal Reset
+    LCDIF_START = 0;                                                                                // Release LCD controller internal Reset
 
     if (LCDIFQueue == NULL)  LCDIFQueue = DL_Create(0);
     if ((LCDIFQueue == NULL) || !LCDIF_RegisterISR())
@@ -220,15 +220,15 @@ boolean LCDIF_Initialize(void)
         return false;
     }
 
-    LCDIF_RSTB = LCDIF_RESET0;                                                                      //Assert LCD panel reset
-    USC_Pause_us(1000);                                                                             //Delay 1ms for reset
-    LCDIF_RSTB = LCDIF_RESET1;                                                                      //Release LCD panel reset
+    LCDIF_RSTB = LCDIF_RESET0;                                                                      // Assert LCD panel reset
+    USC_Pause_us(1000);                                                                             // Delay 1ms for reset
+    LCDIF_RSTB = LCDIF_RESET1;                                                                      // Release LCD panel reset
 
-    LCDIF_SIF0_TIMING = LCD_SIF_TIMINGS;                                                            //Setup SIF timing
-    LCDIF_SIF_CON = LCD_SIF_CON;                                                                    //Setup interface configuration
+    LCDIF_SIF0_TIMING = LCD_SIF_TIMINGS;                                                            // Setup SIF timing
+    LCDIF_SIF_CON = LCD_SIF_CON;                                                                    // Setup interface configuration
 
-    LCDIF_WROICON = LCD_SIF_WROI;                                                                   //Setup LCD data format
-    LCDIF_WROICADD = LCDIF_CSIF0;                                                                   //MT6261 has only one serial interface
+    LCDIF_WROICON = LCD_SIF_WROI;                                                                   // Setup LCD data format
+    LCDIF_WROICADD = LCDIF_CSIF0;                                                                   // MT6261 has only one serial interface
     LCDIF_WROIDADD = LCDIF_DSIF0;
     LCDIF_WROIOFS = LCDIF_WROIOFX(0) | LCDIF_WROIOFY(0);
     LCDIF_WROISIZE = LCDIF_WROICOL(LCD_XRESOLUTION) | LCDIF_WROIROW(LCD_YRESOLUTION);
@@ -236,7 +236,7 @@ boolean LCDIF_Initialize(void)
 
     if (LCDDRV_Initialize())
     {
-        LCDIF_INTEN = LCDIF_CPL;                                                                    //Enable LCD interrupts
+        LCDIF_INTEN = LCDIF_CPL;                                                                    // Enable LCD interrupts
         DebugPrint("Complete.\r\n");
         return true;
     }

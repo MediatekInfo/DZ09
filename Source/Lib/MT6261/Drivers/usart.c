@@ -58,7 +58,7 @@ boolean USART_Initialize(TUSART Index, uint32_t Speed, void (*Handler)(void), ui
 
     USART->LCR = U_WLS(WLS_8);                                                                      // DLAB = 0, LCR in default state
 
-    //Set USART to default state
+    // Set USART to default state
     USART->DMA_EN = 0x00;                                                                           // Disable DMA
     USART->AUTOBAUD_EN = 0x00;
     USART->IER = 0x00;                                                                              // Disable interrupts

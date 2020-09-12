@@ -23,17 +23,17 @@
 
 void GPIO_Initialize(void)
 {
-    GPIO_DIR0_CLR = GPIO_DIR0_MASK;                                                                 //Set all GPIO input
+    GPIO_DIR0_CLR = GPIO_DIR0_MASK;                                                                 // Set all GPIO input
     GPIO_DIR1_CLR = GPIO_DIR1_MASK;
 
-    GPIO_PULLEN0_CLR  = PULLEN0_MASK;                                                               //Disable Pullup/PullDown
+    GPIO_PULLEN0_CLR  = PULLEN0_MASK;                                                               // Disable Pullup/PullDown
     GPIO_PULLEN1_CLR  = PULLEN1_MASK;
     GPIO_RESEN0_0_CLR = RESEN0_0_MASK;
     GPIO_RESEN0_1_CLR = RESEN0_1_MASK;
     GPIO_RESEN1_0_CLR = RESEN1_0_MASK;
     GPIO_RESEN1_1_CLR = RESEN1_1_MASK;
 
-    GPIO_MODE0_CLR = GPIO_MODE0MASK;                                                                //Set pins mode
+    GPIO_MODE0_CLR = GPIO_MODE0MASK;                                                                // Set pins mode
     GPIO_MODE1_CLR = GPIO_MODE1MASK;
     GPIO_MODE2_CLR = GPIO_MODE2MASK;
     GPIO_MODE3_CLR = GPIO_MODE3MASK;

@@ -3,20 +3,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
 #include "tcmcache.h"
@@ -34,7 +34,7 @@ const char *AccRightsStr[] =
     "PRO_URO",
     "NACC",
     "PRO_UNA",
-    "ACR_UNK"                                                                                       //Access rights unknown
+    "ACR_UNK"                                                                                       // Access rights unknown
 };
 #endif
 
@@ -47,12 +47,12 @@ void MPU_Initialize(void)
 #ifdef SysCacheSize
     CACHE_CON = CACHESIZE(SysCacheSize);
 #else
-    CACHESIZE(CACHE_NO);                                                                            //Disable cache
+    CACHESIZE(CACHE_NO);                                                                            // Disable cache
 #endif
-    CACHE_OP = OP(OP_INVALL) | CMDEN;                                                               //Invalidate cache
-    CACHE_EN = 0;                                                                                   //Disable regions
+    CACHE_OP = OP(OP_INVALL) | CMDEN;                                                               // Invalidate cache
+    CACHE_EN = 0;                                                                                   // Disable regions
 
-    for(i = 0; i < MPU_REGIONS_MAX; i++)                                                            //Clear regions in MPU
+    for(i = 0; i < MPU_REGIONS_MAX; i++)                                                            // Clear regions in MPU
     {
         MPU_RSTART(i) = 0;
         MPU_REND(i) = 0;
@@ -86,13 +86,13 @@ boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheabl
 
         if (FreeRegionIdx != -1)
         {
-            CACHE_EN &= ~(1 << FreeRegionIdx);                                                      //Disable region
+            CACHE_EN &= ~(1 << FreeRegionIdx);                                                      // Disable region
             Attr = ((Cacheable) ? MPU_CACHEABLE : 0) | MPU_ATTR(AccessRights);
-            MPU_RSTART(FreeRegionIdx) = RegionStart | Attr;                                         //Set attributes
+            MPU_RSTART(FreeRegionIdx) = RegionStart | Attr;                                         // Set attributes
             MPU_REND(FreeRegionIdx)   = RegionEnd;
-            CACHE_OP = OP(OP_INVALL) | CMDEN;                                                       //Invalidate cache
-            CACHE_EN |= (1 << FreeRegionIdx);                                                       //Enable region
-            CACHE_CON |= MPEN | MCEN;                                                               //Enable memory protection and cache
+            CACHE_OP = OP(OP_INVALL) | CMDEN;                                                       // Invalidate cache
+            CACHE_EN |= (1 << FreeRegionIdx);                                                       // Enable region
+            CACHE_CON |= MPEN | MCEN;                                                               // Enable memory protection and cache
             MpuInfo.MPURegions[FreeRegionIdx].RegionStart = RegionStart;
             MpuInfo.MPURegions[FreeRegionIdx].RegionEnd = RegionEnd;
             MpuInfo.MPURegions[FreeRegionIdx].Used = true;

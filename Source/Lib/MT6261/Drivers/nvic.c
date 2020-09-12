@@ -74,7 +74,7 @@ static void NVIC_SetAEINT_EOI(uint32_t SourceIdx)
     if (SourceIdx < NUM_ADIE_EINT_SOURCES) ADIE_EINT_INTACK = (1 << SourceIdx);
 }
 
-//IRQ
+// IRQ
 static void NVIC_UnmaskIRQ2(uint32_t SourceIdx)
 {
     if (SourceIdx < NUM_IRQ_SOURCES)
@@ -180,7 +180,7 @@ static void NVIC_RestoreMaskedIRQ(void)
     RestoreInterrupts(intflags);
 }
 
-//EINT
+// EINT
 static void NVIC_UnmaskEINT2(uint32_t SourceIdx)
 {
     if      (SourceIdx < NUM_EINT_SOURCES) EINT_MASK_CLR = (1 << SourceIdx);
@@ -247,27 +247,27 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
 
     if (SourceIdx < NUM_EINT_SOURCES)
     {
-        Masked = (EINT_MASK & (1 << SourceIdx)) ? true : false;                                     //Get the masked status
-        if (!Masked) NVIC_MaskEINT2(SourceIdx);                                                     //1. Mask EINT
-        EINT_CON(SourceIdx) = Debounce & ~EINT_DEBEN;                                               //2. Disable debounce
-        USC_Pause_us(50);                                                                           //3. Delay at least 5 32K cycles
-        EINT_CON(SourceIdx) = Debounce;                                                             //4. Enable the debounce (EN = 1) and change the debounce setting
-        if (!Masked) NVIC_UnmaskEINT2(SourceIdx);                                                   //5. Unmask EINT
+        Masked = (EINT_MASK & (1 << SourceIdx)) ? true : false;                                     // Get the masked status
+        if (!Masked) NVIC_MaskEINT2(SourceIdx);                                                     // 1. Mask EINT
+        EINT_CON(SourceIdx) = Debounce & ~EINT_DEBEN;                                               // 2. Disable debounce
+        USC_Pause_us(50);                                                                           // 3. Delay at least 5 32K cycles
+        EINT_CON(SourceIdx) = Debounce;                                                             // 4. Enable the debounce (EN = 1) and change the debounce setting
+        if (!Masked) NVIC_UnmaskEINT2(SourceIdx);                                                   // 5. Unmask EINT
     }
     else if (SourceIdx < GLB_EINT_SOURCES)
     {
         SourceIdx -= NUM_EINT_SOURCES;
 
-        Masked = (ADIE_EINT_MASK & (1 << SourceIdx)) ? true : false;                                //Get the masked status
-        if (!Masked) NVIC_MaskEINT2(SourceIdx + NUM_EINT_SOURCES);                                  //1. Mask EINT
-        ADIE_EINT_CON(SourceIdx) &= ~(ADIE_EINT_PSMASK | ADIE_EINT_DEBEN);                          //2. Clear original prescaler and disable debounce
-        USC_Pause_us(50);                                                                           //3. Delay at least 5 32K cycles
-        ADIE_EINT_CON(SourceIdx) = Debounce;                                                        //4. Enable the debounce (EN = 1) and change the debounce setting
-        USC_Pause_us(50);                                                                           //5. Delay at least 5 32K cycles
-        ADIE_EINT_DBCRST |= 1 << SourceIdx;                                                         //6. Reset debounce counter
-        USC_Pause_us(50);                                                                           //7. Delay at least 5 32K cycles
-        NVIC_SetAEINT_EOI(SourceIdx);                                                               //8. Ack spurious interrupt
-        if (!Masked) NVIC_UnmaskEINT2(SourceIdx + NUM_EINT_SOURCES);                                //9. Unmask EINT
+        Masked = (ADIE_EINT_MASK & (1 << SourceIdx)) ? true : false;                                // Get the masked status
+        if (!Masked) NVIC_MaskEINT2(SourceIdx + NUM_EINT_SOURCES);                                  // 1. Mask EINT
+        ADIE_EINT_CON(SourceIdx) &= ~(ADIE_EINT_PSMASK | ADIE_EINT_DEBEN);                          // 2. Clear original prescaler and disable debounce
+        USC_Pause_us(50);                                                                           // 3. Delay at least 5 32K cycles
+        ADIE_EINT_CON(SourceIdx) = Debounce;                                                        // 4. Enable the debounce (EN = 1) and change the debounce setting
+        USC_Pause_us(50);                                                                           // 5. Delay at least 5 32K cycles
+        ADIE_EINT_DBCRST |= 1 << SourceIdx;                                                         // 6. Reset debounce counter
+        USC_Pause_us(50);                                                                           // 7. Delay at least 5 32K cycles
+        NVIC_SetAEINT_EOI(SourceIdx);                                                               // 8. Ack spurious interrupt
+        if (!Masked) NVIC_UnmaskEINT2(SourceIdx + NUM_EINT_SOURCES);                                // 9. Unmask EINT
     }
 }
 
@@ -345,12 +345,12 @@ void NVIC_Initialize(void)
 {
     uint32_t i, intflags = DisableInterrupts();
 
-    IRQ_MASK_SET0 = IRQ_MASK0_ALL;                                                                  //Disable All interrupt sources
+    IRQ_MASK_SET0 = IRQ_MASK0_ALL;                                                                  // Disable All interrupt sources
     IRQ_MASK_SET1 = IRQ_MASK1_ALL;
     EINT_MASK_SET = EINT_MASK_ALL;
     EINT_D0EN = 0;
 
-    ADIE_IRQ_MASK_SET = ADIE_IRQ_MASK_ALL;                                                          //Disable All ADIE interrupt sources
+    ADIE_IRQ_MASK_SET = ADIE_IRQ_MASK_ALL;                                                          // Disable All ADIE interrupt sources
     ADIE_EINT_MASK_SET = ADIE_EINT_MASK_ALL;
     ADIE_EINT_D0EN = 0;
 
@@ -366,14 +366,14 @@ void NVIC_Initialize(void)
     memset(AIRQHandlers, 0x00, sizeof(AIRQHandlers));
     memset(AEINTHandlers, 0x00, sizeof(AEINTHandlers));
 
-    while((i = NVIC_GetIRQStatus2()) != NOIRQ) NVIC_SetIRQ_EOI(i);                                  //Release IRQ interrupts
-    while((i = NVIC_GetAIRQStatus2()) != NOIRQ) NVIC_SetAIRQ_EOI(i);                                //Release AIRQ interrupts
+    while((i = NVIC_GetIRQStatus2()) != NOIRQ) NVIC_SetIRQ_EOI(i);                                  // Release IRQ interrupts
+    while((i = NVIC_GetAIRQStatus2()) != NOIRQ) NVIC_SetAIRQ_EOI(i);                                // Release AIRQ interrupts
 
-    EINT_INTACK = EINT_MASK_ALL;                                                                    //Release EINT interrupts
-    ADIE_EINT_INTACK = ADIE_EINT_MASK_ALL;                                                          //Release AEINT interrupts
-    NVIC_RegisterIRQ(IRQ_EINT_CODE, NVIC_EINTCHandler, IRQ_SENS_EDGE, true);                        //Register EINT interrupt
-    NVIC_RegisterIRQ(IRQ_ADIE_EINT_CODE, NVIC_AEINTCHandler, IRQ_SENS_EDGE, true);                  //Register ADIE EINT interrupt
-    NVIC_RegisterIRQ(IRQ_DIE2DIE_CODE, NVIC_ADIE_C_IRQ_Handler, IRQ_SENS_LEVEL, true);              //Register ADIE NVIC interrupt
+    EINT_INTACK = EINT_MASK_ALL;                                                                    // Release EINT interrupts
+    ADIE_EINT_INTACK = ADIE_EINT_MASK_ALL;                                                          // Release AEINT interrupts
+    NVIC_RegisterIRQ(IRQ_EINT_CODE, NVIC_EINTCHandler, IRQ_SENS_EDGE, true);                        // Register EINT interrupt
+    NVIC_RegisterIRQ(IRQ_ADIE_EINT_CODE, NVIC_AEINTCHandler, IRQ_SENS_EDGE, true);                  // Register ADIE EINT interrupt
+    NVIC_RegisterIRQ(IRQ_DIE2DIE_CODE, NVIC_ADIE_C_IRQ_Handler, IRQ_SENS_LEVEL, true);              // Register ADIE NVIC interrupt
 
     RestoreInterrupts(intflags);
 }

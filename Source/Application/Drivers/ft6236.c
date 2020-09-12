@@ -3,20 +3,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
 #include "appconfig.h"
@@ -69,7 +69,7 @@ boolean FT6236_WriteData(uint8_t Register, uint8_t *Data, uint32_t Count)
 
 void FT6236_ISR(void)
 {
-    uint8_t  TPData[6 * FT6236_NUMPOFOINTS + 1];                                                    //TD_STATUS + 6 bytes per point
+    uint8_t  TPData[6 * FT6236_NUMPOFOINTS + 1];                                                    // TD_STATUS + 6 bytes per point
     uint32_t i, p;
 
     if (FT6236_ReadData(TD_STATUS, TPData, sizeof(TPData)))
@@ -132,14 +132,14 @@ boolean FT6236_Initialize(void)
     SetupSW_I2C_SCL(CPT_SCL, CPT_SCL_MODE);
     SetupSW_I2C_SDA(CPT_SDA, CPT_SDA_MODE);
 
-    GPIO_SETMODE(CPT_RST, CPT_RST_MODE);                                                            //Reset pin setup
+    GPIO_SETMODE(CPT_RST, CPT_RST_MODE);                                                            // Reset pin setup
     GPIO_SETDIROUT(CPT_RST);
 
-    GPIO_SETMODE(CPT_INT, CPT_INT_MODE);                                                            //External interrupt pin setup
+    GPIO_SETMODE(CPT_INT, CPT_INT_MODE);                                                            // External interrupt pin setup
 
-    GPIO_DATAOUT(CPT_RST, 0);                                                                       //Assert CTP reset
+    GPIO_DATAOUT(CPT_RST, 0);                                                                       // Assert CTP reset
     USC_Pause_us(10000);
-    GPIO_DATAOUT(CPT_RST, 1);                                                                       //Release CTP reset
+    GPIO_DATAOUT(CPT_RST, 1);                                                                       // Release CTP reset
 
     SW_I2C_CHECKDEVICE(FT6236_ADDRESS, DeviceFound);
     if (DeviceFound && FT6236_RegisterISR())

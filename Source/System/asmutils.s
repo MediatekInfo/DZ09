@@ -1,26 +1,26 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
     .syntax unified
     .arch armv5te
 
-    .equ    _I_, 0x80                                                                               //when I bit is set, IRQ is disabled
-    .equ    _F_, 0x40                                                                               //when F bit is set, FIQ is disabled
+    .equ    _I_, 0x80                                                                               // when I bit is set, IRQ is disabled
+    .equ    _F_, 0x40                                                                               // when F bit is set, FIQ is disabled
 
     .text
     .code   32
@@ -31,43 +31,43 @@
     .type   EnableInterrupts, %function
     .func   EnableInterrupts
 EnableInterrupts:
-    stmfd   sp!,{lr}                                                                                //uint32_t EnableInterrupts(void); (Privileged modes)
+    stmfd   sp!,{lr}                                                                                // uint32_t EnableInterrupts(void); (Privileged modes)
     mrs     r0, cpsr
 
-    orr     lr, r0, _F_                                                                             //lr - mode with FIQ disabled
+    orr     lr, r0, _F_                                                                             // lr - mode with FIQ disabled
     and     r0, r0, _F_ | _I_
-    bic     lr, lr, _I_                                                                             //Enable IRQ
+    bic     lr, lr, _I_                                                                             // Enable IRQ
 
-    msr     cpsr_c, lr                                                                              //Apply mode
-    ldmfd   sp!,{pc}                                                                                //r0 - previous state of IntEN flags
+    msr     cpsr_c, lr                                                                              // Apply mode
+    ldmfd   sp!,{pc}                                                                                // r0 - previous state of IntEN flags
     .endfunc
 ///////////////////////////////////////////////////////////////////////////////////////////////////
     .globl  DisableInterrupts
     .type   DisableInterrupts, %function
     .func   DisableInterrupts
 DisableInterrupts:
-    stmfd   sp!,{lr}                                                                                //uint32_t DisableInterrupts(void); (Privileged modes)
+    stmfd   sp!,{lr}                                                                                // uint32_t DisableInterrupts(void); (Privileged modes)
     mrs     r0, cpsr
 
-    orr     lr, r0, _F_ | _I_                                                                       //lr - mode with Ints disabled
+    orr     lr, r0, _F_ | _I_                                                                       // lr - mode with Ints disabled
     and     r0, r0, _F_ | _I_
 
-    msr     cpsr_c, lr                                                                              //Apply mode
-    ldmfd   sp!,{pc}                                                                                //r0 - previous state of IntEN flags
+    msr     cpsr_c, lr                                                                              // Apply mode
+    ldmfd   sp!,{pc}                                                                                // r0 - previous state of IntEN flags
     .endfunc
 ///////////////////////////////////////////////////////////////////////////////////////////////////
     .globl  RestoreInterrupts
     .type   RestoreInterrupts, %function
     .func   RestoreInterrupts
 RestoreInterrupts:
-    stmfd   sp!,{r0, lr}                                                                            //void RestoreInterrupts(uint32_t flags); (Privileged modes)
+    stmfd   sp!,{r0, lr}                                                                            // void RestoreInterrupts(uint32_t flags); (Privileged modes)
 
-    mrs     lr, cpsr                                                                                //Control byte
-    bic     lr, lr, _I_ | _F_                                                                       //Clear current IntEN flags
-    and     r0, r0, _I_ | _F_                                                                       //Clear parameter with mask
+    mrs     lr, cpsr                                                                                // Control byte
+    bic     lr, lr, _I_ | _F_                                                                       // Clear current IntEN flags
+    and     r0, r0, _I_ | _F_                                                                       // Clear parameter with mask
     orr     r0, r0, lr
 
-    msr     cpsr_c, r0                                                                              //Apply new interrupt settings
+    msr     cpsr_c, r0                                                                              // Apply new interrupt settings
     ldmfd   sp!,{r0, pc}
     .endfunc
 ///////////////////////////////////////////////////////////////////////////////////////////////////

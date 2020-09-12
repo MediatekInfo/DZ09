@@ -135,7 +135,7 @@ boolean GUI_Initialize(void)
     DebugPrint("GUI subsystem initialization:\r\n");
 
     DebugPrint(" LCD interface initialization...");
-    Result = LCDIF_Initialize();                                                                    //Initialize subsystem
+    Result = LCDIF_Initialize();                                                                    // Initialize subsystem
 
     if (Result)
     {

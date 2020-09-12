@@ -92,7 +92,7 @@ boolean IsPointInRect(int16_t x, int16_t y, pRECT Rct)
             (y >= Rct->t) && (y <= Rct->b)) ? true : false;
 }
 
-//a in b or b in a, a = larger rectangle
+// a in b or b in a, a = larger rectangle
 boolean IsRectInRect(pRECT a, pRECT b)
 {
     if ((a == NULL) || (b == NULL)) return false;
@@ -200,7 +200,7 @@ TRECT GDI_GlobalToLocalRct(pRECT rct, pPOINT Offset)
     return Res;
 }
 
-//a = a & b
+// a = a & b
 boolean GDI_ANDRectangles(pRECT a, pRECT b)
 {
     if ((a != NULL) && (b != NULL))
@@ -217,7 +217,7 @@ boolean GDI_ANDRectangles(pRECT a, pRECT b)
     return false;
 }
 
-//a + b
+// a + b
 pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
 {
     pDLIST ResRects = NULL;
@@ -279,7 +279,7 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
     return ResRects;
 }
 
-//a - b
+// a - b
 pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
 {
     pDLIST Rlist = DL_Create(0);
@@ -300,7 +300,7 @@ pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
     }
     if (((b->l - a->l) > 0) && ((a->b - a->t) >= 0))
     {
-        Rct = malloc(sizeof(TRECT));                                                                //Left vertical rectangle
+        Rct = malloc(sizeof(TRECT));                                                                // Left vertical rectangle
         if (Rct != NULL)
         {
             Rct->l = a->l;
@@ -312,7 +312,7 @@ pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
     }
     if (((b->r - b->l) >= 0) && ((b->t - a->t) > 0))
     {
-        Rct = malloc(sizeof(TRECT));                                                                //Top horizontal rectangle
+        Rct = malloc(sizeof(TRECT));                                                                // Top horizontal rectangle
         if (Rct != NULL)
         {
             Rct->l = max(a->l, b->l);
@@ -324,7 +324,7 @@ pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
     }
     if (((a->r - b->r) > 0) && ((a->b - a->t) >= 0))
     {
-        Rct = malloc(sizeof(TRECT));                                                                //Right vertical rectangle
+        Rct = malloc(sizeof(TRECT));                                                                // Right vertical rectangle
         if (Rct != NULL)
         {
             Rct->l = b->r + 1;
@@ -336,7 +336,7 @@ pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
     }
     if (((b->r - b->l) >= 0) && ((a->b - b->b) > 0))
     {
-        Rct = malloc(sizeof(TRECT));                                                                //Bottom horizontal rectangle
+        Rct = malloc(sizeof(TRECT));                                                                // Bottom horizontal rectangle
         if (Rct != NULL)
         {
             Rct->l = max(a->l, b->l);

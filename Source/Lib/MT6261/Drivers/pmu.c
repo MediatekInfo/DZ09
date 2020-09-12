@@ -31,7 +31,7 @@ void PMU_EnablePCHR_WDT(uint8_t Interval)
     CHR_CON9 = RG_CHRWDT_WR | RG_CHRWDT_EN | RG_CHRWDT_TD(Interval);
 }
 
-void PMU_EnableUSBDownloaderWDT(void)                                                               //~30 sec WDT after power on
+void PMU_EnableUSBDownloaderWDT(void)                                                               // ~30 sec WDT after power on
 {
     CHR_CON10 &= ~(RG_USBDL_RST | RG_USBDL_SET);
 }

@@ -3,20 +3,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
 #include "rtc.h"
@@ -73,35 +73,35 @@ static uint8_t RTC_DayOfWeek(pDATE Date)
 
 boolean RTC_Initialize(void)
 {
-    RTC_SetOSC32CON(OSC32_RSV | EMB_MODE(0) | XOSCCALI(0x0F));                                      //Set OSC32CON to default value
+    RTC_SetOSC32CON(OSC32_RSV | EMB_MODE(0) | XOSCCALI(0x0F));                                      // Set OSC32CON to default value
     RTC_Unprotect();
 
     if (!RTC_IsValidState())
     {
         TDATETIME DateTime;
 
-//Initial configure RTC
+// Initial configure RTC
         DebugPrint("settings invalid - ");
 
         RTC_SetPowerkey();
 
         RTC_BBPU = KEY_BBPU;
-        RTC_UpdateContext();                                                                        //Set RTC_BBPU to default value
+        RTC_UpdateContext();                                                                        // Set RTC_BBPU to default value
 
         RTC_CON = LPEN(1) | LPSTA_RAW;
-        RTC_UpdateContext();                                                                        //Enable Low Power Detection
-        RTC_CON = LPEN(1) | LPRST; //-V525
+        RTC_UpdateContext();                                                                        // Enable Low Power Detection
+        RTC_CON = LPEN(1) | LPRST; // -V525
         RTC_UpdateContext();
         RTC_CON = LPEN(1);
         RTC_UpdateContext();
 
-        RTC_CII_EN = 0;                                                                             //Disable periodical interrupts
-        RTC_IRQ_EN = 0;                                                                             //Disable RTC interrupts
-        RTC_AL_MASK = YEA_MSK | MTH_MSK | DOM_MSK | DOW_MSK | HOU_MSK | MIN_MSK | SEC_MSK;          //Disable Alarms
+        RTC_CII_EN = 0;                                                                             // Disable periodical interrupts
+        RTC_IRQ_EN = 0;                                                                             // Disable RTC interrupts
+        RTC_AL_MASK = YEA_MSK | MTH_MSK | DOM_MSK | DOW_MSK | HOU_MSK | MIN_MSK | SEC_MSK;          // Disable Alarms
         RTC_UpdateContext();
-        if (RTC_IRQ_STA);                                                                           //Clear interrupts
+        if (RTC_IRQ_STA);                                                                           // Clear interrupts
 
-        memset(&DateTime, 0x00, sizeof(DateTime));                                                  //Set default Date/Time values
+        memset(&DateTime, 0x00, sizeof(DateTime));                                                  // Set default Date/Time values
         DateTime.Date.Day = 1;
         DateTime.Date.Month = 1;
         DateTime.Date.Year = RTC_INITIAL_YEAR;

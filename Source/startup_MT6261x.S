@@ -1,25 +1,25 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
     .syntax unified
     .arch armv5te
 
-//--- System stack locations
+// --- System stack locations
     .equ    FIQ_StackSz, 0
     .equ    IRQ_StackSz, 1024
     .equ    ABT_StackSz, 0
@@ -94,17 +94,17 @@ ROM_Image_Limit:
 
     .size    __isr_vectors, . - __isr_vectors
 
-//--- Standard definitions of mode bits and interrupt (I & F) flags in PSRs
+// --- Standard definitions of mode bits and interrupt (I & F) flags in PSRs
     .equ    Mode_USR, 0x10
     .equ    Mode_FIQ, 0x11
     .equ    Mode_IRQ, 0x12
     .equ    Mode_SVC, 0x13
     .equ    Mode_ABT, 0x17
     .equ    Mode_UND, 0x1B
-    .equ    Mode_SYS, 0x1F                                                                          //available on ARM Arch 4 and later
+    .equ    Mode_SYS, 0x1F                                                                          // available on ARM Arch 4 and later
     .equ    Mode_Msk, 0x1F
-    .equ    _I_, 0x80                                                                               //when I bit is set, IRQ is disabled
-    .equ    _F_, 0x40                                                                               //when F bit is set, FIQ is disabled
+    .equ    _I_, 0x80                                                                               // when I bit is set, IRQ is disabled
+    .equ    _F_, 0x40                                                                               // when F bit is set, FIQ is disabled
 
     .section .reset_handler
     .align  2
@@ -113,7 +113,7 @@ ROM_Image_Limit:
 
 Reset_Handler:
     ldr     r0, =__StackTop
-//Setup MCU modes and stack pointers
+// Setup MCU modes and stack pointers
     msr     cpsr_c, Mode_FIQ | _I_ | _F_
     mov     sp, r0
     sub     r0, r0, FIQ_StackSz
