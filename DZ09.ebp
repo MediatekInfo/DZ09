@@ -241,11 +241,8 @@
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\rgu.c">
 			<Option compilerVar="CC" />
-			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\MT6261\Drivers\rgu.h">
-			<Option target="SYSTEM" />
-		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\rgu.h" />
 		<Unit filename="Source\Lib\MT6261\Drivers\rtc.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

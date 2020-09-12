@@ -3,20 +3,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
 #include "mtktypes.h"
@@ -97,11 +97,15 @@ int main(void)
 {
     pSF_HEADER_v1 sf_header = (pSF_HEADER_v1)ROM_Image_Base;
 
+    /* Setup system watchdog */
+    RGU_SetWDTInterval(WDTINTERVAL, true);                                                          // Setup system watchdog
+
     DBG_Initialize();                                                                               // Setup debug interface
     USC_StartCounter();
     PLL_Initialize();
 
     DebugPrint("\r\n--1st bootloader runs--\r\n");
+    DebugPrint("System watchdog was set for %d seconds\r\n", WDTINTERVAL);
     EMI_MemoryRemap(MR_FB1RB0);                                                                     /*  Remap Flash to Bank1, RAM to Bank0.
                                                                                                         Now ROM starts from 0x10000000 */
     DebugPrint("CPU measured frequency: %uMHz\r\n", GetCPUFrequency());
@@ -127,6 +131,9 @@ int main(void)
             /* Try to find descriptor of 2nd bootloader */
             for(i = 0; i < MAX_BL_NUM; i++)
             {
+                /* Restart watchdog */
+                RGU_RestartWDT();
+
                 DebugPrint("Descriptor %d, device %d, type %d\r\n",
                            i, BR_Layout->m_bl_desc[i].m_bl_dev, BR_Layout->m_bl_desc[i].m_bl_type);
                 if ((BR_Layout->m_bl_desc[i].m_bl_exist_magic == BL_EXIST_MAGIC) &&

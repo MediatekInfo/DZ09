@@ -21,6 +21,9 @@
 
 #include "systypes.h"
 
+// Watchdog configuration
+#define WDTINTERVAL         2                                                                       // seconds
+
 // Debug USART interface
 #define DBG_USARTn          USART_MODULE1
 #define DBG_BAUDRATE        115200
@@ -32,7 +35,7 @@
 #if defined(TARGET_SYSTEM)
 
 #define _DEBUG_             (1)
-#define _USEBATTERY_        (0)
+#define _USEBATTERY_        (1)
 #define USEINTERRUPTS
 #define VIBRVoltage         VIBR_VO18V
 
@@ -50,6 +53,7 @@
 #define _DEBUG_             (1)
 #include "mt6261.h"
 #include "debug.h"
+#include "utils.h"
 #endif
 
 #endif /* _SYSTEMCONFIG_H_ */
