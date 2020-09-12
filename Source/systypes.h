@@ -26,5 +26,6 @@
 typedef enum {false = 0, true = !false}     boolean;
 typedef volatile uint8_t __attribute__((aligned(4))) uint8x32_t;
 typedef volatile uint16_t __attribute__((aligned(4))) uint16x32_t;
+typedef void* pHANDLE;
 
 #endif /* _SYSTYPES_H_ */
