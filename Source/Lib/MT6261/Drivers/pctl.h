@@ -68,22 +68,22 @@
 #define PD_FM_BCLK                  (0x2E)
 #define PD_CNFG_MAX                 (0x2E)
 
-#define CNFG_PDN_CON(x)             (*(volatile uint16_t *)(CONFIG_base + 0x0300 + 0x04 * (x)))
-#define CNFG_PDN_CON0               (*(volatile uint16_t *)(CONFIG_base + 0x0300))
-#define CNFG_PDN_CON1               (*(volatile uint16_t *)(CONFIG_base + 0x0304))
-#define CNFG_PDN_CON2               (*(volatile uint16_t *)(CONFIG_base + 0x0308))
+#define CNFG_PDN_CON(x)             (*(volatile uint16_t *)(CONFIG_BASE + 0x0300 + 0x04 * (x)))
+#define CNFG_PDN_CON0               (*(volatile uint16_t *)(CONFIG_BASE + 0x0300))
+#define CNFG_PDN_CON1               (*(volatile uint16_t *)(CONFIG_BASE + 0x0304))
+#define CNFG_PDN_CON2               (*(volatile uint16_t *)(CONFIG_BASE + 0x0308))
 #define CNFG_PDN0_MASK              0xFFFF
 
-#define CNFG_PDN_CON_SET(x)         (*(volatile uint16_t *)(CONFIG_base + 0x0310 + 0x04 * (x)))
-#define CNFG_PDN_CON0_SET           (*(volatile uint16_t *)(CONFIG_base + 0x0310))
-#define CNFG_PDN_CON1_SET           (*(volatile uint16_t *)(CONFIG_base + 0x0314))
-#define CNFG_PDN_CON2_SET           (*(volatile uint16_t *)(CONFIG_base + 0x0318))
+#define CNFG_PDN_CON_SET(x)         (*(volatile uint16_t *)(CONFIG_BASE + 0x0310 + 0x04 * (x)))
+#define CNFG_PDN_CON0_SET           (*(volatile uint16_t *)(CONFIG_BASE + 0x0310))
+#define CNFG_PDN_CON1_SET           (*(volatile uint16_t *)(CONFIG_BASE + 0x0314))
+#define CNFG_PDN_CON2_SET           (*(volatile uint16_t *)(CONFIG_BASE + 0x0318))
 #define CNFG_PDN1_MASK              0xFFFF
 
-#define CNFG_PDN_CON_CLR(x)         (*(volatile uint16_t *)(CONFIG_base + 0x0320 + 0x04 * (x)))
-#define CNFG_PDN_CON0_CLR           (*(volatile uint16_t *)(CONFIG_base + 0x0320))
-#define CNFG_PDN_CON1_CLR           (*(volatile uint16_t *)(CONFIG_base + 0x0324))
-#define CNFG_PDN_CON2_CLR           (*(volatile uint16_t *)(CONFIG_base + 0x0328))
+#define CNFG_PDN_CON_CLR(x)         (*(volatile uint16_t *)(CONFIG_BASE + 0x0320 + 0x04 * (x)))
+#define CNFG_PDN_CON0_CLR           (*(volatile uint16_t *)(CONFIG_BASE + 0x0320))
+#define CNFG_PDN_CON1_CLR           (*(volatile uint16_t *)(CONFIG_BASE + 0x0324))
+#define CNFG_PDN_CON2_CLR           (*(volatile uint16_t *)(CONFIG_BASE + 0x0328))
 #define CNFG_PDN2_MASK              0xF7FF                                                          // Disable all peripherals, except serial flash controller
 
 // Analog power control
@@ -94,9 +94,9 @@
 #define PD_PMU_F26M                 (0x34)
 #define PD_ACFG_MAX                 (0x34)
 
-#define ACFG_CLK_CON                (*(volatile uint16_t *)(ANA_CFGSYS_base + 0x0008))
-#define ACFG_CLK_CON_SET            (*(volatile uint16_t *)(ANA_CFGSYS_base + 0x000C))
-#define ACFG_CLK_CON_CLR            (*(volatile uint16_t *)(ANA_CFGSYS_base + 0x0010))
+#define ACFG_CLK_CON                (*(volatile uint16_t *)(ANA_CFGSYS_BASE + 0x0008))
+#define ACFG_CLK_CON_SET            (*(volatile uint16_t *)(ANA_CFGSYS_BASE + 0x000C))
+#define ACFG_CLK_CON_CLR            (*(volatile uint16_t *)(ANA_CFGSYS_BASE + 0x0010))
 #define ACFG_CLK_MASK               0xFFFF
 
 #define PCTL_PowerDown(x)           do\

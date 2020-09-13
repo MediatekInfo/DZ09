@@ -72,13 +72,13 @@ typedef struct tag_PWM_CONTEXT
 #define PWM2_DUTY_100               (2 << 0)
 #define PWM2_DUTY_MASK              0x03
 
-#define PWM2_base                   (PWM_2CH_base + 0x000C)
-#define PWM3_base                   (PWM_2CH_base + 0x0018)
+#define PWM2_base                   (PWM_2CH_BASE + 0x000C)
+#define PWM3_base                   (PWM_2CH_BASE + 0x0018)
 
-#define PWM1                        ((volatile TPWMREGS *) PWM1_base)
+#define PWM1                        ((volatile TPWMREGS *) PWM1_BASE)
 #define PWM2                        ((volatile TPWMREGS *) PWM2_base)
 #define PWM3                        ((volatile TPWMREGS *) PWM3_base)
-#define PWM4                        ((volatile TPWMREGS *) PWM4_base)
+#define PWM4                        ((volatile TPWMREGS *) PWM4_BASE)
 
 extern boolean PWM_SetupChannel(TPWM Index, uint16_t Count, uint16_t Threshold, TPWM_FLAGS Flags);
 extern boolean PWM_SetPowerDown(TPWM Index, boolean PowerDown);

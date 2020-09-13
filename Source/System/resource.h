@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,28 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef _EMI_H_
-#define _EMI_H_
+#ifndef _RESOURCE_H_
+#define _RESOURCE_H_
 
-typedef enum
+typedef enum tag_RESTYPE
 {
-    MR_BOOTCODE = 0,                                                                                // Boot jump code
-    MR_FB0RB1   = 2,                                                                                // Flash - Bank0, RAM - Bank1
-    MR_FB1RB0   = 3                                                                                 // Flash - Bank1, RAM - Bank0
-} MREMAP;
+    RT_UNKNOWN,
+    RT_FONT,
+    RT_IMAGE,
+    RT_AUDIO,
+    RT_BLOB,
+    RT_MAXNUM
+} TRESTYPE, *pRESTYPE;
 
-#define EMI_REMAP                   (*(volatile uint16_t *)(BOOT_ENG_BASE))
-#define EMI_REMAP_MODE_MASK         0x03
+typedef struct tag_RESOURCE
+{
+    TRESTYPE Type;
+} TRESOURCE, *pRESOURCE;
 
-extern void EMI_MemoryRemap(MREMAP Mode);
+typedef struct tag_RESFONT
+{
+    TRESTYPE Type;
+    BFC_FONT *Font;
+} TRESFONT, *pRESFONT;
 
-#endif /* _EMI_H_ */
+#endif /* _RESOURCE_H_ */

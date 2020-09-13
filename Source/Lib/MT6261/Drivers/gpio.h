@@ -88,13 +88,13 @@
 #define GPSMT                       (1 << 4)                                                        // GPIO Schmitt trigger enable
 #define GPMODE(v)                   (((v) & 0x0F) << 8)                                             // GPIO mode << 8
 
-#define GPIO_DIR0                   (*(volatile uint32_t *)(GPIO_Base + 0x0000))                    // 0 - Input/1 - Output
-#define GPIO_DIR0_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0004))
-#define GPIO_DIR0_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0008))
+#define GPIO_DIR0                   (*(volatile uint32_t *)(GPIO_BASE + 0x0000))                    // 0 - Input/1 - Output
+#define GPIO_DIR0_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0004))
+#define GPIO_DIR0_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0008))
 #define GPIO_DIR0_MASK              0xFFFFFFFF
-#define GPIO_DIR1                   (*(volatile uint32_t *)(GPIO_Base + 0x0010))
-#define GPIO_DIR1_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0014))
-#define GPIO_DIR1_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0018))
+#define GPIO_DIR1                   (*(volatile uint32_t *)(GPIO_BASE + 0x0010))
+#define GPIO_DIR1_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0014))
+#define GPIO_DIR1_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0018))
 #define GPIO_DIR1_MASK              0x00CFFFFFF
 #define GPIO_SETDIRIN(Pin)          do\
                                     {\
@@ -114,13 +114,13 @@
                                     while(0)
 
 
-#define GPIO_PULLEN0                (*(volatile uint32_t *)(GPIO_Base + 0x0100))                    // 0 - Disable/1 - Enable
-#define GPIO_PULLEN0_SET            (*(volatile uint32_t *)(GPIO_Base + 0x0104))
-#define GPIO_PULLEN0_CLR            (*(volatile uint32_t *)(GPIO_Base + 0x0108))
+#define GPIO_PULLEN0                (*(volatile uint32_t *)(GPIO_BASE + 0x0100))                    // 0 - Disable/1 - Enable
+#define GPIO_PULLEN0_SET            (*(volatile uint32_t *)(GPIO_BASE + 0x0104))
+#define GPIO_PULLEN0_CLR            (*(volatile uint32_t *)(GPIO_BASE + 0x0108))
 #define PULLEN0_MASK                0x43C00BFF
-#define GPIO_PULLEN1                (*(volatile uint32_t *)(GPIO_Base + 0x0110))
-#define GPIO_PULLEN1_SET            (*(volatile uint32_t *)(GPIO_Base + 0x0114))
-#define GPIO_PULLEN1_CLR            (*(volatile uint32_t *)(GPIO_Base + 0x0118))
+#define GPIO_PULLEN1                (*(volatile uint32_t *)(GPIO_BASE + 0x0110))
+#define GPIO_PULLEN1_SET            (*(volatile uint32_t *)(GPIO_BASE + 0x0114))
+#define GPIO_PULLEN1_CLR            (*(volatile uint32_t *)(GPIO_BASE + 0x0118))
 #define PULLEN1_MASK                0x00F01800
 #define GPIO_PULLENABLE(Pin)        do\
                                     {\
@@ -161,19 +161,19 @@
                                     }\
                                     while(0)
 
-#define GPIO_DINV0                  (*(volatile uint32_t *)(GPIO_Base + 0x0200))
-#define GPIO_DINV0_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0204))
-#define GPIO_DINV0_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0208))
-#define GPIO_DINV1                  (*(volatile uint32_t *)(GPIO_Base + 0x0210))
-#define GPIO_DINV1_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0214))
-#define GPIO_DINV1_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0218))
+#define GPIO_DINV0                  (*(volatile uint32_t *)(GPIO_BASE + 0x0200))
+#define GPIO_DINV0_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0204))
+#define GPIO_DINV0_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0208))
+#define GPIO_DINV1                  (*(volatile uint32_t *)(GPIO_BASE + 0x0210))
+#define GPIO_DINV1_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0214))
+#define GPIO_DINV1_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0218))
 
-#define GPIO_DOUT0                  (*(volatile uint32_t *)(GPIO_Base + 0x0300))
-#define GPIO_DOUT0_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0304))
-#define GPIO_DOUT0_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0308))
-#define GPIO_DOUT1                  (*(volatile uint32_t *)(GPIO_Base + 0x0310))
-#define GPIO_DOUT1_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0314))
-#define GPIO_DOUT1_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0318))
+#define GPIO_DOUT0                  (*(volatile uint32_t *)(GPIO_BASE + 0x0300))
+#define GPIO_DOUT0_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0304))
+#define GPIO_DOUT0_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0308))
+#define GPIO_DOUT1                  (*(volatile uint32_t *)(GPIO_BASE + 0x0310))
+#define GPIO_DOUT1_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0314))
+#define GPIO_DOUT1_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0318))
 #define GPIO_DATAOUT(Pin, Data)     do\
                                     {\
                                         uint32_t  v, p = (Pin);\
@@ -190,18 +190,18 @@
                                     }\
                                     while(0)
 
-#define GPIO_DIN0                   (*(volatile uint32_t *)(GPIO_Base + 0x0400))
-#define GPIO_DIN1                   (*(volatile uint32_t *)(GPIO_Base + 0x0410))
+#define GPIO_DIN0                   (*(volatile uint32_t *)(GPIO_BASE + 0x0400))
+#define GPIO_DIN1                   (*(volatile uint32_t *)(GPIO_BASE + 0x0410))
 #define GPIO_DATAIN(Pin)            (((Pin) < 0x20) ? ((GPIO_DIN0 & (1UL << (Pin))) ? true : false) :\
                                      ((Pin) < 0x40) ? ((GPIO_DIN1 & (1UL << ((Pin) - 0x20))) ? true : false) : false)
 
-#define GPIO_PULLSEL0               (*(volatile uint32_t *)(GPIO_Base + 0x0500))                    // 0 - PullDown/1 - PullUp
-#define GPIO_PULLSEL0_SET           (*(volatile uint32_t *)(GPIO_Base + 0x0504))
-#define GPIO_PULLSEL0_CLR           (*(volatile uint32_t *)(GPIO_Base + 0x0508))
+#define GPIO_PULLSEL0               (*(volatile uint32_t *)(GPIO_BASE + 0x0500))                    // 0 - PullDown/1 - PullUp
+#define GPIO_PULLSEL0_SET           (*(volatile uint32_t *)(GPIO_BASE + 0x0504))
+#define GPIO_PULLSEL0_CLR           (*(volatile uint32_t *)(GPIO_BASE + 0x0508))
 #define PULLSEL0_MASK               0x43C00BFF
-#define GPIO_PULLSEL1               (*(volatile uint32_t *)(GPIO_Base + 0x0510))                    // 0 - PullDown/1 - PullUp
-#define GPIO_PULLSEL1_SET           (*(volatile uint32_t *)(GPIO_Base + 0x0514))
-#define GPIO_PULLSEL1_CLR           (*(volatile uint32_t *)(GPIO_Base + 0x0518))
+#define GPIO_PULLSEL1               (*(volatile uint32_t *)(GPIO_BASE + 0x0510))                    // 0 - PullDown/1 - PullUp
+#define GPIO_PULLSEL1_SET           (*(volatile uint32_t *)(GPIO_BASE + 0x0514))
+#define GPIO_PULLSEL1_CLR           (*(volatile uint32_t *)(GPIO_BASE + 0x0518))
 #define PULLSEL1_MASK               0x00F01800
 #define GPIO_SETPULLUP(Pin)         do\
                                     {\
@@ -242,13 +242,13 @@
                                     }\
                                     while(0)
 
-#define GPIO_SMT0                   (*(volatile uint32_t *)(GPIO_Base + 0x0600))                    // Schmitt trigger control
-#define GPIO_SMT0_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0604))
-#define GPIO_SMT0_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0608))
+#define GPIO_SMT0                   (*(volatile uint32_t *)(GPIO_BASE + 0x0600))                    // Schmitt trigger control
+#define GPIO_SMT0_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0604))
+#define GPIO_SMT0_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0608))
 #define GPIO_SMT0_MASK              0xFFFFFFFF
-#define GPIO_SMT1                   (*(volatile uint32_t *)(GPIO_Base + 0x0610))
-#define GPIO_SMT1_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0614))
-#define GPIO_SMT1_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0618))
+#define GPIO_SMT1                   (*(volatile uint32_t *)(GPIO_BASE + 0x0610))
+#define GPIO_SMT1_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0614))
+#define GPIO_SMT1_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0618))
 #define GPIO_SMT1_MASK              0x00001FE0
 #define GPIO_SMTENABLE(Pin)         do\
                                     {\
@@ -281,30 +281,30 @@
                                     }\
                                     while(0)
 
-#define GPIO_SR0                    (*(volatile uint32_t *)(GPIO_Base + 0x0700))                    // Slew rate control
-#define GPIO_SR0_SET                (*(volatile uint32_t *)(GPIO_Base + 0x0704))
-#define GPIO_SR0_CLR                (*(volatile uint32_t *)(GPIO_Base + 0x0708))
-#define GPIO_SR1                    (*(volatile uint32_t *)(GPIO_Base + 0x0710))
-#define GPIO_SR1_SET                (*(volatile uint32_t *)(GPIO_Base + 0x0714))
-#define GPIO_SR1_CLR                (*(volatile uint32_t *)(GPIO_Base + 0x0718))
-#define GPIO_SIM_SR                 (*(volatile uint32_t *)(GPIO_Base + 0x0720))
-#define GPIO_SIM_SR_SET             (*(volatile uint32_t *)(GPIO_Base + 0x0724))
-#define GPIO_SIM_SR_CLR             (*(volatile uint32_t *)(GPIO_Base + 0x0728))
+#define GPIO_SR0                    (*(volatile uint32_t *)(GPIO_BASE + 0x0700))                    // Slew rate control
+#define GPIO_SR0_SET                (*(volatile uint32_t *)(GPIO_BASE + 0x0704))
+#define GPIO_SR0_CLR                (*(volatile uint32_t *)(GPIO_BASE + 0x0708))
+#define GPIO_SR1                    (*(volatile uint32_t *)(GPIO_BASE + 0x0710))
+#define GPIO_SR1_SET                (*(volatile uint32_t *)(GPIO_BASE + 0x0714))
+#define GPIO_SR1_CLR                (*(volatile uint32_t *)(GPIO_BASE + 0x0718))
+#define GPIO_SIM_SR                 (*(volatile uint32_t *)(GPIO_BASE + 0x0720))
+#define GPIO_SIM_SR_SET             (*(volatile uint32_t *)(GPIO_BASE + 0x0724))
+#define GPIO_SIM_SR_CLR             (*(volatile uint32_t *)(GPIO_BASE + 0x0728))
 
-#define GPIO_DRV0                   (*(volatile uint32_t *)(GPIO_Base + 0x0800))
-#define GPIO_DRV0_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0804))
-#define GPIO_DRV0_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0808))
-#define GPIO_DRV1                   (*(volatile uint32_t *)(GPIO_Base + 0x0810))
-#define GPIO_DRV1_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0814))
-#define GPIO_DRV1_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0818))
+#define GPIO_DRV0                   (*(volatile uint32_t *)(GPIO_BASE + 0x0800))
+#define GPIO_DRV0_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0804))
+#define GPIO_DRV0_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0808))
+#define GPIO_DRV1                   (*(volatile uint32_t *)(GPIO_BASE + 0x0810))
+#define GPIO_DRV1_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0814))
+#define GPIO_DRV1_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0818))
 
-#define GPIO_IES0                   (*(volatile uint32_t *)(GPIO_Base + 0x0900))
-#define GPIO_IES0_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0904))
-#define GPIO_IES0_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0908))
+#define GPIO_IES0                   (*(volatile uint32_t *)(GPIO_BASE + 0x0900))
+#define GPIO_IES0_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0904))
+#define GPIO_IES0_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0908))
 #define GPIO_IES0_MASK              0x43C00BFF
-#define GPIO_IES1                   (*(volatile uint32_t *)(GPIO_Base + 0x0910))
-#define GPIO_IES1_SET               (*(volatile uint32_t *)(GPIO_Base + 0x0914))
-#define GPIO_IES1_CLR               (*(volatile uint32_t *)(GPIO_Base + 0x0918))
+#define GPIO_IES1                   (*(volatile uint32_t *)(GPIO_BASE + 0x0910))
+#define GPIO_IES1_SET               (*(volatile uint32_t *)(GPIO_BASE + 0x0914))
+#define GPIO_IES1_CLR               (*(volatile uint32_t *)(GPIO_BASE + 0x0918))
 #define GPIO_IES1_MASK              0x00001FE0
 #define GPIO_SETINPUTEN(Pin)        do\
                                     {\
@@ -371,39 +371,39 @@
 //  1   0   1   PD-47k
 //  1   1   0   PD-47k
 //  1   1   1   PD-23.5k
-#define GPIO_PUPD0                  (*(volatile uint32_t *)(GPIO_Base + 0x0A00))                    // Select pullup/pulldown
-#define GPIO_PUPD0_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0A04))
-#define GPIO_PUPD0_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0A08))
+#define GPIO_PUPD0                  (*(volatile uint32_t *)(GPIO_BASE + 0x0A00))                    // Select pullup/pulldown
+#define GPIO_PUPD0_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0A04))
+#define GPIO_PUPD0_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0A08))
 #define PUPD0_MASK                  0xBC3FF400
-#define GPIO_PUPD1                  (*(volatile uint32_t *)(GPIO_Base + 0x0A10))
-#define GPIO_PUPD1_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0A14))
-#define GPIO_PUPD1_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0A18))
+#define GPIO_PUPD1                  (*(volatile uint32_t *)(GPIO_BASE + 0x0A10))
+#define GPIO_PUPD1_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0A14))
+#define GPIO_PUPD1_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0A18))
 #define PUPD1_MASK                  0x000FE7FF
 
-#define GPIO_RESEN0_0               (*(volatile uint32_t *)(GPIO_Base + 0x0B00))                    // R0 control
-#define GPIO_RESEN0_0_SET           (*(volatile uint32_t *)(GPIO_Base + 0x0B04))
-#define GPIO_RESEN0_0_CLR           (*(volatile uint32_t *)(GPIO_Base + 0x0B08))
+#define GPIO_RESEN0_0               (*(volatile uint32_t *)(GPIO_BASE + 0x0B00))                    // R0 control
+#define GPIO_RESEN0_0_SET           (*(volatile uint32_t *)(GPIO_BASE + 0x0B04))
+#define GPIO_RESEN0_0_CLR           (*(volatile uint32_t *)(GPIO_BASE + 0x0B08))
 #define RESEN0_0_MASK               0xBC3FF400
-#define GPIO_RESEN0_1               (*(volatile uint32_t *)(GPIO_Base + 0x0B10))                    // R0 control
-#define GPIO_RESEN0_1_SET           (*(volatile uint32_t *)(GPIO_Base + 0x0B14))
-#define GPIO_RESEN0_1_CLR           (*(volatile uint32_t *)(GPIO_Base + 0x0B18))
+#define GPIO_RESEN0_1               (*(volatile uint32_t *)(GPIO_BASE + 0x0B10))                    // R0 control
+#define GPIO_RESEN0_1_SET           (*(volatile uint32_t *)(GPIO_BASE + 0x0B14))
+#define GPIO_RESEN0_1_CLR           (*(volatile uint32_t *)(GPIO_BASE + 0x0B18))
 #define RESEN0_1_MASK               0x000FE7FF
-#define GPIO_RESEN1_0               (*(volatile uint32_t *)(GPIO_Base + 0x0B20))                    // R1 control
-#define GPIO_RESEN1_0_SET           (*(volatile uint32_t *)(GPIO_Base + 0x0B24))
-#define GPIO_RESEN1_0_CLR           (*(volatile uint32_t *)(GPIO_Base + 0x0B28))
+#define GPIO_RESEN1_0               (*(volatile uint32_t *)(GPIO_BASE + 0x0B20))                    // R1 control
+#define GPIO_RESEN1_0_SET           (*(volatile uint32_t *)(GPIO_BASE + 0x0B24))
+#define GPIO_RESEN1_0_CLR           (*(volatile uint32_t *)(GPIO_BASE + 0x0B28))
 #define RESEN1_0_MASK               0xBC3FF400
-#define GPIO_RESEN1_1               (*(volatile uint32_t *)(GPIO_Base + 0x0B30))                    // R1 control
-#define GPIO_RESEN1_1_SET           (*(volatile uint32_t *)(GPIO_Base + 0x0B34))
-#define GPIO_RESEN1_1_CLR           (*(volatile uint32_t *)(GPIO_Base + 0x0B38))
+#define GPIO_RESEN1_1               (*(volatile uint32_t *)(GPIO_BASE + 0x0B30))                    // R1 control
+#define GPIO_RESEN1_1_SET           (*(volatile uint32_t *)(GPIO_BASE + 0x0B34))
+#define GPIO_RESEN1_1_CLR           (*(volatile uint32_t *)(GPIO_BASE + 0x0B38))
 #define RESEN1_1_MASK               0x000FE7FF
 
-#define GPIO_MODE(x)                (*(volatile uint32_t *)(GPIO_Base + 0x0C00 + 0x10 * (x)))
-#define GPIO_MODE_SET(x)            (*(volatile uint32_t *)(GPIO_Base + 0x0C04 + 0x10 * (x)))
-#define GPIO_MODE_CLR(x)            (*(volatile uint32_t *)(GPIO_Base + 0x0C08 + 0x10 * (x)))
+#define GPIO_MODE(x)                (*(volatile uint32_t *)(GPIO_BASE + 0x0C00 + 0x10 * (x)))
+#define GPIO_MODE_SET(x)            (*(volatile uint32_t *)(GPIO_BASE + 0x0C04 + 0x10 * (x)))
+#define GPIO_MODE_CLR(x)            (*(volatile uint32_t *)(GPIO_BASE + 0x0C08 + 0x10 * (x)))
 
-#define GPIO_MODE0                  (*(volatile uint32_t *)(GPIO_Base + 0x0C00))
-#define GPIO_MODE0_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0C04))
-#define GPIO_MODE0_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0C08))
+#define GPIO_MODE0                  (*(volatile uint32_t *)(GPIO_BASE + 0x0C00))
+#define GPIO_MODE0_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0C04))
+#define GPIO_MODE0_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0C08))
 #define GPIO_MODE0MASK              ((GPIO00_MASK <<  0) | (GPIO01_MASK <<  4) | (GPIO02_MASK <<  8) |\
                                      (GPIO03_MASK << 12) | (GPIO04_MASK << 16) | (GPIO05_MASK << 20) |\
                                      (GPIO06_MASK << 24) | (GPIO07_MASK << 28))
@@ -476,9 +476,9 @@
 #define GPIO07_MODE_EINT6           0x01                                                            // I
 #define GPIO07_MODE_BPI_BUS5        0x03                                                            // O
 
-#define GPIO_MODE1                  (*(volatile uint32_t *)(GPIO_Base + 0x0C10))
-#define GPIO_MODE1_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0C14))
-#define GPIO_MODE1_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0C18))
+#define GPIO_MODE1                  (*(volatile uint32_t *)(GPIO_BASE + 0x0C10))
+#define GPIO_MODE1_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0C14))
+#define GPIO_MODE1_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0C18))
 #define GPIO_MODE1MASK              ((GPIO08_MASK <<  0) | (GPIO09_MASK <<  4) | (GPIO10_MASK <<  8) |\
                                      (GPIO11_MASK << 12) | (GPIO12_MASK << 16) | (GPIO13_MASK << 20) |\
                                      (GPIO14_MASK << 24) | (GPIO15_MASK << 28))
@@ -539,9 +539,9 @@
 #define GPIO15_MODE_JTCK            0x05                                                            // I
 #define GPIO15_MODE_BTJTCK          0x06                                                            // I
 
-#define GPIO_MODE2                  (*(volatile uint32_t *)(GPIO_Base + 0x0C20))
-#define GPIO_MODE2_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0C24))
-#define GPIO_MODE2_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0C28))
+#define GPIO_MODE2                  (*(volatile uint32_t *)(GPIO_BASE + 0x0C20))
+#define GPIO_MODE2_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0C24))
+#define GPIO_MODE2_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0C28))
 #define GPIO_MODE2MASK              ((GPIO16_MASK <<  0) | (GPIO17_MASK <<  4) | (GPIO18_MASK <<  8) |\
                                      (GPIO19_MASK << 12) | (GPIO20_MASK << 16) | (GPIO21_MASK << 20) |\
                                      (GPIO22_MASK << 24) | (GPIO23_MASK << 28))
@@ -597,9 +597,9 @@
 #define GPIO23_MODE_IO              0x00                                                            // IO
 #define GPIO23_MODE_PI_BUS1         0x01                                                            // O
 
-#define GPIO_MODE3                  (*(volatile uint32_t *)(GPIO_Base + 0x0C30))
-#define GPIO_MODE3_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0C34))
-#define GPIO_MODE3_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0C38))
+#define GPIO_MODE3                  (*(volatile uint32_t *)(GPIO_BASE + 0x0C30))
+#define GPIO_MODE3_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0C34))
+#define GPIO_MODE3_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0C38))
 #define GPIO_MODE3MASK              ((GPIO24_MASK <<  0) | (GPIO25_MASK <<  4) | (GPIO26_MASK <<  8) |\
                                      (GPIO27_MASK << 12) | (GPIO28_MASK << 16) | (GPIO29_MASK << 20) |\
                                      (GPIO30_MASK << 24) | (GPIO31_MASK << 28))
@@ -669,9 +669,9 @@
 #define GPIO31_MODE_MCCK            0x01                                                            // O
 #define GPIO31_MODE_U2RXD           0x04                                                            // I
 
-#define GPIO_MODE4                  (*(volatile uint32_t *)(GPIO_Base + 0x0C40))
-#define GPIO_MODE4_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0C44))
-#define GPIO_MODE4_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0C48))
+#define GPIO_MODE4                  (*(volatile uint32_t *)(GPIO_BASE + 0x0C40))
+#define GPIO_MODE4_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0C44))
+#define GPIO_MODE4_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0C48))
 #define GPIO_MODE4MASK              ((GPIO32_MASK <<  0) | (GPIO33_MASK <<  4) | (GPIO34_MASK <<  8) |\
                                      (GPIO35_MASK << 12) | (GPIO36_MASK << 16) | (GPIO37_MASK << 20) |\
                                      (GPIO38_MASK << 24) | (GPIO39_MASK << 28))
@@ -717,9 +717,9 @@
 #define GPIO39_MODE_IO              0x00                                                            // IO
 #define GPIO39_MODE_SIM1_SCLK       0x01                                                            // IO
 
-#define GPIO_MODE5                  (*(volatile uint32_t *)(GPIO_Base + 0x0C50))
-#define GPIO_MODE5_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0C54))
-#define GPIO_MODE5_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0C58))
+#define GPIO_MODE5                  (*(volatile uint32_t *)(GPIO_BASE + 0x0C50))
+#define GPIO_MODE5_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0C54))
+#define GPIO_MODE5_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0C58))
 #define GPIO_MODE5MASK              ((GPIO40_MASK <<  0) | (GPIO41_MASK <<  4) | (GPIO42_MASK <<  8) |\
                                      (GPIO43_MASK << 12) | (GPIO44_MASK << 16) | (GPIO45_MASK << 20) |\
                                      (GPIO46_MASK << 24) | (GPIO47_MASK << 28))
@@ -765,9 +765,9 @@
 #define GPIO47_MODE_LSCK0           0x01                                                            // O
 #define GPIO47_MODE_CMPDN           0x03                                                            // O
 
-#define GPIO_MODE6                  (*(volatile uint32_t *)(GPIO_Base + 0x0C60))
-#define GPIO_MODE6_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0C64))
-#define GPIO_MODE6_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0C68))
+#define GPIO_MODE6                  (*(volatile uint32_t *)(GPIO_BASE + 0x0C60))
+#define GPIO_MODE6_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0C64))
+#define GPIO_MODE6_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0C68))
 #define GPIO_MODE6MASK              ((GPIO48_MASK <<  0) | (GPIO49_MASK <<  4) | (GPIO50_MASK <<  8) |\
                                      (GPIO51_MASK << 12) | (GPIO52_MASK << 16) | (GPIO53_MASK << 20) |\
                                      (GPIO54_MASK << 24) | (GPIO55_MASK << 28))
@@ -834,16 +834,16 @@
                                     }\
                                     while(0)
 
-#define GPIO_TDSEL                  (*(volatile uint32_t *)(GPIO_Base + 0x0D10))                    // TX duty control
-#define GPIO_TDSEL_SET              (*(volatile uint32_t *)(GPIO_Base + 0x0D14))
-#define GPIO_TDSEL_CLR              (*(volatile uint32_t *)(GPIO_Base + 0x0D18))
+#define GPIO_TDSEL                  (*(volatile uint32_t *)(GPIO_BASE + 0x0D10))                    // TX duty control
+#define GPIO_TDSEL_SET              (*(volatile uint32_t *)(GPIO_BASE + 0x0D14))
+#define GPIO_TDSEL_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0D18))
 
-#define CLK_OUT0                    (*(volatile uint32_t *)(GPIO_Base + 0x0E00))
-#define CLK_OUT1                    (*(volatile uint32_t *)(GPIO_Base + 0x0E10))
-#define CLK_OUT2                    (*(volatile uint32_t *)(GPIO_Base + 0x0E20))
-#define CLK_OUT3                    (*(volatile uint32_t *)(GPIO_Base + 0x0E30))
-#define CLK_OUT4                    (*(volatile uint32_t *)(GPIO_Base + 0x0E40))
-#define CLK_OUT5                    (*(volatile uint32_t *)(GPIO_Base + 0x0E50))
+#define CLK_OUT0                    (*(volatile uint32_t *)(GPIO_BASE + 0x0E00))
+#define CLK_OUT1                    (*(volatile uint32_t *)(GPIO_BASE + 0x0E10))
+#define CLK_OUT2                    (*(volatile uint32_t *)(GPIO_BASE + 0x0E20))
+#define CLK_OUT3                    (*(volatile uint32_t *)(GPIO_BASE + 0x0E30))
+#define CLK_OUT4                    (*(volatile uint32_t *)(GPIO_BASE + 0x0E40))
+#define CLK_OUT5                    (*(volatile uint32_t *)(GPIO_BASE + 0x0E50))
 #define CLKO_26MHz                  1
 #define CLKO_32kHz                  4
 

@@ -228,9 +228,9 @@ typedef struct tag_USART_CONTEXT
 // RXTRI_AD
 #define RXTRIG(v)                   (((v) & 0x0F) << 0)
 
-#define USART1  ((volatile TUSART *) USART1_base)
-#define USART2  ((volatile TUSART *) USART2_base)
-#define USART3  ((volatile TUSART *) USART3_base)
+#define USART1  ((volatile TUSART *) USART1_BASE)
+#define USART2  ((volatile TUSART *) USART2_BASE)
+#define USART3  ((volatile TUSART *) USART3_BASE)
 
 extern int32_t USART_GetPDCode(TUSART Index);
 extern pUSART_CONTEXT USART_GetContext(TUSART Index);

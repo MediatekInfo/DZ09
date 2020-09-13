@@ -22,20 +22,20 @@
 #define FREERUNFREQ                 26000000UL
 #define MAX_GPT_FREQ                16384                                                           // 32kHz source and /2 prescaler
 
-#define GPTIMER1_CON                (*(volatile uint32_t *)(GPT_base + 0x0000))
+#define GPTIMER1_CON                (*(volatile uint32_t *)(GPT_BASE + 0x0000))
 #define GPT_OneShot                 (0 << 14)
 #define GPT_ARepeat                 (1 << 14)
 #define GPT_Enable                  (1 << 15)
-#define GPTIMER1_DAT                (*(volatile uint32_t *)(GPT_base + 0x0004))
-#define GPTIMER2_CON                (*(volatile uint32_t *)(GPT_base + 0x0008))
+#define GPTIMER1_DAT                (*(volatile uint32_t *)(GPT_BASE + 0x0004))
+#define GPTIMER2_CON                (*(volatile uint32_t *)(GPT_BASE + 0x0008))
 #define GPT_OneShot                 (0 << 14)
 #define GPT_ARepeat                 (1 << 14)
 #define GPT_Enable                  (1 << 15)
-#define GPTIMER2_DAT                (*(volatile uint32_t *)(GPT_base + 0x000C))
-#define GPTIMER_STA                 (*(volatile uint32_t *)(GPT_base + 0x0010))
+#define GPTIMER2_DAT                (*(volatile uint32_t *)(GPT_BASE + 0x000C))
+#define GPTIMER_STA                 (*(volatile uint32_t *)(GPT_BASE + 0x0010))
 #define GPT1_TO                     (1 << 0)                                                        // Read Clear
 #define GPT2_TO                     (1 << 1)                                                        // Read Clear
-#define GPTIMER1_PS                 (*(volatile uint32_t *)(GPT_base + 0x0014))
+#define GPTIMER1_PS                 (*(volatile uint32_t *)(GPT_BASE + 0x0014))
 #define GPT_PS(v)                   (((v) & 0x07) << 0)
 #define GPT_PS16kHz                 0
 #define GPT_PS8kHz                  1
@@ -45,7 +45,7 @@
 #define GPT_PS512Hz                 5
 #define GPT_PS256Hz                 6
 #define GPT_PS128Hz                 7
-#define GPTIMER2_PS                 (*(volatile uint32_t *)(GPT_base + 0x0018))
+#define GPTIMER2_PS                 (*(volatile uint32_t *)(GPT_BASE + 0x0018))
 #define GPT_PS(v)                   (((v) & 0x07) << 0)
 #define GPT_PS16384                 0
 #define GPT_PS8192                  1
@@ -55,10 +55,10 @@
 #define GPT_PS512                   5
 #define GPT_PS256                   6
 #define GPT_PS128                   7
-#define GPTIMER4_CON                (*(volatile uint32_t *)(GPT_base + 0x0028))
+#define GPTIMER4_CON                (*(volatile uint32_t *)(GPT_BASE + 0x0028))
 #define GPT4_Enable                 (1 << 0)
 #define GPT4_LOCK                   (1 << 1)
-#define GPTIMER4_DAT                (*(volatile uint32_t *)(GPT_base + 0x002C))
+#define GPTIMER4_DAT                (*(volatile uint32_t *)(GPT_BASE + 0x002C))
 
 typedef enum tag_GPT
 {

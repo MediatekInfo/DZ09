@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,19 +16,9 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef _EMI_H_
-#define _EMI_H_
+#ifndef _GDIFONT_H_
+#define _GDIFONT_H_
 
-typedef enum
-{
-    MR_BOOTCODE = 0,                                                                                // Boot jump code
-    MR_FB0RB1   = 2,                                                                                // Flash - Bank0, RAM - Bank1
-    MR_FB1RB0   = 3                                                                                 // Flash - Bank1, RAM - Bank0
-} MREMAP;
 
-#define EMI_REMAP                   (*(volatile uint16_t *)(BOOT_ENG_BASE))
-#define EMI_REMAP_MODE_MASK         0x03
 
-extern void EMI_MemoryRemap(MREMAP Mode);
-
-#endif /* _EMI_H_ */
+#endif /* _GDIFONT_H_ */
