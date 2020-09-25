@@ -33,11 +33,13 @@ void PLL_Initialize(void)                                                       
     // enable delay control
     PLL_PLLTD_CON0 = 0x0000;    //0x A0170700, bit 0 set to 0 to enable delay control
 
-    // wait for 1us for TOPSM and delay (HW) control signal stable
+    //wait for 1us for TOPSM and delay (HW) control signal stable
     USC_Pause_us(1);
 
-    // Disable UPLL by default
-    PLL_SetUPLLEnabled(false);
+    //enable and reset UPLL
+    tmp = PLL_UPLL_CON0;
+    tmp  |= 0x0001;
+    PLL_UPLL_CON0 = tmp;        // 0xA0170140, bit 0 set to 1 to enable UPLL and generate reset of UPLL
 
     //select MPLL frequency
     PLL_MPLL_CON0  = 0x1400;    // 0xA0170100, set MPLL = 520M
@@ -75,14 +77,4 @@ void PLL_Initialize(void)                                                       
     PLL_CLK_CONDC = 0xB620;
 
     USC_Pause_us(50);
-}
-
-void PLL_SetUPLLEnabled(boolean Enable)
-{
-    uint32_t tmpUPLL = PLL_UPLL_CON0;
-
-    if (Enable) tmpUPLL |= 0x0001;
-    else tmpUPLL &= ~0x0001;
-
-    PLL_UPLL_CON0 = tmpUPLL;
 }
