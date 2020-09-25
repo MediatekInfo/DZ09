@@ -138,3 +138,9 @@ void PMU_SetISINKParameters(ISINKCHNL Channel, ICVAL Value, boolean Enable)
         break;
     }
 }
+
+void PMU_TurnOnVUSB(boolean Enable)
+{
+    if (Enable) VUSB_CON0 |= RG_VUSB_EN;
+    else VUSB_CON0 &= ~RG_VUSB_EN;
+}

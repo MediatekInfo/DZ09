@@ -19,6 +19,40 @@
 #ifndef _USB_H_
 #define _USB_H_
 
+#define USB_EP0_MAXLENGTH           64
+
+typedef enum tag_USBDIR
+{
+    USB_DIR_OUT  = 0x00,
+    USB_DIR_IN   = 0x80,
+    USB_DIR_MASK = 0x80
+} TUSBDIR;
+
+typedef enum tag_EP
+{
+    USB_EP0,
+    USB_EP1IN,
+    USB_EP2IN,
+    USB_EP3IN,
+    USB_EP4IN,
+    USB_EP1OUT,
+    USB_EP2OUT,
+    USB_EPNUM
+} TEP;
+
+typedef struct tag_EPSTATE
+{
+    TUSBDIR  EPType;
+    uint16_t PacketSize;
+    void     *TXBuffer;                                                                             // transmit buffer located in main memory
+    void     *TXPosition;                                                                           // next transmit position in the buffer or NULL if done
+    uint16_t TXLength;                                                                              // transmit buffer length
+    void     *RXBuffer;                                                                             // receive buffer located in main memory
+    void     *RXPosition;                                                                           // next transmit position in the buffer or NULL if done
+    uint16_t RXLength;                                                                              // receive buffer length
+    void     (*EventHandler)(uint8_t EPAddress);
+} TEPSTATE;
+
 #define USB_FADDR                   (*(volatile uint8_t *)(USB_BASE + 0x0000))
 #define UUPD                        (1 << 7)
 #define UFADDR(v)                   (((v) & 0x7F) << 0)
@@ -89,7 +123,7 @@
 #define UIDMAENAB                   (1 << 4)
 #define UMODE                       (1 << 5)
 #define UISO                        (1 << 6)
-#define UUAUTOSET                   (1 << 7)
+#define UAUTOSET                    (1 << 7)
 #define USB_EP_OUTMAXP              (*(volatile uint8_t *)(USB_BASE + 0x0013))
 #define USB_EP_OUTCSR1              (*(volatile uint8_t *)(USB_BASE + 0x0014))
 #define UOUTPKTRDY                  (1 << 0)
@@ -109,6 +143,7 @@
 #define USB_EP_COUNTL               (*(volatile uint8_t *)(USB_BASE + 0x0016))
 #define USB_EP_COUNTH               (*(volatile uint8_t *)(USB_BASE + 0x0017))
 #define UCOUNTH(v)                  ((v) & 0x07)
+#define USB_EPn_FIFO(v)             (*(volatile uint8_t *)(USB_BASE + 0x0020 + 4 * (v)))
 #define USB_EP0_FIFO                (*(volatile uint8_t *)(USB_BASE + 0x0020))
 #define USB_EP1_FIFO                (*(volatile uint8_t *)(USB_BASE + 0x0024))
 #define USB_EP2_FIFO                (*(volatile uint8_t *)(USB_BASE + 0x0028))
@@ -129,5 +164,14 @@
 #define USB_U1PHYCR1                (*(volatile uint32_t *)(USB_SIFSLV_BASE + 0x08C4))               // USB1.1 PHY Control Registers
 #define U1PHYCR1_RG_USB11_PHY_REV_7 (1 << 15)
 #define USB_U1PHYCR2                (*(volatile uint32_t *)(USB_SIFSLV_BASE + 0x08C8))               // USB1.1 PHY Control Registers
+
+extern void USB_Initialize(void);
+extern void USB_EnableDevice(void);
+extern void USB_DisableDevice(void);
+extern boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8_t), uint8_t MaxPacketSize);
+extern boolean USB_SetEndpointEnabled(TEP Endpoint, boolean Enabled);
+extern uint32_t USB_GetOUTDataLength(TEP Endpoint);
+extern void USB_UpdateEPState(TEP Endpoint, boolean ReadStage, boolean SendStall, boolean DataEnd);
+extern void USB_ControlEPStall(TEP Endpoint, boolean Enable);
 
 #endif /* _USB_H_ */

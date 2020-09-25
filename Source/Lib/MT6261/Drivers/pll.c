@@ -3,20 +3,20 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2020, 2019 AJScorp
 *
-* This program is free software; you can redistribute it and/or modify 
-* it under the terms of the GNU General Public License as published by 
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
 * the Free Software Foundation; version 2 of the License.
 *
-* This program is distributed in the hope that it will be useful, 
-* but WITHOUT ANY WARRANTY; without even the implied warranty of 
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
 * General Public License for more details.
 *
-* You should have received a copy of the GNU General Public License 
-* along with this program; if not, write to the Free Software 
-* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA. 
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
 #include "pll.h"
@@ -33,13 +33,11 @@ void PLL_Initialize(void)                                                       
     // enable delay control
     PLL_PLLTD_CON0 = 0x0000;    //0x A0170700, bit 0 set to 0 to enable delay control
 
-    //wait for 1us for TOPSM and delay (HW) control signal stable
+    // wait for 1us for TOPSM and delay (HW) control signal stable
     USC_Pause_us(1);
 
-    //enable and reset UPLL
-    tmp = PLL_UPLL_CON0;
-    tmp  |= 0x0001;
-    PLL_UPLL_CON0 = tmp;        // 0xA0170140, bit 0 set to 1 to enable UPLL and generate reset of UPLL
+    // Disable UPLL by default
+    PLL_SetUPLLEnabled(false);
 
     //select MPLL frequency
     PLL_MPLL_CON0  = 0x1400;    // 0xA0170100, set MPLL = 520M
@@ -77,4 +75,14 @@ void PLL_Initialize(void)                                                       
     PLL_CLK_CONDC = 0xB620;
 
     USC_Pause_us(50);
+}
+
+void PLL_SetUPLLEnabled(boolean Enable)
+{
+    uint32_t tmpUPLL = PLL_UPLL_CON0;
+
+    if (Enable) tmpUPLL |= 0x0001;
+    else tmpUPLL &= ~0x0001;
+
+    PLL_UPLL_CON0 = tmpUPLL;
 }
