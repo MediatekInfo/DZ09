@@ -37,7 +37,6 @@ static void USB_ResetDevice(void)
     USB_FADDR = UUPD;
     USB_INTRINE = 0;
     USB_INTROUTE = 0;
-    USB_INTRUSBE = 0;
     USB_INTRUSBE = UISUSP | UIRESUME | UIRESET;
 
     memset(EPState, 0x00, sizeof(EPState));
@@ -98,6 +97,7 @@ static void USB_InterruptHandler(void)
         if (IntFlagsUSB & UIRESUME)
         {
             /* Enter to normal power mode */
+            USB_INTRUSBE = UISUSP | UIRESET;
             USB_POWER = URESUME | USWRSTENAB;
         }
 
@@ -123,6 +123,7 @@ static void USB_InterruptHandler(void)
         if (IntFlagsUSB & UISUSPEND)
         {
             /* Enter to suspend power mode */
+            USB_INTRUSBE = UIRESUME | UIRESET;
             USB_POWER = USUSPENAB | USWRSTENAB;
         }
     }
