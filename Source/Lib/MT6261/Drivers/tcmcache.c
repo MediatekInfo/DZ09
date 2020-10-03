@@ -70,8 +70,7 @@ boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheabl
     int32_t  FreeRegionIdx = -1;
 
     RegionStart &= ~MPU_ADDR_MASK;
-    if (RegionEnd & MPU_ADDR_MASK)
-        RegionEnd = (RegionEnd & ~MPU_ADDR_MASK) + MPU_ADDR_MASK + 1;
+    RegionEnd = (RegionEnd + MPU_ADDR_MASK) & ~MPU_ADDR_MASK;
 
     if (RegionStart < RegionEnd)
     {
@@ -98,11 +97,11 @@ boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheabl
             MpuInfo.MPURegions[FreeRegionIdx].Used = true;
             MpuInfo.RegionsUsed++;
             DebugPrint("Region 0x%08X...0x%08X added to cache. Rights: %s\r\n",
-                       RegionStart, RegionEnd, AccRightsStr[AccessRights & MPU_ATTR_MASK]);
+                       RegionStart, RegionEnd - 1, AccRightsStr[AccessRights & MPU_ATTR_MASK]);
             return true;
         }
     }
-    DebugPrint("Unable to add region 0x%08X...0x%08X to cache.\r\n", RegionStart, RegionEnd);
+    DebugPrint("Unable to add region 0x%08X...0x%08X to cache.\r\n", RegionStart, RegionEnd - 1);
     return false;
 }
 
