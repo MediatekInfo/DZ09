@@ -19,39 +19,22 @@
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
 #include "systemconfig.h"
+#include "usb9.h"
 #include "usb.h"
 
-const uint8_t EPFIFOSize[USB_EPNUM] = {64, 64, 64, 16, 16, 64, 64};
+const uint8_t EPFIFOSize[USB_EPNUM] =
+{
+    USB_EP0_FIFOSIZE,
+    USB_EP1_FIFOSIZE,
+    USB_EP2_FIFOSIZE,
+    USB_EP3_FIFOSIZE,
+    USB_EP4_FIFOSIZE,
+    USB_EP1_FIFOSIZE,
+    USB_EP2_FIFOSIZE
+};
 
 TEPSTATE EPState[USB_EPNUM];
-uint8_t  DeviceAddress;
-uint8_t  SetupPacket[USB_EP0_MAXLENGTH];
-
-static void USB_ResetDevice(void)
-{
-    USB_POWER = USWRSTENAB;                                                                         // Enable software reset
-
-    USB_RSTCTRL = USWRST;                                                                           // Reset device
-    USB_RSTCTRL = 0;
-
-    USB_FADDR = UUPD;
-    USB_INTRINE = 0;
-    USB_INTROUTE = 0;
-    USB_INTRUSBE = UISUSP | UIRESUME | UIRESET;
-
-    memset(EPState, 0x00, sizeof(EPState));
-
-    USB_INTRINE |= UEP0;
-}
-
-static boolean USB_GetInterruptFlags(uint8_t *IntUSB, uint8_t *IntIN, uint8_t *IntOUT)
-{
-    *IntUSB = USB_INTRUSB & USB_INTRUSBE;
-    *IntIN  = USB_INTRIN & USB_INTRINE;
-    *IntOUT = USB_INTROUT & USB_INTROUTE;
-
-    return *IntUSB || *IntIN || *IntOUT;
-}
+uint8_t  EP0Buffer[USB_EP0_FIFOSIZE] __attribute__ ((aligned (8)));
 
 static void USB_EPFIFORead(TEP Endpoint, uint32_t Count, void *Data)
 {
@@ -74,9 +57,81 @@ static void USB_EPFIFOWrite(TEP Endpoint, uint32_t Count, void *Data)
         USB_EPn_FIFO(Endpoint) = *SrcPointer++;
 }
 
-static void USB_SetDeviceAddress(uint8_t Address)
+static void USB_EP0Handler(uint8_t EPAddress)
 {
-    DeviceAddress = Address;
+    if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
+    {
+        uint32_t Count = USB_GetOUTDataLength(USB_EP0);
+
+        DebugPrint("COUT=%d\r\n", Count);
+        if (Count)
+        {
+            USB_EPFIFORead(USB_EP0, Count, EP0Buffer);
+            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer);
+        }
+    }
+    else if (EPState[USB_EP0].Stage == EPSTAGE_RX)
+    {
+//        USB_DataReceive(USB_EP0);
+    }
+    if (EPState[USB_EP0].Stage == EPSTAGE_TX)
+    {
+        USB_DataTransmit(USB_EP0);
+    }
+}
+
+static void USB_ResetDevice(void)
+{
+    USB_POWER = USWRSTENAB;                                                                         // Enable software reset
+
+    USB_RSTCTRL = USWRST;                                                                           // Reset device
+    USB_RSTCTRL = 0;
+
+    USB_FADDR = UUPD;
+    USB_INTRINE = 0;
+    USB_INTROUTE = 0;
+    USB_INTRUSBE = UISUSP | UIRESUME | UIRESET;
+
+    memset(EPState, 0x00, sizeof(EPState));
+
+    USB_SetupEndpoint(USB_EP0, USB_DIR_IN, USB_EP0Handler, EPFIFOSize[USB_EP0]);
+    USB_SetEndpointEnabled(USB_EP0, true);
+
+    USB_INTRINE |= UEP0;
+}
+
+static boolean USB_GetInterruptFlags(uint8_t *IntUSB, uint8_t *IntIN, uint8_t *IntOUT)
+{
+    *IntUSB = USB_INTRUSB & USB_INTRUSBE;
+    *IntIN  = USB_INTRIN & USB_INTRINE;
+    *IntOUT = USB_INTROUT & USB_INTROUTE;
+
+    return *IntUSB || *IntIN || *IntOUT;
+}
+
+static void USB_EPDefaultHandler(uint8_t EPAddress)
+{
+    uint8_t EPIndex = EPAddress & ~USB_DIR_MASK;
+    uint8_t tmpCSR;
+
+    USB_INDEX = EPIndex;
+    if (!EPIndex)
+    {
+        tmpCSR = USB_EP0_CSR;
+        DebugPrint("DefH CSR%d, %02X\r\n", EPIndex, tmpCSR);
+        if (tmpCSR & UE0SENTSTALL) USB_EP0_CSR = tmpCSR & ~UE0SENTSTALL;
+        if (tmpCSR & UE0SETUPEND) USB_EP0_CSR = UE0SSETUPEND;
+    }
+    else if ((EPAddress & USB_DIR_MASK) == USB_DIR_IN)
+    {
+        tmpCSR = USB_EP_INCSR1;
+        USB_EP_INCSR1 = tmpCSR & ~UISENTSTALL;
+    }
+    else
+    {
+        tmpCSR = USB_EP_OUTCSR1;
+        USB_EP_OUTCSR1 = tmpCSR & ~UOSENTSTALL;
+    }
 }
 
 static void USB_InterruptHandler(void)
@@ -86,8 +141,7 @@ static void USB_InterruptHandler(void)
 
     while(USB_GetInterruptFlags(&IntFlagsUSB, &IntFlagsIN, &IntFlagsOUT))
     {
-        DebugPrint("USB %02X %02X %02X\r\n", IntFlagsUSB, IntFlagsIN, IntFlagsOUT);
-
+        DebugPrint("\r\nINT %02X %02X %02X\r\n", IntFlagsUSB, IntFlagsIN, IntFlagsOUT);
         if (IntFlagsUSB & UIRESET)
         {
             /* Reset the device */
@@ -100,7 +154,6 @@ static void USB_InterruptHandler(void)
             USB_INTRUSBE = UISUSP | UIRESET;
             USB_POWER = URESUME | USWRSTENAB;
         }
-
         /* Process endpoint requests */
         for(i = 0; (i < USB_EPNUM) && (IntFlagsIN || IntFlagsOUT); i++)
         {
@@ -108,16 +161,18 @@ static void USB_InterruptHandler(void)
 
             USB_INDEX = EPIndex;
 
-            if ((IntFlagsIN & (1 << EPIndex)) && (EPState[i].EventHandler != NULL))
+            if (IntFlagsIN & (1 << EPIndex))
             {
-                EPState[i].EventHandler(EPIndex | USB_DIR_IN);
-                IntFlagsIN &= ~(1 << EPIndex);
+                USB_EPDefaultHandler(EPIndex | USB_DIR_IN);
+                if (EPState[i].EventHandler != NULL) EPState[i].EventHandler(EPIndex | USB_DIR_IN);
             }
-            if ((IntFlagsOUT & (1 << EPIndex)) && (EPState[i].EventHandler != NULL))
+            if (IntFlagsOUT & (1 << EPIndex))
             {
-                EPState[i].EventHandler(EPIndex | USB_DIR_OUT);
-                IntFlagsOUT &= ~(1 << EPIndex);
+                USB_EPDefaultHandler(EPIndex | USB_DIR_OUT);
+                if (EPState[i].EventHandler != NULL) EPState[i].EventHandler(EPIndex | USB_DIR_OUT);
             }
+            IntFlagsIN  &= ~(1 << EPIndex);
+            IntFlagsOUT &= ~(1 << EPIndex);
         }
 
         if (IntFlagsUSB & UISUSPEND)
@@ -145,7 +200,7 @@ void USB_EnableDevice(void)
     /* USB AHB clock */
     PCTL_PowerUp(PD_USB);
     /* USB internal 48MHz */
-    PLL_SetUPLLEnabled(true);
+//    PLL_SetUPLLEnabled(true);
     /* Wait while power stable */
     USC_Pause_us(50);
     /* Turn on PHY bias control */
@@ -171,9 +226,15 @@ void USB_DisableDevice(void)
     NVIC_UnregisterIRQ(IRQ_USB_CODE);
 }
 
+void USB_SetDeviceAddress(uint8_t Address)
+{
+    USB_FADDR = Address;
+    DebugPrint("FADDR = %02X %02X\r\n", Address, USB_FADDR);
+}
+
 boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8_t), uint8_t MaxPacketSize)
 {
-    if ((Endpoint >= USB_EPNUM) || (EPState[Endpoint].EventHandler == NULL)) return false;
+    if ((Endpoint >= USB_EPNUM) || (Handler == NULL)) return false;
 
     MaxPacketSize = min(MaxPacketSize, EPFIFOSize[Endpoint]);
     USB_INDEX = (Endpoint < USB_EP1OUT) ? Endpoint : Endpoint - USB_EP1OUT + USB_EP1IN;
@@ -197,8 +258,10 @@ boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8
         }
         else return false;
     }
+
     memset(&EPState[Endpoint], 0x00, sizeof(TEPSTATE));
 
+    EPState[Endpoint].Stage = EPSTAGE_IDLE;
     EPState[Endpoint].EPType = Direction;
     EPState[Endpoint].EventHandler = Handler;
     EPState[Endpoint].PacketSize = MaxPacketSize;
@@ -353,5 +416,52 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = tmpCSR | UOFLUSHFIFO;
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = tmpCSR | UOFLUSHFIFO;
         }
+    }
+}
+
+void USB_PrepareDataReceive(TEP Endpoint, uint8_t *DataBuffer)
+{
+    if ((Endpoint < USB_EPNUM) &&
+            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
+    {
+        EPState[Endpoint].RXBuffer = DataBuffer;
+        EPState[Endpoint].RXPosition = DataBuffer;
+        EPState[Endpoint].RXLength = 0;
+
+        USB_SetEndpointEnabled(Endpoint, true);
+    }
+}
+
+void USB_PrepareDataTransmit(TEP Endpoint, uint8_t *DataBuffer, uint32_t DataLength)
+{
+    if ((Endpoint < USB_EPNUM) &&
+            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
+    {
+        EPState[Endpoint].TXBuffer = DataBuffer;
+        EPState[Endpoint].TXPosition = DataBuffer;
+        EPState[Endpoint].TXLength = DataLength;
+        EPState[Endpoint].Stage = EPSTAGE_TX;
+    }
+}
+
+void USB_DataTransmit(TEP Endpoint)
+{
+    if ((Endpoint < USB_EPNUM) &&
+            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
+    {
+        uint32_t Count = min(EPState[Endpoint].TXLength, EPFIFOSize[Endpoint]);
+
+        EPState[Endpoint].TXLength -= Count;
+
+        USB_EPFIFOWrite(Endpoint, Count, EPState[Endpoint].TXPosition);
+
+        DebugPrint("TX size: %d\r\n", Count);
+
+        if (Count < EPFIFOSize[Endpoint])
+        {
+            EPState[Endpoint].Stage = EPSTAGE_IDLE;
+            USB_UpdateEPState(Endpoint, false, false, true);
+        }
+        else USB_UpdateEPState(Endpoint, false, false, false);
     }
 }

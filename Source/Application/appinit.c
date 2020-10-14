@@ -29,6 +29,9 @@ boolean APP_Initialize(void)
 
         BL_TurnOn(true);
 
+        USB_Initialize();
+        USB_EnableDevice();
+
         return true;
     }
     while(0);

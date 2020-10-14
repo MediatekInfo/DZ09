@@ -19,14 +19,19 @@
 #ifndef _USB_H_
 #define _USB_H_
 
-#define USB_EP0_MAXLENGTH           64
-
 typedef enum tag_USBDIR
 {
     USB_DIR_OUT  = 0x00,
     USB_DIR_IN   = 0x80,
     USB_DIR_MASK = 0x80
 } TUSBDIR;
+
+typedef enum tag_EPSTAGE
+{
+    EPSTAGE_IDLE,
+    EPSTAGE_RX,
+    EPSTAGE_TX
+} TEPSTAGE;
 
 typedef enum tag_EP
 {
@@ -43,6 +48,7 @@ typedef enum tag_EP
 typedef struct tag_EPSTATE
 {
     TUSBDIR  EPType;
+    TEPSTAGE Stage;
     uint16_t PacketSize;
     void     *TXBuffer;                                                                             // transmit buffer located in main memory
     void     *TXPosition;                                                                           // next transmit position in the buffer or NULL if done
@@ -52,6 +58,18 @@ typedef struct tag_EPSTATE
     uint16_t RXLength;                                                                              // receive buffer length
     void     (*EventHandler)(uint8_t EPAddress);
 } TEPSTATE;
+
+#define USB_EP0_FIFOSIZE            64
+#define USB_EP1_FIFOSIZE            64
+#define USB_EP2_FIFOSIZE            64
+#define USB_EP3_FIFOSIZE            16
+#define USB_EP4_FIFOSIZE            16
+
+#define USB_EP0                     USB_EP0
+#define USB_EP1                     USB_EP1IN
+#define USB_EP2                     USB_EP2IN
+#define USB_EP3                     USB_EP3IN
+#define USB_EP4                     USB_EP4IN
 
 #define USB_FADDR                   (*(volatile uint8_t *)(USB_BASE + 0x0000))
 #define UUPD                        (1 << 7)
@@ -165,13 +183,19 @@ typedef struct tag_EPSTATE
 #define U1PHYCR1_RG_USB11_PHY_REV_7 (1 << 15)
 #define USB_U1PHYCR2                (*(volatile uint32_t *)(USB_SIFSLV_BASE + 0x08C8))               // USB1.1 PHY Control Registers
 
+extern TEPSTATE EPState[USB_EPNUM];
+
 extern void USB_Initialize(void);
 extern void USB_EnableDevice(void);
 extern void USB_DisableDevice(void);
+extern void USB_SetDeviceAddress(uint8_t Address);
 extern boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8_t), uint8_t MaxPacketSize);
 extern boolean USB_SetEndpointEnabled(TEP Endpoint, boolean Enabled);
 extern uint32_t USB_GetOUTDataLength(TEP Endpoint);
 extern void USB_UpdateEPState(TEP Endpoint, boolean ReadStage, boolean SendStall, boolean DataEnd);
 extern void USB_ControlEPStall(TEP Endpoint, boolean Enable);
+extern void USB_PrepareDataReceive(TEP Endpoint, uint8_t *DataBuffer);
+extern void USB_PrepareDataTransmit(TEP Endpoint, uint8_t *DataBuffer, uint32_t DataLength);
+extern void USB_DataTransmit(TEP Endpoint);
 
 #endif /* _USB_H_ */
