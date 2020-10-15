@@ -29,8 +29,8 @@ typedef enum tag_USBDIR
 typedef enum tag_EPSTAGE
 {
     EPSTAGE_IDLE,
-    EPSTAGE_RX,
-    EPSTAGE_TX
+    EPSTAGE_OUT,
+    EPSTAGE_IN
 } TEPSTAGE;
 
 typedef enum tag_EP

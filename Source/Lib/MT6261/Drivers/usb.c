@@ -70,11 +70,11 @@ static void USB_EP0Handler(uint8_t EPAddress)
             USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer);
         }
     }
-    else if (EPState[USB_EP0].Stage == EPSTAGE_RX)
+    else if (EPState[USB_EP0].Stage == EPSTAGE_OUT)
     {
 //        USB_DataReceive(USB_EP0);
     }
-    if (EPState[USB_EP0].Stage == EPSTAGE_TX)
+    if (EPState[USB_EP0].Stage == EPSTAGE_IN)
     {
         USB_DataTransmit(USB_EP0);
     }
@@ -440,7 +440,7 @@ void USB_PrepareDataTransmit(TEP Endpoint, void *DataBuffer, uint32_t DataLength
         EPState[Endpoint].DataBuffer = DataBuffer;
         EPState[Endpoint].DataPosition = DataBuffer;
         EPState[Endpoint].DataLength = DataLength;
-        EPState[Endpoint].Stage = EPSTAGE_TX;
+        EPState[Endpoint].Stage = EPSTAGE_IN;
     }
 }
 
