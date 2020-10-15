@@ -273,46 +273,36 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
 
 void NVIC_C_IRQ_Handler(void)
 {
-    uint32_t IRQSrcIdx  = NVIC_GetIRQStatus2();
+    uint32_t IRQSrcIdx;
 
-    do
+    while((IRQSrcIdx = NVIC_GetIRQStatus2()) != NOIRQ)
     {
-        if (IRQSrcIdx != NOIRQ)
+        IRQSrcIdx &= IRQMASK;
+        if (IRQHandlers[IRQSrcIdx].Handler != NULL)
+            IRQHandlers[IRQSrcIdx].Handler();
+        else
         {
-            IRQSrcIdx &= IRQMASK;
-            if (IRQHandlers[IRQSrcIdx].Handler != NULL)
-                IRQHandlers[IRQSrcIdx].Handler();
-            else
-            {
-                DebugPrint("\r\nUnhandled IRQ 0x%02X", IRQSrcIdx);
-            }
-            NVIC_SetIRQ_EOI(IRQSrcIdx);
+            DebugPrint("\r\nUnhandled IRQ 0x%02X", IRQSrcIdx);
         }
-        IRQSrcIdx = NVIC_GetIRQStatus2();
+        NVIC_SetIRQ_EOI(IRQSrcIdx);
     }
-    while(IRQSrcIdx != NOIRQ);
 }
 
 void NVIC_ADIE_C_IRQ_Handler(void)
 {
-    uint32_t AIRQSrcIdx = NVIC_GetAIRQStatus2();
+    uint32_t AIRQSrcIdx;
 
-    do
+    while((AIRQSrcIdx = NVIC_GetAIRQStatus2()) != NOIRQ)
     {
-        if (AIRQSrcIdx != NOIRQ)
+        AIRQSrcIdx &= AIRQMASK;
+        if (AIRQHandlers[AIRQSrcIdx].Handler != NULL)
+            AIRQHandlers[AIRQSrcIdx].Handler();
+        else
         {
-            AIRQSrcIdx &= AIRQMASK;
-            if (AIRQHandlers[AIRQSrcIdx].Handler != NULL)
-                AIRQHandlers[AIRQSrcIdx].Handler();
-            else
-            {
-                DebugPrint("\r\nUnhandled AIRQ 0x%02X", AIRQSrcIdx);
-            }
-            NVIC_SetAIRQ_EOI(AIRQSrcIdx);
+            DebugPrint("\r\nUnhandled AIRQ 0x%02X", AIRQSrcIdx);
         }
-        AIRQSrcIdx = NVIC_GetAIRQStatus2();
+        NVIC_SetAIRQ_EOI(AIRQSrcIdx);
     }
-    while(AIRQSrcIdx != NOIRQ);
 }
 
 void NVIC_EINTCHandler(void)
