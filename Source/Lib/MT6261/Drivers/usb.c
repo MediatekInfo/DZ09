@@ -424,9 +424,9 @@ void USB_PrepareDataReceive(TEP Endpoint, uint8_t *DataBuffer)
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
     {
-        EPState[Endpoint].RXBuffer = DataBuffer;
-        EPState[Endpoint].RXPosition = DataBuffer;
-        EPState[Endpoint].RXLength = 0;
+        EPState[Endpoint].DataBuffer = DataBuffer;
+        EPState[Endpoint].DataPosition = DataBuffer;
+        EPState[Endpoint].DataLength = 0;
 
         USB_SetEndpointEnabled(Endpoint, true);
     }
@@ -437,9 +437,9 @@ void USB_PrepareDataTransmit(TEP Endpoint, uint8_t *DataBuffer, uint32_t DataLen
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
     {
-        EPState[Endpoint].TXBuffer = DataBuffer;
-        EPState[Endpoint].TXPosition = DataBuffer;
-        EPState[Endpoint].TXLength = DataLength;
+        EPState[Endpoint].DataBuffer = DataBuffer;
+        EPState[Endpoint].DataPosition = DataBuffer;
+        EPState[Endpoint].DataLength = DataLength;
         EPState[Endpoint].Stage = EPSTAGE_TX;
     }
 }
@@ -449,11 +449,11 @@ void USB_DataTransmit(TEP Endpoint)
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
     {
-        uint32_t Count = min(EPState[Endpoint].TXLength, EPState[Endpoint].PacketSize);
+        uint32_t Count = min(EPState[Endpoint].DataLength, EPState[Endpoint].PacketSize);
 
-        EPState[Endpoint].TXLength -= Count;
+        EPState[Endpoint].DataLength -= Count;
 
-        USB_EPFIFOWrite(Endpoint, Count, EPState[Endpoint].TXPosition);
+        USB_EPFIFOWrite(Endpoint, Count, EPState[Endpoint].DataPosition);
 
         DebugPrint("TX size: %d\r\n", Count);
 

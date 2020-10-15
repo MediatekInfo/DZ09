@@ -50,12 +50,9 @@ typedef struct tag_EPSTATE
     TUSBDIR  EPType;
     TEPSTAGE Stage;
     uint16_t PacketSize;
-    void     *TXBuffer;                                                                             // transmit buffer located in main memory
-    void     *TXPosition;                                                                           // next transmit position in the buffer or NULL if done
-    uint16_t TXLength;                                                                              // transmit buffer length
-    void     *RXBuffer;                                                                             // receive buffer located in main memory
-    void     *RXPosition;                                                                           // next transmit position in the buffer or NULL if done
-    uint16_t RXLength;                                                                              // receive buffer length
+    void     *DataBuffer;                                                                           // Buffer located in main memory
+    void     *DataPosition;                                                                         // Next position in the buffer or NULL if done
+    uint32_t DataLength;                                                                            // Data length
     void     (*EventHandler)(uint8_t EPAddress);
 } TEPSTATE;
 
