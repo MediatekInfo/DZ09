@@ -419,7 +419,7 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
     }
 }
 
-void USB_PrepareDataReceive(TEP Endpoint, uint8_t *DataBuffer)
+void USB_PrepareDataReceive(TEP Endpoint, void *DataBuffer)
 {
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
@@ -432,7 +432,7 @@ void USB_PrepareDataReceive(TEP Endpoint, uint8_t *DataBuffer)
     }
 }
 
-void USB_PrepareDataTransmit(TEP Endpoint, uint8_t *DataBuffer, uint32_t DataLength)
+void USB_PrepareDataTransmit(TEP Endpoint, void *DataBuffer, uint32_t DataLength)
 {
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
