@@ -94,7 +94,7 @@ static void USB_ResetDevice(void)
 
     memset(EPState, 0x00, sizeof(EPState));
 
-    USB_SetupEndpoint(USB_EP0, USB_DIR_IN, USB_EP0Handler, EPFIFOSize[USB_EP0]);
+    USB_SetupEndpoint(USB_EP0, USB_DIR_IN, USB_EP0Handler, USB_EP0_FIFOSIZE);
     USB_SetEndpointEnabled(USB_EP0, true);
 
     USB_INTRINE |= UEP0;
@@ -449,7 +449,7 @@ void USB_DataTransmit(TEP Endpoint)
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
     {
-        uint32_t Count = min(EPState[Endpoint].TXLength, EPFIFOSize[Endpoint]);
+        uint32_t Count = min(EPState[Endpoint].TXLength, EPState[Endpoint].PacketSize);
 
         EPState[Endpoint].TXLength -= Count;
 
@@ -457,7 +457,7 @@ void USB_DataTransmit(TEP Endpoint)
 
         DebugPrint("TX size: %d\r\n", Count);
 
-        if (Count < EPFIFOSize[Endpoint])
+        if (Count < EPState[Endpoint].PacketSize)
         {
             EPState[Endpoint].Stage = EPSTAGE_IDLE;
             USB_UpdateEPState(Endpoint, false, false, true);
