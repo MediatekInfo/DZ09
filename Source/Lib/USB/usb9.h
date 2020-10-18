@@ -140,6 +140,15 @@ typedef struct tag_USB_DEV_DESCR
     uint8_t  bNumConfigurations;
 } TUSB_DEV_DESCR, *pUSB_DEV_DESCR;
 
+#define _USB_STRING_(name, str)\
+const struct name\
+{\
+    uint8_t  Length;\
+    uint8_t  DescriptorType;\
+    uint16_t String[(sizeof(str) - 2) / 2];\
+}\
+name = {sizeof(name), USB_STRING, str};
+
 extern void USB9_HandleSetupRequest(pUSBSETUP Setup);
 
 #endif /* _USB9_H_ */
