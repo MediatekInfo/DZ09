@@ -462,6 +462,6 @@ void USB_PrepareDataTransmit(TEP Endpoint, void *DataBuffer, uint32_t DataLength
         EPState[Endpoint].DataBuffer = DataBuffer;
         EPState[Endpoint].DataPosition = DataBuffer;
         EPState[Endpoint].DataLength = DataLength;
-        EPState[Endpoint].Stage = EPSTAGE_IN;
+        EPState[Endpoint].Stage = ((DataBuffer != NULL) && DataLength) ? EPSTAGE_IN : EPSTAGE_IDLE;
     }
 }
