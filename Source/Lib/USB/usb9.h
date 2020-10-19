@@ -140,6 +140,19 @@ typedef struct tag_USB_DEV_DESCR
     uint8_t  bNumConfigurations;
 } TUSB_DEV_DESCR, *pUSB_DEV_DESCR;
 
+// standard configuration descriptor
+typedef struct tag_USB_CFG_DESCR
+{
+    uint8_t  bLength;
+    uint8_t  bDescriptorType;
+    uint16_t wTotalLength;
+    uint8_t  bNumInterfaces;
+    uint8_t  bConfigurationValue;
+    uint8_t  iConfiguration;
+    uint8_t  bmAttributes;
+    uint8_t  bMaxPower;
+} TUSB_CFG_DESCR, *pUSB_CFG_DESCR;
+
 #define _USB_STRING_(name, str)\
 const struct name\
 {\
