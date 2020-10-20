@@ -49,6 +49,7 @@ typedef struct tag_EPSTATE
 {
     TUSBDIR  EPType;
     TEPSTAGE Stage;
+    boolean  Stalled;
     uint16_t PacketSize;
     void     *DataBuffer;                                                                           // Buffer located in main memory
     void     *DataPosition;                                                                         // Next position in the buffer or NULL if done

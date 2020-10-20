@@ -23,6 +23,7 @@
 #include "usb9.h"
 
 static pUSBDRIVERINTERFACE DevInterface;
+static uint8_t U9Buffer[2] __attribute__ ((aligned (4)));
 
 static boolean USB9_GetDescriptor(pUSBSETUP Setup)
 {
@@ -138,7 +139,35 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         break;
     case USB_GET_STATUS:
         DebugPrint("GET_STATUS\r\n");
-        USB_PrepareDataTransmit(USB_EP0, (void *)DevInterface->DeviceStatus, 2);
+        switch (Setup->bmRequestType)
+        {
+        case USB_FS_DEVICE:                                                                             // Remote Wakeup / Self Powered features
+            USB_PrepareDataTransmit(USB_EP0, (void *)DevInterface->DeviceStatus, 2);
+            break;
+        case USB_FS_INTERFACE:
+            U9Buffer[0] = U9Buffer[1] = 0;
+            USB_PrepareDataTransmit(USB_EP0, (void *)U9Buffer, 2);
+            break;
+        case USB_FS_ENDPOINT:
+        {
+            uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
+
+            if (EPIndex > USB_EP_MAXNUM) Error = true;
+            else
+            {
+                if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
+                    EPIndex += USB_EP_MAXNUM;
+                if (EPIndex < USB_EPNUM)
+                {
+                    U9Buffer[0] = EPState[EPIndex].Stalled;
+                    U9Buffer[1] = 0;
+                    USB_PrepareDataTransmit(USB_EP0, (void *)U9Buffer, 2);
+                }
+                else Error = true;
+            }
+        }
+        break;
+        }
         break;
     case USB_CLEAR_FEATURE:
         DebugPrint("CLEAR_FEATURE\r\n");

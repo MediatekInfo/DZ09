@@ -35,7 +35,7 @@ const uint8_t EPFIFOSize[USB_EPNUM] =
 
 TEPSTATE       EPState[USB_EPNUM];
 TUSBSTATE      USBDeviceState;
-static uint8_t EP0Buffer[USB_EP0_FIFOSIZE] __attribute__ ((aligned (8)));
+static uint8_t EP0Buffer[USB_EP0_FIFOSIZE] __attribute__ ((aligned (4)));
 
 static void USB_EPFIFORead(TEP Endpoint, uint32_t Count, void *Data)
 {
@@ -436,6 +436,7 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
             USB_EP_INCSR1 = tmpCSR;
             if (USB_EP_INCSR1 & UINPKTRDY) USB_EP_INCSR1 = tmpCSR | UABORTPKTEN | UIFLUSHFIFO;
             if (USB_EP_INCSR1 & UINPKTRDY) USB_EP_INCSR1 = tmpCSR | UABORTPKTEN | UIFLUSHFIFO;
+            EPState[Endpoint].Stalled = false;
         }
         else if ((Endpoint == USB_EP1OUT) || (Endpoint == USB_EP2OUT))
         {
@@ -444,6 +445,7 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
             USB_EP_OUTCSR1 = tmpCSR;
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = tmpCSR | UOFLUSHFIFO;
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = tmpCSR | UOFLUSHFIFO;
+            EPState[Endpoint].Stalled = false;
         }
     }
     else
@@ -455,6 +457,7 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
             USB_EP_INCSR1 = tmpCSR;
             if (USB_EP_INCSR1 & UINPKTRDY) USB_EP_INCSR1 = tmpCSR | UABORTPKTEN | UIFLUSHFIFO;
             if (USB_EP_INCSR1 & UINPKTRDY) USB_EP_INCSR1 = tmpCSR | UABORTPKTEN | UIFLUSHFIFO;
+            EPState[Endpoint].Stalled = true;
         }
         else if ((Endpoint == USB_EP1OUT) || (Endpoint == USB_EP2OUT))
         {
@@ -463,6 +466,7 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
             USB_EP_OUTCSR1 = tmpCSR;
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = tmpCSR | UOFLUSHFIFO;
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = tmpCSR | UOFLUSHFIFO;
+            EPState[Endpoint].Stalled = true;
         }
     }
 }
