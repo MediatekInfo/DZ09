@@ -33,8 +33,9 @@ const uint8_t EPFIFOSize[USB_EPNUM] =
     USB_EP2_FIFOSIZE
 };
 
-TEPSTATE EPState[USB_EPNUM];
-uint8_t  EP0Buffer[USB_EP0_FIFOSIZE] __attribute__ ((aligned (8)));
+TEPSTATE       EPState[USB_EPNUM];
+TUSBSTATE      USBDeviceState;
+static uint8_t EP0Buffer[USB_EP0_FIFOSIZE] __attribute__ ((aligned (8)));
 
 static void USB_EPFIFORead(TEP Endpoint, uint32_t Count, void *Data)
 {
@@ -113,6 +114,8 @@ static void USB_ResetDevice(void)
     USB_INTRINE = 0;
     USB_INTROUTE = 0;
     USB_INTRUSBE = UISUSP | UIRESUME | UIRESET;
+
+    USBDeviceState = USB_DEVICE_IDLE;
 
     memset(EPState, 0x00, sizeof(EPState));
 
@@ -249,6 +252,7 @@ void USB_EnableDevice(void)
 
 void USB_DisableDevice(void)
 {
+    USBDeviceState = USB_DEVICE_IDLE;
     /* Release D+ pull up resistor */
     USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
     /* Turn off PHY bias control */
@@ -267,7 +271,13 @@ void USB_DisableDevice(void)
 void USB_SetDeviceAddress(uint8_t Address)
 {
     USB_FADDR = Address;
+    USBDeviceState = USB_DEVICE_ADDRESSED;
     DebugPrint("FADDR = %02X %02X\r\n", Address, USB_FADDR);
+}
+
+boolean USB_IsDeviceActive(void)
+{
+    return (USBDeviceState == USB_DEVICE_CONFIGURED);
 }
 
 boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8_t), uint8_t MaxPacketSize)
