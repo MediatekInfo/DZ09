@@ -87,11 +87,13 @@ static void USB_EP0Handler(uint8_t EPAddress)
         uint32_t Count = USB_GetOUTDataLength(USB_EP0);
 
         DebugPrint("COUT=%d\r\n", Count);
-        if (Count)
+        if (Count >= sizeof(TUSBSETUP))
         {
-            USB_EPFIFORead(USB_EP0, Count, EP0Buffer);
-            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer);
+            USB_EPFIFORead(USB_EP0, sizeof(TUSBSETUP), EP0Buffer);
+            Count -= sizeof(TUSBSETUP);
+            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer, Count);
         }
+        else USB_UpdateEPState(USB_EP0, true, true, true);                                          // Invalid Setup request -> send Stall
     }
     else if (EPState[USB_EP0].Stage == EPSTAGE_OUT)
     {

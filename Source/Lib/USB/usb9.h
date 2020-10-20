@@ -186,6 +186,6 @@ typedef struct tag_USBDRIVERINTERFACE
 } TUSBDRIVERINTERFACE, *pUSBDRIVERINTERFACE;
 
 extern boolean USB9_InterfaceInitialize(void);
-extern void USB9_HandleSetupRequest(pUSBSETUP Setup);
+extern void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize);
 
 #endif /* _USB9_H_ */

@@ -222,7 +222,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
     else USB_UpdateEPState(USB_EP0, true, Error, false);
 }
 
-void USB9_HandleSetupRequest(pUSBSETUP Setup)
+void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize)
 {
     switch(Setup->bmRequestType & USB_CMD_TYPEMASK)
     {
