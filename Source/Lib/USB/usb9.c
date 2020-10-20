@@ -107,9 +107,21 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         break;
     case USB_GET_INTERFACE:
         DebugPrint("GET_INTERFACE\r\n");
+        if ((USBDeviceState < USB_DEVICE_CONFIGURED) ||
+                (DevInterface->GetAltInterface == NULL)) Error = true;
+        else
+        {
+            uint8_t *AltInerfIndex = DevInterface->GetAltInterface(Setup->wIndex);
+
+            if (AltInerfIndex == NULL) Error = true;
+            else USB_PrepareDataTransmit(USB_EP0, AltInerfIndex, 1);
+        }
         break;
     case USB_SET_INTERFACE:
         DebugPrint("SET_INTERFACE\r\n");
+        if ((USBDeviceState < USB_DEVICE_CONFIGURED) ||
+                (DevInterface->SetAltInterface == NULL)) Error = true;
+        else Error = !DevInterface->SetAltInterface(Setup->wIndex, Setup->wValue);
         break;
     case USB_SET_DESCRIPTOR:
     case USB_SYNCH_FRAME:

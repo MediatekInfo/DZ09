@@ -178,6 +178,8 @@ typedef struct tag_USBDRIVERINTERFACE
     pUSB_STR_DESCR (*GetStringDescriptor)(uint8_t Index);
     const uint8_t  *ConfigIndex;
     void           (*SetConfiguration)(uint8_t Index);
+    uint8_t        (*(*GetAltInterface)(uint8_t Index));
+    boolean        (*SetAltInterface)(uint8_t Index, uint8_t AltIndex);
     const uint16_t *DeviceStatus;
 } TUSBDRIVERINTERFACE, *pUSBDRIVERINTERFACE;
 
