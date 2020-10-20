@@ -118,6 +118,13 @@
 		<Unit filename="Source\Application\Drivers\ili9341.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Application\USB\usbdevice_cdc.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\USB\usbdevice_cdc.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Bootloader\DZ09_boot.c">
 			<Option compilerVar="CC" />
 			<Option target="BOOTLOADER" />
