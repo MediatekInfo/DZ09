@@ -62,6 +62,62 @@ static boolean USB9_GetDescriptor(pUSBSETUP Setup)
     return Error;
 }
 
+static boolean USB9_ClearFeature(pUSBSETUP Setup)
+{
+    boolean Error = false;
+
+    switch (Setup->bmRequestType)
+    {
+    case USB_FS_ENDPOINT:
+    {
+        uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
+
+        if (EPIndex > USB_EP_MAXNUM) Error = true;
+        else
+        {
+            if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
+                EPIndex += USB_EP_MAXNUM;
+            if (EPIndex < USB_EPNUM) USB_ControlEPStall(EPIndex, false);
+            else Error = true;
+        }
+    }
+    break;
+    case USB_FS_DEVICE:                                                                             // Remote Wakeup / Self Powered features
+    case USB_FS_INTERFACE:
+        Error = true;
+        break;
+    }
+    return Error;
+}
+
+static boolean USB9_SetFeature(pUSBSETUP Setup)
+{
+    boolean Error = false;
+
+    switch (Setup->bmRequestType)
+    {
+    case USB_FS_ENDPOINT:
+    {
+        uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
+
+        if (EPIndex > USB_EP_MAXNUM) Error = true;
+        else
+        {
+            if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
+                EPIndex += USB_EP_MAXNUM;
+            if (EPIndex < USB_EPNUM) USB_ControlEPStall(EPIndex, true);
+            else Error = true;
+        }
+    }
+    break;
+    case USB_FS_DEVICE:                                                                             // Remote Wakeup / Self Powered features
+    case USB_FS_INTERFACE:
+        Error = true;
+        break;
+    }
+    return Error;
+}
+
 static void USB9_HandleStdRequest(pUSBSETUP Setup)
 {
     boolean Error = false;
@@ -86,9 +142,11 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         break;
     case USB_CLEAR_FEATURE:
         DebugPrint("CLEAR_FEATURE\r\n");
+        Error = USB9_ClearFeature(Setup);
         break;
     case USB_SET_FEATURE:
         DebugPrint("SET_FEATURE\r\n");
+        Error = USB9_SetFeature(Setup);
         break;
     case USB_SET_CONFIGURATION:
         DebugPrint("SET_CONFIGURATION\r\n");

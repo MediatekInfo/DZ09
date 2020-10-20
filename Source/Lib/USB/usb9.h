@@ -21,6 +21,8 @@
 #ifndef _USB9_H_
 #define _USB9_H_
 
+#define USB_EPNUM_MASK              0x000F
+
 #define DEV_LENGTH                  18                                                              // Length of Device Descriptor
 #define CFG_LENGTH                  9                                                               // Length of Configuration Descriptor
 #define INT_LENGTH                  9                                                               // Length of Interface Descriptor
