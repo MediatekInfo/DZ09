@@ -111,7 +111,9 @@ static const uint8_t CFG_DESC_CDC[] =
     0x00                                                                                            // '0' - endpoint never NAKs
 };
 
-TUSBDRIVERINTERFACE USB_CDC_Interface;
+static TUSBDRIVERINTERFACE USB_CDC_Interface;
+static uint8_t  CDC_DeviceConfig;
+static uint16_t CDC_DeviceStatus;
 
 static uint8_t USB_CDC_GetStringDescriptorCount(void)
 {
@@ -123,11 +125,23 @@ static pUSB_STR_DESCR USB_CDC_GetStringDescriptor(uint8_t Index)
     return (Index < USB_CDC_GetStringDescriptorCount()) ? STR_DATA_CDC[Index] : NULL;
 }
 
+static void USB_CDC_SetConfiguration(uint8_t Index)
+{
+    /* Do something here when the configuration changes */
+    CDC_DeviceConfig = Index;
+}
+
 void *USB_CDC_Initialize(void)
 {
+    CDC_DeviceConfig = 0;
+    CDC_DeviceStatus = 0;
+
     USB_CDC_Interface.DeviceDesctiptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
     USB_CDC_Interface.ConfigDescriptor = (pUSB_CFG_DESCR)CFG_DESC_CDC;
     USB_CDC_Interface.GetStringDescriptor = USB_CDC_GetStringDescriptor;
+    USB_CDC_Interface.ConfigIndex = &CDC_DeviceConfig;
+    USB_CDC_Interface.SetConfiguration = USB_CDC_SetConfiguration;
+    USB_CDC_Interface.DeviceStatus = &CDC_DeviceStatus;
 
     return &USB_CDC_Interface;
 }

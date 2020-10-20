@@ -78,17 +78,12 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         break;
     case USB_GET_CONFIGURATION:
         DebugPrint("GET_CONFIGURATION\r\n");
-//        USB_PrepareTransmitData(USB_EP0, &DevConfig, 1);
+        USB_PrepareDataTransmit(USB_EP0, (void *)DevInterface->ConfigIndex, 1);
         break;
     case USB_GET_STATUS:
-    {
-        uint16_t DevStatus = 0;                                                                     // We does not process "Self Powered" and "Remote Wakeup" fields.
-
         DebugPrint("GET_STATUS\r\n");
-//        USB_StartTransmitData(USB_EP0, (uint8_t *)&DevStatus, 2);
-//        Error = false;
-    }
-    break;
+        USB_PrepareDataTransmit(USB_EP0, (void *)DevInterface->DeviceStatus, 2);
+        break;
     case USB_CLEAR_FEATURE:
         DebugPrint("CLEAR_FEATURE\r\n");
         break;
@@ -97,6 +92,18 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         break;
     case USB_SET_CONFIGURATION:
         DebugPrint("SET_CONFIGURATION\r\n");
+        if (USBDeviceState < USB_DEVICE_ADDRESSED) Error = true;
+        else
+        {
+            uint8_t ConfigIndex = Setup->wValue;
+
+            if (ConfigIndex > DevInterface->DeviceDesctiptor->bNumConfigurations) Error = true;
+            else
+            {
+                DevInterface->SetConfiguration(ConfigIndex);
+                USBDeviceState = (ConfigIndex) ? USB_DEVICE_CONFIGURED : USB_DEVICE_ADDRESSED;
+            }
+        }
         break;
     case USB_GET_INTERFACE:
         DebugPrint("GET_INTERFACE\r\n");
@@ -107,6 +114,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
     case USB_SET_DESCRIPTOR:
     case USB_SYNCH_FRAME:
     default:
+        Error = true;
         break;
     }
 
