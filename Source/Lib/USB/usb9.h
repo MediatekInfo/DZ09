@@ -151,7 +151,16 @@ typedef struct tag_USB_CFG_DESCR
     uint8_t  iConfiguration;
     uint8_t  bmAttributes;
     uint8_t  bMaxPower;
+    uint8_t  ExtraData[];
 } TUSB_CFG_DESCR, *pUSB_CFG_DESCR;
+
+// standard string descriptor
+typedef struct tag_USB_STR_DESCR
+{
+    uint8_t  bLength;
+    uint8_t  bDescriptorType;
+    uint16_t wString[];
+} TUSB_STR_DESCR, *pUSB_STR_DESCR;
 
 #define _USB_STRING_(name, str)\
 const struct name\
@@ -162,6 +171,15 @@ const struct name\
 }\
 name = {sizeof(name), USB_STRING, str};
 
+typedef struct tag_USBDRIVERINTERFACE
+{
+    pUSB_DEV_DESCR DeviceDesctiptor;
+    pUSB_CFG_DESCR ConfigDescriptor;
+    pUSB_STR_DESCR (*GetStringDescriptor)(uint8_t Index);
+
+} TUSBDRIVERINTERFACE, *pUSBDRIVERINTERFACE;
+
+extern boolean USB9_InterfaceInitialize(void);
 extern void USB9_HandleSetupRequest(pUSBSETUP Setup);
 
 #endif /* _USB9_H_ */

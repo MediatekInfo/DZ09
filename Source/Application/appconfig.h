@@ -44,6 +44,10 @@
 #define BACKLIGHTDEFVAL 100                                                                         // In percents
 #define BASKLIGHTCOUNT  163                                                                         // 199.8 Hz
 
+/* USB driver */
+#define _USB_CDC_DRIVER_                                                                            // Prolific PL2303 emulation
+//#define _NO_USB_DRIVER_
+
 /* Application pins configuration */
 
 /* LCD interface */

@@ -21,7 +21,8 @@
 #include "systemconfig.h"
 #include "usb.h"
 #include "usb9.h"
-#include "usbdevice.h"
+
+static pUSBDRIVERINTERFACE DevInterface;
 
 static boolean USB9_GetDescriptor(pUSBSETUP Setup)
 {
@@ -35,20 +36,22 @@ static boolean USB9_GetDescriptor(pUSBSETUP Setup)
         {
         case USB_CMD_DEVICE:
             DebugPrint("->DEVICE\r\n");
-            USB_PrepareDataTransmit(USB_EP0, (uint8_t *)USBDevDescriptor, min(DEV_LENGTH, Setup->wLength));
+            USB_PrepareDataTransmit(USB_EP0, DevInterface->DeviceDesctiptor,
+                                    min(DEV_LENGTH, Setup->wLength));
             break;
         case USB_CMD_CONFIG:
             DebugPrint("->CONFIG\r\n");
-            USB_PrepareDataTransmit(USB_EP0, USBCfgDescriptor, min(USB_DevConfigSize(), Setup->wLength));
+            USB_PrepareDataTransmit(USB_EP0, DevInterface->ConfigDescriptor,
+                                    min(DevInterface->ConfigDescriptor->wTotalLength, Setup->wLength));
             break;
         case USB_CMD_STRING:
         {
-            uint8_t Index = Setup->wValue & 0x00FF;
-            uint8_t *String = USB_GetString(Index);
+            uint8_t        Index = Setup->wValue & 0x00FF;
+            pUSB_STR_DESCR String = DevInterface->GetStringDescriptor(Index);
 
             DebugPrint("->STRING\r\n");
             if (String == NULL) Error = true;
-            else USB_PrepareDataTransmit(USB_EP0, (uint8_t *)String, min(String[0], Setup->wLength));
+            else USB_PrepareDataTransmit(USB_EP0, String, min(String->bLength, Setup->wLength));
         }
         break;
         default:
@@ -135,4 +138,11 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup)
         USB_UpdateEPState(USB_EP0, true, true, false);
         break;
     }
+}
+
+boolean USB9_InterfaceInitialize(void)
+{
+    DevInterface = USB_ITF_Initialize();
+
+    return (DevInterface != NULL);
 }

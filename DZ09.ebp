@@ -281,13 +281,6 @@
 		<Unit filename="Source\Lib\USB\usb9.h">
 			<Option target="SYSTEM" />
 		</Unit>
-		<Unit filename="Source\Lib\USB\usbdevice.c">
-			<Option compilerVar="CC" />
-			<Option target="SYSTEM" />
-		</Unit>
-		<Unit filename="Source\Lib\USB\usbdevice.h">
-			<Option target="SYSTEM" />
-		</Unit>
 		<Unit filename="Source\startup_MT6261x.S">
 			<Option compilerVar="CC" />
 		</Unit>

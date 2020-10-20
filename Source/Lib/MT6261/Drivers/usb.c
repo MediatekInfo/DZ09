@@ -116,10 +116,17 @@ static void USB_ResetDevice(void)
 
     memset(EPState, 0x00, sizeof(EPState));
 
-    USB_SetupEndpoint(USB_EP0, USB_DIR_IN, USB_EP0Handler, USB_EP0_FIFOSIZE);
-    USB_SetEndpointEnabled(USB_EP0, true);
-
-    USB_INTRINE |= UEP0;
+    if (!USB9_InterfaceInitialize())
+    {
+        DebugPrint("Can not initialize USB device interface.\r\n");
+        USB_DisableDevice();
+    }
+    else
+    {
+        USB_SetupEndpoint(USB_EP0, USB_DIR_IN, USB_EP0Handler, USB_EP0_FIFOSIZE);
+        USB_SetEndpointEnabled(USB_EP0, true);
+        USB_INTRINE |= UEP0;
+    }
 }
 
 static boolean USB_GetInterruptFlags(uint8_t *IntUSB, uint8_t *IntIN, uint8_t *IntOUT)
@@ -208,15 +215,21 @@ static void USB_InterruptHandler(void)
 
 void USB_Initialize(void)
 {
+#if !defined(_NO_USB_DRIVER_)
+    DebugPrint("USB driver initialization.\r\n");
     memset(&EPState, 0x00, sizeof(EPState));
 
     USB_DisableDevice();
 
     NVIC_RegisterIRQ(IRQ_USB_CODE, USB_InterruptHandler, IRQ_SENS_LEVEL, true);
+#else
+    USB_DisableDevice();
+#endif
 }
 
 void USB_EnableDevice(void)
 {
+#if !defined(_NO_USB_DRIVER_)
     /* Turn on VUSB */
     PMU_TurnOnVUSB(true);
     /* USB AHB clock */
@@ -230,6 +243,8 @@ void USB_EnableDevice(void)
     USC_Pause_us(10);
     /* Set up D+ pull up resistor */
     USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
+    DebugPrint("USB device enabled.\r\n");
+#endif
 }
 
 void USB_DisableDevice(void)
@@ -246,6 +261,7 @@ void USB_DisableDevice(void)
     PCTL_PowerDown(PD_USB);
 
     NVIC_UnregisterIRQ(IRQ_USB_CODE);
+    DebugPrint("USB device disabled.\r\n");
 }
 
 void USB_SetDeviceAddress(uint8_t Address)
