@@ -81,9 +81,9 @@ static const uint8_t CFG_DESC_CDC[] =
     CDC_CTL_INTERFACE_INDEX,                                                                        // Index of interface in this Configuration
     0x00,                                                                                           // Alternative interface ('0' - None)
     0x03,                                                                                           // Number of endpoints, used by this interface
-    0xFF,                                                                                           // Class Code: Communication Interface Class
-    0x00,                                                                                           // Subclass Code: Abstract Control Model
-    0x00,                                                                                           // Protocol Code: Common AT commands
+    0xFF,                                                                                           // Class Code: Vendor specific (?)
+    0x00,                                                                                           // Subclass Code: Reserved (?)
+    0x00,                                                                                           // Protocol Code: No class specific protocol required
     0x00,                                                                                           // Index of string descriptor describing this interface
 
     // Pipe 1 (endpoint 1)
