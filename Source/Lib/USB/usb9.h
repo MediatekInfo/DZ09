@@ -175,7 +175,7 @@ name = {sizeof(name), USB_STRING, str};
 
 typedef struct tag_USBDRIVERINTERFACE
 {
-    pUSB_DEV_DESCR DeviceDesctiptor;
+    pUSB_DEV_DESCR DeviceDescriptor;
     pUSB_CFG_DESCR ConfigDescriptor;
     pUSB_STR_DESCR (*GetStringDescriptor)(uint8_t Index);
     const uint8_t  *ConfigIndex;

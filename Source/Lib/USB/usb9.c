@@ -37,7 +37,7 @@ static boolean USB9_GetDescriptor(pUSBSETUP Setup)
         {
         case USB_CMD_DEVICE:
             DebugPrint("->DEVICE\r\n");
-            USB_PrepareDataTransmit(USB_EP0, DevInterface->DeviceDesctiptor,
+            USB_PrepareDataTransmit(USB_EP0, DevInterface->DeviceDescriptor,
                                     min(DEV_LENGTH, Setup->wLength));
             break;
         case USB_CMD_CONFIG:
@@ -184,7 +184,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         {
             uint8_t ConfigIndex = Setup->wValue;
 
-            if (ConfigIndex > DevInterface->DeviceDesctiptor->bNumConfigurations) Error = true;
+            if (ConfigIndex > DevInterface->DeviceDescriptor->bNumConfigurations) Error = true;
             else
             {
                 DevInterface->SetConfiguration(ConfigIndex);

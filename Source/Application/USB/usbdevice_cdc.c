@@ -137,7 +137,7 @@ void *USB_CDC_Initialize(void)
     CDC_DeviceStatus = 0;
     memset(&USB_CDC_Interface, 0x00, sizeof(TUSBDRIVERINTERFACE));
 
-    USB_CDC_Interface.DeviceDesctiptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
+    USB_CDC_Interface.DeviceDescriptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
     USB_CDC_Interface.ConfigDescriptor = (pUSB_CFG_DESCR)CFG_DESC_CDC;
     USB_CDC_Interface.GetStringDescriptor = USB_CDC_GetStringDescriptor;
     USB_CDC_Interface.ConfigIndex = &CDC_DeviceConfig;
