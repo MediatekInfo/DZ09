@@ -32,7 +32,19 @@
 #define CDC_CTL_INTERFACE_INDEX     0x00
 #define CDC_DATA_INTERFACE_INDEX    0x01
 
-static pUSB_STR_DESCR USB_CDC_GetStringDescriptor(uint8_t Index);
+typedef struct
+{
+    uint16_t Request;
+    uint8_t  Data;
+} CDC_VENDOR_REQ;
+
+typedef struct
+{
+    uint32_t dwDTERate;
+    uint8_t  bCharFormat;
+    uint8_t  bParityType;
+    uint8_t  bDataBits;
+} CDC_LINE_CODING, *pCDC_LINE_CODING;
 
 _USB_STRING_(sd00_cdc, 0x0409);
 _USB_STRING_(sd01_cdc, u"Prolific Technology Inc. ");
@@ -115,6 +127,25 @@ static TUSBDRIVERINTERFACE USB_CDC_Interface;
 static uint8_t  CDC_DeviceConfig;
 static uint16_t CDC_DeviceStatus;
 
+static CDC_LINE_CODING CDC_Params =
+{
+    115200,
+    0,
+    0,
+    8
+};
+
+static CDC_VENDOR_REQ VReq[] =
+{
+    0x0080, 0x01,
+    0x0081, 0x00,
+    0x0082, 0x44,
+    0x8383, 0xFF,
+    0x8484, 0x02,
+    0x8686, 0xAA,
+    0x9494, 0x00
+};
+
 static uint8_t USB_CDC_GetStringDescriptorCount(void)
 {
     return sizeof(STR_DATA_CDC) / sizeof(STR_DATA_CDC[0]);
@@ -131,6 +162,46 @@ static void USB_CDC_SetConfiguration(uint8_t Index)
     CDC_DeviceConfig = Index;
 }
 
+static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
+{
+    switch (Setup->bRequest)
+    {
+    case SET_LINE_CODING:
+        break;
+    case GET_LINE_CODING:
+        break;
+    case SET_CONTROL_LINE_STATE:
+        break;
+    default:
+        break;
+    }
+}
+
+static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
+{
+//    if ((Setup->bmRequestType & USB_CMD_DATADIR) == USB_DIR_OUT)
+//        USB_StartTransmitData(USB_EP0, NULL, 0);
+//    else
+//    {
+//        if (Setup->wValue == 0x0606)
+//            USB_StartTransmitData(USB_EP0, NULL, 0);
+//        else
+//        {
+//            uint32_t i;
+//
+//            bError = true;
+//
+//            for(i = 0; i < sizeof(VReq) / sizeof(CDC_VENDOR_REQ); i++)
+//                if (Setup->wValue == VReq[i].Request)
+//                {
+//                    USB_StartTransmitData(USB_EP0, &VReq[i].Data, sizeof(VReq[i].Data));
+//                    bError = false;
+//                    break;
+//                }
+//        }
+//    }
+}
+
 void *USB_CDC_Initialize(void)
 {
     CDC_DeviceConfig = 0;
@@ -143,6 +214,8 @@ void *USB_CDC_Initialize(void)
     USB_CDC_Interface.ConfigIndex = &CDC_DeviceConfig;
     USB_CDC_Interface.SetConfiguration = USB_CDC_SetConfiguration;
     USB_CDC_Interface.DeviceStatus = &CDC_DeviceStatus;
+    USB_CDC_Interface.InterfaceReqHandler = USB_CDC_InterfaceReqHandler;
+    USB_CDC_Interface.VendorReqHandler = USB_CDC_VendorReqHandler;
 
     return &USB_CDC_Interface;
 }

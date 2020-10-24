@@ -231,15 +231,19 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize)
         USB9_HandleStdRequest(Setup);
         break;
     case USB_CMD_CLASSREQ:
-        if ((Setup->bmRequestType == USB_CMD_CLASSIFIN) ||
-                (Setup->bmRequestType == USB_CMD_CLASSIFOUT))
+        if ((DevInterface->InterfaceReqHandler != NULL) &&
+                ((Setup->bmRequestType == USB_CMD_CLASSIFIN) ||
+                 (Setup->bmRequestType == USB_CMD_CLASSIFOUT)))
         {
-            //USB_ITF_ReqHandler(Setup);
+            DevInterface->InterfaceReqHandler(Setup);
         }
         else USB_UpdateEPState(USB_EP0, true, true, false);
         break;
     case USB_CMD_VENDREQ:
-        //USB_ITF_VendorReqHandler(Setup);
+        if (DevInterface->VendorReqHandler != NULL)
+        {
+            DevInterface->VendorReqHandler(Setup);
+        }
         break;
     default:
         USB_UpdateEPState(USB_EP0, true, true, false);

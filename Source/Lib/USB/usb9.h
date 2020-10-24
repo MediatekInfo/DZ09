@@ -183,6 +183,8 @@ typedef struct tag_USBDRIVERINTERFACE
     uint8_t        (*(*GetAltInterface)(uint8_t Index));
     boolean        (*SetAltInterface)(uint8_t Index, uint8_t AltIndex);
     const uint16_t *DeviceStatus;
+    void           (*InterfaceReqHandler)(pUSBSETUP Setup);
+    void           (*VendorReqHandler)(pUSBSETUP Setup);
 } TUSBDRIVERINTERFACE, *pUSBDRIVERINTERFACE;
 
 extern boolean USB9_InterfaceInitialize(void);
