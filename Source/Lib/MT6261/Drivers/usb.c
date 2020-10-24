@@ -93,7 +93,7 @@ static void USB_EP0Handler(uint8_t EPAddress)
             Count -= sizeof(TUSBSETUP);
             USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer, Count);
         }
-        else USB_UpdateEPState(USB_EP0, true, true, true);                                          // Invalid Setup request -> send Stall
+        else if (Count) USB_UpdateEPState(USB_EP0, true, true, true);                               // Invalid Setup request -> send Stall
     }
     else if (EPState[USB_EP0].Stage == EPSTAGE_OUT)
     {
