@@ -67,11 +67,13 @@ static boolean USB9_ClearFeature(pUSBSETUP Setup)
 {
     boolean Error = false;
 
-    switch (Setup->bmRequestType)
+    switch (Setup->bmRequestType & USB_FS_MASK)
     {
     case USB_FS_ENDPOINT:
     {
         uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
+
+        DebugPrint("ENDPOINT %02X\r\n", Setup->wIndex);
 
         if (EPIndex > USB_EP_MAXNUM) Error = true;
         else
@@ -84,7 +86,11 @@ static boolean USB9_ClearFeature(pUSBSETUP Setup)
     }
     break;
     case USB_FS_DEVICE:                                                                             // Remote Wakeup / Self Powered features
+        DebugPrint("DEVICE\r\n");
+        Error = true;
+        break;
     case USB_FS_INTERFACE:
+        DebugPrint("INTERFACE\r\n");
         Error = true;
         break;
     }
@@ -95,7 +101,7 @@ static boolean USB9_SetFeature(pUSBSETUP Setup)
 {
     boolean Error = false;
 
-    switch (Setup->bmRequestType)
+    switch (Setup->bmRequestType & USB_FS_MASK)
     {
     case USB_FS_ENDPOINT:
     {
@@ -119,6 +125,45 @@ static boolean USB9_SetFeature(pUSBSETUP Setup)
     return Error;
 }
 
+static boolean USB9_GetStatus(pUSBSETUP Setup)
+{
+    boolean Error = false;
+
+    switch (Setup->bmRequestType & USB_FS_MASK)
+    {
+    case USB_FS_ENDPOINT:
+    {
+        uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
+
+        DebugPrint("ENDPOINT %02X\r\n", Setup->wIndex);
+        if (EPIndex > USB_EP_MAXNUM) Error = true;
+        else
+        {
+            if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
+                EPIndex += USB_EP_MAXNUM;
+            if (EPIndex < USB_EPNUM)
+            {
+                U9Buffer[0] = EPState[EPIndex].Stalled;
+                U9Buffer[1] = 0;
+                USB_PrepareDataTransmit(USB_EP0, (void *)U9Buffer, 2);
+            }
+            else Error = true;
+        }
+    }
+    break;
+    case USB_FS_DEVICE:
+        DebugPrint("DEVICE\r\n");
+        USB_PrepareDataTransmit(USB_EP0, (void *)DevInterface->DeviceStatus, 2);
+        break;
+    case USB_FS_INTERFACE:
+        DebugPrint("INTERFACE\r\n");
+        U9Buffer[0] = U9Buffer[1] = 0;
+        USB_PrepareDataTransmit(USB_EP0, (void *)U9Buffer, 2);
+        break;
+    }
+    return Error;
+}
+
 static void USB9_HandleStdRequest(pUSBSETUP Setup)
 {
     boolean Error = false;
@@ -126,7 +171,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
     switch(Setup->bRequest)
     {
     case USB_SET_ADDRESS:
-        DebugPrint("SET_ADDRESS %02X\r\n", Setup->bmRequestType);
+        DebugPrint("SET_ADDRESS %02X\r\n", Setup->wValue);
         USB_SetDeviceAddress(Setup->wValue);
         break;
     case USB_GET_DESCRIPTOR:
@@ -138,39 +183,11 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         USB_PrepareDataTransmit(USB_EP0, (void *)DevInterface->ConfigIndex, 1);
         break;
     case USB_GET_STATUS:
-        DebugPrint("GET_STATUS\r\n");
-        switch (Setup->bmRequestType)
-        {
-        case USB_FS_DEVICE:                                                                             // Remote Wakeup / Self Powered features
-            USB_PrepareDataTransmit(USB_EP0, (void *)DevInterface->DeviceStatus, 2);
-            break;
-        case USB_FS_INTERFACE:
-            U9Buffer[0] = U9Buffer[1] = 0;
-            USB_PrepareDataTransmit(USB_EP0, (void *)U9Buffer, 2);
-            break;
-        case USB_FS_ENDPOINT:
-        {
-            uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
-
-            if (EPIndex > USB_EP_MAXNUM) Error = true;
-            else
-            {
-                if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
-                    EPIndex += USB_EP_MAXNUM;
-                if (EPIndex < USB_EPNUM)
-                {
-                    U9Buffer[0] = EPState[EPIndex].Stalled;
-                    U9Buffer[1] = 0;
-                    USB_PrepareDataTransmit(USB_EP0, (void *)U9Buffer, 2);
-                }
-                else Error = true;
-            }
-        }
-        break;
-        }
+        DebugPrint("GET_STATUS ");
+        Error = USB9_GetStatus(Setup);
         break;
     case USB_CLEAR_FEATURE:
-        DebugPrint("CLEAR_FEATURE\r\n");
+        DebugPrint("CLEAR_FEATURE ");
         Error = USB9_ClearFeature(Setup);
         break;
     case USB_SET_FEATURE:
@@ -235,11 +252,13 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize)
                 ((Setup->bmRequestType == USB_CMD_CLASSIFIN) ||
                  (Setup->bmRequestType == USB_CMD_CLASSIFOUT)))
         {
+            DebugPrint("CLASSREQ: ");
             DevInterface->InterfaceReqHandler(Setup);
         }
         else USB_UpdateEPState(USB_EP0, true, true, false);
         break;
     case USB_CMD_VENDREQ:
+        DebugPrint("VENDREQ: ");
         if (DevInterface->VendorReqHandler != NULL)
         {
             DevInterface->VendorReqHandler(Setup);

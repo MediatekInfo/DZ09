@@ -46,6 +46,7 @@
 #define USB_FS_DEVICE               0x00
 #define USB_FS_INTERFACE            0x01
 #define USB_FS_ENDPOINT             0x02
+#define USB_FS_MASK                 0x03
 
 // Request Type Field
 #define USB_CMD_TYPEMASK            0x60

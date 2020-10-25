@@ -167,10 +167,13 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
     switch (Setup->bRequest)
     {
     case SET_LINE_CODING:
+        DebugPrint("SET_LINE_CODING\r\n");
         break;
     case GET_LINE_CODING:
+        DebugPrint("GET_LINE_CODING\r\n");
         break;
     case SET_CONTROL_LINE_STATE:
+        DebugPrint("SET_LINE_STATE\r\n");
         break;
     default:
         break;
@@ -179,6 +182,7 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
 
 static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
 {
+    DebugPrint("-\r\n");
 //    if ((Setup->bmRequestType & USB_CMD_DATADIR) == USB_DIR_OUT)
 //        USB_StartTransmitData(USB_EP0, NULL, 0);
 //    else
