@@ -97,6 +97,10 @@ static void USB_EP0Handler(uint8_t EPAddress)
     }
     else if (EPState[USB_EP0].Stage == EPSTAGE_OUT)
     {
+        uint32_t Count = USB_GetOUTDataLength(USB_EP0);
+
+        DebugPrint("RX COUT=%d\r\n", Count);
+        EPState[USB_EP0].Stage = EPSTAGE_IDLE;
 //        USB_DataReceive(USB_EP0);
     }
     if (EPState[USB_EP0].Stage == EPSTAGE_IN)
@@ -473,7 +477,7 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
     }
 }
 
-void USB_PrepareDataReceive(TEP Endpoint, void *DataBuffer)
+void USB_PrepareDataReceive(TEP Endpoint, void *DataBuffer, uint32_t MaxDataLength)
 {
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
@@ -481,8 +485,7 @@ void USB_PrepareDataReceive(TEP Endpoint, void *DataBuffer)
         EPState[Endpoint].DataBuffer = DataBuffer;
         EPState[Endpoint].DataPosition = DataBuffer;
         EPState[Endpoint].DataLength = 0;
-
-        USB_SetEndpointEnabled(Endpoint, true);
+        EPState[Endpoint].Stage = ((DataBuffer != NULL) && MaxDataLength) ? EPSTAGE_OUT : EPSTAGE_IDLE;
     }
 }
 

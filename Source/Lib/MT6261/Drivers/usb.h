@@ -202,7 +202,7 @@ extern boolean USB_SetEndpointEnabled(TEP Endpoint, boolean Enabled);
 extern uint32_t USB_GetOUTDataLength(TEP Endpoint);
 extern void USB_UpdateEPState(TEP Endpoint, boolean ReadStage, boolean SendStall, boolean DataEnd);
 extern void USB_ControlEPStall(TEP Endpoint, boolean Enable);
-extern void USB_PrepareDataReceive(TEP Endpoint, void *DataBuffer);
+extern void USB_PrepareDataReceive(TEP Endpoint, void *DataBuffer, uint32_t MaxDataLength);
 extern void USB_PrepareDataTransmit(TEP Endpoint, void *DataBuffer, uint32_t DataLength);
 
 #endif /* _USB_H_ */
