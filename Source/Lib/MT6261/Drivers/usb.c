@@ -45,7 +45,8 @@ static void USB_EPFIFORead(TEP Endpoint, uint32_t Count, void *Data)
     USB_INDEX = Endpoint;
 
     while(Count--)
-        *DestPointer++ = USB_EPn_FIFO(Endpoint);
+        if (DestPointer != NULL) *DestPointer++ = USB_EPn_FIFO(Endpoint);
+        else if (USB_EPn_FIFO(Endpoint));
 }
 
 static void USB_EPFIFOWrite(TEP Endpoint, uint32_t Count, void *Data)
