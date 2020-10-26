@@ -61,7 +61,7 @@ static void USB_EPFIFOWrite(TEP Endpoint, uint32_t Count, void *Data)
 static void USB_DataTransmit(TEP Endpoint)
 {
     if ((Endpoint < USB_EPNUM) &&
-            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
+            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_IN))
     {
         uint32_t Count = min(EPState[Endpoint].DataLength, EPState[Endpoint].PacketSize);
 
