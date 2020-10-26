@@ -83,6 +83,34 @@ static void USB_DataTransmit(TEP Endpoint)
     }
 }
 
+static boolean USB_DataReceive(TEP Endpoint)
+{
+    boolean  LastPacket = false;
+
+    if ((Endpoint < USB_EPNUM) &&
+            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
+    {
+        pEPSTATE EPInfo = &EPState[Endpoint];
+        uint32_t Count = USB_GetOUTDataLength(USB_EP0);
+        uint32_t TotalReceived = (uintptr_t)EPInfo->DataPosition - (uintptr_t)EPInfo->DataBuffer;
+        boolean  LastPacket = (Count < EPInfo->PacketSize);
+
+        if (TotalReceived < EPInfo->DataLength)
+        {
+            uint32_t ReadCount = min(Count, EPInfo->DataLength - TotalReceived);
+
+            USB_EPFIFORead(Endpoint, ReadCount, EPInfo->DataPosition);
+            EPInfo->DataPosition += ReadCount;
+            Count -= ReadCount;
+        }
+        if (Count) USB_EPFIFORead(Endpoint, Count, NULL);
+
+        if (LastPacket) USB_UpdateEPState(Endpoint, USB_DIR_OUT, false, true);
+        else USB_UpdateEPState(Endpoint, USB_DIR_OUT, false, false);
+    }
+    return LastPacket;
+}
+
 static void USB_EP0Handler(uint8_t EPAddress)
 {
     if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
