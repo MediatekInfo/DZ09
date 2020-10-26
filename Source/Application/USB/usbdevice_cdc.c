@@ -168,7 +168,7 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
     {
     case SET_LINE_CODING:
         DebugPrint("SET_LINE_CODING %02X\r\n", Setup->wLength);
-        USB_UpdateEPState(USB_EP0, true, false, false);
+        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, false, false);
         USB_PrepareDataReceive(USB_EP0, &CDC_Params, min(Setup->wLength, sizeof(CDC_Params)));
         break;
     case GET_LINE_CODING:

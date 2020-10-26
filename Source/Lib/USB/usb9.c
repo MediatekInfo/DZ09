@@ -235,8 +235,8 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
     }
 
     if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)                                                     // no data to transmit
-        USB_UpdateEPState(USB_EP0, true, Error, true);
-    else USB_UpdateEPState(USB_EP0, true, Error, false);
+        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
+    else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
 }
 
 void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize)
@@ -255,7 +255,7 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize)
             DebugPrint("CLASSREQ: ");
             DevInterface->InterfaceReqHandler(Setup);
         }
-        else USB_UpdateEPState(USB_EP0, true, true, false);
+        else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, true, false);
         break;
     case USB_CMD_VENDREQ:
         DebugPrint("VENDREQ: ");
@@ -265,7 +265,7 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize)
         }
         break;
     default:
-        USB_UpdateEPState(USB_EP0, true, true, false);
+        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, true, false);
         break;
     }
 }

@@ -74,9 +74,9 @@ static void USB_DataTransmit(TEP Endpoint)
         if (Count < EPState[Endpoint].PacketSize)
         {
             EPState[Endpoint].Stage = EPSTAGE_IDLE;
-            USB_UpdateEPState(Endpoint, false, false, true);
+            USB_UpdateEPState(Endpoint, USB_DIR_IN, false, true);
         }
-        else USB_UpdateEPState(Endpoint, false, false, false);
+        else USB_UpdateEPState(Endpoint, USB_DIR_IN, false, false);
     }
 }
 
@@ -93,7 +93,7 @@ static void USB_EP0Handler(uint8_t EPAddress)
             Count -= sizeof(TUSBSETUP);
             USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer, Count);
         }
-        else if (Count) USB_UpdateEPState(USB_EP0, true, true, true);                               // Invalid Setup request -> send Stall
+        else if (Count) USB_UpdateEPState(USB_EP0, USB_DIR_OUT, true, true);                        // Invalid Setup request -> send Stall
     }
     else if (EPState[USB_EP0].Stage == EPSTAGE_OUT)
     {
@@ -391,13 +391,13 @@ uint32_t USB_GetOUTDataLength(TEP Endpoint)
     return DataLength;
 }
 
-void USB_UpdateEPState(TEP Endpoint, boolean ReadStage, boolean SendStall, boolean DataEnd)
+void USB_UpdateEPState(TEP Endpoint, TUSBDIR Transaction, boolean SendStall, boolean DataEnd)
 {
     uint8_t tmpCSR;
 
     if (Endpoint == USB_EP0)
     {
-        tmpCSR = (ReadStage) ? UE0SOUTPKTRDY : UE0INPKTRDY;
+        tmpCSR = ((Transaction & USB_DIR_MASK) == USB_DIR_OUT) ? UE0SOUTPKTRDY : UE0INPKTRDY;
 
         USB_INDEX = Endpoint;
         if (SendStall) tmpCSR |= UE0SENDSTALL;
@@ -410,15 +410,16 @@ void USB_UpdateEPState(TEP Endpoint, boolean ReadStage, boolean SendStall, boole
         USB_INDEX = (Endpoint < USB_EP1OUT) ? Endpoint : Endpoint - USB_EP1OUT + USB_EP1IN;
         if ((EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_IN)
         {
-            tmpCSR = (ReadStage) ? 0 : UINPKTRDY;
+            tmpCSR = USB_EP_INCSR1;
+            if ((Transaction & USB_DIR_MASK) == USB_DIR_IN) tmpCSR |= UINPKTRDY;
             if (SendStall) tmpCSR |= UISENDSTALL;
 
             USB_EP_INCSR1 = tmpCSR;
         }
         else if ((Endpoint == USB_EP1OUT) || (Endpoint == USB_EP2OUT))
         {
-            tmpCSR = USB_EP_OUTCSR1 & UOUTPKTRDY;
-            if (ReadStage) tmpCSR &= ~UOUTPKTRDY;
+            tmpCSR = USB_EP_OUTCSR1;
+            if ((Transaction & USB_DIR_MASK) == USB_DIR_OUT) tmpCSR &= ~UOUTPKTRDY;
             if (SendStall) tmpCSR |= UISENDSTALL;
 
             USB_EP_OUTCSR1 = tmpCSR;
