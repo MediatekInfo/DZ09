@@ -51,11 +51,11 @@ typedef struct tag_EPSTATE
     TEPSTAGE Stage;
     boolean  Stalled;
     uint16_t PacketSize;
-    void     *DataBuffer;                                                                           // Buffer located in main memory
-    void     *DataPosition;                                                                         // Next position in the buffer or NULL if done
+    uint8_t  *DataBuffer;                                                                           // Buffer located in main memory
+    uint8_t  *DataPosition;                                                                         // Next position in the buffer or NULL if done
     uint32_t DataLength;                                                                            // Data length
     void     (*EventHandler)(uint8_t EPAddress);
-} TEPSTATE;
+} TEPSTATE, *pEPSTATE;
 
 typedef enum tag_USBSTATE
 {

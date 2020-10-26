@@ -64,17 +64,19 @@ static void USB_DataTransmit(TEP Endpoint)
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_IN))
     {
-        uint32_t Count = min(EPState[Endpoint].DataLength, EPState[Endpoint].PacketSize);
+        pEPSTATE EPInfo = &EPState[Endpoint];
+        uint32_t Count = min(EPInfo->DataLength, EPInfo->PacketSize);
 
-        EPState[Endpoint].DataLength -= Count;
+        USB_EPFIFOWrite(Endpoint, Count, EPInfo->DataPosition);
 
-        USB_EPFIFOWrite(Endpoint, Count, EPState[Endpoint].DataPosition);
+        EPInfo->DataLength -= Count;
+        EPInfo->DataPosition += Count;
 
         DebugPrint("TX size: %d\r\n", Count);
 
-        if (Count < EPState[Endpoint].PacketSize)
+        if (Count < EPInfo->PacketSize)
         {
-            EPState[Endpoint].Stage = EPSTAGE_IDLE;
+            EPInfo->Stage = EPSTAGE_IDLE;
             USB_UpdateEPState(Endpoint, USB_DIR_IN, false, true);
         }
         else USB_UpdateEPState(Endpoint, USB_DIR_IN, false, false);
