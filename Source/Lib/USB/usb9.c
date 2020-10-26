@@ -23,7 +23,7 @@
 #include "usb9.h"
 
 static pUSBDRIVERINTERFACE DevInterface;
-static uint8_t U9Buffer[2] __attribute__ ((aligned (4)));
+static uint8_t U9Buffer[2];
 
 static boolean USB9_GetDescriptor(pUSBSETUP Setup)
 {
