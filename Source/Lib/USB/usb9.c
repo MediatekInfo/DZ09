@@ -234,12 +234,12 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         break;
     }
 
-    if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)                                                     // no data to transmit
+    if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
         USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
     else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
 }
 
-void USB9_HandleSetupRequest(pUSBSETUP Setup, uint32_t ExtraDataSize)
+void USB9_HandleSetupRequest(pUSBSETUP Setup)
 {
     switch(Setup->bmRequestType & USB_CMD_TYPEMASK)
     {

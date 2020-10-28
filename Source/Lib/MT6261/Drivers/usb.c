@@ -121,8 +121,7 @@ static void USB_EP0Handler(uint8_t EPAddress)
         if (Count >= sizeof(TUSBSETUP))
         {
             USB_EPFIFORead(USB_EP0, sizeof(TUSBSETUP), EP0Buffer);
-            Count -= sizeof(TUSBSETUP);
-            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer, Count);
+            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer);
         }
         else if (Count) USB_UpdateEPState(USB_EP0, USB_DIR_OUT, true, true);                        // Invalid Setup request -> send Stall
     }
