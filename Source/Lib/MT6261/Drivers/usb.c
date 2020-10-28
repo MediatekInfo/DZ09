@@ -233,18 +233,18 @@ static void USB_InterruptHandler(void)
 
             USB_INDEX = EPIndex;
 
-            if (IntFlagsIN & (1 << EPIndex))
+            if ((i < USB_EP1OUT) && (IntFlagsIN & (1 << EPIndex)))
             {
+                IntFlagsIN  &= ~(1 << EPIndex);
                 USB_EPDefaultHandler(EPIndex | USB_DIR_IN);
                 if (EPState[i].EventHandler != NULL) EPState[i].EventHandler(EPIndex | USB_DIR_IN);
             }
-            if (IntFlagsOUT & (1 << EPIndex))
+            if ((i >= USB_EP1OUT) && (IntFlagsOUT & (1 << EPIndex)))
             {
+                IntFlagsOUT &= ~(1 << EPIndex);
                 USB_EPDefaultHandler(EPIndex | USB_DIR_OUT);
                 if (EPState[i].EventHandler != NULL) EPState[i].EventHandler(EPIndex | USB_DIR_OUT);
             }
-            IntFlagsIN  &= ~(1 << EPIndex);
-            IntFlagsOUT &= ~(1 << EPIndex);
         }
 
         if (IntFlagsUSB & UISUSPEND)
