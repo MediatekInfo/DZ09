@@ -85,7 +85,7 @@ static void USB_DataTransmit(TEP Endpoint)
 
 static boolean USB_DataReceive(TEP Endpoint)
 {
-    boolean  LastPacket = false;
+    boolean LastPacket = false;
 
     if ((Endpoint < USB_EPNUM) &&
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
@@ -93,7 +93,8 @@ static boolean USB_DataReceive(TEP Endpoint)
         pEPSTATE EPInfo = &EPState[Endpoint];
         uint32_t Count = USB_GetOUTDataLength(USB_EP0);
         uint32_t TotalReceived = (uintptr_t)EPInfo->DataPosition - (uintptr_t)EPInfo->DataBuffer;
-        boolean  LastPacket = (Count < EPInfo->PacketSize);
+
+        LastPacket = (Count < EPInfo->PacketSize);
 
         if (TotalReceived < EPInfo->DataLength)
         {
@@ -130,8 +131,11 @@ static void USB_EP0Handler(uint8_t EPAddress)
         uint32_t Count = USB_GetOUTDataLength(USB_EP0);
 
         DebugPrint("RX COUT=%d\r\n", Count);
-        EPState[USB_EP0].Stage = EPSTAGE_IDLE;
-//        USB_DataReceive(USB_EP0);
+        if (USB_DataReceive(USB_EP0))
+        {
+            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer);
+            EPState[USB_EP0].Stage = EPSTAGE_IDLE;
+        }
     }
     if (EPState[USB_EP0].Stage == EPSTAGE_IN)
     {
@@ -515,7 +519,7 @@ void USB_PrepareDataReceive(TEP Endpoint, void *DataBuffer, uint32_t MaxDataLeng
     {
         EPState[Endpoint].DataBuffer = DataBuffer;
         EPState[Endpoint].DataPosition = DataBuffer;
-        EPState[Endpoint].DataLength = 0;
+        EPState[Endpoint].DataLength = MaxDataLength;
         EPState[Endpoint].Stage = ((DataBuffer != NULL) && MaxDataLength) ? EPSTAGE_OUT : EPSTAGE_IDLE;
     }
 }

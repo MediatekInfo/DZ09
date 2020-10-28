@@ -22,12 +22,12 @@
 #include "usb9.h"
 #include "usbdevice_cdc.h"
 
-#define USB_CDC_CONTROL_EP          (USB_EP3 | USB_DIR_IN)
-#define USB_CDC_DATAIN_EP           (USB_EP1 | USB_DIR_IN)
-#define USB_CDC_DATAOUT_EP          (USB_EP2 | USB_DIR_OUT)
+#define USB_CDC_CONTROL_EP          USB_EP3
+#define USB_CDC_DATAIN_EP           USB_EP1
+#define USB_CDC_DATAOUT_EP          USB_EP2
 
-#define USB_CDC_EPDEV_MAXP           USB_EP1_FIFOSIZE                                               // The same for EP2
-#define USB_CDC_EPCTL_MAXP           USB_EP3_FIFOSIZE
+#define USB_CDC_EPDEV_MAXP          USB_EP1_FIFOSIZE                                                // The same for EP2
+#define USB_CDC_EPCTL_MAXP          USB_EP3_FIFOSIZE
 
 #define CDC_CTL_INTERFACE_INDEX     0x00
 #define CDC_DATA_INTERFACE_INDEX    0x01
@@ -101,7 +101,7 @@ static const uint8_t CFG_DESC_CDC[] =
     // Pipe 1 (endpoint 1)
     END_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    USB_CDC_CONTROL_EP,                                                                             // IN Endpoint with address 0x03
+    (USB_CDC_CONTROL_EP | USB_DIR_IN),                                                              // IN Endpoint with address 0x03
     USB_EPTYPE_INTR,                                                                                // Data transfer type - Interrupt
     USB_CDC_EPCTL_MAXP, 0x00,                                                                       // Max packet size = 16
     0x01,                                                                                           // Endpoint polling interval - 1 ms
@@ -109,7 +109,7 @@ static const uint8_t CFG_DESC_CDC[] =
     // Pipe 2 (endpoint 2)
     END_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    USB_CDC_DATAIN_EP,                                                                              // IN Endpoint with address 0x01
+    (USB_CDC_DATAIN_EP | USB_DIR_IN),                                                               // IN Endpoint with address 0x01
     0x02,                                                                                           // Data transfer Type - Bulk
     USB_CDC_EPDEV_MAXP, 0x00,                                                                       // Max packet size = 64
     0x00,                                                                                           // '0' - endpoint never NAKs
@@ -117,7 +117,7 @@ static const uint8_t CFG_DESC_CDC[] =
     // Pipe 2 (endpoint 3)
     END_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    USB_CDC_DATAOUT_EP,                                                                             // OUT Endpoint with address 0x02
+    (USB_CDC_DATAOUT_EP | USB_DIR_OUT),                                                             // OUT Endpoint with address 0x02
     0x02,                                                                                           // Data transfer Type - Bulk
     USB_CDC_EPDEV_MAXP, 0x00,                                                                       // Max packet size = 64
     0x00                                                                                            // '0' - endpoint never NAKs
@@ -127,7 +127,7 @@ static TUSBDRIVERINTERFACE USB_CDC_Interface;
 static uint8_t  CDC_DeviceConfig;
 static uint16_t CDC_DeviceStatus;
 
-static CDC_LINE_CODING CDC_Params =
+static CDC_LINE_CODING CDC_LineCoding =
 {
     115200,
     0,
@@ -164,15 +164,23 @@ static void USB_CDC_SetConfiguration(uint8_t Index)
 
 static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
 {
+    boolean Error = false;
+
     switch (Setup->bRequest)
     {
     case SET_LINE_CODING:
-        DebugPrint("SET_LINE_CODING %02X\r\n", Setup->wLength);
-        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, false, false);
-        USB_PrepareDataReceive(USB_EP0, &CDC_Params, min(Setup->wLength, sizeof(CDC_Params)));
+        DebugPrint("SET_LINE_CODING %02X ", Setup->wLength);
+        if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
+            USB_PrepareDataReceive(USB_EP0, &CDC_LineCoding, min(Setup->wLength, sizeof(CDC_LineCoding)));
+        else
+        {
+            /* Do something here with updated CDC_LineCoding */
+            return;
+        }
         break;
     case GET_LINE_CODING:
         DebugPrint("GET_LINE_CODING\r\n");
+        USB_PrepareDataTransmit(USB_EP0, &CDC_LineCoding, min(Setup->wLength, sizeof(CDC_LineCoding)));
         break;
     case SET_CONTROL_LINE_STATE:
         /* Setup->wValue: bit 0 - DTR value,
@@ -181,34 +189,50 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
         DebugPrint("SET_LINE_STATE\r\n");
         break;
     default:
+        Error = true;
         break;
     }
+
+    if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
+        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
+    else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
 }
 
 static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
 {
-    DebugPrint("-\r\n");
-//    if ((Setup->bmRequestType & USB_CMD_DATADIR) == USB_DIR_OUT)
-//        USB_StartTransmitData(USB_EP0, NULL, 0);
-//    else
-//    {
-//        if (Setup->wValue == 0x0606)
-//            USB_StartTransmitData(USB_EP0, NULL, 0);
-//        else
-//        {
-//            uint32_t i;
-//
-//            bError = true;
-//
-//            for(i = 0; i < sizeof(VReq) / sizeof(CDC_VENDOR_REQ); i++)
-//                if (Setup->wValue == VReq[i].Request)
-//                {
-//                    USB_StartTransmitData(USB_EP0, &VReq[i].Data, sizeof(VReq[i].Data));
-//                    bError = false;
-//                    break;
-//                }
-//        }
-//    }
+    boolean Error = false;
+
+    DebugPrint("- %04X, %02X\r\n", Setup->wValue, Setup->bmRequestType);
+
+    if (((Setup->bmRequestType & USB_DIR_MASK) == USB_DIR_IN) &&
+            (Setup->wValue != 0x0606))
+    {
+        uint32_t i;
+
+        Error = true;
+
+        for(i = 0; i < sizeof(VReq) / sizeof(CDC_VENDOR_REQ); i++)
+            if (Setup->wValue == VReq[i].Request)
+            {
+                USB_PrepareDataTransmit(USB_EP0, &VReq[i].Data, sizeof(VReq[i].Data));
+                Error = false;
+                break;
+            }
+    }
+
+    if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
+        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
+    else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
+}
+
+static void USB_CDC_CtlHandler(uint8_t EPAddress)
+{
+    DebugPrint("CDC CONTROL HANDLER\r\n");
+}
+
+static void USB_CDC_DataHandler(uint8_t EPAddress)
+{
+    DebugPrint("CDC DATA HANDLER\r\n");
 }
 
 void *USB_CDC_Initialize(void)
@@ -225,6 +249,16 @@ void *USB_CDC_Initialize(void)
     USB_CDC_Interface.DeviceStatus = &CDC_DeviceStatus;
     USB_CDC_Interface.InterfaceReqHandler = USB_CDC_InterfaceReqHandler;
     USB_CDC_Interface.VendorReqHandler = USB_CDC_VendorReqHandler;
+
+    /* Configure CDC control endpoint */
+    USB_SetupEndpoint(USB_CDC_CONTROL_EP, USB_DIR_IN, USB_CDC_CtlHandler, USB_CDC_EPCTL_MAXP);
+    USB_SetEndpointEnabled(USB_CDC_CONTROL_EP, true);
+    /* Configure CDC data IN endpoint */
+    USB_SetupEndpoint(USB_CDC_DATAIN_EP, USB_DIR_IN, USB_CDC_DataHandler, USB_CDC_EPDEV_MAXP);
+    USB_SetEndpointEnabled(USB_CDC_DATAIN_EP, true);
+    /* Configure CDC data OUT endpoint */
+    USB_SetupEndpoint(USB_CDC_DATAOUT_EP, USB_DIR_OUT, USB_CDC_DataHandler, USB_CDC_EPDEV_MAXP);
+    USB_SetEndpointEnabled(USB_CDC_DATAOUT_EP, true);
 
     return &USB_CDC_Interface;
 }
