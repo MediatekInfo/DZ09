@@ -62,7 +62,7 @@ static const uint8_t DEV_DESC_CDC[] =
     DEV_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_DEVICE,                                                                                     // DEVICE Descriptor
     0x10, 0x01,                                                                                     // USB version 1.1
-    0x00,                                                                                           // Devise Class Code
+    0x00,                                                                                           // Device Class Code
     0x00,                                                                                           // Device Subclass Code
     0x00,                                                                                           // Protocol Code
     USB_EP0_FIFOSIZE,                                                                               // EP0 packet max size
@@ -175,6 +175,9 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
         DebugPrint("GET_LINE_CODING\r\n");
         break;
     case SET_CONTROL_LINE_STATE:
+        /* Setup->wValue: bit 0 - DTR value,
+                          bit 1 - RTS value
+        */
         DebugPrint("SET_LINE_STATE\r\n");
         break;
     default:
