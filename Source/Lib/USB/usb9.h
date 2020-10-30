@@ -111,17 +111,13 @@
 #define USB_EPTYPE_BULK             0x02
 #define USB_EPTYPE_INTR             0x03
 
-typedef union tag_USBSETUP
+typedef struct tag_USBSETUP
 {
-    struct
-    {
-        uint8_t  bmRequestType;
-        uint8_t  bRequest;
-        uint16_t wValue;
-        uint16_t wIndex;
-        uint16_t wLength;
-    };
-    uint8_t Data[8];
+    uint8_t  bmRequestType;
+    uint8_t  bRequest;
+    uint16_t wValue;
+    uint16_t wIndex;
+    uint16_t wLength;
 } __packed TUSBSETUP, *pUSBSETUP;
 
 // standard device descriptor

@@ -33,9 +33,9 @@ const uint8_t EPFIFOSize[USB_EPNUM] =
     USB_EP2_FIFOSIZE
 };
 
-TEPSTATE       EPState[USB_EPNUM];
-TUSBSTATE      USBDeviceState;
-static uint8_t EP0Buffer[USB_EP0_FIFOSIZE] __attribute__ ((aligned (4)));
+TEPSTATE         EPState[USB_EPNUM];
+TUSBSTATE        USBDeviceState;
+static TUSBSETUP SetupBuffer;
 
 static void USB_EPFIFORead(TEP Endpoint, uint32_t Count, void *Data)
 {
@@ -121,8 +121,8 @@ static void USB_EP0Handler(uint8_t EPAddress)
         DebugPrint("COUT=%d\r\n", Count);
         if (Count >= sizeof(TUSBSETUP))
         {
-            USB_EPFIFORead(USB_EP0, sizeof(TUSBSETUP), EP0Buffer);
-            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer);
+            USB_EPFIFORead(USB_EP0, sizeof(TUSBSETUP), &SetupBuffer);
+            USB9_HandleSetupRequest(&SetupBuffer);
         }
         else if (Count) USB_UpdateEPState(USB_EP0, USB_DIR_OUT, true, true);                        // Invalid Setup request -> send Stall
     }
@@ -133,7 +133,7 @@ static void USB_EP0Handler(uint8_t EPAddress)
         DebugPrint("RX COUT=%d\r\n", Count);
         if (USB_DataReceive(USB_EP0))
         {
-            USB9_HandleSetupRequest((pUSBSETUP)EP0Buffer);
+            USB9_HandleSetupRequest(&SetupBuffer);
             EPState[USB_EP0].Stage = EPSTAGE_IDLE;
         }
     }
