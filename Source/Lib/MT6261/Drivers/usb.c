@@ -229,9 +229,7 @@ static void USB_InterruptHandler(void)
         /* Process endpoint requests */
         for(i = 0; (i < USB_EPNUM) && (IntFlagsIN || IntFlagsOUT); i++)
         {
-            uint8_t EPIndex = (i < USB_EP1OUT) ? i : i - USB_EP1OUT + USB_EP1IN;
-
-            USB_INDEX = EPIndex;
+            uint8_t EPIndex = USB_INDEX = EPIndex = USB_EPENUM2INDEX(i);
 
             if ((i < USB_EP1OUT) && (IntFlagsIN & (1 << EPIndex)))
             {
@@ -325,8 +323,8 @@ boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8
     if ((Endpoint >= USB_EPNUM) || (Handler == NULL)) return false;
 
     MaxPacketSize = min(MaxPacketSize, EPFIFOSize[Endpoint]);
-    USB_INDEX = (Endpoint < USB_EP1OUT) ? Endpoint : Endpoint - USB_EP1OUT + USB_EP1IN;
 
+    USB_INDEX = USB_EPENUM2INDEX(Endpoint);
     if (Endpoint > USB_EP0)
     {
         if (((Direction & USB_DIR_MASK) == USB_DIR_IN) && (Endpoint < USB_EP1OUT))
@@ -362,9 +360,7 @@ boolean USB_SetEndpointEnabled(TEP Endpoint, boolean Enable)
 
     if ((Endpoint >= USB_EPNUM) || (EPState[Endpoint].EventHandler == NULL)) return false;
 
-    EPIndex = (Endpoint < USB_EP1OUT) ? Endpoint : Endpoint - USB_EP1OUT + USB_EP1IN;
-    USB_INDEX = EPIndex;
-
+    USB_INDEX = EPIndex = USB_EPENUM2INDEX(Endpoint);
     if ((EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_IN)
     {
         if (Enable)
@@ -441,7 +437,7 @@ void USB_UpdateEPState(TEP Endpoint, TUSBDIR Transaction, boolean SendStall, boo
     }
     else if (Endpoint < USB_EPNUM)
     {
-        USB_INDEX = (Endpoint < USB_EP1OUT) ? Endpoint : Endpoint - USB_EP1OUT + USB_EP1IN;
+        USB_INDEX = USB_EPENUM2INDEX(Endpoint);
         if ((EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_IN)
         {
             tmpCSR = USB_EP_INCSR1;
@@ -467,7 +463,7 @@ void USB_ControlEPStall(TEP Endpoint, boolean Enable)
 
     if (Endpoint == USB_EP0) return;
 
-    USB_INDEX = (Endpoint < USB_EP1OUT) ? Endpoint : Endpoint - USB_EP1OUT + USB_EP1IN;
+    USB_INDEX = USB_EPENUM2INDEX(Endpoint);
     if (Enable)
     {
         if ((EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_IN)

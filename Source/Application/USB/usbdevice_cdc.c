@@ -22,9 +22,9 @@
 #include "usb9.h"
 #include "usbdevice_cdc.h"
 
-#define USB_CDC_CONTROL_EP          USB_EP3
-#define USB_CDC_DATAIN_EP           USB_EP1
-#define USB_CDC_DATAOUT_EP          USB_EP2
+#define USB_CDC_CONTROL_EP          USB_EP3IN
+#define USB_CDC_DATAIN_EP           USB_EP1IN
+#define USB_CDC_DATAOUT_EP          USB_EP2OUT
 
 #define USB_CDC_EPDEV_MAXP          USB_EP1_FIFOSIZE                                                // The same for EP2
 #define USB_CDC_EPCTL_MAXP          USB_EP3_FIFOSIZE
@@ -101,7 +101,7 @@ static const uint8_t CFG_DESC_CDC[] =
     // Pipe 1 (endpoint 1)
     END_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    (USB_CDC_CONTROL_EP | USB_DIR_IN),                                                              // IN Endpoint with address 0x03
+    USB_EPENUM2INDEX(USB_CDC_CONTROL_EP) | USB_DIR_IN,                                              // IN Endpoint with address 0x03
     USB_EPTYPE_INTR,                                                                                // Data transfer type - Interrupt
     USB_CDC_EPCTL_MAXP, 0x00,                                                                       // Max packet size = 16
     0x01,                                                                                           // Endpoint polling interval - 1 ms
@@ -109,16 +109,16 @@ static const uint8_t CFG_DESC_CDC[] =
     // Pipe 2 (endpoint 2)
     END_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    (USB_CDC_DATAIN_EP | USB_DIR_IN),                                                               // IN Endpoint with address 0x01
-    0x02,                                                                                           // Data transfer Type - Bulk
+    USB_EPENUM2INDEX(USB_CDC_DATAIN_EP) | USB_DIR_IN,                                               // IN Endpoint with address 0x01
+    USB_EPTYPE_BULK,                                                                                // Data transfer Type - Bulk
     USB_CDC_EPDEV_MAXP, 0x00,                                                                       // Max packet size = 64
     0x00,                                                                                           // '0' - endpoint never NAKs
 
     // Pipe 2 (endpoint 3)
     END_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    (USB_CDC_DATAOUT_EP | USB_DIR_OUT),                                                             // OUT Endpoint with address 0x02
-    0x02,                                                                                           // Data transfer Type - Bulk
+    USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT,                                             // OUT Endpoint with address 0x02
+    USB_EPTYPE_BULK,                                                                                // Data transfer Type - Bulk
     USB_CDC_EPDEV_MAXP, 0x00,                                                                       // Max packet size = 64
     0x00                                                                                            // '0' - endpoint never NAKs
 };
