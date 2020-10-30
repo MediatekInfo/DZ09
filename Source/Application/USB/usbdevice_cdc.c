@@ -40,10 +40,10 @@ typedef struct
 
 typedef struct
 {
-    uint32_t dwDTERate;
-    uint8_t  bCharFormat;
-    uint8_t  bParityType;
-    uint8_t  bDataBits;
+    uint32_t dwDTERate;                                                                             // Baud rate
+    uint8_t  bCharFormat;                                                                           // Stop bits:   0 - 1 Stop bit, 1 - 1.5 Stop bits, 2 - 2 Stop bits
+    uint8_t  bParityType;                                                                           // Parity:      0 - None, 1 - Odd, 2 - even, 3 - Mark, 4 - Space
+    uint8_t  bDataBits;                                                                             // 5, 6, 7, 8 or 16 bits
 } CDC_LINE_CODING, *pCDC_LINE_CODING;
 
 _USB_STRING_(sd00_cdc, 0x0409);

@@ -23,7 +23,7 @@
 #include "usb9.h"
 
 static pUSBDRIVERINTERFACE DevInterface;
-static uint8_t U9Buffer[2];
+static uint8_t U9Buffer[2];                                                                         // Used only for USB_GET_STATUS request
 
 static boolean USB9_GetDescriptor(pUSBSETUP Setup)
 {
