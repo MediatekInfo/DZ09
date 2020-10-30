@@ -284,25 +284,28 @@ void USB_EnableDevice(void)
     USC_Pause_us(10);
     /* Set up D+ pull up resistor */
     USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
+    /* Enable USB interrupts */
+    NVIC_EnableIRQ(IRQ_USB_CODE);
     DebugPrint("USB device enabled.\r\n");
 #endif
 }
 
 void USB_DisableDevice(void)
 {
+    /* Disable USB interrupts */
+    NVIC_DisableIRQ(IRQ_USB_CODE);
+
     USBDeviceState = USB_DEVICE_IDLE;
     /* Release D+ pull up resistor */
-    USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
+    USB_PHY_CONTROL &= ~UPHY_CONTROL_PUDP;
     /* Turn off PHY bias control */
-    USB_U1PHYCR0 |= U1PHYCR0_USB11_FSLS_ENBGRI;
+    USB_U1PHYCR0 &= ~U1PHYCR0_USB11_FSLS_ENBGRI;
     /* Turn off VUSB */
     PMU_TurnOnVUSB(false);
     /* Disable USB internal 48MHz */
 //    PLL_SetUPLLEnabled(false);
     /* USB AHB clock */
     PCTL_PowerDown(PD_USB);
-
-    NVIC_UnregisterIRQ(IRQ_USB_CODE);
     DebugPrint("USB device disabled.\r\n");
 }
 
