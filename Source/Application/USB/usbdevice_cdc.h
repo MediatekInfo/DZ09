@@ -31,10 +31,10 @@
 #define SET_PULSE_TIME              0x14
 #define RING_AUX_JACK               0x15
 #define SET_LINE_CODING             0x20
-#define LINE_DTR                    (1 << 0)
-#define LINE_RTS                    (1 << 1)
 #define GET_LINE_CODING             0x21
 #define SET_CONTROL_LINE_STATE      0x22
+#define LINE_DTR                    (1 << 0)
+#define LINE_RTS                    (1 << 1)
 #define SEND_BREAK                  0x23
 #define SET_RINGING_PARMS           0x30
 #define GET_RINGING_PARMS           0x31
