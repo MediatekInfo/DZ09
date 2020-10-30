@@ -166,7 +166,7 @@ static void USB_ResetDevice(void)
     }
     else
     {
-        USB_SetupEndpoint(USB_EP0, USB_DIR_IN, USB_EP0Handler, USB_EP0_FIFOSIZE);
+        USB_SetupEndpoint(USB_EP0, USB_EP0Handler, USB_EP0_FIFOSIZE);
         USB_SetEndpointEnabled(USB_EP0, true);
         USB_INTRINE |= UEP0;
     }
@@ -321,8 +321,10 @@ boolean USB_IsDeviceActive(void)
     return (USBDeviceState == USB_DEVICE_CONFIGURED);
 }
 
-boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8_t), uint8_t MaxPacketSize)
+boolean USB_SetupEndpoint(TEP Endpoint, void (*Handler)(uint8_t), uint8_t MaxPacketSize)
 {
+    TUSBDIR Direction = USB_DIR_IN;
+
     if ((Endpoint >= USB_EPNUM) || (Handler == NULL)) return false;
 
     MaxPacketSize = min(MaxPacketSize, EPFIFOSize[Endpoint]);
@@ -330,7 +332,7 @@ boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8
     USB_INDEX = USB_EPENUM2INDEX(Endpoint);
     if (Endpoint > USB_EP0)
     {
-        if (((Direction & USB_DIR_MASK) == USB_DIR_IN) && (Endpoint < USB_EP1OUT))
+        if (Endpoint < USB_EP1OUT)
         {
             USB_EP_INCSR1 = UICLRDATATOG;
             if (USB_EP_INCSR1 & UINPKTRDY) USB_EP_INCSR1 = UABORTPKTEN | UIFLUSHFIFO;
@@ -344,6 +346,7 @@ boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = UOFLUSHFIFO;
             if (USB_EP_OUTCSR1 & UOUTPKTRDY) USB_EP_OUTCSR1 = UOFLUSHFIFO;
             USB_EP_OUTMAXP = MaxPacketSize;
+            Direction = USB_DIR_OUT;
         }
         else return false;
     }

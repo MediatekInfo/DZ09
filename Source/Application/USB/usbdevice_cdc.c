@@ -251,13 +251,13 @@ void *USB_CDC_Initialize(void)
     USB_CDC_Interface.VendorReqHandler = USB_CDC_VendorReqHandler;
 
     /* Configure CDC control endpoint */
-    USB_SetupEndpoint(USB_CDC_CONTROL_EP, USB_DIR_IN, USB_CDC_CtlHandler, USB_CDC_EPCTL_MAXP);
+    USB_SetupEndpoint(USB_CDC_CONTROL_EP, USB_CDC_CtlHandler, USB_CDC_EPCTL_MAXP);
     USB_SetEndpointEnabled(USB_CDC_CONTROL_EP, true);
     /* Configure CDC data IN endpoint */
-    USB_SetupEndpoint(USB_CDC_DATAIN_EP, USB_DIR_IN, USB_CDC_DataHandler, USB_CDC_EPDEV_MAXP);
+    USB_SetupEndpoint(USB_CDC_DATAIN_EP, USB_CDC_DataHandler, USB_CDC_EPDEV_MAXP);
     USB_SetEndpointEnabled(USB_CDC_DATAIN_EP, true);
     /* Configure CDC data OUT endpoint */
-    USB_SetupEndpoint(USB_CDC_DATAOUT_EP, USB_DIR_OUT, USB_CDC_DataHandler, USB_CDC_EPDEV_MAXP);
+    USB_SetupEndpoint(USB_CDC_DATAOUT_EP, USB_CDC_DataHandler, USB_CDC_EPDEV_MAXP);
     USB_SetEndpointEnabled(USB_CDC_DATAOUT_EP, true);
 
     return &USB_CDC_Interface;

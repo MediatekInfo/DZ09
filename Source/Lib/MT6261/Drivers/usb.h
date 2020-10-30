@@ -193,7 +193,7 @@ extern void USB_EnableDevice(void);
 extern void USB_DisableDevice(void);
 extern void USB_SetDeviceAddress(uint8_t Address);
 extern boolean USB_IsDeviceActive(void);
-extern boolean USB_SetupEndpoint(TEP Endpoint, TUSBDIR Direction, void (*Handler)(uint8_t), uint8_t MaxPacketSize);
+extern boolean USB_SetupEndpoint(TEP Endpoint, void (*Handler)(uint8_t), uint8_t MaxPacketSize);
 extern boolean USB_SetEndpointEnabled(TEP Endpoint, boolean Enabled);
 extern uint32_t USB_GetOUTDataLength(TEP Endpoint);
 extern void USB_UpdateEPState(TEP Endpoint, TUSBDIR Transaction, boolean SendStall, boolean DataEnd);
