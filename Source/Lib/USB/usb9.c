@@ -75,11 +75,11 @@ static boolean USB9_ClearFeature(pUSBSETUP Setup)
 
         DebugPrint("ENDPOINT %02X\r\n", Setup->wIndex);
 
-        if (EPIndex > USB_EP_MAXNUM) Error = true;
+        if (EPIndex > USB_EPMAXINDEX) Error = true;
         else
         {
             if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
-                EPIndex += USB_EP_MAXNUM;
+                EPIndex += USB_EPMAXINDEX;
             if (EPIndex < USB_EPNUM) USB_ControlEPStall(EPIndex, false);
             else Error = true;
         }
@@ -107,11 +107,11 @@ static boolean USB9_SetFeature(pUSBSETUP Setup)
     {
         uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
 
-        if (EPIndex > USB_EP_MAXNUM) Error = true;
+        if (EPIndex > USB_EPMAXINDEX) Error = true;
         else
         {
             if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
-                EPIndex += USB_EP_MAXNUM;
+                EPIndex += USB_EPMAXINDEX;
             if (EPIndex < USB_EPNUM) USB_ControlEPStall(EPIndex, true);
             else Error = true;
         }
@@ -136,11 +136,11 @@ static boolean USB9_GetStatus(pUSBSETUP Setup)
         uint8_t EPIndex = Setup->wIndex & USB_EPNUM_MASK;
 
         DebugPrint("ENDPOINT %02X\r\n", Setup->wIndex);
-        if (EPIndex > USB_EP_MAXNUM) Error = true;
+        if (EPIndex > USB_EPMAXINDEX) Error = true;
         else
         {
             if (((Setup->wIndex & USB_DIR_MASK) == USB_DIR_OUT) && EPIndex)
-                EPIndex += USB_EP_MAXNUM;
+                EPIndex += USB_EPMAXINDEX;
             if (EPIndex < USB_EPNUM)
             {
                 U9Buffer[0] = EPState[EPIndex].Stalled;

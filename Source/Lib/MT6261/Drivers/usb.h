@@ -40,6 +40,7 @@ typedef enum tag_EP
     USB_EP2IN,
     USB_EP3IN,
     USB_EP4IN,
+    USB_EPMAXINDEX = USB_EP4IN,
     USB_EP1OUT,
     USB_EP2OUT,
     USB_EPNUM
@@ -75,7 +76,6 @@ typedef enum tag_USBSTATE
 #define USB_EP2                     USB_EP2IN
 #define USB_EP3                     USB_EP3IN
 #define USB_EP4                     USB_EP4IN
-#define USB_EP_MAXNUM               USB_EP4
 
 #define USB_FADDR                   (*(volatile uint8_t *)(USB_BASE + 0x0000))
 #define UUPD                        (1 << 7)
