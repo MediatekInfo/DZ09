@@ -22,6 +22,7 @@
 #include "usb9.h"
 #include "usbdevice_cdc.h"
 
+/* CDC interface configuration */
 #define USB_CDC_CONTROL_EP          USB_EP3IN
 #define USB_CDC_DATAIN_EP           USB_EP1IN
 #define USB_CDC_DATAOUT_EP          USB_EP2OUT
@@ -31,6 +32,14 @@
 
 #define CDC_CTL_INTERFACE_INDEX     0x00
 #define CDC_DATA_INTERFACE_INDEX    0x01
+
+/* Used CDC interface requests */
+#define RING_AUX_JACK               0x15
+#define SET_LINE_CODING             0x20
+#define GET_LINE_CODING             0x21
+#define SET_CONTROL_LINE_STATE      0x22
+#define LINE_DTR                    (1 << 0)
+#define LINE_RTS                    (1 << 1)
 
 typedef struct
 {
@@ -124,8 +133,10 @@ static const uint8_t CFG_DESC_CDC[] =
 };
 
 static TUSBDRIVERINTERFACE USB_CDC_Interface;
+static pCDCEVENTER IntEventerInfo;
 static uint8_t  CDC_DeviceConfig;
 static uint16_t CDC_DeviceStatus;
+static volatile boolean USB_CDC_Connected;
 
 static CDC_LINE_CODING CDC_LineCoding =
 {
@@ -160,6 +171,8 @@ static void USB_CDC_SetConfiguration(uint8_t Index)
 {
     /* Do something here when the configuration changes */
     CDC_DeviceConfig = Index;
+    if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusShange != NULL))
+        IntEventerInfo->OnStatusShange(CDC_CONNECTED);
 }
 
 static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
@@ -225,6 +238,33 @@ static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
     else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
 }
 
+static void USB_CDC_IntFlashRXBuffer(void)
+{
+
+}
+
+static void USB_CDC_IntFlashTXBuffer(void)
+{
+
+}
+
+static void USB_CDC_SetConnectedStatus(boolean Connected)
+{
+    if (USB_CDC_Connected != Connected)
+    {
+        USB_CDC_Connected = Connected;
+        if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusShange != NULL))
+            IntEventerInfo->OnStatusShange((Connected) ? CDC_CONNECTED : CDC_DISCONNECTED);
+    }
+}
+
+static void USB_CDC_ConnectHandler(boolean Connected)
+{
+    USB_CDC_SetConnectedStatus(Connected);
+    USB_CDC_IntFlashRXBuffer();
+    USB_CDC_IntFlashTXBuffer();
+}
+
 static void USB_CDC_CtlHandler(uint8_t EPAddress)
 {
     DebugPrint("CDC CONTROL HANDLER\r\n");
@@ -239,6 +279,7 @@ void *USB_CDC_Initialize(void)
 {
     CDC_DeviceConfig = 0;
     CDC_DeviceStatus = 0;
+    USB_CDC_SetConnectedStatus(false);
     memset(&USB_CDC_Interface, 0x00, sizeof(TUSBDRIVERINTERFACE));
 
     USB_CDC_Interface.DeviceDescriptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
@@ -261,4 +302,68 @@ void *USB_CDC_Initialize(void)
     USB_SetEndpointEnabled(USB_CDC_DATAOUT_EP, true);
 
     return &USB_CDC_Interface;
+}
+
+TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo)
+{
+    if ((EventerInfo != NULL) && (IntEventerInfo == NULL))
+    {
+
+        return CDC_OK;
+    }
+    return CDC_FAILED;
+}
+
+TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo)
+{
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    {
+
+        return CDC_OK;
+    }
+    return CDC_FAILED;
+}
+
+TCDCSTATUS USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
+{
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    {
+
+        return CDC_OK;
+    }
+    return CDC_FAILED;
+}
+
+TCDCSTATUS USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
+{
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    {
+
+        return CDC_OK;
+    }
+    return CDC_FAILED;
+}
+
+TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo)
+{
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        RestoreInterrupts(intflags);
+        return CDC_OK;
+    }
+    return CDC_FAILED;
+}
+
+TCDCSTATUS USB_CDC_FlashTXBuffer(pCDCEVENTER EventerInfo)
+{
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        RestoreInterrupts(intflags);
+        return CDC_OK;
+    }
+    return CDC_FAILED;
 }

@@ -19,35 +19,28 @@
 #ifndef _USBDEVICE_CDC_H_
 #define _USBDEVICE_CDC_H_
 
-#define SEND_ENCAPSULATED_COMMAND   0x00
-#define GET_ENCAPSULATED_RESPONSE   0x01
-#define SET_COMM_FEATURE            0x02
-#define GET_COMM_FEATURE            0x03
-#define CLEAR_COMM_FEATURE          0x04
-#define SET_AUX_LINE_STATE          0x10
-#define SET_HOOK_STATE              0x11
-#define PULSE_SETUP                 0x12
-#define SEND_PULSE                  0x13
-#define SET_PULSE_TIME              0x14
-#define RING_AUX_JACK               0x15
-#define SET_LINE_CODING             0x20
-#define GET_LINE_CODING             0x21
-#define SET_CONTROL_LINE_STATE      0x22
-#define LINE_DTR                    (1 << 0)
-#define LINE_RTS                    (1 << 1)
-#define SEND_BREAK                  0x23
-#define SET_RINGING_PARMS           0x30
-#define GET_RINGING_PARMS           0x31
-#define SET_OPERATION_PARMS         0x32
-#define GET_OPERATION_PARMS         0x33
-#define SET_LINE_PARMS              0x34
-#define GET_LINE_PARMS              0x35
-#define DIAL_DIGITS                 0x36
-#define SET_UNIT_PARAMETER          0x37
-#define GET_UNIT_PARAMETER          0x38
-#define CLEAR_UNIT_PARAMETER        0x39
-#define GET_PROFILE                 0x3A
+typedef enum tag_CDCSTATUS
+{
+    CDC_OK,
+    CDC_FAILED,
+    CDC_CONNECTED,
+    CDC_DISCONNECTED
+} TCDCSTATUS;
+
+typedef struct tag_CDCEVENTER
+{
+    void (*OnStatusShange)(TCDCSTATUS Status);
+    void (*OnDataReceived)(uint32_t ReceivedCount);
+    void (*OnDataTransmitted)(uint32_t TransmittedCount);
+} TCDCEVENTER, *pCDCEVENTER;
 
 extern void *USB_CDC_Initialize(void);
+
+extern TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo);
+extern TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo);
+extern TCDCSTATUS USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count);
+extern TCDCSTATUS USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count);
+extern TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo);
+extern TCDCSTATUS USB_CDC_FlashTXBuffer(pCDCEVENTER EventerInfo);
 
 #endif /* _USBDEVICE_CDC_H_ */
