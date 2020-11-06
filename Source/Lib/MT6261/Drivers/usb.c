@@ -91,7 +91,7 @@ static boolean USB_DataReceive(TEP Endpoint)
             ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
     {
         pEPSTATE EPInfo = &EPState[Endpoint];
-        uint32_t Count = USB_GetOUTDataLength(USB_EP0);
+        uint32_t Count = USB_GetOUTDataLength(Endpoint);
         uint32_t TotalReceived = (uintptr_t)EPInfo->DataPosition - (uintptr_t)EPInfo->DataBuffer;
 
         LastPacket = (Count < EPInfo->PacketSize);
