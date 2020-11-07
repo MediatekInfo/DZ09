@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,20 +16,18 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef _SYSTEMLIB_H_
-#define _SYSTEMLIB_H_
+#ifndef _RINGBUF_H_
+#define _RINGBUF_H_
 
-#include "debug.h"
-#include "mt6261.h"
-#include "init.h"
-#include "memory.h"
-#include "utils.h"
-#include "dlist.h"
-#include "pmngr.h"
-#include "evmngr.h"
-#include "lrtimer.h"
-#include "sw_i2c.h"
-#include "ringbuf.h"
+typedef struct tag_RINGBUF
+{
+    uint8_t  *Buffer;
+    uint8_t  *Tail;
+    uint32_t DataCount;
+    uint32_t BufferSize;
+} TRINGBUF, *pRINGBUF;
 
+extern pRINGBUF RB_Create(uint32_t BufferSize);
+extern void RB_Destroy(pRINGBUF RingBuffer);
 
-#endif /* _SYSTEMLIB_H_ */
+#endif /* _RINGBUF_H_ */
