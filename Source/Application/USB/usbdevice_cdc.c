@@ -41,13 +41,13 @@
 #define LINE_DTR                    (1 << 0)
 #define LINE_RTS                    (1 << 1)
 
-typedef struct
+typedef struct tag_CDC_VENDOR_REQ
 {
     uint16_t Request;
     uint8_t  Data;
 } CDC_VENDOR_REQ;
 
-typedef struct
+typedef struct tag_CDC_LINE_CODING
 {
     uint32_t dwDTERate;                                                                             // Baud rate
     uint8_t  bCharFormat;                                                                           // Stop bits:   0 - 1 Stop bit, 1 - 1.5 Stop bits, 2 - 2 Stop bits
@@ -137,6 +137,7 @@ static pCDCEVENTER IntEventerInfo;
 static uint8_t  CDC_DeviceConfig;
 static uint16_t CDC_DeviceStatus;
 static volatile boolean USB_CDC_Connected;
+static uint8_t CDC_OUTBuffer[USB_CDC_EPDEV_MAXP];
 
 static CDC_LINE_CODING CDC_LineCoding =
 {
@@ -273,6 +274,8 @@ static void USB_CDC_CtlHandler(uint8_t EPAddress)
 static void USB_CDC_DataHandler(uint8_t EPAddress)
 {
     DebugPrint("CDC DATA HANDLER\r\n");
+    USB_DataReceive(USB_CDC_DATAOUT_EP);
+    USB_PrepareDataReceive(USB_CDC_DATAOUT_EP, CDC_OUTBuffer, sizeof(CDC_OUTBuffer));
 }
 
 void *USB_CDC_Initialize(void)
@@ -299,6 +302,7 @@ void *USB_CDC_Initialize(void)
     USB_SetEndpointEnabled(USB_CDC_DATAIN_EP, true);
     /* Configure CDC data OUT endpoint */
     USB_SetupEndpoint(USB_CDC_DATAOUT_EP, USB_CDC_DataHandler, USB_CDC_EPDEV_MAXP);
+    USB_PrepareDataReceive(USB_CDC_DATAOUT_EP, CDC_OUTBuffer, sizeof(CDC_OUTBuffer));
     USB_SetEndpointEnabled(USB_CDC_DATAOUT_EP, true);
 
     return &USB_CDC_Interface;
