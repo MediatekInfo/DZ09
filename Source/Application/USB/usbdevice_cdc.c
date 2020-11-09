@@ -138,6 +138,8 @@ static uint8_t  CDC_DeviceConfig;
 static uint16_t CDC_DeviceStatus;
 static volatile boolean USB_CDC_Connected;
 static uint8_t CDC_OUTBuffer[USB_CDC_EPDEV_MAXP];
+static pRINGBUF CDC_OUTRingBuffer;
+static pRINGBUF CDC_INRingBuffer;
 
 static CDC_LINE_CODING CDC_LineCoding =
 {
@@ -241,12 +243,12 @@ static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
 
 static void USB_CDC_IntFlashRXBuffer(void)
 {
-
+    RB_FlashBuffer(CDC_OUTRingBuffer);
 }
 
 static void USB_CDC_IntFlashTXBuffer(void)
 {
-
+    RB_FlashBuffer(CDC_INRingBuffer);
 }
 
 static void USB_CDC_SetConnectedStatus(boolean Connected)
@@ -273,9 +275,26 @@ static void USB_CDC_CtlHandler(uint8_t EPAddress)
 
 static void USB_CDC_DataHandler(uint8_t EPAddress)
 {
-    DebugPrint("CDC DATA HANDLER\r\n");
-    USB_DataReceive(USB_CDC_DATAOUT_EP);
-    USB_PrepareDataReceive(USB_CDC_DATAOUT_EP, CDC_OUTBuffer, sizeof(CDC_OUTBuffer));
+    if (EPAddress == USB_CDC_DATAIN_EP)
+    {
+
+    }
+    else if (EPAddress == USB_CDC_DATAOUT_EP)
+    {
+        uint32_t ReceivedCount;
+
+        DebugPrint("CDC DATA OUT HANDLER\r\n");
+
+        USB_DataReceive(USB_CDC_DATAOUT_EP);
+        if (ReceivedCount = USB_GetDataAmount(USB_CDC_DATAOUT_EP))
+            RB_WriteData(CDC_OUTRingBuffer, CDC_OUTBuffer, ReceivedCount);
+
+        if ((ReceivedCount = RB_GetCurrentDataCount(CDC_OUTRingBuffer)) &&
+                (IntEventerInfo->OnDataReceived != NULL))
+            IntEventerInfo->OnDataReceived(ReceivedCount);
+
+        USB_PrepareDataReceive(USB_CDC_DATAOUT_EP, CDC_OUTBuffer, sizeof(CDC_OUTBuffer));
+    }
 }
 
 void *USB_CDC_Initialize(void)
@@ -354,6 +373,7 @@ TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo)
     {
         uint32_t intflags = DisableInterrupts();
 
+        USB_CDC_IntFlashRXBuffer();
         RestoreInterrupts(intflags);
         return CDC_OK;
     }
@@ -366,6 +386,7 @@ TCDCSTATUS USB_CDC_FlashTXBuffer(pCDCEVENTER EventerInfo)
     {
         uint32_t intflags = DisableInterrupts();
 
+        USB_CDC_IntFlashTXBuffer();
         RestoreInterrupts(intflags);
         return CDC_OK;
     }

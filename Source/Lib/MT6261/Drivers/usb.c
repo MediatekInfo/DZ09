@@ -540,3 +540,14 @@ void USB_PrepareDataTransmit(TEP Endpoint, void *DataBuffer, uint32_t DataLength
         EPState[Endpoint].Stage = ((DataBuffer != NULL) && DataLength) ? EPSTAGE_IN : EPSTAGE_IDLE;
     }
 }
+
+uint32_t USB_GetDataAmount(TEP Endpoint)
+{
+    if ((Endpoint < USB_EPNUM) &&
+            (EPState[Endpoint].DataBuffer != NULL) && (EPState[Endpoint].DataPosition != NULL) &&
+            ((uintptr_t)EPState[Endpoint].DataPosition > (uintptr_t)EPState[Endpoint].DataBuffer))
+    {
+        return ((uintptr_t)EPState[Endpoint].DataPosition - (uintptr_t)EPState[Endpoint].DataBuffer);
+    }
+    return 0;
+}
