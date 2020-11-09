@@ -155,3 +155,15 @@ uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer)
 
     return n;
 }
+
+void RB_FlashBuffer(pRINGBUF RingBuffer)
+{
+    if (RingBuffer != NULL)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        RingBuffer->Tail = RingBuffer->Buffer;
+        RingBuffer->DataCount = 0;
+        RestoreInterrupts(intflags);
+    }
+}

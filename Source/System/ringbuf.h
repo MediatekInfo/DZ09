@@ -32,5 +32,6 @@ extern pRINGBUF RB_Destroy(pRINGBUF RingBuffer);
 extern uint32_t RB_WriteData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
 extern uint32_t RB_ReadData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
 extern uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer);
+extern void RB_FlashBuffer(pRINGBUF RingBuffer);
 
 #endif /* _RINGBUF_H_ */
