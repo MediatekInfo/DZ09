@@ -21,10 +21,23 @@
 #include "systemconfig.h"
 #include "ringbuf.h"
 
+static uint8_t *RB_ShiftPointer(pRINGBUF RingBuffer, uint8_t *BufPtr, uint32_t Value)
+{
+    uint8_t *BufLimit = &RingBuffer->Buffer[RingBuffer->BufferSize];
+    uint8_t *Pointer = BufPtr;
+
+    Value %= RingBuffer->BufferSize;
+    Pointer += Value;
+    if ((uintptr_t)Pointer >= (uintptr_t)BufLimit)
+        Pointer -= RingBuffer->BufferSize;
+
+    return Pointer;
+}
+
 pRINGBUF RB_Create(uint32_t BufferSize)
 {
     pRINGBUF tmpRingBuf = NULL;
-    uint8_t  tmpBuffer;
+    uint8_t  *tmpBuffer;
 
     if (BufferSize)
     {
@@ -60,12 +73,85 @@ pRINGBUF RB_Destroy(pRINGBUF RingBuffer)
 
 uint32_t RB_WriteData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count)
 {
-    uint32_t Written = 0;
+    uint32_t WCount = 0;
 
-    if ((RingBuffer != NULL) && (RingBuffer->Buffer != NULL) &&
-            (Data != NULL) && Count)
+    if ((RingBuffer != NULL) && (Data != NULL) && Count)
     {
+        uint32_t intflags = DisableInterrupts();
 
+        if ((RingBuffer->Buffer != NULL) && (RingBuffer->Tail != NULL))
+        {
+            uint8_t *BufLimit = &RingBuffer->Buffer[RingBuffer->BufferSize];
+            uint8_t *BufHead;
+
+            WCount = Count;
+            if (Count >= RingBuffer->BufferSize)
+            {
+                Data = &Data[Count - RingBuffer->BufferSize];
+                Count = RingBuffer->BufferSize;
+            }
+            BufHead = RB_ShiftPointer(RingBuffer, RingBuffer->Tail, RingBuffer->DataCount);
+            if (RingBuffer->BufferSize - RingBuffer->DataCount < Count)
+                RingBuffer->Tail = RB_ShiftPointer(RingBuffer, RingBuffer->Tail,
+                                                   Count - RingBuffer->BufferSize + RingBuffer->DataCount);
+
+            while(Count)
+            {
+                uint32_t NWrite = min(Count, (uintptr_t)BufLimit - (uintptr_t)BufHead);
+
+                memcpy(BufHead, Data, NWrite);
+                Data += NWrite;
+                Count -= NWrite;
+                BufHead = RB_ShiftPointer(RingBuffer, BufHead, NWrite);
+                RingBuffer->DataCount = min(RingBuffer->DataCount + NWrite, RingBuffer->BufferSize);
+            }
+        }
+        RestoreInterrupts(intflags);
     }
-    return Written;
+    return WCount;
+}
+
+uint32_t RB_ReadData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count)
+{
+    uint32_t RCount = 0;
+
+    if ((RingBuffer != NULL) && (Data != NULL) && Count)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        if ((RingBuffer->Buffer != NULL) && (RingBuffer->Tail != NULL))
+        {
+            uint8_t *BufLimit = &RingBuffer->Buffer[RingBuffer->BufferSize];
+            uint32_t RBytes = RCount = min(RingBuffer->DataCount, Count);
+
+            while(RBytes)
+            {
+                uint32_t NRead = min(RBytes, (uintptr_t)BufLimit - (uintptr_t)RingBuffer->Tail);
+
+                memcpy(Data, RingBuffer->Tail, NRead);
+                Data += NRead;
+                RBytes -= NRead;
+                RingBuffer->Tail = RB_ShiftPointer(RingBuffer, RingBuffer->Tail, NRead);
+            }
+            RingBuffer->DataCount -= RCount;
+            RestoreInterrupts(intflags);
+        }
+    }
+    return RCount;
+}
+
+uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer)
+{
+    uint32_t n;
+
+    if (RingBuffer != NULL)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        n = RingBuffer->DataCount;
+        RestoreInterrupts(intflags);
+    }
+    else n = 0;
+
+    return n;
 }

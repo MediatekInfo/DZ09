@@ -28,6 +28,9 @@ typedef struct tag_RINGBUF
 } TRINGBUF, *pRINGBUF;
 
 extern pRINGBUF RB_Create(uint32_t BufferSize);
-extern void RB_Destroy(pRINGBUF RingBuffer);
+extern pRINGBUF RB_Destroy(pRINGBUF RingBuffer);
+extern uint32_t RB_WriteData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
+extern uint32_t RB_ReadData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
+extern uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer);
 
 #endif /* _RINGBUF_H_ */
