@@ -75,7 +75,7 @@ void PMUBL_Initialize(void)
     memset(&BLState, 0x00, sizeof(TBLSTATE));
 
     PMU_DisableISINKs();
-    PWM_SetupChannel(LCD_PWMCHANNEL, BASKLIGHTCOUNT, 0, PWF_FSEL_32K | PWF_CLKDIV1);
+    PWM_SetupChannel(LCD_PWMCHANNEL, BACKLIGHTCOUNT, 0, PWF_FSEL_32K | PWF_CLKDIV1);
     PMUBL_SetBacklightMode(BACKLIGHTMODE);
 
     PMUBL_TurnOn(false);

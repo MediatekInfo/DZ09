@@ -41,7 +41,7 @@
 #define MPU_BASE                    0xA0540000                                                      // Memory protection unit
 #define PMU_BASE                    0xA0700000                                                      // PMU mixedsys
 #define RTC_BASE                    0xA0710000                                                      // Real Time Clock
-#define ABBSYS_BASE              0xA0720000                                                      // Analog baseband (ABB) controller
+#define ABBSYS_BASE                 0xA0720000                                                      // Analog baseband (ABB) controller
 #define ANA_CFGSYS_BASE             0xA0730000                                                      // Analog die (MT6100) Configuration Registers (Clock, Reset, etc.)
 #define PWM_2CH_BASE                0xA0740000                                                      // Pulse-Width Modulation (2 channel)
 #define ADIE_CIRQ_BASE              0xA0760000                                                      // Interrupt Controller (16-bit)

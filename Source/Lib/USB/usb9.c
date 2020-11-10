@@ -248,9 +248,7 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup)
         USB9_HandleStdRequest(Setup);
         break;
     case USB_CMD_CLASSREQ:
-        if ((DevInterface->InterfaceReqHandler != NULL) &&
-                ((Setup->bmRequestType == USB_CMD_CLASSIFIN) ||
-                 (Setup->bmRequestType == USB_CMD_CLASSIFOUT)))
+        if (DevInterface->InterfaceReqHandler != NULL)
         {
             DebugPrint("CLASSREQ: ");
             DevInterface->InterfaceReqHandler(Setup);
@@ -263,6 +261,7 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup)
         {
             DevInterface->VendorReqHandler(Setup);
         }
+        else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, true, false);
         break;
     default:
         USB_UpdateEPState(USB_EP0, USB_DIR_OUT, true, false);
