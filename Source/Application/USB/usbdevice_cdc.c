@@ -139,6 +139,7 @@ static uint16_t CDC_DeviceStatus;
 static volatile boolean USB_CDC_Connected;
 static uint8_t CDC_OUTBuffer[USB_CDC_EPDEV_MAXP];
 static pRINGBUF CDC_OUTRingBuffer;
+static uint8_t CDC_INBuffer[USB_CDC_EPDEV_MAXP];
 static pRINGBUF CDC_INRingBuffer;
 
 static CDC_LINE_CODING CDC_LineCoding =
@@ -297,6 +298,14 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
     }
 }
 
+static void USB_CDC_StartTransmitData(void)
+{
+    uint32_t TXCount = RB_ReadData(CDC_INRingBuffer, CDC_INBuffer, USB_CDC_EPDEV_MAXP);
+
+    USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, CDC_INBuffer, TXCount);
+    USB_DataTransmit(USB_CDC_DATAIN_EP);
+}
+
 void *USB_CDC_Initialize(void)
 {
     CDC_DeviceConfig = 0;
@@ -356,14 +365,33 @@ uint32_t USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
     return 0;
 }
 
-TCDCSTATUS USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
+uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo)
+            && (DataPtr != NULL) && (CDC_INRingBuffer != NULL))
     {
+        uint32_t WCount = 0;
 
-        return CDC_OK;
+        while(WCount < Count)
+        {
+            uint32_t intflags = DisableInterrupts();
+            uint32_t NWrite = min(RB_GetCurrentFreeSpace(CDC_INRingBuffer), Count);
+
+            if (NWrite)
+            {
+                RB_WriteData(CDC_INRingBuffer, DataPtr, NWrite);
+                DataPtr += NWrite;
+                WCount += NWrite;
+                if (USB_GetEPStage(USB_CDC_DATAIN_EP) == EPSTAGE_IDLE)
+                    USB_CDC_StartTransmitData();
+            }
+            RestoreInterrupts(intflags);
+            /* TODO (scorp#1#): 1. Check for external disconnect events (USB disconnect, Port close)
+                                2. Check the timeout of the transmission.*/
+        }
+        return WCount;
     }
-    return CDC_FAILED;
+    return 0;
 }
 
 TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo)

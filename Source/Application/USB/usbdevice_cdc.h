@@ -39,7 +39,7 @@ extern void *USB_CDC_Initialize(void);
 extern TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo);
 extern TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo);
 extern uint32_t USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count);
-extern TCDCSTATUS USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count);
+extern uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count);
 extern TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo);
 extern TCDCSTATUS USB_CDC_FlashTXBuffer(pCDCEVENTER EventerInfo);
 
