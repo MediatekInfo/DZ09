@@ -156,6 +156,22 @@ uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer)
     return n;
 }
 
+uint32_t RB_GetCurrentFreeSpace(pRINGBUF RingBuffer)
+{
+    uint32_t n;
+
+    if (RingBuffer != NULL)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        n = RingBuffer->BufferSize - RingBuffer->DataCount;
+        RestoreInterrupts(intflags);
+    }
+    else n = 0;
+
+    return n;
+}
+
 void RB_FlashBuffer(pRINGBUF RingBuffer)
 {
     if (RingBuffer != NULL)
