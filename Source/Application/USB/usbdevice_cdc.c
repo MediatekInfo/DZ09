@@ -347,14 +347,13 @@ TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo)
     return CDC_FAILED;
 }
 
-TCDCSTATUS USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
+uint32_t USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && (DataPtr != NULL))
     {
-
-        return CDC_OK;
+        return RB_ReadData(CDC_OUTRingBuffer, DataPtr, Count);
     }
-    return CDC_FAILED;
+    return 0;
 }
 
 TCDCSTATUS USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
