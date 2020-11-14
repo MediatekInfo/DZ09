@@ -508,7 +508,7 @@ boolean USB_DataReceive(TEP Endpoint)
 void USB_PrepareDataTransmit(TEP Endpoint, void *DataBuffer, uint32_t DataLength)
 {
     if ((Endpoint < USB_EPNUM) &&
-            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
+            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_IN))
     {
         EPState[Endpoint].DataBuffer = DataBuffer;
         EPState[Endpoint].DataPosition = DataBuffer;
