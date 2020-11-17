@@ -204,5 +204,6 @@ extern void USB_PrepareDataTransmit(TEP Endpoint, void *DataBuffer, uint32_t Dat
 extern boolean USB_DataTransmit(TEP Endpoint);
 extern uint32_t USB_GetDataAmount(TEP Endpoint);
 extern TEPSTAGE USB_GetEPStage(TEP Endpoint);
+extern boolean USB_SetEPStage(TEP Endpoint, TEPSTAGE Stage);
 
 #endif /* _USB_H_ */

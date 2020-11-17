@@ -561,3 +561,16 @@ TEPSTAGE USB_GetEPStage(TEP Endpoint)
 {
     return (Endpoint < USB_EPNUM) ? EPState[Endpoint].Stage : EPSTAGE_IDLE;
 }
+
+boolean USB_SetEPStage(TEP Endpoint, TEPSTAGE Stage)
+{
+    if ((Endpoint < USB_EPNUM) && (Stage <= EPSTAGE_IN))
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        EPState[Endpoint].Stage = Stage;
+        RestoreInterrupts(intflags);
+        return true;
+    }
+    return false;
+}
