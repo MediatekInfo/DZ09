@@ -86,7 +86,8 @@ static void USB_EP0Handler(uint8_t EPAddress)
     }
     if (EPState[USB_EP0].Stage == EPSTAGE_IN)
     {
-        USB_DataTransmit(USB_EP0);
+        if (USB_DataTransmit(USB_EP0))
+            EPState[USB_EP0].Stage = EPSTAGE_IDLE;
     }
 }
 
@@ -478,7 +479,8 @@ boolean USB_DataReceive(TEP Endpoint)
     boolean LastPacket = false;
 
     if ((Endpoint < USB_EPNUM) &&
-            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT))
+            ((Endpoint == USB_EP0) || (EPState[Endpoint].EPType & USB_DIR_MASK) == USB_DIR_OUT) &&
+            (EPState[Endpoint].DataBuffer != NULL) && (EPState[Endpoint].DataPosition != NULL))
     {
         pEPSTATE EPInfo = &EPState[Endpoint];
         uint32_t Count = USB_GetOUTDataLength(Endpoint);
@@ -528,19 +530,17 @@ boolean USB_DataTransmit(TEP Endpoint)
         uint32_t Count = min(EPInfo->DataLength, EPInfo->PacketSize);
 
         LastPacket = (Count < EPInfo->PacketSize);
+        if (Count && (EPInfo->DataPosition != NULL))
+        {
+            USB_EPFIFOWrite(Endpoint, Count, EPInfo->DataPosition);
 
-        USB_EPFIFOWrite(Endpoint, Count, EPInfo->DataPosition);
-
-        EPInfo->DataLength -= Count;
-        EPInfo->DataPosition += Count;
+            EPInfo->DataLength -= Count;
+            EPInfo->DataPosition += Count;
+        }
 
         DebugPrint("TX size: %d\r\n", Count);
 
-        if (LastPacket)
-        {
-            EPInfo->Stage = EPSTAGE_IDLE;
-            USB_UpdateEPState(Endpoint, USB_DIR_IN, false, true);
-        }
+        if (LastPacket) USB_UpdateEPState(Endpoint, USB_DIR_IN, false, true);
         else USB_UpdateEPState(Endpoint, USB_DIR_IN, false, false);
     }
     return LastPacket;
