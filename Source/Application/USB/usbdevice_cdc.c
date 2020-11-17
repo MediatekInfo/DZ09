@@ -187,7 +187,7 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
     {
     case SET_LINE_CODING:
         DebugPrint("SET_LINE_CODING %02X ", Setup->wLength);
-        if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
+        if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
             USB_PrepareDataReceive(USB_EP0, &CDC_LineCoding, min(Setup->wLength, sizeof(CDC_LineCoding)));
         else
         {
@@ -210,7 +210,7 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
         break;
     }
 
-    if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
+    if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
         USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
     else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
 }
@@ -237,7 +237,7 @@ static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
             }
     }
 
-    if (EPState[USB_EP0].Stage == EPSTAGE_IDLE)
+    if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
         USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
     else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
 }
