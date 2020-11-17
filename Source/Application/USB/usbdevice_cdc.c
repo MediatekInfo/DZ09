@@ -177,6 +177,34 @@ static void USB_CDC_SetConfiguration(uint8_t Index)
         IntEventerInfo->OnStatusShange(CDC_CONNECTED);
 }
 
+static void USB_CDC_IntFlashRXBuffer(void)
+{
+    RB_FlashBuffer(CDC_OUTRingBuffer);
+}
+
+static void USB_CDC_IntFlashTXBuffer(void)
+{
+    USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, NULL, 0);
+    USB_CDC_WaitTXAck = false;
+}
+
+static void USB_CDC_SetConnectedStatus(boolean Connected)
+{
+    if (USB_CDC_Connected != Connected)
+    {
+        USB_CDC_Connected = Connected;
+        if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusShange != NULL))
+            IntEventerInfo->OnStatusShange((Connected) ? CDC_CONNECTED : CDC_DISCONNECTED);
+    }
+}
+
+static void USB_CDC_ConnectHandler(boolean Connected)
+{
+    USB_CDC_SetConnectedStatus(Connected);
+    USB_CDC_IntFlashRXBuffer();
+    USB_CDC_IntFlashTXBuffer();
+}
+
 static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
 {
     boolean Error = false;
@@ -201,6 +229,7 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
         /* Setup->wValue: bit 0 - DTR value,
                           bit 1 - RTS value
         */
+        USB_CDC_ConnectHandler((Setup->wValue & LINE_DTR) != 0);
         DebugPrint("SET_LINE_STATE\r\n");
         break;
     default:
@@ -238,34 +267,6 @@ static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
     if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
         USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
     else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
-}
-
-static void USB_CDC_IntFlashRXBuffer(void)
-{
-    RB_FlashBuffer(CDC_OUTRingBuffer);
-}
-
-static void USB_CDC_IntFlashTXBuffer(void)
-{
-    USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, NULL, 0);
-    USB_CDC_WaitTXAck = false;
-}
-
-static void USB_CDC_SetConnectedStatus(boolean Connected)
-{
-    if (USB_CDC_Connected != Connected)
-    {
-        USB_CDC_Connected = Connected;
-        if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusShange != NULL))
-            IntEventerInfo->OnStatusShange((Connected) ? CDC_CONNECTED : CDC_DISCONNECTED);
-    }
-}
-
-static void USB_CDC_ConnectHandler(boolean Connected)
-{
-    USB_CDC_SetConnectedStatus(Connected);
-    USB_CDC_IntFlashRXBuffer();
-    USB_CDC_IntFlashTXBuffer();
 }
 
 static void USB_CDC_CtlHandler(uint8_t EPAddress)
