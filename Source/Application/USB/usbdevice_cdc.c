@@ -132,6 +132,17 @@ static const uint8_t CFG_DESC_CDC[] =
     0x00                                                                                            // '0' - endpoint never NAKs
 };
 
+static const CDC_VENDOR_REQ VReq[] =
+{
+    0x0080, 0x01,
+    0x0081, 0x00,
+    0x0082, 0x44,
+    0x8383, 0xFF,
+    0x8484, 0x02,
+    0x8686, 0xAA,
+    0x9494, 0x00
+};
+
 static TUSBDRIVERINTERFACE USB_CDC_Interface;
 static pCDCEVENTER IntEventerInfo;
 static uint8_t  CDC_DeviceConfig;
@@ -146,17 +157,6 @@ static CDC_LINE_CODING CDC_LineCoding =
     0,
     0,
     8
-};
-
-static CDC_VENDOR_REQ VReq[] =
-{
-    0x0080, 0x01,
-    0x0081, 0x00,
-    0x0082, 0x44,
-    0x8383, 0xFF,
-    0x8484, 0x02,
-    0x8686, 0xAA,
-    0x9494, 0x00
 };
 
 static uint8_t USB_CDC_GetStringDescriptorCount(void)
@@ -258,7 +258,7 @@ static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
         for(i = 0; i < sizeof(VReq) / sizeof(CDC_VENDOR_REQ); i++)
             if (Setup->wValue == VReq[i].Request)
             {
-                USB_PrepareDataTransmit(USB_EP0, &VReq[i].Data, sizeof(VReq[i].Data));
+                USB_PrepareDataTransmit(USB_EP0, (void *)&VReq[i].Data, sizeof(VReq[i].Data));
                 Error = false;
                 break;
             }

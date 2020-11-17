@@ -116,7 +116,6 @@ static void USB_ResetDevice(void)
     {
         USB_SetupEndpoint(USB_EP0, USB_EP0Handler, USB_EP0_FIFOSIZE);
         USB_SetEndpointEnabled(USB_EP0, true);
-        USB_INTRINE |= UEP0;
     }
 }
 
