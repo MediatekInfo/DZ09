@@ -136,11 +136,9 @@ static TUSBDRIVERINTERFACE USB_CDC_Interface;
 static pCDCEVENTER IntEventerInfo;
 static uint8_t  CDC_DeviceConfig;
 static uint16_t CDC_DeviceStatus;
-static volatile boolean USB_CDC_Connected;
+static volatile boolean USB_CDC_Connected, USB_CDC_WaitTXAck;
 static uint8_t CDC_OUTBuffer[USB_CDC_EPDEV_MAXP];
 static pRINGBUF CDC_OUTRingBuffer;
-static uint8_t CDC_INBuffer[USB_CDC_EPDEV_MAXP];
-static pRINGBUF CDC_INRingBuffer;
 
 static CDC_LINE_CODING CDC_LineCoding =
 {
@@ -249,7 +247,8 @@ static void USB_CDC_IntFlashRXBuffer(void)
 
 static void USB_CDC_IntFlashTXBuffer(void)
 {
-    RB_FlashBuffer(CDC_INRingBuffer);
+    USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, NULL, 0);
+    USB_CDC_WaitTXAck = false;
 }
 
 static void USB_CDC_SetConnectedStatus(boolean Connected)
@@ -276,41 +275,45 @@ static void USB_CDC_CtlHandler(uint8_t EPAddress)
 
 static void USB_CDC_DataHandler(uint8_t EPAddress)
 {
-    if (EPAddress == USB_CDC_DATAIN_EP)
+    if (EPAddress == (USB_EPENUM2INDEX(USB_CDC_DATAIN_EP) | USB_DIR_IN))
     {
+        DebugPrint("CDC DATA IN HANDLER\r\n");
 
+        if (USB_GetEPStage(USB_CDC_DATAIN_EP) == EPSTAGE_IN)
+        {
+            if (USB_CDC_WaitTXAck)
+            {
+                USB_SetEPStage(USB_CDC_DATAIN_EP, EPSTAGE_IDLE);
+                USB_CDC_WaitTXAck = false;
+            }
+            else USB_CDC_WaitTXAck = USB_DataTransmit(USB_CDC_DATAIN_EP);
+        }
     }
-    else if (EPAddress == USB_CDC_DATAOUT_EP)
+    else if (EPAddress == (USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT))
     {
         uint32_t ReceivedCount;
 
         DebugPrint("CDC DATA OUT HANDLER\r\n");
 
         USB_DataReceive(USB_CDC_DATAOUT_EP);
-        if (ReceivedCount = USB_GetDataAmount(USB_CDC_DATAOUT_EP))
-            RB_WriteData(CDC_OUTRingBuffer, CDC_OUTBuffer, ReceivedCount);
+        if (USB_CDC_Connected)
+        {
+            if (ReceivedCount = USB_GetDataAmount(USB_CDC_DATAOUT_EP))
+                RB_WriteData(CDC_OUTRingBuffer, CDC_OUTBuffer, ReceivedCount);
 
-        if ((ReceivedCount = RB_GetCurrentDataCount(CDC_OUTRingBuffer)) &&
-                (IntEventerInfo->OnDataReceived != NULL))
-            IntEventerInfo->OnDataReceived(ReceivedCount);
-
+            if ((ReceivedCount = RB_GetCurrentDataCount(CDC_OUTRingBuffer)) &&
+                    (IntEventerInfo->OnDataReceived != NULL))
+                IntEventerInfo->OnDataReceived(ReceivedCount);
+        }
         USB_PrepareDataReceive(USB_CDC_DATAOUT_EP, CDC_OUTBuffer, sizeof(CDC_OUTBuffer));
     }
-}
-
-static void USB_CDC_StartTransmitData(void)
-{
-    uint32_t TXCount = RB_ReadData(CDC_INRingBuffer, CDC_INBuffer, USB_CDC_EPDEV_MAXP);
-
-    USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, CDC_INBuffer, TXCount);
-    USB_DataTransmit(USB_CDC_DATAIN_EP);
 }
 
 void *USB_CDC_Initialize(void)
 {
     CDC_DeviceConfig = 0;
     CDC_DeviceStatus = 0;
-    USB_CDC_SetConnectedStatus(false);
+    USB_CDC_ConnectHandler(false);
     memset(&USB_CDC_Interface, 0x00, sizeof(TUSBDRIVERINTERFACE));
 
     USB_CDC_Interface.DeviceDescriptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
@@ -367,31 +370,29 @@ uint32_t USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
 
 uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo)
-            && (DataPtr != NULL) && (CDC_INRingBuffer != NULL))
+    uint32_t WCount = 0;
+
+    if (USB_CDC_Connected && (DataPtr != NULL) && Count &&
+            (EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
     {
-        uint32_t WCount = 0;
-
-        while(WCount < Count)
+        while(USB_GetEPStage(USB_CDC_DATAIN_EP) != EPSTAGE_IDLE)
         {
-            uint32_t intflags = DisableInterrupts();
-            uint32_t NWrite = min(RB_GetCurrentFreeSpace(CDC_INRingBuffer), Count);
-
-            if (NWrite)
-            {
-                RB_WriteData(CDC_INRingBuffer, DataPtr, NWrite);
-                DataPtr += NWrite;
-                WCount += NWrite;
-                if (USB_GetEPStage(USB_CDC_DATAIN_EP) == EPSTAGE_IDLE)
-                    USB_CDC_StartTransmitData();
-            }
-            RestoreInterrupts(intflags);
             /* TODO (scorp#1#): 1. Check for external disconnect events (USB disconnect, Port close)
                                 2. Check the timeout of the transmission.*/
-        }
-        return WCount;
+        };
+        DebugPrint("NWrite %u\r\n", Count);
+        USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, DataPtr, Count);
+        USB_DataTransmit(USB_CDC_DATAIN_EP);
+
+        while(USB_GetEPStage(USB_CDC_DATAIN_EP) != EPSTAGE_IDLE)
+        {
+            /* TODO (scorp#1#): 1. Check for external disconnect events (USB disconnect, Port close)
+                                2. Check the timeout of the transmission.*/
+        };
+        WCount = Count;
+        DebugPrint("USB_CDC_Write - exit\r\n");
     }
-    return 0;
+    return WCount;
 }
 
 TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo)
