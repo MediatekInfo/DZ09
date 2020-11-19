@@ -500,8 +500,7 @@ boolean USB_DataReceive(TEP Endpoint)
         }
         if (Count) USB_EPFIFORead(Endpoint, Count, NULL);
 
-        if (LastPacket) USB_UpdateEPState(Endpoint, USB_DIR_OUT, false, true);
-        else USB_UpdateEPState(Endpoint, USB_DIR_OUT, false, false);
+        USB_UpdateEPState(Endpoint, USB_DIR_OUT, false, LastPacket);
     }
     return LastPacket;
 }
@@ -538,9 +537,7 @@ boolean USB_DataTransmit(TEP Endpoint)
         }
 
         DebugPrint("TX size: %d\r\n", Count);
-
-        if (LastPacket) USB_UpdateEPState(Endpoint, USB_DIR_IN, false, true);
-        else USB_UpdateEPState(Endpoint, USB_DIR_IN, false, false);
+        USB_UpdateEPState(Endpoint, USB_DIR_IN, false, LastPacket);
     }
     return LastPacket;
 }

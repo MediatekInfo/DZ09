@@ -239,9 +239,7 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
         break;
     }
 
-    if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
-        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
-    else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
+    USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE);
 }
 
 static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
@@ -266,9 +264,7 @@ static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
             }
     }
 
-    if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
-        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
-    else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
+    USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE);
 }
 
 static void USB_CDC_CtlHandler(uint8_t EPAddress)

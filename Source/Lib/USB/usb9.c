@@ -234,9 +234,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         break;
     }
 
-    if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
-        USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, true);
-    else USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, false);
+    USB_UpdateEPState(USB_EP0, USB_DIR_OUT, Error, USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE);
 }
 
 void USB9_HandleSetupRequest(pUSBSETUP Setup)
