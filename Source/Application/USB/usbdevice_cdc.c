@@ -33,6 +33,8 @@
 #define CDC_CTL_INTERFACE_INDEX     0x00
 #define CDC_DATA_INTERFACE_INDEX    0x01
 
+#define CDC_OUTBUF_MIN_SIZE         (2 * USB_CDC_EPDEV_MAXP)
+
 /* Used CDC interface requests */
 #define RING_AUX_JACK               0x15
 #define SET_LINE_CODING             0x20
@@ -344,8 +346,18 @@ TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo)
 {
     if ((EventerInfo != NULL) && (IntEventerInfo == NULL))
     {
+        pRINGBUF tmpRingBuffer = RB_Create(max(EventerInfo->OutBufferSize, CDC_OUTBUF_MIN_SIZE));
 
-        return CDC_OK;
+        if (tmpRingBuffer != NULL)
+        {
+            uint32_t intflags = DisableInterrupts();
+
+            IntEventerInfo = EventerInfo;
+            CDC_OUTRingBuffer = tmpRingBuffer;
+            IntEventerInfo->OutBufferSize = CDC_OUTRingBuffer->BufferSize;
+            RestoreInterrupts(intflags);
+            return CDC_OK;
+        }
     }
     return CDC_FAILED;
 }
@@ -354,6 +366,12 @@ TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo)
 {
     if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
     {
+        uint32_t intflags = DisableInterrupts();
+
+        USB_CDC_IntFlashTXBuffer();
+        CDC_OUTRingBuffer = RB_Destroy(CDC_OUTRingBuffer);
+        IntEventerInfo = NULL;
+        RestoreInterrupts(intflags);
 
         return CDC_OK;
     }

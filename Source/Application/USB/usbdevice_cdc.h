@@ -29,6 +29,7 @@ typedef enum tag_CDCSTATUS
 
 typedef struct tag_CDCEVENTER
 {
+    volatile uint32_t OutBufferSize;
     void (*OnStatusShange)(TCDCSTATUS Status);
     void (*OnDataReceived)(uint32_t ReceivedCount);
     void (*OnDataTransmitted)(uint32_t TransmittedCount);
