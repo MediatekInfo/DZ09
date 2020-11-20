@@ -49,7 +49,7 @@
 #define AUX_TS_CMD0                 (*(volatile uint16_t *)(AUXADC_BASE + 0x0054))                  // Touch Screen Sample Command 0
 #define AUX_TS_CON                  (*(volatile uint16_t *)(AUXADC_BASE + 0x0058))                  // Touch Screen Control
 #define AUX_TS_DAT0                 (*(volatile uint16_t *)(AUXADC_BASE + 0x005C))                  // Touch Screen Sample Data 0
-#define AUXADC_DAT_ZCV              (*(volatile uint16_t *)(AUXADC_BASE + 0x0070))                  // Touch Screen Sample Data 0
+#define AUXADC_DAT_ZCV              (*(volatile uint16_t *)(AUXADC_BASE + 0x0070))                  // AuxiliaryADC ZCV Sample DATA
 #define AUXADC_CON4                 (*(volatile uint16_t *)(AUXADC_BASE + 0x00D0))                  // AuxiliaryADC Control Register 4
 #define SYN0STA                     (1 << 0)
 #define SYN1STA                     (1 << 1)
