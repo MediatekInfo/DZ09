@@ -39,8 +39,8 @@ void LRT_GPTHandler(void)
             {
                 if (tmpLRT->Flags & TF_ENABLED)
                 {
-                    int32_t CurrTicks = USC_GetCurrentTicks();
-                    int32_t DeltaTicks = CurrTicks - tmpLRT->StartTicks;
+                    uint32_t CurrTicks = USC_GetCurrentTicks();
+                    uint32_t DeltaTicks = CurrTicks - tmpLRT->StartTicks;
 
                     if (DeltaTicks >= tmpLRT->Interval)
                     {

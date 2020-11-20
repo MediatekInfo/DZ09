@@ -32,7 +32,7 @@ typedef struct tag_TIMER
 {
     TMRFLAGS   Flags;
     uint32_t   Interval;
-    int32_t    StartTicks;
+    uint32_t   StartTicks;
     pHANDLE    Parent;
     void       (*Handler)(pTIMER);
 } TTIMER, *pTIMER;

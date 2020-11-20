@@ -33,7 +33,7 @@
 
 extern void USC_StartCounter(void);
 extern void USC_StopCounter(void);
-extern int32_t USC_GetCurrentTicks(void);
+extern uint32_t USC_GetCurrentTicks(void);
 extern void USC_Pause_us(uint32_t us);
 
 #endif /* _USTIMER_H_ */

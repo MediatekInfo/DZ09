@@ -25,7 +25,7 @@
 
 static boolean AUXADC_WaitBusy(void)
 {
-    int32_t tmpUSTicks, CurrentTicks;
+    uint32_t tmpUSTicks, CurrentTicks;
 
     CurrentTicks = tmpUSTicks = USC_GetCurrentTicks();
     while((AUXADC_CON3 & AUXADCSTA) &&
