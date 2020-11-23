@@ -178,8 +178,6 @@ static void USB_CDC_SetConfiguration(uint8_t Index)
 {
     /* Do something here when the configuration changes */
     CDC_DeviceConfig = Index;
-    if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusShange != NULL))
-        IntEventerInfo->OnStatusShange(CDC_CONNECTED);
 }
 
 static void USB_CDC_IntFlashRXBuffer(void)
