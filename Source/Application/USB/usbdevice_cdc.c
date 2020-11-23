@@ -286,7 +286,7 @@ static void CDC_RestartTXTimeout(void)
 
 static void CDC_StopTXTimeout(void)
 {
-    LRT_Start(CDC_TimeoutTimer);
+    LRT_Stop(CDC_TimeoutTimer);
 }
 
 static boolean USB_CDC_WaitTXIdle(void)
