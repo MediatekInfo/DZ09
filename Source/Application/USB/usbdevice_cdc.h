@@ -24,7 +24,8 @@ typedef enum tag_CDCSTATUS
     CDC_OK,
     CDC_FAILED,
     CDC_CONNECTED,
-    CDC_DISCONNECTED
+    CDC_DISCONNECTED,
+    CDC_TXTIMEOUT,
 } TCDCSTATUS;
 
 typedef struct tag_CDCEVENTER
