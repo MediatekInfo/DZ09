@@ -318,14 +318,22 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
 
         if (USB_GetEPStage(USB_CDC_DATAIN_EP) == EPSTAGE_IN)
         {
+            uint32_t TotalTransmitted = USB_GetDataAmount(USB_CDC_DATAIN_EP);
+
             if (USB_CDC_WaitTXAck)
             {
                 USB_SetEPStage(USB_CDC_DATAIN_EP, EPSTAGE_IDLE);
                 CDC_StopTXTimeout();
+                if (IntEventerInfo->OnDataTransmitted != NULL) IntEventerInfo->OnDataTransmitted(TotalTransmitted);
                 USB_CDC_WaitTXAck = false;
             }
             else
             {
+                if (IntEventerInfo->OnDataTransmitted != NULL)
+                {
+                    CDC_StopTXTimeout();
+                    IntEventerInfo->OnDataTransmitted(TotalTransmitted);
+                }
                 USB_CDC_WaitTXAck = USB_DataTransmit(USB_CDC_DATAIN_EP);
                 CDC_RestartTXTimeout();
             }
