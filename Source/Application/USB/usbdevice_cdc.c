@@ -155,6 +155,7 @@ static volatile boolean USB_CDC_Connected, USB_CDC_WaitTXAck, USB_CDC_TXTimeout;
 static uint8_t CDC_OUTBuffer[USB_CDC_EPDEV_MAXP];
 static pRINGBUF CDC_OUTRingBuffer;
 static pTIMER CDC_TimeoutTimer;
+static uint32_t CDC_TransmitRemain;
 
 static CDC_LINE_CODING CDC_LineCoding =
 {
@@ -318,13 +319,16 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
 
         if (USB_GetEPStage(USB_CDC_DATAIN_EP) == EPSTAGE_IN)
         {
-            uint32_t TotalTransmitted = USB_GetDataAmount(USB_CDC_DATAIN_EP);
+            uint32_t CurrentlyTransmitted = CDC_TransmitRemain - USB_GetDataAmount(USB_CDC_DATAIN_EP);
+
+            CDC_TransmitRemain = USB_GetDataAmount(USB_CDC_DATAIN_EP);
 
             if (USB_CDC_WaitTXAck)
             {
                 USB_SetEPStage(USB_CDC_DATAIN_EP, EPSTAGE_IDLE);
                 CDC_StopTXTimeout();
-                if (IntEventerInfo->OnDataTransmitted != NULL) IntEventerInfo->OnDataTransmitted(TotalTransmitted);
+                if (IntEventerInfo->OnDataTransmitted != NULL)
+                    IntEventerInfo->OnDataTransmitted(CurrentlyTransmitted);
                 USB_CDC_WaitTXAck = false;
             }
             else
@@ -332,7 +336,7 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
                 if (IntEventerInfo->OnDataTransmitted != NULL)
                 {
                     CDC_StopTXTimeout();
-                    IntEventerInfo->OnDataTransmitted(TotalTransmitted);
+                    IntEventerInfo->OnDataTransmitted(CurrentlyTransmitted);
                 }
                 USB_CDC_WaitTXAck = USB_DataTransmit(USB_CDC_DATAIN_EP);
                 CDC_RestartTXTimeout();
