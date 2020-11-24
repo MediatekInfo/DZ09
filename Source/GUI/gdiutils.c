@@ -480,6 +480,8 @@ void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, uint32_t Color)
 
     if ((lc == NULL) || (Rct == NULL) || (lc->FrameBuffer == NULL)) return;
 
+    dpx = lc->LayerRgn.r - (Rct->r - Rct->l);
+
     switch (lc->ColorFormat)
     {
     case CF_RGB565:
@@ -487,7 +489,6 @@ void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, uint32_t Color)
         uint16_t *p = (uint16_t *)GDI_GetPixelPtr(lc, Rct->lt);
 
         Color = RGB_565(Color);
-        dpx = (lc->LayerRgn.r + 1) - (Rct->r - Rct->l + 1);
         for(y = Rct->t; y <= Rct->b; y++)
         {
             for(x = Rct->l; x <= Rct->r; x++) *p++ = Color;
@@ -501,7 +502,6 @@ void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, uint32_t Color)
     {
         uint32_t *p = (uint32_t *)GDI_GetPixelPtr(lc, Rct->lt);
 
-        dpx = (lc->LayerRgn.r + 1) - (Rct->r + 1 - Rct->l);
         for(y = Rct->t; y <= Rct->b; y++)
         {
             for(x = Rct->l; x <= Rct->r; x++) *p++ = Color;
