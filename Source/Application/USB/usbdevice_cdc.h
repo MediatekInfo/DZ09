@@ -31,9 +31,9 @@ typedef enum tag_CDCSTATUS
 typedef struct tag_CDCEVENTER
 {
     volatile uint32_t OutBufferSize;
-    void (*OnStatusShange)(TCDCSTATUS Status);
-    void (*OnDataReceived)(uint32_t ReceivedCount);
-    void (*OnDataTransmitted)(uint32_t TransmittedCount);
+    void (*OnStatusShange)(TCDCSTATUS Status);                                                      // These handlers will be called from the interrupt.
+    void (*OnDataReceived)(uint32_t ReceivedCount);                                                 // -
+    void (*OnDataTransmitted)(uint32_t TransmittedCount);                                           // -
 } TCDCEVENTER, *pCDCEVENTER;
 
 extern void *USB_CDC_Initialize(void);
