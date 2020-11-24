@@ -446,23 +446,26 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
 {
     uint32_t WCount = 0;
 
-    while(USB_CDC_Connected && (DataPtr != NULL) && Count &&
+    if (USB_CDC_Connected && (DataPtr != NULL) && Count &&
             (EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
-    {
-        CDC_RestartTXTimeout();
-        if (USB_CDC_WaitTXIdle()) break;
+        do
+        {
+            CDC_RestartTXTimeout();
+            if (USB_CDC_WaitTXIdle()) break;
 
-        DebugPrint("NWrite %u\r\n", Count);
-        USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, DataPtr, Count);
-        USB_DataTransmit(USB_CDC_DATAIN_EP);
+            DebugPrint("NWrite %u\r\n", Count);
+            CDC_TransmitRemain = Count;
+            USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, DataPtr, Count);
+            USB_DataTransmit(USB_CDC_DATAIN_EP);
 
-        CDC_RestartTXTimeout();
-        if (USB_CDC_WaitTXIdle()) break;
+            CDC_RestartTXTimeout();
+            if (USB_CDC_WaitTXIdle()) break;
 
-        WCount = Count;
-        DebugPrint("USB_CDC_Write - exit\r\n");
-        break;
-    }
+            WCount = Count;
+            DebugPrint("USB_CDC_Write - exit\r\n");
+        }
+        while(0);
+
     return WCount;
 }
 
