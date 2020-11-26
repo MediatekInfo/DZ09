@@ -274,18 +274,18 @@ static void USB_CDC_CtlHandler(uint8_t EPAddress)
     DebugPrint("CDC CONTROL HANDLER\r\n");
 }
 
-static void CDC_TXTimeoutHandler(pTIMER Timer)
+static void USB_CDC_TXTimeoutHandler(pTIMER Timer)
 {
     USB_CDC_TXTimeout = true;
     USB_CDC_FlashTXBuffer(IntEventerInfo);
 }
 
-static void CDC_RestartTXTimeout(void)
+static void USB_CDC_RestartTXTimeout(void)
 {
     LRT_Start(CDC_TimeoutTimer);
 }
 
-static void CDC_StopTXTimeout(void)
+static void USB_CDC_StopTXTimeout(void)
 {
     LRT_Stop(CDC_TimeoutTimer);
 }
@@ -297,7 +297,7 @@ static boolean USB_CDC_WaitTXIdle(void)
         /* Checking whether the connection is active */
         if (!USB_CDC_Connected)
         {
-            CDC_StopTXTimeout();
+            USB_CDC_StopTXTimeout();
             return true;
         }
 
@@ -326,7 +326,7 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
             if (USB_CDC_WaitTXAck)
             {
                 USB_SetEPStage(USB_CDC_DATAIN_EP, EPSTAGE_IDLE);
-                CDC_StopTXTimeout();
+                USB_CDC_StopTXTimeout();
                 if (IntEventerInfo->OnDataTransmitted != NULL)
                     IntEventerInfo->OnDataTransmitted(CurrentlyTransmitted);
                 USB_CDC_WaitTXAck = false;
@@ -335,11 +335,11 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
             {
                 if (IntEventerInfo->OnDataTransmitted != NULL)
                 {
-                    CDC_StopTXTimeout();
+                    USB_CDC_StopTXTimeout();
                     IntEventerInfo->OnDataTransmitted(CurrentlyTransmitted);
                 }
                 USB_CDC_WaitTXAck = USB_DataTransmit(USB_CDC_DATAIN_EP);
-                CDC_RestartTXTimeout();
+                USB_CDC_RestartTXTimeout();
             }
         }
     }
@@ -371,7 +371,7 @@ void *USB_CDC_Initialize(void)
     memset(&USB_CDC_Interface, 0x00, sizeof(TUSBDRIVERINTERFACE));
 
     if (CDC_TimeoutTimer != NULL)
-        CDC_TimeoutTimer = LRT_Create(CDC_TRANSMITTIMEOUT, NULL, CDC_TXTimeoutHandler, TF_DIRECT);
+        CDC_TimeoutTimer = LRT_Create(CDC_TRANSMITTIMEOUT, NULL, USB_CDC_TXTimeoutHandler, TF_DIRECT);
     if (CDC_TimeoutTimer == NULL) return NULL;
 
     USB_CDC_Interface.DeviceDescriptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
