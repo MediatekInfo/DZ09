@@ -192,11 +192,28 @@ static void USB_CDC_IntFlashTXBuffer(void)
     USB_CDC_WaitTXAck = false;
 }
 
+static void USB_CDC_TXTimeoutHandler(pTIMER Timer)
+{
+    USB_CDC_TXTimeout = true;
+    USB_CDC_FlashTXBuffer(IntEventerInfo);
+}
+
+static void USB_CDC_RestartTXTimeout(void)
+{
+    LRT_Start(CDC_TimeoutTimer);
+}
+
+static void USB_CDC_StopTXTimeout(void)
+{
+    LRT_Stop(CDC_TimeoutTimer);
+}
+
 static void USB_CDC_SetConnectedStatus(boolean Connected)
 {
     if (USB_CDC_Connected != Connected)
     {
         USB_CDC_Connected = Connected;
+        if (!Connected) USB_CDC_StopTXTimeout();
         if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusShange != NULL))
             IntEventerInfo->OnStatusShange((Connected) ? CDC_CONNECTED : CDC_DISCONNECTED);
     }
@@ -274,32 +291,13 @@ static void USB_CDC_CtlHandler(uint8_t EPAddress)
     DebugPrint("CDC CONTROL HANDLER\r\n");
 }
 
-static void USB_CDC_TXTimeoutHandler(pTIMER Timer)
-{
-    USB_CDC_TXTimeout = true;
-    USB_CDC_FlashTXBuffer(IntEventerInfo);
-}
-
-static void USB_CDC_RestartTXTimeout(void)
-{
-    LRT_Start(CDC_TimeoutTimer);
-}
-
-static void USB_CDC_StopTXTimeout(void)
-{
-    LRT_Stop(CDC_TimeoutTimer);
-}
-
 static boolean USB_CDC_WaitTXIdle(void)
 {
+    USB_CDC_RestartTXTimeout();
     while(USB_GetEPStage(USB_CDC_DATAIN_EP) != EPSTAGE_IDLE)
     {
         /* Checking whether the connection is active */
-        if (!USB_CDC_Connected)
-        {
-            USB_CDC_StopTXTimeout();
-            return true;
-        }
+        if (!USB_CDC_Connected) return true;
 
         /* Timeout check */
         if (USB_CDC_TXTimeout)
@@ -450,7 +448,6 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
             (EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
         do
         {
-            CDC_RestartTXTimeout();
             if (USB_CDC_WaitTXIdle()) break;
 
             DebugPrint("NWrite %u\r\n", Count);
@@ -458,7 +455,6 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
             USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, DataPtr, Count);
             USB_DataTransmit(USB_CDC_DATAIN_EP);
 
-            CDC_RestartTXTimeout();
             if (USB_CDC_WaitTXIdle()) break;
 
             WCount = Count;
