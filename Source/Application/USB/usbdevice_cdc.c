@@ -214,8 +214,8 @@ static void USB_CDC_SetConnectedStatus(boolean Connected)
     {
         USB_CDC_Connected = Connected;
         if (!Connected) USB_CDC_StopTXTimeout();
-        if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusShange != NULL))
-            IntEventerInfo->OnStatusShange((Connected) ? CDC_CONNECTED : CDC_DISCONNECTED);
+        if ((IntEventerInfo != NULL) && (IntEventerInfo->OnStatusChange != NULL))
+            IntEventerInfo->OnStatusChange((Connected) ? CDC_CONNECTED : CDC_DISCONNECTED);
     }
 }
 
@@ -302,7 +302,7 @@ static boolean USB_CDC_WaitTXIdle(void)
         /* Timeout check */
         if (USB_CDC_TXTimeout)
         {
-            if (IntEventerInfo->OnStatusShange != NULL) IntEventerInfo->OnStatusShange(CDC_TXTIMEOUT);
+            if (IntEventerInfo->OnStatusChange != NULL) IntEventerInfo->OnStatusChange(CDC_TXTIMEOUT);
             return true;
         }
     }
@@ -368,7 +368,7 @@ void *USB_CDC_Initialize(void)
     USB_CDC_ConnectHandler(false);
     memset(&USB_CDC_Interface, 0x00, sizeof(TUSBDRIVERINTERFACE));
 
-    if (CDC_TimeoutTimer != NULL)
+    if (CDC_TimeoutTimer == NULL)
         CDC_TimeoutTimer = LRT_Create(CDC_TRANSMITTIMEOUT, NULL, USB_CDC_TXTimeoutHandler, TF_DIRECT);
     if (CDC_TimeoutTimer == NULL) return NULL;
 
