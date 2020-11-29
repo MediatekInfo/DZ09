@@ -65,7 +65,6 @@ static void USB_EP0Handler(uint8_t EPAddress)
     {
         uint32_t Count = USB_GetOUTDataLength(USB_EP0);
 
-        DebugPrint("COUT=%d\r\n", Count);
         if (Count >= sizeof(TUSBSETUP))
         {
             USB_EPFIFORead(USB_EP0, sizeof(TUSBSETUP), &SetupBuffer);
@@ -77,7 +76,6 @@ static void USB_EP0Handler(uint8_t EPAddress)
     {
         uint32_t Count = USB_GetOUTDataLength(USB_EP0);
 
-        DebugPrint("RX COUT=%d\r\n", Count);
         if (USB_DataReceive(USB_EP0))
         {
             USB9_HandleSetupRequest(&SetupBuffer);
@@ -137,7 +135,6 @@ static void USB_EPDefaultHandler(uint8_t EPAddress)
     if (!EPIndex)
     {
         tmpCSR = USB_EP0_CSR;
-        DebugPrint("DefH CSR%d, %02X\r\n", EPIndex, tmpCSR);
         if (tmpCSR & UE0SENTSTALL) USB_EP0_CSR = tmpCSR & ~UE0SENTSTALL;
         if (tmpCSR & UE0SETUPEND) USB_EP0_CSR = UE0SSETUPEND;
     }
@@ -160,7 +157,6 @@ static void USB_InterruptHandler(void)
 
     while(USB_GetInterruptFlags(&IntFlagsUSB, &IntFlagsIN, &IntFlagsOUT))
     {
-        DebugPrint("\r\nINT %02X %02X %02X\r\n", IntFlagsUSB, IntFlagsIN, IntFlagsOUT);
         if (IntFlagsUSB & UIRESET)
         {
             /* Reset the device */
@@ -262,7 +258,6 @@ void USB_SetDeviceAddress(uint8_t Address)
 {
     USB_FADDR = Address;
     USBDeviceState = USB_DEVICE_ADDRESSED;
-    DebugPrint("FADDR = %02X %02X\r\n", Address, USB_FADDR);
 }
 
 boolean USB_IsDeviceActive(void)
@@ -488,13 +483,10 @@ boolean USB_DataReceive(TEP Endpoint)
         uint32_t TotalReceived = (uintptr_t)EPInfo->DataPosition - (uintptr_t)EPInfo->DataBuffer;
 
         LastPacket = (Count < EPInfo->PacketSize);
-        DebugPrint("Count %d, LP %d\r\n", Count, LastPacket);
 
         if (TotalReceived < EPInfo->DataLength)
         {
             uint32_t ReadCount = min(Count, EPInfo->DataLength - TotalReceived);
-
-            DebugPrint("ReadCount %d\r\n", ReadCount);
 
             USB_EPFIFORead(Endpoint, ReadCount, EPInfo->DataPosition);
             EPInfo->DataPosition += ReadCount;
@@ -537,8 +529,6 @@ boolean USB_DataTransmit(TEP Endpoint)
             EPInfo->DataLength -= Count;
             EPInfo->DataPosition += Count;
         }
-
-        DebugPrint("TX size: %d\r\n", Count);
         USB_UpdateEPState(Endpoint, USB_DIR_IN, false, LastPacket);
     }
     return LastPacket;

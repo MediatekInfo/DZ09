@@ -241,7 +241,6 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
     switch (Setup->bRequest)
     {
     case SET_LINE_CODING:
-        DebugPrint("SET_LINE_CODING %02X ", Setup->wLength);
         if (USB_GetEPStage(USB_EP0) == EPSTAGE_IDLE)
             USB_PrepareDataReceive(USB_EP0, &CDC_LineCoding, min(Setup->wLength, sizeof(CDC_LineCoding)));
         else
@@ -251,7 +250,6 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
         }
         break;
     case GET_LINE_CODING:
-        DebugPrint("GET_LINE_CODING\r\n");
         USB_PrepareDataTransmit(USB_EP0, &CDC_LineCoding, min(Setup->wLength, sizeof(CDC_LineCoding)));
         break;
     case SET_CONTROL_LINE_STATE:
@@ -259,7 +257,6 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
                           bit 1 - RTS value
         */
         USB_CDC_ConnectHandler((Setup->wValue & LINE_DTR) != 0);
-        DebugPrint("SET_LINE_STATE\r\n");
         break;
     default:
         Error = true;
@@ -272,8 +269,6 @@ static void USB_CDC_InterfaceReqHandler(pUSBSETUP Setup)
 static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
 {
     boolean Error = false;
-
-    DebugPrint("- %04X, %02X\r\n", Setup->wValue, Setup->bmRequestType);
 
     if (((Setup->bmRequestType & USB_DIR_MASK) == USB_DIR_IN) &&
             (Setup->wValue != 0x0606))
@@ -296,13 +291,11 @@ static void USB_CDC_VendorReqHandler(pUSBSETUP Setup)
 
 static void USB_CDC_CtlHandler(uint8_t EPAddress)
 {
-    DebugPrint("CDC CONTROL HANDLER\r\n");
 }
 
 static boolean USB_CDC_WaitTXIdle(void)
 {
     USB_CDC_RestartTXTimeout();
-    DebugPrint("Stage %d\r\n", USB_GetEPStage(USB_CDC_DATAIN_EP));
     while(USB_GetEPStage(USB_CDC_DATAIN_EP) != EPSTAGE_IDLE) {}
 
     /* Checking whether the connection is active */
@@ -322,8 +315,6 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
 {
     if (EPAddress == (USB_EPENUM2INDEX(USB_CDC_DATAIN_EP) | USB_DIR_IN))
     {
-        DebugPrint("CDC DATA IN HANDLER\r\n");
-
         if (USB_GetEPStage(USB_CDC_DATAIN_EP) == EPSTAGE_IN)
         {
             uint32_t CurrentlyTransmitted = USB_GetDataAmount(USB_CDC_DATAIN_EP) - CDC_PrevTransmitAmount;
@@ -351,8 +342,6 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
     else if (EPAddress == (USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT))
     {
         uint32_t ReceivedCount;
-
-        DebugPrint("CDC DATA OUT HANDLER\r\n");
 
         USB_DataReceive(USB_CDC_DATAOUT_EP);
         if (USB_CDC_Connected)
@@ -457,7 +446,6 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
         {
             if (USB_CDC_WaitTXIdle()) break;
 
-            DebugPrint("NWrite %u\r\n", Count);
             CDC_PrevTransmitAmount = 0;
             USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, DataPtr, Count);
             USB_DataTransmit(USB_CDC_DATAIN_EP);
@@ -465,7 +453,6 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
             if (USB_CDC_WaitTXIdle()) break;
 
             WCount = Count;
-            DebugPrint("USB_CDC_Write - exit\r\n");
         }
         while(0);
 
