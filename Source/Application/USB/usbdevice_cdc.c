@@ -25,7 +25,7 @@
 /* CDC interface configuration */
 #define USB_CDC_CONTROL_EP          USB_EP3IN
 #define USB_CDC_DATAIN_EP           USB_EP1IN
-#define USB_CDC_DATAOUT_EP          USB_EP2OUT
+#define USB_CDC_DATAOUT_EP          USB_EP1OUT
 
 #define USB_CDC_EPDEV_MAXP          USB_EP1_FIFOSIZE                                                // The same for EP2
 #define USB_CDC_EPCTL_MAXP          USB_EP3_FIFOSIZE
@@ -302,17 +302,18 @@ static void USB_CDC_CtlHandler(uint8_t EPAddress)
 static boolean USB_CDC_WaitTXIdle(void)
 {
     USB_CDC_RestartTXTimeout();
-    while(USB_GetEPStage(USB_CDC_DATAIN_EP) != EPSTAGE_IDLE)
-    {
-        /* Checking whether the connection is active */
-        if (!USB_CDC_Connected) return true;
+    DebugPrint("Stage %d\r\n", USB_GetEPStage(USB_CDC_DATAIN_EP));
+    while(USB_GetEPStage(USB_CDC_DATAIN_EP) != EPSTAGE_IDLE) {}
 
-        /* Timeout check */
-        if (USB_CDC_TXTimeout)
-        {
-            if (IntEventerInfo->OnStatusChange != NULL) IntEventerInfo->OnStatusChange(CDC_TXTIMEOUT);
-            return true;
-        }
+    /* Checking whether the connection is active */
+    if (!USB_CDC_Connected) return true;
+
+    /* Timeout check */
+    if (USB_CDC_TXTimeout)
+    {
+        if (IntEventerInfo->OnStatusChange != NULL)
+            IntEventerInfo->OnStatusChange(CDC_TXTIMEOUT);
+        return true;
     }
     return false;
 }
@@ -333,8 +334,6 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
             {
                 USB_SetEPStage(USB_CDC_DATAIN_EP, EPSTAGE_IDLE);
                 USB_CDC_StopTXTimeout();
-                if (IntEventerInfo->OnDataTransmitted != NULL)
-                    IntEventerInfo->OnDataTransmitted(CurrentlyTransmitted);
                 USB_CDC_WaitTXAck = false;
             }
             else

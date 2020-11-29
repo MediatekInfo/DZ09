@@ -557,7 +557,12 @@ uint32_t USB_GetDataAmount(TEP Endpoint)
 
 TEPSTAGE USB_GetEPStage(TEP Endpoint)
 {
-    return (Endpoint < USB_EPNUM) ? EPState[Endpoint].Stage : EPSTAGE_IDLE;
+    uint32_t intflags = DisableInterrupts();
+    TEPSTAGE Stage = (Endpoint < USB_EPNUM) ? EPState[Endpoint].Stage : EPSTAGE_IDLE;
+
+    RestoreInterrupts(intflags);
+
+    return Stage;
 }
 
 boolean USB_SetEPStage(TEP Endpoint, TEPSTAGE Stage)
