@@ -118,6 +118,13 @@
 		<Unit filename="Source\Application\Drivers\ili9341.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Application\Drivers\usbdevice_cdc.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\Drivers\usbdevice_cdc.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Bootloader\DZ09_boot.c">
 			<Option compilerVar="CC" />
 			<Option target="BOOTLOADER" />
@@ -261,6 +268,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\usart.h" />
+		<Unit filename="Source\Lib\MT6261\Drivers\usb.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\usb.h">
 			<Option target="SYSTEM" />
 		</Unit>
@@ -270,6 +281,13 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\ustimer.h" />
 		<Unit filename="Source\Lib\MT6261\mt6261.h" />
 		<Unit filename="Source\Lib\mtktypes.h" />
+		<Unit filename="Source\Lib\USB\usb9.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\USB\usb9.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\startup_MT6261x.S">
 			<Option compilerVar="CC" />
 		</Unit>
@@ -328,6 +346,13 @@
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\System\pmngr.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\ringbuf.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\ringbuf.h">
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\System\sw_i2c.h">

@@ -69,5 +69,6 @@
 #define PLL_FH_CON4       (*(volatile uint32_t *)(MIXED_BASE + 0x0510))
 
 extern void PLL_Initialize(void);
+extern void PLL_SetUPLLEnabled(boolean Enable);
 
 #endif /* _PLL_H_ */

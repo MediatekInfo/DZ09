@@ -42,7 +42,11 @@
 #define BACKLIGHTREDUCE 10000                                                                       // ms
 #define BACKLIGHTOFF    30000                                                                       // ms
 #define BACKLIGHTDEFVAL 100                                                                         // In percents
-#define BASKLIGHTCOUNT  163                                                                         // 199.8 Hz
+#define BACKLIGHTCOUNT  163                                                                         // 199.8 Hz
+
+/* USB driver */
+#define _USB_CDC_DRIVER_                                                                            // Prolific PL2303 emulation
+//#define _NO_USB_DRIVER_
 
 /* Application pins configuration */
 

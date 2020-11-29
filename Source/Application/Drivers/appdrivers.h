@@ -85,4 +85,25 @@
 #define BL_RestartReduceTimer()
 #endif
 
+#if defined(_USB_DRIVER_ASSIGNED_)
+#undefine _USB_DRIVER_ASSIGNED_
+#endif
+
+#if defined(_USB_CDC_DRIVER_)
+#include "usbdevice_cdc.h"
+#define USB_ITF_Initialize()                USB_CDC_Initialize()
+#define _USB_DRIVER_ASSIGNED_
+#endif
+#if defined(_NO_USB_DRIVER_)
+#if defined(_USB_DRIVER_ASSIGNED_)
+#error Duplicate USB driver definition!
+#else
+#define USB_ITF_Initialize()                NULL
+#define _USB_DRIVER_ASSIGNED_
+#endif
+#endif
+#if !defined(_USB_DRIVER_ASSIGNED_)
+#error USB driver not assigned!
+#endif
+
 #endif /* _APPDRIVERS_H_ */

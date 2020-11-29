@@ -1,9 +1,7 @@
-// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,23 +16,23 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#include "systemconfig.h"
-#include "appinit.h"
+#ifndef _RINGBUF_H_
+#define _RINGBUF_H_
 
-boolean APP_Initialize(void)
+typedef struct tag_RINGBUF
 {
-    do
-    {
-        if (!GUI_Initialize()) break;
+    uint8_t  *Buffer;
+    uint8_t  *Tail;
+    uint32_t DataCount;
+    uint32_t BufferSize;
+} TRINGBUF, *pRINGBUF;
 
-        BL_TurnOn(true);
+extern pRINGBUF RB_Create(uint32_t BufferSize);
+extern pRINGBUF RB_Destroy(pRINGBUF RingBuffer);
+extern uint32_t RB_WriteData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
+extern uint32_t RB_ReadData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
+extern uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer);
+extern uint32_t RB_GetCurrentFreeSpace(pRINGBUF RingBuffer);
+extern void RB_FlashBuffer(pRINGBUF RingBuffer);
 
-        USB_Initialize();
-        USB_EnableDevice();
-
-        return true;
-    }
-    while(0);
-
-    return false;
-}
+#endif /* _RINGBUF_H_ */
