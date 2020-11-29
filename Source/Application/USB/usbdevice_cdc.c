@@ -155,7 +155,7 @@ static volatile boolean USB_CDC_Connected, USB_CDC_WaitTXAck, USB_CDC_TXTimeout;
 static uint8_t CDC_OUTBuffer[USB_CDC_EPDEV_MAXP];
 static pRINGBUF CDC_OUTRingBuffer;
 static pTIMER CDC_TimeoutTimer;
-static uint32_t CDC_TransmitRemain;
+static uint32_t CDC_PrevTransmitAmount;
 
 static CDC_LINE_CODING CDC_LineCoding =
 {
@@ -317,9 +317,9 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
 
         if (USB_GetEPStage(USB_CDC_DATAIN_EP) == EPSTAGE_IN)
         {
-            uint32_t CurrentlyTransmitted = CDC_TransmitRemain - USB_GetDataAmount(USB_CDC_DATAIN_EP);
+            uint32_t CurrentlyTransmitted = USB_GetDataAmount(USB_CDC_DATAIN_EP) - CDC_PrevTransmitAmount;
 
-            CDC_TransmitRemain = USB_GetDataAmount(USB_CDC_DATAIN_EP);
+            CDC_PrevTransmitAmount = USB_GetDataAmount(USB_CDC_DATAIN_EP);
 
             if (USB_CDC_WaitTXAck)
             {
@@ -451,7 +451,7 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
             if (USB_CDC_WaitTXIdle()) break;
 
             DebugPrint("NWrite %u\r\n", Count);
-            CDC_TransmitRemain = Count;
+            CDC_PrevTransmitAmount = 0;
             USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, DataPtr, Count);
             USB_DataTransmit(USB_CDC_DATAIN_EP);
 
