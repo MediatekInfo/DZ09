@@ -35,7 +35,7 @@
 
 #define CDC_OUTBUF_MIN_SIZE         (2 * USB_CDC_EPDEV_MAXP)
 
-#define CDC_TRANSMITTIMEOUT         50
+#define CDC_TRANSMITTIMEOUT         500
 
 /* Used CDC interface requests */
 #define RING_AUX_JACK               0x15
@@ -200,12 +200,20 @@ static void USB_CDC_TXTimeoutHandler(pTIMER Timer)
 
 static void USB_CDC_RestartTXTimeout(void)
 {
+    uint32_t intflags = DisableInterrupts();
+
     LRT_Start(CDC_TimeoutTimer);
+    USB_CDC_TXTimeout = false;
+    RestoreInterrupts(intflags);
 }
 
 static void USB_CDC_StopTXTimeout(void)
 {
+    uint32_t intflags = DisableInterrupts();
+
     LRT_Stop(CDC_TimeoutTimer);
+    USB_CDC_TXTimeout = false;
+    RestoreInterrupts(intflags);
 }
 
 static void USB_CDC_SetConnectedStatus(boolean Connected)
