@@ -151,7 +151,8 @@ static TUSBDRIVERINTERFACE USB_CDC_Interface;
 static pCDCEVENTER IntEventerInfo;
 static uint8_t  CDC_DeviceConfig;
 static uint16_t CDC_DeviceStatus;
-static volatile boolean USB_CDC_Connected, USB_CDC_WaitTXAck, USB_CDC_TXTimeout;
+static volatile boolean USB_CDC_Connected, USB_CDC_WaitTXAck;
+static volatile boolean USB_CDC_TXTimeout, CDCInterfaceInitialized;
 static uint8_t CDC_OUTBuffer[USB_CDC_EPDEV_MAXP];
 static pRINGBUF CDC_OUTRingBuffer;
 static pTIMER CDC_TimeoutTimer;
@@ -359,6 +360,7 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
 
 void *USB_CDC_Initialize(void)
 {
+    CDCInterfaceInitialized  = false;
     CDC_DeviceConfig = 0;
     CDC_DeviceStatus = 0;
     USB_CDC_ConnectHandler(false);
@@ -388,14 +390,28 @@ void *USB_CDC_Initialize(void)
     USB_PrepareDataReceive(USB_CDC_DATAOUT_EP, CDC_OUTBuffer, sizeof(CDC_OUTBuffer));
     USB_SetEndpointEnabled(USB_CDC_DATAOUT_EP, true);
 
+    CDCInterfaceInitialized = true;
+
     return &USB_CDC_Interface;
 }
 
 TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo)
 {
-    if ((EventerInfo != NULL) && (IntEventerInfo == NULL))
+    if ((EventerInfo != NULL) && (IntEventerInfo == NULL) && CDCInterfaceInitialized)
     {
-        pRINGBUF tmpRingBuffer = RB_Create(max(EventerInfo->OutBufferSize, CDC_OUTBUF_MIN_SIZE));
+        pRINGBUF tmpRingBuffer;
+        uint32_t RingBufferSize = max(EventerInfo->OutBufferSize, CDC_OUTBUF_MIN_SIZE);
+
+        if (CDC_OUTRingBuffer == NULL) tmpRingBuffer = RB_Create(RingBufferSize);
+        else if (CDC_OUTRingBuffer->BufferSize != RingBufferSize)
+        {
+            uint32_t intflags = DisableInterrupts();
+
+            CDC_OUTRingBuffer = RB_Destroy(CDC_OUTRingBuffer);
+            RestoreInterrupts(intflags);
+            tmpRingBuffer = RB_Create(RingBufferSize);
+        }
+        else tmpRingBuffer = CDC_OUTRingBuffer;
 
         if (tmpRingBuffer != NULL)
         {
@@ -413,7 +429,7 @@ TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo)
 
 TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && CDCInterfaceInitialized)
     {
         uint32_t intflags = DisableInterrupts();
 
@@ -429,7 +445,8 @@ TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo)
 
 uint32_t USB_CDC_Read(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && (DataPtr != NULL))
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) &&
+            (DataPtr != NULL) && CDCInterfaceInitialized)
     {
         return RB_ReadData(CDC_OUTRingBuffer, DataPtr, Count);
     }
@@ -440,7 +457,7 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
 {
     uint32_t WCount = 0;
 
-    if (USB_CDC_Connected && (DataPtr != NULL) && Count &&
+    if (USB_CDC_Connected && (DataPtr != NULL) && Count && CDCInterfaceInitialized &&
             (EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
         do
         {
@@ -461,7 +478,7 @@ uint32_t USB_CDC_Write(pCDCEVENTER EventerInfo, uint8_t *DataPtr, uint32_t Count
 
 TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && CDCInterfaceInitialized)
     {
         uint32_t intflags = DisableInterrupts();
 
@@ -474,7 +491,7 @@ TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo)
 
 TCDCSTATUS USB_CDC_FlashTXBuffer(pCDCEVENTER EventerInfo)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && CDCInterfaceInitialized)
     {
         uint32_t intflags = DisableInterrupts();
 
