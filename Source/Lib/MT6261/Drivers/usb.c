@@ -18,6 +18,8 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
+// TODO (scorp#1#): 1. Currently, the driver cannot detect the USB cable disconnection. It will be fixed when handling events from the charger.
+
 #include "systemconfig.h"
 #include "usb9.h"
 #include "usb.h"
