@@ -57,14 +57,14 @@ boolean PMU_IsPowerKeyPressed(void)
 
 void PMU_SetVibrationOutput(boolean Enable)
 {
-#ifdef VIBRVoltage
+#ifdef VIBRVOLTAGE
     uint16_t En = (Enable) ? RG_VIBR_EN : 0;
 
-#if VIBRVoltage == VIBR_VO18V
+#if VIBRVOLTAGE == VIBR_VO18V
     VIBR_CON0 = RG_VIBR_VOSEL(VIBR_VO18V) | VIBR_ON_SEL | En;
-#elif VIBRVoltage == VIBR_VO28V
+#elif VIBRVOLTAGE == VIBR_VO28V
     VIBR_CON0 = RG_VIBR_VOSEL(VIBR_VO28V) | VIBR_ON_SEL | En;
-#elif VIBRVoltage == VIBR_VO30V
+#elif VIBRVOLTAGE == VIBR_VO30V
     VIBR_CON0 = RG_VIBR_VOSEL(VIBR_VO30V) | VIBR_ON_SEL | En;
 #endif
 #endif

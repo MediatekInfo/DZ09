@@ -44,8 +44,8 @@ void MPU_Initialize(void)
 {
     uint8_t i;
 
-#ifdef SysCacheSize
-    CACHE_CON = CACHESIZE(SysCacheSize);
+#ifdef SYSCACHESIZE
+    CACHE_CON = CACHESIZE(SYSCACHESIZE);
 #else
     CACHESIZE(CACHE_NO);                                                                            // Disable cache
 #endif

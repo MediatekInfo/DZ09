@@ -72,6 +72,7 @@
 #error Touch screen driver not assigned!
 #endif
 
+/* Backlight driver */
 #if defined(_BACKLIGHT_DRIVER_)
 #include "backlight.h"
 #define BL_Initialize()                     PMUBL_Initialize()
@@ -85,10 +86,10 @@
 #define BL_RestartReduceTimer()
 #endif
 
+/* USB interface driver */
 #if defined(_USB_DRIVER_ASSIGNED_)
 #undefine _USB_DRIVER_ASSIGNED_
 #endif
-
 #if defined(_USB_CDC_DRIVER_)
 #include "usbdevice_cdc.h"
 #define USB_ITF_Initialize()                USB_CDC_Initialize()
@@ -103,7 +104,7 @@
 #endif
 #endif
 #if !defined(_USB_DRIVER_ASSIGNED_)
-#error USB driver not assigned!
+#error USB interface driver not assigned!
 #endif
 
 #endif /* _APPDRIVERS_H_ */

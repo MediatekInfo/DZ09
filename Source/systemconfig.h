@@ -37,12 +37,12 @@
 #define _DEBUG_             (1)
 #define _USEBATTERY_        (1)
 #define USEINTERRUPTS
-#define VIBRVoltage         VIBR_VO18V
+#define VIBRVOLTAGE         VIBR_VO18V
 
-#define SystemMemorySize    (3 * 1024 * 1024)
-#define SysCacheSize        CACHE_32kB
+#define SYSMEMSIZE          (3 * 1024 * 1024)
+#define SYSCACHESIZE        CACHE_32kB
 #define LRTMRHWTIMER        GP_TIMER1
-#define LRTMRFrequency      100
+#define LRTMR_FREQUENCY     100
 #include "systemlib.h"
 #include "guilib.h"
 

@@ -130,7 +130,7 @@ static const uint8_t CFG_DESC_CDC[] =
     // Pipe 2 (endpoint 3)
     END_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT,                                             // OUT Endpoint with address 0x02
+    USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT,                                             // OUT Endpoint with address 0x02 //-V501
     USB_EPTYPE_BULK,                                                                                // Data transfer Type - Bulk
     USB_CDC_EPDEV_MAXP, 0x00,                                                                       // Max packet size = 64
     0x00                                                                                            // '0' - endpoint never NAKs
@@ -340,7 +340,7 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
             }
         }
     }
-    else if (EPAddress == (USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT))
+    else if (EPAddress == (USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT)) //-V501
     {
         uint32_t ReceivedCount;
 

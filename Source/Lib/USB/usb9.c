@@ -81,8 +81,6 @@ static boolean USB9_ClearFeature(pUSBSETUP Setup)
     }
     break;
     case USB_FS_DEVICE:                                                                             // Remote Wakeup / Self Powered features
-        Error = true;
-        break;
     case USB_FS_INTERFACE:
         Error = true;
         break;

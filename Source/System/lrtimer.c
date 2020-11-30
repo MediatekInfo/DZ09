@@ -21,7 +21,7 @@
 #include "systemconfig.h"
 #include "lrtimer.h"
 
-#define LRTMININTERVAL  (1000000 / LRTMRFrequency)
+#define LRTMININTERVAL              (1000000 / LRTMR_FREQUENCY)
 
 pDLIST TimersList;
 
@@ -74,7 +74,7 @@ boolean LRT_Initialize(void)
     if (TimersList == NULL) TimersList = DL_Create(0);
     if (TimersList != NULL)
     {
-        if (GPT_SetupTimer(LRTMRHWTIMER, LRTMRFrequency, true, LRT_GPTHandler, true) &&
+        if (GPT_SetupTimer(LRTMRHWTIMER, LRTMR_FREQUENCY, true, LRT_GPTHandler, true) &&
                 GPT_StartTimer(LRTMRHWTIMER))
             return true;
         GPT_SetupTimer(LRTMRHWTIMER, 0, false, NULL, false);
