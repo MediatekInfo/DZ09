@@ -189,8 +189,11 @@ static void USB_CDC_IntFlashRXBuffer(void)
 
 static void USB_CDC_IntFlashTXBuffer(void)
 {
-    USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, NULL, 0);
-    USB_CDC_WaitTXAck = false;
+    if (CDCInterfaceInitialized)
+    {
+        USB_PrepareDataTransmit(USB_CDC_DATAIN_EP, NULL, 0);
+        USB_CDC_WaitTXAck = false;
+    }
 }
 
 static void USB_CDC_TXTimeoutHandler(pTIMER Timer)
@@ -435,7 +438,7 @@ TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo)
 
 TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo)
 {
-    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && CDCInterfaceInitialized)
+    if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
     {
         uint32_t intflags = DisableInterrupts();
 
