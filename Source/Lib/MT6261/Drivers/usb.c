@@ -230,6 +230,7 @@ void USB_EnableDevice(void)
     USC_Pause_us(10);
     /* Set up D+ pull up resistor */
     USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
+    USBDeviceState = USB_DEVICE_IDLE;
     /* Enable USB interrupts */
     NVIC_EnableIRQ(IRQ_USB_CODE);
     DebugPrint("USB device enabled.\r\n");
@@ -241,7 +242,12 @@ void USB_DisableDevice(void)
     /* Disable USB interrupts */
     NVIC_DisableIRQ(IRQ_USB_CODE);
 
-    USBDeviceState = USB_DEVICE_IDLE;
+    if (USBDeviceState != USB_DEVICE_OFF)
+    {
+        USBDeviceState = USB_DEVICE_OFF;
+        USB9_InterfaceInitialize();
+    }
+
     /* Release D+ pull up resistor */
     USB_PHY_CONTROL &= ~UPHY_CONTROL_PUDP;
     /* Turn off PHY bias control */

@@ -60,6 +60,7 @@ typedef struct tag_EPSTATE
 
 typedef enum tag_USBSTATE
 {
+    USB_DEVICE_OFF,
     USB_DEVICE_IDLE,
     USB_DEVICE_ADDRESSED,
     USB_DEVICE_CONFIGURED
