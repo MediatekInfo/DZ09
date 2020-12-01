@@ -216,50 +216,54 @@ void USB_Initialize(void)
 void USB_EnableDevice(void)
 {
 #if !defined(_NO_USB_DRIVER_)
-    /* Turn on VUSB */
-    PMU_TurnOnVUSB(true);
-    /* USB AHB clock */
-    PCTL_PowerUp(PD_USB);
-    /* USB internal 48MHz */
-//    PLL_SetUPLLEnabled(true);
-    /* Wait while power stable */
-    USC_Pause_us(50);
-    /* Turn on PHY bias control */
-    USB_U1PHYCR1 &= ~U1PHYCR1_RG_USB11_PHY_REV_7;
-    USB_U1PHYCR0 |= U1PHYCR0_USB11_FSLS_ENBGRI;
-    USC_Pause_us(10);
-    /* Set up D+ pull up resistor */
-    USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
-    USBDeviceState = USB_DEVICE_IDLE;
-    /* Enable USB interrupts */
-    NVIC_EnableIRQ(IRQ_USB_CODE);
-    DebugPrint("USB device enabled.\r\n");
+    if (USBDeviceState == USB_DEVICE_OFF)
+    {
+        /* Turn on VUSB */
+        PMU_TurnOnVUSB(true);
+        /* USB AHB clock */
+        PCTL_PowerUp(PD_USB);
+        /* USB internal 48MHz */
+//        PLL_SetUPLLEnabled(true);
+        /* Wait while power stable */
+        USC_Pause_us(50);
+        /* Turn on PHY bias control */
+        USB_U1PHYCR1 &= ~U1PHYCR1_RG_USB11_PHY_REV_7;
+        USB_U1PHYCR0 |= U1PHYCR0_USB11_FSLS_ENBGRI;
+        USC_Pause_us(10);
+        /* Set up D+ pull up resistor */
+        USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
+        USBDeviceState = USB_DEVICE_IDLE;
+        /* Enable USB interrupts */
+        NVIC_EnableIRQ(IRQ_USB_CODE);
+        DebugPrint("USB device enabled.\r\n");
+    }
 #endif
 }
 
 void USB_DisableDevice(void)
 {
-    /* Disable USB interrupts */
-    NVIC_DisableIRQ(IRQ_USB_CODE);
-
     if (USBDeviceState != USB_DEVICE_OFF)
     {
+        /* Disable USB interrupts */
+        NVIC_DisableIRQ(IRQ_USB_CODE);
+
+        /* Disable interface */
         USBDeviceState = USB_DEVICE_OFF;
         USB9_InterfaceInitialize();
-    }
 
-    /* Release D+ pull up resistor */
-    USB_PHY_CONTROL &= ~UPHY_CONTROL_PUDP;
-    /* Turn off PHY bias control */
-    USB_U1PHYCR0 &= ~U1PHYCR0_USB11_FSLS_ENBGRI;
-    USB_U1PHYCR1 |= U1PHYCR1_RG_USB11_PHY_REV_7;
-    /* Turn off VUSB */
-    PMU_TurnOnVUSB(false);
-    /* Disable USB internal 48MHz */
-//    PLL_SetUPLLEnabled(false);
-    /* USB AHB clock */
-    PCTL_PowerDown(PD_USB);
-    DebugPrint("USB device disabled.\r\n");
+        /* Release D+ pull up resistor */
+        USB_PHY_CONTROL &= ~UPHY_CONTROL_PUDP;
+        /* Turn off PHY bias control */
+        USB_U1PHYCR0 &= ~U1PHYCR0_USB11_FSLS_ENBGRI;
+        USB_U1PHYCR1 |= U1PHYCR1_RG_USB11_PHY_REV_7;
+        /* Turn off VUSB */
+        PMU_TurnOnVUSB(false);
+        /* Disable USB internal 48MHz */
+//        PLL_SetUPLLEnabled(false);
+        /* USB AHB clock */
+        PCTL_PowerDown(PD_USB);
+        DebugPrint("USB device disabled.\r\n");
+    }
 }
 
 void USB_SetDeviceAddress(uint8_t Address)

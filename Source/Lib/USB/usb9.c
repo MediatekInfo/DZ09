@@ -240,7 +240,11 @@ void USB9_HandleSetupRequest(pUSBSETUP Setup)
 
 boolean USB9_InterfaceInitialize(void)
 {
+#if !defined(_NO_USB_DRIVER_)
     DevInterface = USB_ITF_Initialize();
 
     return (DevInterface != NULL);
+#else
+    return false;
+#endif
 }
