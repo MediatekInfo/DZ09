@@ -27,13 +27,6 @@ static TEINTHANDLER EINTHandlers[NUM_EINT_SOURCES];
 static TIRQHANDLER  AIRQHandlers[ADIE_NUM_IRQ_SOURCES];
 static TEINTHANDLER AEINTHandlers[NUM_ADIE_EINT_SOURCES];
 
-static uint32_t IRQMaskStore[2];
-static uint16_t AIRQMaskStore;
-static uint32_t EINTMaskStore;
-static uint32_t EINTD0MaskStore;
-static uint16_t AEINTMaskStore;
-static uint16_t AEINTD0MaskStore;
-
 static uint32_t NVIC_GetIRQStatus2(void)
 {
     return IRQ_STA2;
@@ -153,31 +146,6 @@ static void NVIC_SetIRQSenseLevel(uint32_t SourceIdx)
         SourceIdx -= TOTAL_IRQ_SOURCES;
         ADIE_IRQ_SENS_SET = (1 << SourceIdx);
     }
-}
-
-static void NVIC_StoreAndMaskIRQ(void)
-{
-    uint32_t intflags = DisableInterrupts();
-
-    IRQMaskStore[0] = IRQ_MASK0;
-    IRQ_MASK_SET0 = 0xFFFFFFFF & ~(1 << IRQ_EINT_CODE);
-    IRQMaskStore[1] = IRQ_MASK1;
-    IRQ_MASK_SET1 = 0xFFFFFFFF;
-    AIRQMaskStore   = ADIE_IRQ_MASK;
-    ADIE_IRQ_MASK_SET = 0xFFFF & ~(1 << (IRQ_ADIE_EINT_CODE - TOTAL_IRQ_SOURCES));
-
-    RestoreInterrupts(intflags);
-}
-
-static void NVIC_RestoreMaskedIRQ(void)
-{
-    uint32_t intflags = DisableInterrupts();
-
-    IRQ_MASK_CLR0 = ~IRQMaskStore[0];
-    IRQ_MASK_CLR1 = ~IRQMaskStore[1];
-    ADIE_IRQ_MASK_CLR = ~AIRQMaskStore;
-
-    RestoreInterrupts(intflags);
 }
 
 // EINT

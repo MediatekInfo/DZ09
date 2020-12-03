@@ -48,7 +48,7 @@ static void USB_EPFIFORead(TEP Endpoint, uint32_t Count, void *Data)
 
     while(Count--)
         if (DestPointer != NULL) *DestPointer++ = USB_EPn_FIFO(Endpoint);
-        else if (USB_EPn_FIFO(Endpoint));
+        else if (USB_EPn_FIFO(Endpoint)) {};
 }
 
 static void USB_EPFIFOWrite(TEP Endpoint, uint32_t Count, void *Data)
@@ -76,8 +76,6 @@ static void USB_EP0Handler(uint8_t EPAddress)
     }
     else if (EPState[USB_EP0].Stage == EPSTAGE_OUT)
     {
-        uint32_t Count = USB_GetOUTDataLength(USB_EP0);
-
         if (USB_DataReceive(USB_EP0))
         {
             USB9_HandleSetupRequest(&SetupBuffer);
