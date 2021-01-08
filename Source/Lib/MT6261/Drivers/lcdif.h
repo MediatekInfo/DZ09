@@ -330,6 +330,7 @@ extern boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pR
 extern boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
                                 TCFORMAT CFormat, uint8_t Alpha);
 extern boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScreen);
+extern boolean LCDIF_IsLayerInitialized(TVLINDEX Layer);
 extern void LCDIF_UpdateRectangle(TRECT Rct);
 extern void LCDIF_UpdateRectangleBlocked(pRECT Rct);
 

@@ -320,6 +320,11 @@ boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScr
     return LCDScreen.VLayer[Layer].Enabled;
 }
 
+boolean LCDIF_IsLayerInitialized(TVLINDEX Layer)
+{
+    return LCDScreen.VLayer[Layer].Initialized;
+}
+
 void LCDIF_UpdateRectangle(TRECT Rct)
 {
     uint32_t *Commands, CmdCount;
