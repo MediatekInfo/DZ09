@@ -300,6 +300,7 @@ typedef struct tag_TLCONTEXT
     uint32_t LayerEnMask;
     uint8_t  BPP;
     TCFORMAT ColorFormat;
+    uint32_t ForeColor;
     void     *FrameBuffer;
 } TLCONTEXT, *pLCONTEXT;
 
@@ -328,7 +329,7 @@ extern void LCDIF_WriteData(uint8_t Data);
 extern uint8_t LCDIF_ReadData(void);
 extern boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect);
 extern boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
-                                TCFORMAT CFormat, uint8_t Alpha);
+                                TCFORMAT CFormat, uint8_t GlobalAlpha, uint32_t ForeColor);
 extern boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScreen);
 extern boolean LCDIF_IsLayerInitialized(TVLINDEX Layer);
 extern void LCDIF_UpdateRectangle(TRECT Rct);

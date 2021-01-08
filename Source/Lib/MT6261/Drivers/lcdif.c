@@ -247,7 +247,7 @@ boolean LCDIF_Initialize(void)
 }
 
 boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
-                         TCFORMAT CFormat, uint8_t Alpha)
+                         TCFORMAT CFormat, uint8_t GlobalAlpha, uint32_t ForeColor)
 {
     if (Layer >= LCDIF_NUMLAYERS) return false;
 
@@ -267,6 +267,7 @@ boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t
         LCDScreen.VLayer[Layer].LayerRgn = Rect(0, 0, SizeX - 1, SizeY - 1);
         LCDScreen.VLayer[Layer].LayerOffset = Offset;
         LCDScreen.VLayer[Layer].ColorFormat = CFormat;
+        LCDScreen.VLayer[Layer].ForeColor = ForeColor;
         LCDScreen.VLayer[Layer].BPP = CFormatToBPP[CFormat];
 
         n = SizeX * SizeY * LCDScreen.VLayer[Layer].BPP;
@@ -276,8 +277,8 @@ boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t
             if (LCDScreen.VLayer[Layer].FrameBuffer != NULL)
             {
                 LCDIF_LAYER[Layer]->LCDIF_LWINCON = LCDIF_LROTATE(LCDIF_LR_NO) | LCDIF_LCF(CFormat);
-                if ((CFormat == LCDIF_LCF_ARGB8888) || (CFormat == LCDIF_LCF_PARGB8888) || (Alpha != 0xFF))
-                    LCDIF_LAYER[Layer]->LCDIF_LWINCON |= LCDIF_LALPHA(Alpha) | LCDIF_LALPHA_EN;
+                if ((CFormat == LCDIF_LCF_ARGB8888) || (CFormat == LCDIF_LCF_PARGB8888) || (GlobalAlpha != 0xFF))
+                    LCDIF_LAYER[Layer]->LCDIF_LWINCON |= LCDIF_LALPHA(GlobalAlpha) | LCDIF_LALPHA_EN;
 
                 LCDIF_LAYER[Layer]->LCDIF_LWINOFFS  = LCDIF_LWINOF_X(Offset.x) | LCDIF_LWINOF_Y(Offset.y);
                 LCDIF_LAYER[Layer]->LCDIF_LWINADD   = (uint32_t)LCDScreen.VLayer[Layer].FrameBuffer;
@@ -285,6 +286,8 @@ boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t
                 LCDIF_LAYER[Layer]->LCDIF_LWINSCRL  = LCDIF_LSCCOL(0) | LCDIF_LSCROW(0);
                 LCDIF_LAYER[Layer]->LCDIF_LWINMOFS  = LCDIF_LMOFCOL(0) | LCDIF_LMOFROW(0);
                 LCDIF_LAYER[Layer]->LCDIF_LWINPITCH = LCDScreen.VLayer[Layer].BPP * SizeX;
+
+                GDI_FillRectangleX(&LCDScreen.VLayer[Layer], &LCDScreen.VLayer[Layer].LayerRgn, ForeColor);
 
                 LCDScreen.VLayer[Layer].Initialized = true;
             }
