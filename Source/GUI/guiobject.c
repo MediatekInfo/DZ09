@@ -139,6 +139,22 @@ void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position)
     }
 }
 
+boolean GUI_GetObjectVisibilty(pGUIHEADER Object)
+{
+    return ((Object != NULL) && Object->Visible);
+}
+
+boolean GUI_SetObjectVisibility(pGUIHEADER Object, boolean Visible)
+{
+    if (Object == NULL) return false;
+    if (Object->Visible != Visible)
+    {
+        Object->Visible = Visible;
+        GUI_Invalidate(Object, NULL);
+    }
+    return true;
+}
+
 pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
                       TVLINDEX Layer, uint32_t ForeColor, TGOFLAGS Flags)
 {
