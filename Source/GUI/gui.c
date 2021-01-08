@@ -39,8 +39,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
         }
         else ObjectPosition = Object->Position;
 
-        IsStillVisible = Object->Visible &&
-                         GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
+        IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
                          ((Object->Parent != NULL) || IsWindowObject(Object));                      // The topmost object in the hierarchy must be a TWIN object.
 
         while(IsStillVisible && (Object->Parent != NULL))
@@ -276,8 +275,9 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         tmpDLItem = DL_GetPrevItem(tmpDLItem);
                     }
 
-                    if (DL_GetItemsCount(UpdateRgn))
+                    do
                     {
+                        if (!DL_GetItemsCount(UpdateRgn)) break;
                         if (Event->Object->Parent != NULL)
                         {
                             tmpObject = Event->Object;
@@ -289,30 +289,66 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             }
                         }
 
-                        if (IsWindowObject(Event->Object) && DL_GetItemsCount(UpdateRgn))
+                        if (!DL_GetItemsCount(UpdateRgn)) break;
+                        if (IsWindowObject(Event->Object))
                         {
-                            /* Update the tree of child objects. */
-                            if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object, &Event->Object->Position))
-                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
-                        }
-
-                        /* Draw parts of the object */
-                        while((tmpDLItem = DL_GetFirstItem(UpdateRgn)) != NULL)
-                        {
-                            pRECT tmpObjectRect = (pRECT)tmpDLItem->Data;
-
-                            if (tmpObjectRect != NULL)
+                            if (Event->Object->Visible)
                             {
-                                GUI_DrawObjectDefault(Event->Object, tmpObjectRect);
-                                free(tmpDLItem->Data);
+                                /* Update the tree of child objects. */
+                                if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object, &Event->Object->Position))
+                                    GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
                             }
-                            DL_DeleteFirstItem(UpdateRgn);
+                            else if (Event->Object->Parent != NULL)
+                            {
+                                /* Update the tree of child objects. */
+                                if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object->Parent, &Event->Object->Position))
+                                    GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                            }
+                            else
+                            {
+                                /* Root object, update the objects below. */
+                                tmpDLItem = DL_FindItemByData(GUIWinZOrder[((pWIN)Event->Object)->Layer], Event->Object, NULL);
+
+                                while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
+                                {
+                                    tmpObject = tmpDLItem->Data;
+                                    if ((tmpObject != NULL) && tmpObject->Visible)
+                                    {
+                                        if (GUI_UpdateChildTree(UpdateRgn, (pWIN)tmpObject, &tmpObject->Position))
+                                            GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position);
+                                        else break;
+                                    }
+                                }
+                                /* Update layer background */
+                                while((tmpDLItem = DL_GetFirstItem(UpdateRgn)) != NULL)
+                                {
+                                    pRECT tmpRect = (pRECT)tmpDLItem->Data;
+
+                                    GDI_FillRectangle(((pWIN)Event->Object)->Layer,
+                                                      *tmpRect,
+                                                      LCDScreen.VLayer[((pWIN)Event->Object)->Layer].ForeColor);
+
+                                    tmpRect->l += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.x;
+                                    tmpRect->t += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.y;
+                                    tmpRect->r += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.x;
+                                    tmpRect->b += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.y;
+                                    LCDIF_UpdateRectangle(*tmpRect);
+
+                                    free(tmpDLItem->Data);
+                                    DL_DeleteFirstItem(UpdateRgn);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            /* Here process non-window objects */
                         }
                     }
+                    while(0);
                 }
                 else if (SeedRect != NULL) free(SeedRect);
 
-                DL_Delete(UpdateRgn, false);
+                DL_Delete(UpdateRgn, true);
             }
         }
         else                                                                                        // Invalidate by screen
