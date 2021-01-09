@@ -247,9 +247,10 @@ void GUI_OnPaintHandler(pPAINTEV Event)
     {
         if (Event->RootParent != NULL)                                                              // Invalidate by object
         {
+            TVLINDEX Layer = ((pWIN)Event->RootParent)->Layer;
+
             if (IsWindowObject(Event->RootParent) &&
-                    GDI_ANDRectangles(&Event->UpdateRect,
-                                      &LCDScreen.VLayer[((pWIN)Event->RootParent)->Layer].LayerRgn))
+                    GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
             {
                 pDLIST UpdateRgn = DL_Create(0);
                 pRECT  SeedRect = malloc(sizeof(TRECT));
@@ -263,7 +264,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                     *SeedRect = Event->UpdateRect;
 
                     /* Subtract the positions of topmost windows from the update region. */
-                    tmpDLItem = DL_GetLastItem(GUIWinZOrder[((pWIN)Event->RootParent)->Layer]);
+                    tmpDLItem = DL_GetLastItem(GUIWinZOrder[Layer]);
                     while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
                     {
                         tmpObject = (pGUIHEADER)tmpDLItem->Data;
@@ -307,7 +308,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             else
                             {
                                 /* Root object, update the objects below. */
-                                tmpDLItem = DL_FindItemByData(GUIWinZOrder[((pWIN)Event->Object)->Layer], Event->Object, NULL);
+                                tmpDLItem = DL_FindItemByData(GUIWinZOrder[Layer], Event->Object, NULL);
 
                                 while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
                                 {
@@ -324,14 +325,13 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                                 {
                                     pRECT tmpRect = (pRECT)tmpDLItem->Data;
 
-                                    GDI_FillRectangle(((pWIN)Event->Object)->Layer,
-                                                      *tmpRect,
-                                                      LCDScreen.VLayer[((pWIN)Event->Object)->Layer].ForeColor);
+                                    GDI_FillRectangle(Layer, *tmpRect, LCDScreen.VLayer[Layer].ForeColor);
 
-                                    tmpRect->l += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.x;
-                                    tmpRect->t += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.y;
-                                    tmpRect->r += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.x;
-                                    tmpRect->b += LCDScreen.VLayer[((pWIN)Event->Object)->Layer].LayerOffset.y;
+                                    tmpRect->l += LCDScreen.VLayer[Layer].LayerOffset.x;
+                                    tmpRect->t += LCDScreen.VLayer[Layer].LayerOffset.y;
+                                    tmpRect->r += LCDScreen.VLayer[Layer].LayerOffset.x;
+                                    tmpRect->b += LCDScreen.VLayer[Layer].LayerOffset.y;
+
                                     LCDIF_UpdateRectangle(*tmpRect);
 
                                     free(tmpDLItem->Data);
@@ -339,9 +339,19 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                                 }
                             }
                         }
-                        else
+                        else if (Event->Object->Parent != NULL)
                         {
                             /* Here process non-window objects */
+                            if (Event->Object->Visible)
+                            {
+
+                            }
+                            else
+                            {
+                                /* Update the tree of child objects. */
+                                if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object->Parent, &Event->Object->Position))
+                                    GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                            }
                         }
                     }
                     while(0);
