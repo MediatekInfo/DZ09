@@ -68,7 +68,7 @@ extern boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position);
 extern void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position);
 extern boolean GUI_GetObjectVisibilty(pGUIHEADER Object);
 extern boolean GUI_SetObjectVisibility(pGUIHEADER Object, boolean Visible);
-extern boolean IsWindowObject(pGUIHEADER Object);
+extern boolean GUI_IsWindowObject(pGUIHEADER Object);
 extern pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
                              uint8_t Layer, uint32_t ForeColor, TGOFLAGS Flags);
 extern void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip);

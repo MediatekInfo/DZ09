@@ -27,7 +27,7 @@ static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
     TRECT WinRect;
 
     if ((Object == NULL) || !Object->Visible ||
-            !IsWindowObject((pGUIHEADER)Object) || (Clip == NULL)) return;
+            !GUI_IsWindowObject((pGUIHEADER)Object) || (Clip == NULL)) return;
 
     WinRect = Object->Position;
     if (Win->Framed)
@@ -65,7 +65,7 @@ static void GUI_UpdateChildPositions(pGUIHEADER Object, pPOINT dXY)
                 tmpObject->Position.t += dXY->y;
                 tmpObject->Position.b += dXY->y;
 
-                if (IsWindowObject(tmpObject))
+                if (GUI_IsWindowObject(tmpObject))
                     GUI_UpdateChildPositions(tmpObject, dXY);
             }
             tmpItem = DL_GetNextItem(tmpItem);
@@ -123,7 +123,7 @@ void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position)
 
         Object->Position = NewPosition;
 
-        if (IsWindowObject(Object))
+        if (GUI_IsWindowObject(Object))
             GUI_UpdateChildPositions(Object, &dXY);
         GUI_Invalidate(Object, NULL);
 
@@ -162,7 +162,7 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
     boolean Result;
 
     if ((Layer >= LCDIF_NUMLAYERS) ||
-            ((Parent != NULL) && !IsWindowObject(Parent))) return NULL;
+            ((Parent != NULL) && !GUI_IsWindowObject(Parent))) return NULL;
 
     Win = malloc(sizeof(TWIN));
     if (Win != NULL)
@@ -196,7 +196,7 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
                 pGUIHEADER tmpObject = tmpItem->Data;
 
                 if ((tmpObject != NULL) &&
-                        (!IsWindowObject(tmpObject) || !((pWIN)tmpObject)->Topmost))
+                        (!GUI_IsWindowObject(tmpObject) || !((pWIN)tmpObject)->Topmost))
                 {
                     Result = DL_InsertItemAfter(ObjectsList, tmpItem, Win) != NULL;
                     break;
@@ -215,7 +215,7 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
     return Win;
 }
 
-boolean IsWindowObject(pGUIHEADER Object)
+boolean GUI_IsWindowObject(pGUIHEADER Object)
 {
     return ((Object != NULL) && (Object->Type == GO_WINDOW));
 }
@@ -224,7 +224,7 @@ int32_t GUI_GetWindowZIndex(pWIN Win)
 {
     int32_t ZL = -1;
 
-    if ((Win != NULL) && IsWindowObject((pGUIHEADER)Win) && (Win->Layer < LCDIF_NUMLAYERS))
+    if ((Win != NULL) && GUI_IsWindowObject((pGUIHEADER)Win) && (Win->Layer < LCDIF_NUMLAYERS))
     {
         DL_FindItemByData(GUIWinZOrder[Win->Layer], Win, &ZL);
     }

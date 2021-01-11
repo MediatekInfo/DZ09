@@ -40,7 +40,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
         else ObjectPosition = Object->Position;
 
         IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
-                         ((Object->Parent != NULL) || IsWindowObject(Object));                      // The topmost object in the hierarchy must be a TWIN object.
+                         ((Object->Parent != NULL) || GUI_IsWindowObject(Object));                  // The topmost object in the hierarchy must be a TWIN object.
 
         while(IsStillVisible && (Object->Parent != NULL))
         {
@@ -48,7 +48,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 
             IsStillVisible = Object->Parent->Visible &&
                              GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
-                             IsWindowObject(Object->Parent);                                        // Only a TWIN object can be a parent.
+                             GUI_IsWindowObject(Object->Parent);                                    // Only a TWIN object can be a parent.
             Object = Object->Parent;
         }
 
@@ -111,7 +111,7 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pRECT Clip)
 
         if ((tmpObject->Visible) && GDI_ANDRectangles(&tmpObjectRect, &tmpWinRect))
         {
-            if (IsWindowObject(tmpObject))
+            if (GUI_IsWindowObject(tmpObject))
             {
                 if (!GUI_UpdateChildTree(Region, (pWIN)tmpObject, &tmpObjectRect)) break;
             }
@@ -249,7 +249,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
         {
             TVLINDEX Layer = ((pWIN)Event->RootParent)->Layer;
 
-            if (IsWindowObject(Event->RootParent) &&
+            if (GUI_IsWindowObject(Event->RootParent) &&
                     GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
             {
                 pDLIST UpdateRgn = DL_Create(0);
@@ -291,7 +291,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         }
 
                         if (!DL_GetItemsCount(UpdateRgn)) break;
-                        if (IsWindowObject(Event->Object))
+                        if (GUI_IsWindowObject(Event->Object))
                         {
                             if (Event->Object->Visible)
                             {
