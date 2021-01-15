@@ -21,6 +21,8 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
+pGUILAYER GUILayers[LCDIF_NUMLAYERS];
+
 static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
 {
     pWIN  Win = (pWIN)Object;
@@ -153,6 +155,48 @@ boolean GUI_SetObjectVisibility(pGUIHEADER Object, boolean Visible)
         GUI_Invalidate(Object, NULL);
     }
     return true;
+}
+
+boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
+                        uint8_t GlobalAlpha, uint32_t ForeColor)
+{
+    pGUILAYER LObject;
+    boolean   Result = false;
+
+    if (Layer >= LCDIF_NUMLAYERS) return false;
+
+    if (GUILayers[Layer] == NULL)
+    {
+        LObject = malloc(sizeof(TGUILAYER));
+        if (LObject != NULL) memset(LObject, 0x00, sizeof(TGUILAYER));
+    }
+    else LObject = GUILayers[Layer];
+
+    if (LObject != NULL)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
+        LObject->Head.Enabled = true;
+        LObject->Head.Visible = false;
+        LObject->Layer = Layer;
+        LObject->ForeColor = ForeColor;
+
+        Result = LCDIF_SetupLayer(Layer, Position.lt, Position.r - Position.l + 1,
+                                  Position.b - Position.t + 1, CFormat, GlobalAlpha, ForeColor);
+
+        if (!Result)
+        {
+            GUI_DestroyObject((pGUIHEADER)LObject);
+            GUILayers[Layer] = NULL;
+        }
+        else LObject->Head.Type = GO_WINDOW;
+
+        RestoreInterrupts(intflags);
+    }
+    LCDIF_SetLayerEnabled(Layer, false, true);
+
+    return Result;
 }
 
 pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
@@ -317,4 +361,9 @@ void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip)
         UpdateRect = GDI_GlobalToLocalRct(&UpdateRect, &LCDScreen.ScreenOffset);
         LCDIF_UpdateRectangle(UpdateRect);
     }
+}
+
+void GUI_DestroyObject(pGUIHEADER Object)
+{
+
 }
