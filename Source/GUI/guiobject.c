@@ -163,18 +163,12 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
     pGUILAYER LObject;
     boolean   Result = false;
 
-    if (Layer >= LCDIF_NUMLAYERS) return false;
+    if ((Layer >= LCDIF_NUMLAYERS) || (GUILayers[Layer] != NULL)) return false;
 
-    if (GUILayers[Layer] == NULL)
-    {
-        LObject = malloc(sizeof(TGUILAYER));
-        if (LObject != NULL) memset(LObject, 0x00, sizeof(TGUILAYER));
-    }
-    else LObject = GUILayers[Layer];
-
+    LObject = malloc(sizeof(TGUILAYER));
     if (LObject != NULL)
     {
-        uint32_t intflags = DisableInterrupts();
+        memset(LObject, 0x00, sizeof(TGUILAYER));
 
         LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
         LObject->Head.Enabled = true;
@@ -185,17 +179,16 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
         Result = LCDIF_SetupLayer(Layer, Position.lt, Position.r - Position.l + 1,
                                   Position.b - Position.t + 1, CFormat, GlobalAlpha, ForeColor);
 
-        if (!Result)
+        if (!Result) free(LObject);
+        else
         {
-            GUI_DestroyObject((pGUIHEADER)LObject);
-            GUILayers[Layer] = NULL;
+            uint32_t intflags = DisableInterrupts();
+
+            LObject->Head.Type = GO_WINDOW;
+            GUILayers[Layer] = LObject;
+            RestoreInterrupts(intflags);
         }
-        else LObject->Head.Type = GO_WINDOW;
-
-        RestoreInterrupts(intflags);
     }
-    LCDIF_SetLayerEnabled(Layer, false, true);
-
     return Result;
 }
 
