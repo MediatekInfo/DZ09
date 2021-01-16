@@ -33,8 +33,6 @@ typedef struct tag_PAINTEV
     TVLINDEX   Layer;
 } TPAINTEV, *pPAINTEV;
 
-extern pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
-
 extern boolean GUI_Initialize(void);
 extern void GUI_Invalidate(pGUIHEADER Object, pRECT Rct);
 extern void GUI_InvalidateRegion(pGUIHEADER Object, pDLIST Region, TVLINDEX Layer);

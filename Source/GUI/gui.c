@@ -21,8 +21,6 @@
 #include "systemconfig.h"
 #include "gui.h"
 
-pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
-
 static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 {
     boolean    IsStillVisible = false;
@@ -136,26 +134,6 @@ boolean GUI_Initialize(void)
     DebugPrint(" LCD interface initialization...");
     Result = LCDIF_Initialize();                                                                    // Initialize subsystem
 
-    if (Result)
-    {
-        for(i = 0; i < LCDIF_NUMLAYERS; i++)
-        {
-// TODO (scorp#1#): May need to check for objects in the lists.
-            if (GUIWinZOrder[i] == NULL) GUIWinZOrder[i] = DL_Create(0);
-            if (GUIWinZOrder[i] == NULL)
-            {
-                while(i--)
-                {
-                    free(GUIWinZOrder[i]);
-                    GUIWinZOrder[i] = NULL;
-                }
-                LCDIF_DisableInterface();
-                Result = false;
-                break;
-            }
-        }
-    }
-
     BL_Initialize();
 
     if (Result)
@@ -249,7 +227,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
         {
             TVLINDEX Layer = ((pWIN)Event->RootParent)->Layer;
 
-            if (GUI_IsWindowObject(Event->RootParent) &&
+            if (GUI_IsWindowObject(Event->RootParent) && (GUILayer[Layer] != NULL) &&
                     GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
             {
                 pDLIST UpdateRgn = DL_Create(0);
@@ -264,7 +242,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                     *SeedRect = Event->UpdateRect;
 
                     /* Subtract the positions of topmost windows from the update region. */
-                    tmpDLItem = DL_GetLastItem(GUIWinZOrder[Layer]);
+                    tmpDLItem = DL_GetLastItem(&GUILayer[Layer]->ChildObjects);
                     while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
                     {
                         tmpObject = (pGUIHEADER)tmpDLItem->Data;
@@ -308,7 +286,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             else
                             {
                                 /* Root object, update the objects below. */
-                                tmpDLItem = DL_FindItemByData(GUIWinZOrder[Layer], Event->Object, NULL);
+                                tmpDLItem = DL_FindItemByData(&GUILayer[Layer]->ChildObjects, Event->Object, NULL);
 
                                 while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
                                 {

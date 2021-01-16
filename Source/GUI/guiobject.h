@@ -66,6 +66,8 @@ typedef struct tag_WIN
 typedef TWIN   TGUILAYER;
 typedef pWIN   pGUILAYER;
 
+extern pGUILAYER GUILayer[LCDIF_NUMLAYERS];
+
 extern TRECT GUI_CalculateClientArea(pGUIHEADER Object);
 extern boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position);
 extern void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position);

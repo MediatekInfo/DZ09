@@ -199,7 +199,8 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
     boolean Result;
 
     if ((Layer >= LCDIF_NUMLAYERS) ||
-            ((Parent != NULL) && !GUI_IsWindowObject(Parent))) return NULL;
+            ((Parent != NULL) && !GUI_IsWindowObject(Parent)) ||
+            ((Parent == NULL) && (GUILayer[Layer] == NULL))) return NULL;
 
     Win = malloc(sizeof(TWIN));
     if (Win != NULL)
@@ -207,7 +208,7 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
         pDLIST ObjectsList;
 
         Layer = (Parent != NULL) ? ((pWIN)Parent)->Layer : Layer;
-        ObjectsList = (Parent == NULL) ? GUIWinZOrder[Layer] : &((pWIN)Parent)->ChildObjects;
+        ObjectsList = (Parent == NULL) ? &GUILayer[Layer]->ChildObjects : &((pWIN)Parent)->ChildObjects;
 
         memset(Win, 0x00, sizeof(TWIN));
 
@@ -261,9 +262,10 @@ int32_t GUI_GetWindowZIndex(pWIN Win)
 {
     int32_t ZL = -1;
 
-    if ((Win != NULL) && GUI_IsWindowObject((pGUIHEADER)Win) && (Win->Layer < LCDIF_NUMLAYERS))
+    if ((Win != NULL) && GUI_IsWindowObject((pGUIHEADER)Win) &&
+        (Win->Layer < LCDIF_NUMLAYERS) && (GUILayer[Win->Layer] != NULL))
     {
-        DL_FindItemByData(GUIWinZOrder[Win->Layer], Win, &ZL);
+        DL_FindItemByData(&GUILayer[Win->Layer]->ChildObjects, Win, &ZL);
     }
     return ZL;
 }
@@ -273,17 +275,17 @@ pWIN GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
     pWIN    tmpWIN, Res = NULL;
     pDLITEM tmpItem;
 
-    if (Layer >= LCDIF_NUMLAYERS) return NULL;
+    if ((Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] == NULL)) return NULL;
 
     if (Topmost)
     {
-        tmpItem = DL_GetLastItem(GUIWinZOrder[Layer]);
+        tmpItem = DL_GetLastItem(&GUILayer[Layer]->ChildObjects);
         tmpWIN = (tmpItem == NULL) ? NULL : (pWIN)tmpItem->Data;
         Res = ((tmpWIN == NULL) || !tmpWIN->Topmost) ? NULL : tmpWIN;
     }
     else
     {
-        tmpItem = DL_GetLastItem(GUIWinZOrder[Layer]);
+        tmpItem = DL_GetLastItem(&GUILayer[Layer]->ChildObjects);
         while(tmpItem != NULL)
         {
             tmpWIN = (pWIN)tmpItem->Data;
@@ -310,8 +312,10 @@ pWIN GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
             pDLITEM tmpItem;
             int32_t ItemIndex;
 
-            tmpItem = DL_GetLastItem(GUIWinZOrder[i]);
-            ItemIndex = DL_GetItemsCount(GUIWinZOrder[i]) - 1;
+            if (GUILayer[i] == NULL) continue;
+
+            tmpItem = DL_GetLastItem(&GUILayer[i]->ChildObjects);
+            ItemIndex = DL_GetItemsCount(&GUILayer[i]->ChildObjects) - 1;
             while(tmpItem != NULL)
             {
                 Win = tmpItem->Data;
