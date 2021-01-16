@@ -21,7 +21,7 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
-pGUILAYER GUILayers[LCDIF_NUMLAYERS];
+pGUILAYER GUILayer[LCDIF_NUMLAYERS];
 
 static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
 {
@@ -163,7 +163,7 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
     pGUILAYER LObject;
     boolean   Result = false;
 
-    if ((Layer >= LCDIF_NUMLAYERS) || (GUILayers[Layer] != NULL)) return false;
+    if ((Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] != NULL)) return false;
 
     LObject = malloc(sizeof(TGUILAYER));
     if (LObject != NULL)
@@ -185,7 +185,7 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
             uint32_t intflags = DisableInterrupts();
 
             LObject->Head.Type = GO_WINDOW;
-            GUILayers[Layer] = LObject;
+            GUILayer[Layer] = LObject;
             RestoreInterrupts(intflags);
         }
     }
