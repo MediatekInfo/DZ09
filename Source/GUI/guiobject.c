@@ -172,7 +172,7 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
 
         LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
         LObject->Head.Enabled = true;
-        LObject->Head.Visible = false;
+        LObject->Head.Visible = true;
         LObject->Layer = Layer;
         LObject->ForeColor = ForeColor;
 
@@ -208,7 +208,12 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
         pDLIST ObjectsList;
 
         Layer = (Parent != NULL) ? ((pWIN)Parent)->Layer : Layer;
-        ObjectsList = (Parent == NULL) ? &GUILayer[Layer]->ChildObjects : &((pWIN)Parent)->ChildObjects;
+        if (Parent != 0) ObjectsList = &((pWIN)Parent)->ChildObjects;
+        else
+        {
+            ObjectsList = &GUILayer[Layer]->ChildObjects;
+            Parent = (pGUIHEADER)GUILayer[Layer];
+        }
 
         memset(Win, 0x00, sizeof(TWIN));
 
@@ -263,7 +268,7 @@ int32_t GUI_GetWindowZIndex(pWIN Win)
     int32_t ZL = -1;
 
     if ((Win != NULL) && GUI_IsWindowObject((pGUIHEADER)Win) &&
-        (Win->Layer < LCDIF_NUMLAYERS) && (GUILayer[Win->Layer] != NULL))
+            (Win->Layer < LCDIF_NUMLAYERS) && (GUILayer[Win->Layer] != NULL))
     {
         DL_FindItemByData(&GUILayer[Win->Layer]->ChildObjects, Win, &ZL);
     }

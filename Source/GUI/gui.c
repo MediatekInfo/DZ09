@@ -241,34 +241,19 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
                     *SeedRect = Event->UpdateRect;
 
-                    /* Subtract the positions of topmost windows from the update region. */
-                    tmpDLItem = DL_GetLastItem(&GUILayer[Layer]->ChildObjects);
-                    while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
+                    if (Event->Object->Parent != NULL)
                     {
-                        tmpObject = (pGUIHEADER)tmpDLItem->Data;
-
-                        if ((uintptr_t)tmpObject == (uintptr_t)Event->RootParent) break;
-                        if ((tmpObject != NULL) && tmpObject->Visible &&
-                                !GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position)) break;
-
-                        tmpDLItem = DL_GetPrevItem(tmpDLItem);
+                        tmpObject = Event->Object;
+                        /* Subtract the positions of the topmost child back through the parent tree. */
+                        while (tmpObject->Parent != NULL)
+                        {
+                            if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject)) break;
+                            tmpObject = tmpObject->Parent;
+                        }
                     }
 
-                    do
+                    if (DL_GetItemsCount(UpdateRgn))
                     {
-                        if (!DL_GetItemsCount(UpdateRgn)) break;
-                        if (Event->Object->Parent != NULL)
-                        {
-                            tmpObject = Event->Object;
-                            /* Subtract the positions of the topmost child back through the parent tree. */
-                            while (tmpObject->Parent != NULL)
-                            {
-                                if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject)) break;
-                                tmpObject = tmpObject->Parent;
-                            }
-                        }
-
-                        if (!DL_GetItemsCount(UpdateRgn)) break;
                         if (GUI_IsWindowObject(Event->Object))
                         {
                             if (Event->Object->Visible)
@@ -298,23 +283,6 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                                         else break;
                                     }
                                 }
-                                /* Update layer background */
-                                while((tmpDLItem = DL_GetFirstItem(UpdateRgn)) != NULL)
-                                {
-                                    pRECT tmpRect = (pRECT)tmpDLItem->Data;
-
-                                    GDI_FillRectangle(Layer, *tmpRect, LCDScreen.VLayer[Layer].ForeColor);
-
-                                    tmpRect->l += LCDScreen.VLayer[Layer].LayerOffset.x;
-                                    tmpRect->t += LCDScreen.VLayer[Layer].LayerOffset.y;
-                                    tmpRect->r += LCDScreen.VLayer[Layer].LayerOffset.x;
-                                    tmpRect->b += LCDScreen.VLayer[Layer].LayerOffset.y;
-
-                                    LCDIF_UpdateRectangle(*tmpRect);
-
-                                    free(tmpDLItem->Data);
-                                    DL_DeleteFirstItem(UpdateRgn);
-                                }
                             }
                         }
                         else if (Event->Object->Parent != NULL)
@@ -332,7 +300,6 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             }
                         }
                     }
-                    while(0);
                 }
                 else if (SeedRect != NULL) free(SeedRect);
 
