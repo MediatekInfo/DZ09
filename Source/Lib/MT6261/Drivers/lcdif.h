@@ -300,7 +300,6 @@ typedef struct tag_TLCONTEXT
     uint32_t LayerEnMask;
     uint8_t  BPP;
     TCFORMAT ColorFormat;
-    uint32_t ForeColor;
     void     *FrameBuffer;
 } TLCONTEXT, *pLCONTEXT;
 

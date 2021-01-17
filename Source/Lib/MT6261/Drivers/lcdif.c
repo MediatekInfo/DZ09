@@ -267,7 +267,6 @@ boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t
         LCDScreen.VLayer[Layer].LayerRgn = Rect(0, 0, SizeX - 1, SizeY - 1);
         LCDScreen.VLayer[Layer].LayerOffset = Offset;
         LCDScreen.VLayer[Layer].ColorFormat = CFormat;
-        LCDScreen.VLayer[Layer].ForeColor = ForeColor;
         LCDScreen.VLayer[Layer].BPP = CFormatToBPP[CFormat];
 
         n = SizeX * SizeY * LCDScreen.VLayer[Layer].BPP;
@@ -286,8 +285,6 @@ boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t
                 LCDIF_LAYER[Layer]->LCDIF_LWINSCRL  = LCDIF_LSCCOL(0) | LCDIF_LSCROW(0);
                 LCDIF_LAYER[Layer]->LCDIF_LWINMOFS  = LCDIF_LMOFCOL(0) | LCDIF_LMOFROW(0);
                 LCDIF_LAYER[Layer]->LCDIF_LWINPITCH = LCDScreen.VLayer[Layer].BPP * SizeX;
-
-                GDI_FillRectangleX(&LCDScreen.VLayer[Layer], &LCDScreen.VLayer[Layer].LayerRgn, ForeColor);
 
                 LCDScreen.VLayer[Layer].Initialized = true;
             }
