@@ -28,7 +28,6 @@ typedef struct tag_PENEVENT
 typedef struct tag_PAINTEV
 {
     pGUIHEADER Object;
-    pGUIHEADER RootParent;
     TRECT      UpdateRect;
     TVLINDEX   Layer;
 } TPAINTEV, *pPAINTEV;

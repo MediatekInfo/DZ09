@@ -49,9 +49,6 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
                              GUI_IsWindowObject(Object->Parent);                                    // Only a TWIN object can be a parent.
             Object = Object->Parent;
         }
-
-        if (IsStillVisible)
-            PEvent->RootParent = Object;
     }
     return IsStillVisible;
 }
@@ -223,11 +220,12 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 {
     if (Event != NULL)
     {
-        if (Event->RootParent != NULL)                                                              // Invalidate by object
+        if (GUI_IsWindowObject(Event->Object) || (Event->Object->Parent != NULL))                   // Invalidate by object
         {
-            TVLINDEX Layer = ((pWIN)Event->RootParent)->Layer;
+            TVLINDEX Layer = (GUI_IsWindowObject(Event->Object)) ?
+                             ((pWIN)Event->Object)->Layer : ((pWIN)Event->Object->Parent)->Layer;
 
-            if (GUI_IsWindowObject(Event->RootParent) && (GUILayer[Layer] != NULL) &&
+            if ((GUILayer[Layer] != NULL) &&
                     GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
             {
                 pDLIST UpdateRgn = DL_Create(0);
