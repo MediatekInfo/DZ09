@@ -60,13 +60,13 @@ typedef struct tag_WIN
     uint32_t    Layer;
     uint32_t    ForeColor;
     TDLIST      ChildObjects;
-    boolean     (*EventHandler)(pEVENT, pWIN);
+    boolean     (*EventHandler)(pEVENT, pGUIHEADER);
 } TWIN, *pWIN;
 
 typedef TWIN   TGUILAYER;
 typedef pWIN   pGUILAYER;
 
-extern pGUILAYER GUILayer[LCDIF_NUMLAYERS];
+extern pGUIHEADER GUILayer[LCDIF_NUMLAYERS];
 
 extern TRECT GUI_CalculateClientArea(pGUIHEADER Object);
 extern boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position);
@@ -76,8 +76,9 @@ extern boolean GUI_SetObjectVisibility(pGUIHEADER Object, boolean Visible);
 extern boolean GUI_IsWindowObject(pGUIHEADER Object);
 extern boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
                                uint8_t GlobalAlpha, uint32_t ForeColor);
-extern pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
-                             uint8_t Layer, uint32_t ForeColor, TGOFLAGS Flags);
+extern pGUIHEADER GUI_CreateWindow(pGUIHEADER Parent, TRECT Position,
+                                   boolean (*Handler)(pEVENT, pGUIHEADER),
+                                   uint32_t ForeColor, TGOFLAGS Flags);
 extern void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip);
 extern void GUI_DestroyObject(pGUIHEADER Object);
 

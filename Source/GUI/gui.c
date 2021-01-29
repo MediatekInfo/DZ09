@@ -94,11 +94,11 @@ static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIHEADER Object, pRECT Cli
     }
 }
 
-static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pRECT Clip)
+static boolean GUI_UpdateChildTree(pDLIST Region, pGUIHEADER Object, pRECT Clip)
 {
-    pDLITEM    tmpItem = DL_GetLastItem(&Win->ChildObjects);
+    pDLITEM    tmpItem = DL_GetLastItem(&((pWIN)Object)->ChildObjects);
     pGUIHEADER tmpObject;
-    TRECT      tmpWinRect = GUI_CalculateClientArea((pGUIHEADER)Win);
+    TRECT      tmpWinRect = GUI_CalculateClientArea(Object);
 
     while((tmpItem != NULL) && ((tmpObject = (pGUIHEADER)tmpItem->Data) != NULL))
     {
@@ -108,7 +108,7 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pRECT Clip)
         {
             if (GUI_IsWindowObject(tmpObject))
             {
-                if (!GUI_UpdateChildTree(Region, (pWIN)tmpObject, &tmpObjectRect)) break;
+                if (!GUI_UpdateChildTree(Region, tmpObject, &tmpObjectRect)) break;
             }
             else GUI_UpdateObjectByRegion(Region, tmpObject, &tmpObjectRect);
             GDI_SUBRectFromRegion(Region, &tmpObjectRect);
@@ -116,7 +116,7 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pRECT Clip)
         if (!DL_GetItemsCount(Region)) break;
         tmpItem = DL_GetPrevItem(tmpItem);
     }
-    GUI_UpdateObjectByRegion(Region, &Win->Head, Clip);
+    GUI_UpdateObjectByRegion(Region, Object, Clip);
 
     return DL_GetItemsCount(Region) != 0;
 }
@@ -257,26 +257,26 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             if (Event->Object->Visible)
                             {
                                 /* Update the tree of child objects. */
-                                if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object, &Event->Object->Position))
+                                if (GUI_UpdateChildTree(UpdateRgn, Event->Object, &Event->Object->Position))
                                     GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
                             }
                             else if (Event->Object->Parent != NULL)
                             {
                                 /* Update the tree of child objects. */
-                                if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object->Parent, &Event->Object->Position))
+                                if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
                                     GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
                             }
                             else
                             {
                                 /* Root object, update the objects below. */
-                                tmpDLItem = DL_FindItemByData(&GUILayer[Layer]->ChildObjects, Event->Object, NULL);
+                                tmpDLItem = DL_FindItemByData(&((pGUILAYER)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
 
                                 while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
                                 {
                                     tmpObject = tmpDLItem->Data;
                                     if ((tmpObject != NULL) && tmpObject->Visible)
                                     {
-                                        if (GUI_UpdateChildTree(UpdateRgn, (pWIN)tmpObject, &tmpObject->Position))
+                                        if (GUI_UpdateChildTree(UpdateRgn, tmpObject, &tmpObject->Position))
                                             GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position);
                                         else break;
                                     }
@@ -293,7 +293,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             else
                             {
                                 /* Update the tree of child objects. */
-                                if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object->Parent, &Event->Object->Position))
+                                if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
                                     GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
                             }
                         }

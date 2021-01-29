@@ -21,7 +21,7 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
-pGUILAYER GUILayer[LCDIF_NUMLAYERS];
+pGUIHEADER GUILayer[LCDIF_NUMLAYERS];
 
 static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
 {
@@ -185,47 +185,37 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
             uint32_t intflags = DisableInterrupts();
 
             LObject->Head.Type = GO_WINDOW;
-            GUILayer[Layer] = LObject;
+            GUILayer[Layer] = (pGUIHEADER)LObject;
             RestoreInterrupts(intflags);
         }
     }
     return Result;
 }
 
-pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVENT, pWIN),
-                      TVLINDEX Layer, uint32_t ForeColor, TGOFLAGS Flags)
+pGUIHEADER GUI_CreateWindow(pGUIHEADER Parent, TRECT Position,
+                            boolean (*Handler)(pEVENT, pGUIHEADER),
+                            uint32_t ForeColor, TGOFLAGS Flags)
 {
     pWIN    Win;
     boolean Result;
 
-    if ((Layer >= LCDIF_NUMLAYERS) ||
-            ((Parent != NULL) && !GUI_IsWindowObject(Parent)) ||
-            ((Parent == NULL) && (GUILayer[Layer] == NULL))) return NULL;
+    if ((Parent == NULL) || !GUI_IsWindowObject(Parent)) return NULL;
 
     Win = malloc(sizeof(TWIN));
     if (Win != NULL)
     {
-        pDLIST ObjectsList;
-
-        Layer = (Parent != NULL) ? ((pWIN)Parent)->Layer : Layer;
-        if (Parent != 0) ObjectsList = &((pWIN)Parent)->ChildObjects;
-        else
-        {
-            ObjectsList = &GUILayer[Layer]->ChildObjects;
-            Parent = (pGUIHEADER)GUILayer[Layer];
-        }
+        pDLIST ObjectsList = &((pWIN)Parent)->ChildObjects;
 
         memset(Win, 0x00, sizeof(TWIN));
 
-        Win->Head.Position = (Parent != NULL) ?
-                             GDI_LocalToGlobalRct(&Position, &Parent->Position.lt) : Position;
+        Win->Head.Position = GDI_LocalToGlobalRct(&Position, &Parent->Position.lt);
         Win->Head.Parent = Parent;
         Win->Head.Enabled = (Flags & GF_ENABLED) != 0;
         Win->Head.Visible = (Flags & GF_VISIBLE) != 0;
 
         Win->Topmost = (Flags & GF_TOPMOST) != 0;
         Win->Framed = (Flags & GF_FRAMED) != 0;
-        Win->Layer = Layer;
+        Win->Layer = ((pWIN)Parent)->Layer;
         Win->ForeColor = ForeColor;
         Win->EventHandler = Handler;
 
@@ -255,7 +245,7 @@ pWIN GUI_CreateWindow(pGUIHEADER Parent, TRECT Position, boolean (*Handler)(pEVE
             Win = NULL;
         }
     }
-    return Win;
+    return (pGUIHEADER)Win;
 }
 
 boolean GUI_IsWindowObject(pGUIHEADER Object)
@@ -263,49 +253,52 @@ boolean GUI_IsWindowObject(pGUIHEADER Object)
     return ((Object != NULL) && (Object->Type == GO_WINDOW));
 }
 
-int32_t GUI_GetWindowZIndex(pWIN Win)
+int32_t GUI_GetWindowZIndex(pGUIHEADER Win)
 {
     int32_t ZL = -1;
 
-    if ((Win != NULL) && GUI_IsWindowObject((pGUIHEADER)Win) &&
-            (Win->Layer < LCDIF_NUMLAYERS) && (GUILayer[Win->Layer] != NULL))
+    if ((Win != NULL) && GUI_IsWindowObject(Win) &&
+            (((pWIN)Win)->Layer < LCDIF_NUMLAYERS) && (GUILayer[((pWIN)Win)->Layer] != NULL))
     {
-        DL_FindItemByData(&GUILayer[Win->Layer]->ChildObjects, Win, &ZL);
+        DL_FindItemByData(&((pGUILAYER)GUILayer[((pWIN)Win)->Layer])->ChildObjects, Win, &ZL);
     }
     return ZL;
 }
 
-pWIN GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
+pGUIHEADER GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
 {
     pWIN    tmpWIN, Res = NULL;
     pDLITEM tmpItem;
 
-    if ((Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] == NULL)) return NULL;
+    if ((Layer < LCDIF_NUMLAYERS) && (GUILayer[Layer] != NULL))
+    {
+        pGUILAYER tmpLayer = (pGUILAYER)GUILayer[Layer];
 
-    if (Topmost)
-    {
-        tmpItem = DL_GetLastItem(&GUILayer[Layer]->ChildObjects);
-        tmpWIN = (tmpItem == NULL) ? NULL : (pWIN)tmpItem->Data;
-        Res = ((tmpWIN == NULL) || !tmpWIN->Topmost) ? NULL : tmpWIN;
-    }
-    else
-    {
-        tmpItem = DL_GetLastItem(&GUILayer[Layer]->ChildObjects);
-        while(tmpItem != NULL)
+        if (Topmost)
         {
-            tmpWIN = (pWIN)tmpItem->Data;
-            if ((tmpWIN != NULL) && !tmpWIN->Topmost)
+            tmpItem = DL_GetLastItem(&tmpLayer->ChildObjects);
+            tmpWIN = (tmpItem == NULL) ? NULL : (pWIN)tmpItem->Data;
+            Res = ((tmpWIN == NULL) || !tmpWIN->Topmost) ? NULL : tmpWIN;
+        }
+        else
+        {
+            tmpItem = DL_GetLastItem(&tmpLayer->ChildObjects);
+            while(tmpItem != NULL)
             {
-                Res = tmpWIN;
-                break;
+                tmpWIN = (pWIN)tmpItem->Data;
+                if ((tmpWIN != NULL) && !tmpWIN->Topmost)
+                {
+                    Res = tmpWIN;
+                    break;
+                }
+                tmpItem = DL_GetPrevItem(tmpItem);
             }
-            tmpItem = DL_GetPrevItem(tmpItem);
         }
     }
-    return Res;
+    return (pGUIHEADER)Res;
 }
 
-pWIN GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
+pGUIHEADER GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
 {
     int32_t i;
     pWIN    Win;
@@ -319,15 +312,15 @@ pWIN GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
 
             if (GUILayer[i] == NULL) continue;
 
-            tmpItem = DL_GetLastItem(&GUILayer[i]->ChildObjects);
-            ItemIndex = DL_GetItemsCount(&GUILayer[i]->ChildObjects) - 1;
+            tmpItem = DL_GetLastItem(&((pGUILAYER)GUILayer[i])->ChildObjects);
+            ItemIndex = DL_GetItemsCount(&((pGUILAYER)GUILayer[i])->ChildObjects) - 1;
             while(tmpItem != NULL)
             {
                 Win = tmpItem->Data;
                 if ((Win != NULL) && Win->Head.Visible && IsPointInRect(pt->x, pt->y, &Win->Head.Position))
                 {
                     if (ZIndex != NULL) *ZIndex = ItemIndex;
-                    return Win;
+                    return (pGUIHEADER)Win;
                 }
                 ItemIndex--;
                 tmpItem = DL_GetPrevItem(tmpItem);
