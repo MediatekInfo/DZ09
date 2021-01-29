@@ -21,15 +21,15 @@
 #include "systemconfig.h"
 #include "guiobject.h"
 
-pGUIHEADER GUILayer[LCDIF_NUMLAYERS];
+pGUIOBJECT GUILayer[LCDIF_NUMLAYERS];
 
-static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
+static void GUI_DrawDefaultWindow(pGUIOBJECT Object, pRECT Clip)
 {
     pWIN  Win = (pWIN)Object;
     TRECT WinRect;
 
     if ((Object == NULL) || !Object->Visible ||
-            !GUI_IsWindowObject((pGUIHEADER)Object) || (Clip == NULL)) return;
+            !GUI_IsWindowObject((pGUIOBJECT)Object) || (Clip == NULL)) return;
 
     WinRect = Object->Position;
     if (Win->Framed)
@@ -48,7 +48,7 @@ static void GUI_DrawDefaultWindow(pGUIHEADER Object, pRECT Clip)
     }
 }
 
-static void GUI_UpdateChildPositions(pGUIHEADER Object, pPOINT dXY)
+static void GUI_UpdateChildPositions(pGUIOBJECT Object, pPOINT dXY)
 {
     pDLIST ChildList = &((pWIN)Object)->ChildObjects;
 
@@ -58,7 +58,7 @@ static void GUI_UpdateChildPositions(pGUIHEADER Object, pPOINT dXY)
 
         while (tmpItem != NULL)
         {
-            pGUIHEADER tmpObject = (pGUIHEADER)tmpItem->Data;
+            pGUIOBJECT tmpObject = (pGUIOBJECT)tmpItem->Data;
 
             if (tmpObject != NULL)
             {
@@ -75,7 +75,7 @@ static void GUI_UpdateChildPositions(pGUIHEADER Object, pPOINT dXY)
     }
 }
 
-TRECT GUI_CalculateClientArea(pGUIHEADER Object)
+TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
 {
     TRECT ObjectRect = Object->Position;
 
@@ -97,7 +97,7 @@ TRECT GUI_CalculateClientArea(pGUIHEADER Object)
     return ObjectRect;
 }
 
-boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position)
+boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position)
 {
     if (Object == NULL) return false;
 
@@ -110,7 +110,7 @@ boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position)
     return true;
 }
 
-void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position)
+void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
 {
     TRECT NewPosition;
 
@@ -141,12 +141,12 @@ void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position)
     }
 }
 
-boolean GUI_GetObjectVisibilty(pGUIHEADER Object)
+boolean GUI_GetObjectVisibilty(pGUIOBJECT Object)
 {
     return ((Object != NULL) && Object->Visible);
 }
 
-boolean GUI_SetObjectVisibility(pGUIHEADER Object, boolean Visible)
+boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
 {
     if (Object == NULL) return false;
     if (Object->Visible != Visible)
@@ -185,15 +185,15 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
             uint32_t intflags = DisableInterrupts();
 
             LObject->Head.Type = GO_WINDOW;
-            GUILayer[Layer] = (pGUIHEADER)LObject;
+            GUILayer[Layer] = (pGUIOBJECT)LObject;
             RestoreInterrupts(intflags);
         }
     }
     return Result;
 }
 
-pGUIHEADER GUI_CreateWindow(pGUIHEADER Parent, TRECT Position,
-                            boolean (*Handler)(pEVENT, pGUIHEADER),
+pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
+                            boolean (*Handler)(pEVENT, pGUIOBJECT),
                             uint32_t ForeColor, TGOFLAGS Flags)
 {
     pWIN    Win;
@@ -226,7 +226,7 @@ pGUIHEADER GUI_CreateWindow(pGUIHEADER Parent, TRECT Position,
 
             while(tmpItem != NULL)
             {
-                pGUIHEADER tmpObject = tmpItem->Data;
+                pGUIOBJECT tmpObject = tmpItem->Data;
 
                 if ((tmpObject != NULL) &&
                         (!GUI_IsWindowObject(tmpObject) || !((pWIN)tmpObject)->Topmost))
@@ -245,15 +245,15 @@ pGUIHEADER GUI_CreateWindow(pGUIHEADER Parent, TRECT Position,
             Win = NULL;
         }
     }
-    return (pGUIHEADER)Win;
+    return (pGUIOBJECT)Win;
 }
 
-boolean GUI_IsWindowObject(pGUIHEADER Object)
+boolean GUI_IsWindowObject(pGUIOBJECT Object)
 {
     return ((Object != NULL) && (Object->Type == GO_WINDOW));
 }
 
-int32_t GUI_GetWindowZIndex(pGUIHEADER Win)
+int32_t GUI_GetWindowZIndex(pGUIOBJECT Win)
 {
     int32_t ZL = -1;
 
@@ -265,7 +265,7 @@ int32_t GUI_GetWindowZIndex(pGUIHEADER Win)
     return ZL;
 }
 
-pGUIHEADER GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
+pGUIOBJECT GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
 {
     pWIN    tmpWIN, Res = NULL;
     pDLITEM tmpItem;
@@ -295,10 +295,10 @@ pGUIHEADER GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
             }
         }
     }
-    return (pGUIHEADER)Res;
+    return (pGUIOBJECT)Res;
 }
 
-pGUIHEADER GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
+pGUIOBJECT GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
 {
     int32_t i;
     pWIN    Win;
@@ -320,7 +320,7 @@ pGUIHEADER GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
                 if ((Win != NULL) && Win->Head.Visible && IsPointInRect(pt->x, pt->y, &Win->Head.Position))
                 {
                     if (ZIndex != NULL) *ZIndex = ItemIndex;
-                    return (pGUIHEADER)Win;
+                    return (pGUIOBJECT)Win;
                 }
                 ItemIndex--;
                 tmpItem = DL_GetPrevItem(tmpItem);
@@ -333,7 +333,7 @@ pGUIHEADER GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
     return NULL;
 }
 
-void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip)
+void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 {
     if ((Object != NULL) && (Clip != NULL))
     {
@@ -358,7 +358,7 @@ void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip)
     }
 }
 
-void GUI_DestroyObject(pGUIHEADER Object)
+void GUI_DestroyObject(pGUIOBJECT Object)
 {
 
 }

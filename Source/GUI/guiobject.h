@@ -35,51 +35,51 @@ typedef enum tag_GOFLAGS
     GF_FRAMED   = (1 << 3)
 } TGOFLAGS;
 
-typedef struct tag_GUIHEADER *pGUIHEADER;
-typedef struct tag_GUIHEADER
+typedef struct tag_GUIOBJECT *pGUIOBJECT;
+typedef struct tag_GUIOBJECT
 {
     TRECT      Position;
-    pGUIHEADER Parent;
+    pGUIOBJECT Parent;
     TGOTYPE    Type;
     boolean    Enabled;
     boolean    Visible;
     int32_t    Tag;
-    void       (*OnPressed)(pGUIHEADER, pPOINT);
-    void       (*OnReleased)(pGUIHEADER, pPOINT);
-    void       (*OnMove)(pGUIHEADER, pPOINT);
-    void       (*OnClick)(pGUIHEADER, pPOINT);
-    void       (*OnPaint)(pGUIHEADER, pRECT);
-} TGUIHEADER, *pGUIHEADER;
+    void       (*OnPressed)(pGUIOBJECT, pPOINT);
+    void       (*OnReleased)(pGUIOBJECT, pPOINT);
+    void       (*OnMove)(pGUIOBJECT, pPOINT);
+    void       (*OnClick)(pGUIOBJECT, pPOINT);
+    void       (*OnPaint)(pGUIOBJECT, pRECT);
+} TGUIOBJECT, *pGUIOBJECT;
 
 typedef struct tag_WIN *pWIN;
 typedef struct tag_WIN
 {
-    TGUIHEADER  Head;
+    TGUIOBJECT  Head;
     boolean     Topmost;
     boolean     Framed;
     uint32_t    Layer;
     uint32_t    ForeColor;
     TDLIST      ChildObjects;
-    boolean     (*EventHandler)(pEVENT, pGUIHEADER);
+    boolean     (*EventHandler)(pEVENT, pGUIOBJECT);
 } TWIN, *pWIN;
 
 typedef TWIN   TGUILAYER;
 typedef pWIN   pGUILAYER;
 
-extern pGUIHEADER GUILayer[LCDIF_NUMLAYERS];
+extern pGUIOBJECT GUILayer[LCDIF_NUMLAYERS];
 
-extern TRECT GUI_CalculateClientArea(pGUIHEADER Object);
-extern boolean GUI_GetObjectPosition(pGUIHEADER Object, pRECT Position);
-extern void GUI_SetObjectPosition(pGUIHEADER Object, pRECT Position);
-extern boolean GUI_GetObjectVisibilty(pGUIHEADER Object);
-extern boolean GUI_SetObjectVisibility(pGUIHEADER Object, boolean Visible);
-extern boolean GUI_IsWindowObject(pGUIHEADER Object);
+extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
+extern boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position);
+extern void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position);
+extern boolean GUI_GetObjectVisibilty(pGUIOBJECT Object);
+extern boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible);
+extern boolean GUI_IsWindowObject(pGUIOBJECT Object);
 extern boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
                                uint8_t GlobalAlpha, uint32_t ForeColor);
-extern pGUIHEADER GUI_CreateWindow(pGUIHEADER Parent, TRECT Position,
-                                   boolean (*Handler)(pEVENT, pGUIHEADER),
+extern pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
+                                   boolean (*Handler)(pEVENT, pGUIOBJECT),
                                    uint32_t ForeColor, TGOFLAGS Flags);
-extern void GUI_DrawObjectDefault(pGUIHEADER Object, pRECT Clip);
-extern void GUI_DestroyObject(pGUIHEADER Object);
+extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
+extern void GUI_DestroyObject(pGUIOBJECT Object);
 
 #endif /* _GUIOBJECT_H_ */

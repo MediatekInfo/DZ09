@@ -24,7 +24,7 @@
 static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 {
     boolean    IsStillVisible = false;
-    pGUIHEADER Object;
+    pGUIOBJECT Object;
 
     if ((PEvent != NULL) && ((Object = PEvent->Object) != NULL))
     {
@@ -53,7 +53,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
     return IsStillVisible;
 }
 
-static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object)
+static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIOBJECT Object)
 {
     if (Object->Parent != NULL)
     {
@@ -63,7 +63,7 @@ static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object
         /* Subtract the positions of topmost child objects from the update region. */
         while((tmpDLItem != NULL) && DL_GetItemsCount(Region))
         {
-            pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
+            pGUIOBJECT tmpObject = (pGUIOBJECT)tmpDLItem->Data;
 
             if ((uintptr_t)tmpObject == (uintptr_t)Object) break;
 
@@ -77,7 +77,7 @@ static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object
     return DL_GetItemsCount(Region) != 0;
 }
 
-static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIHEADER Object, pRECT Clip)
+static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIOBJECT Object, pRECT Clip)
 {
     pDLITEM tmpItem = DL_GetFirstItem(Region);
 
@@ -94,13 +94,13 @@ static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIHEADER Object, pRECT Cli
     }
 }
 
-static boolean GUI_UpdateChildTree(pDLIST Region, pGUIHEADER Object, pRECT Clip)
+static boolean GUI_UpdateChildTree(pDLIST Region, pGUIOBJECT Object, pRECT Clip)
 {
     pDLITEM    tmpItem = DL_GetLastItem(&((pWIN)Object)->ChildObjects);
-    pGUIHEADER tmpObject;
+    pGUIOBJECT tmpObject;
     TRECT      tmpWinRect = GUI_CalculateClientArea(Object);
 
-    while((tmpItem != NULL) && ((tmpObject = (pGUIHEADER)tmpItem->Data) != NULL))
+    while((tmpItem != NULL) && ((tmpObject = (pGUIOBJECT)tmpItem->Data) != NULL))
     {
         TRECT tmpObjectRect = tmpObject->Position;
 
@@ -151,7 +151,7 @@ boolean GUI_Initialize(void)
 2. If Object == NULL - Rct coordinates relative to the screen.
    If Rct == NULL - Invalidate whole screen
 */
-void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
+void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
 {
     TPAINTEV PaintEvent = {0};
 
@@ -176,7 +176,7 @@ void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
 2. If Object == NULL - Region coordinates relative to the screen.
                      - Also needs layer index
 */
-void GUI_InvalidateRegion(pGUIHEADER Object, pDLIST Region, TVLINDEX Layer)
+void GUI_InvalidateRegion(pGUIOBJECT Object, pDLIST Region, TVLINDEX Layer)
 {
     TPAINTEV PaintEvent = {0};
     pDLITEM  tmpItem;
@@ -192,7 +192,7 @@ void GUI_InvalidateRegion(pGUIHEADER Object, pDLIST Region, TVLINDEX Layer)
             {
                 if (tmpItem->Data != NULL)
                 {
-                    PaintEvent.UpdateRect = ((pGUIHEADER)tmpItem->Data)->Position;
+                    PaintEvent.UpdateRect = ((pGUIOBJECT)tmpItem->Data)->Position;
                     EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
                 }
                 tmpItem = DL_GetNextItem(tmpItem);
@@ -208,7 +208,7 @@ void GUI_InvalidateRegion(pGUIHEADER Object, pDLIST Region, TVLINDEX Layer)
         {
             if (tmpItem->Data != NULL)
             {
-                PaintEvent.UpdateRect = ((pGUIHEADER)tmpItem->Data)->Position;
+                PaintEvent.UpdateRect = ((pGUIOBJECT)tmpItem->Data)->Position;
                 EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
             }
             tmpItem = DL_GetNextItem(tmpItem);
@@ -235,7 +235,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         (DL_AddItem(UpdateRgn, SeedRect) != NULL))
                 {
                     pDLITEM    tmpDLItem;
-                    pGUIHEADER tmpObject;
+                    pGUIOBJECT tmpObject;
 
                     *SeedRect = Event->UpdateRect;
 

@@ -27,14 +27,14 @@ typedef struct tag_PENEVENT
 
 typedef struct tag_PAINTEV
 {
-    pGUIHEADER Object;
+    pGUIOBJECT Object;
     TRECT      UpdateRect;
     TVLINDEX   Layer;
 } TPAINTEV, *pPAINTEV;
 
 extern boolean GUI_Initialize(void);
-extern void GUI_Invalidate(pGUIHEADER Object, pRECT Rct);
-extern void GUI_InvalidateRegion(pGUIHEADER Object, pDLIST Region, TVLINDEX Layer);
+extern void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct);
+extern void GUI_InvalidateRegion(pGUIOBJECT Object, pDLIST Region, TVLINDEX Layer);
 extern void GUI_OnPaintHandler(pPAINTEV Event);
 
 #endif /* _GUI_H_ */
