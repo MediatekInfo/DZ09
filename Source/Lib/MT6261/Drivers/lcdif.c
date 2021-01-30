@@ -330,11 +330,15 @@ boolean LCDIF_GetLayerPosition(TVLINDEX Layer, pRECT Position)
     return true;
 }
 
-boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position)
+boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScreen)
 {
     if ((Layer < LCDIF_NUMLAYERS) && LCDScreen.VLayer[Layer].Initialized)
     {
+        TRECT    PrevLayerPosition;
         uint32_t intflags = DisableInterrupts();
+
+        PrevLayerPosition = GDI_LocalToGlobalRct(&LCDScreen.VLayer[Layer].LayerRgn,
+                            &LCDScreen.VLayer[Layer].LayerOffset);
 
         LCDScreen.VLayer[Layer].LayerOffset = Position.lt;
         LCDScreen.VLayer[Layer].LayerRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.VLayer[Layer].LayerOffset);
@@ -344,6 +348,26 @@ boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position)
         LCDIF_LAYER[Layer]->LCDIF_LWINSIZE  = LCDIF_LCOLS(LCDScreen.VLayer[Layer].LayerRgn.r - 1) |
                                               LCDIF_LROWS(LCDScreen.VLayer[Layer].LayerRgn.b - 1);
         RestoreInterrupts(intflags);
+
+        if (UpdateScreen)
+        {
+            pDLIST UpdateRects = GDI_SUBRectangles(&PrevLayerPosition, &Position);
+
+            Position = GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset);
+            LCDIF_UpdateRectangle(Position);
+
+            while (DL_GetItemsCount(UpdateRects))
+            {
+                pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+
+                *(pRECT)tmpDLItem->Data = GDI_GlobalToLocalRct((pRECT)tmpDLItem->Data, &LCDScreen.ScreenOffset);
+                LCDIF_UpdateRectangle(*(pRECT)tmpDLItem->Data);
+
+                free(tmpDLItem->Data);
+                DL_DeleteFirstItem(UpdateRects);
+            }
+            DL_Delete(UpdateRects, false);
+        }
         return true;
     }
     return false;
