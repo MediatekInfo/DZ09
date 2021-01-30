@@ -320,6 +320,35 @@ boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScr
     return LCDScreen.VLayer[Layer].Enabled;
 }
 
+boolean LCDIF_GetLayerPosition(TVLINDEX Layer, pRECT Position)
+{
+    if ((Layer >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Layer].Initialized) return false;
+
+    if (Position != NULL)
+        *Position = GDI_LocalToGlobalRct(&LCDScreen.VLayer[Layer].LayerRgn,
+                                         &LCDScreen.VLayer[Layer].LayerOffset);
+    return true;
+}
+
+boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position)
+{
+    if ((Layer < LCDIF_NUMLAYERS) && LCDScreen.VLayer[Layer].Initialized)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        LCDScreen.VLayer[Layer].LayerOffset = Position.lt;
+        LCDScreen.VLayer[Layer].LayerRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.VLayer[Layer].LayerOffset);
+
+        LCDIF_LAYER[Layer]->LCDIF_LWINOFFS = LCDIF_LWINOF_X(LCDScreen.VLayer[Layer].LayerOffset.x) |
+                                             LCDIF_LWINOF_Y(LCDScreen.VLayer[Layer].LayerOffset.y);
+        LCDIF_LAYER[Layer]->LCDIF_LWINSIZE  = LCDIF_LCOLS(LCDScreen.VLayer[Layer].LayerRgn.r - 1) |
+                                              LCDIF_LROWS(LCDScreen.VLayer[Layer].LayerRgn.b - 1);
+        RestoreInterrupts(intflags);
+        return true;
+    }
+    return false;
+}
+
 boolean LCDIF_IsLayerInitialized(TVLINDEX Layer)
 {
     return LCDScreen.VLayer[Layer].Initialized;
