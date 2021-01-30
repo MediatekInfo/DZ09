@@ -269,7 +269,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                             else
                             {
                                 /* Root object, update the objects below. */
-                                tmpDLItem = DL_FindItemByData(&((pGUILAYER)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
+                                tmpDLItem = DL_FindItemByData(&((pWIN)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
 
                                 while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
                                 {

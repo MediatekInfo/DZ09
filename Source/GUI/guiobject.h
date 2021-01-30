@@ -63,9 +63,6 @@ typedef struct tag_WIN
     boolean     (*EventHandler)(pEVENT, pGUIOBJECT);
 } TWIN, *pWIN;
 
-typedef TWIN   TGUILAYER;
-typedef pWIN   pGUILAYER;
-
 extern pGUIOBJECT GUILayer[LCDIF_NUMLAYERS];
 
 extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);

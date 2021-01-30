@@ -165,15 +165,15 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
 boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
                         uint8_t GlobalAlpha, uint32_t ForeColor)
 {
-    pGUILAYER LObject;
-    boolean   Result = false;
+    pWIN    LObject;
+    boolean Result = false;
 
     if ((Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] != NULL)) return false;
 
-    LObject = malloc(sizeof(TGUILAYER));
+    LObject = malloc(sizeof(TWIN));
     if (LObject != NULL)
     {
-        memset(LObject, 0x00, sizeof(TGUILAYER));
+        memset(LObject, 0x00, sizeof(TWIN));
 
         LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
         LObject->Head.Enabled = true;
@@ -265,7 +265,7 @@ int32_t GUI_GetWindowZIndex(pGUIOBJECT Win)
     if ((Win != NULL) && GUI_IsWindowObject(Win) &&
             (((pWIN)Win)->Layer < LCDIF_NUMLAYERS) && (GUILayer[((pWIN)Win)->Layer] != NULL))
     {
-        DL_FindItemByData(&((pGUILAYER)GUILayer[((pWIN)Win)->Layer])->ChildObjects, Win, &ZL);
+        DL_FindItemByData(&((pWIN)GUILayer[((pWIN)Win)->Layer])->ChildObjects, Win, &ZL);
     }
     return ZL;
 }
@@ -277,7 +277,7 @@ pGUIOBJECT GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
 
     if ((Layer < LCDIF_NUMLAYERS) && (GUILayer[Layer] != NULL))
     {
-        pGUILAYER tmpLayer = (pGUILAYER)GUILayer[Layer];
+        pWIN tmpLayer = (pWIN)GUILayer[Layer];
 
         if (Topmost)
         {
@@ -317,8 +317,8 @@ pGUIOBJECT GUI_GetWindowFromPoint(pPOINT pt, int32_t *ZIndex)
 
             if (GUILayer[i] == NULL) continue;
 
-            tmpItem = DL_GetLastItem(&((pGUILAYER)GUILayer[i])->ChildObjects);
-            ItemIndex = DL_GetItemsCount(&((pGUILAYER)GUILayer[i])->ChildObjects) - 1;
+            tmpItem = DL_GetLastItem(&((pWIN)GUILayer[i])->ChildObjects);
+            ItemIndex = DL_GetItemsCount(&((pWIN)GUILayer[i])->ChildObjects) - 1;
             while(tmpItem != NULL)
             {
                 Win = tmpItem->Data;
