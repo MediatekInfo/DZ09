@@ -152,7 +152,12 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
     if (Object->Visible != Visible)
     {
         Object->Visible = Visible;
-        GUI_Invalidate(Object, NULL);
+        if (Object->Parent == NULL)
+        {
+            if (GUI_IsWindowObject(Object))
+                LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, true);
+        }
+        else GUI_Invalidate(Object, NULL);
     }
     return true;
 }
