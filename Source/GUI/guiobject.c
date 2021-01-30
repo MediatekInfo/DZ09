@@ -103,9 +103,10 @@ boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position)
 
     if (Position != NULL)
     {
-        *Position = (Object->Parent != NULL) ?
-                    GDI_GlobalToLocalRct(&Object->Position, &Object->Parent->Position.lt) :
-                    Object->Position;
+        if (Object->Parent != NULL)
+            *Position = GDI_GlobalToLocalRct(&Object->Position, &Object->Parent->Position.lt);
+        else if (!LCDIF_GetLayerPosition(((pWIN)Object)->Layer, Position))
+            return false;
     }
     return true;
 }
