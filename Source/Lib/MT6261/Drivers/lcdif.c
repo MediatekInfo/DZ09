@@ -169,6 +169,8 @@ boolean LCDIF_UnregisterISR(void)
 
 void LCDIF_DisableInterface(void)
 {
+    LCDScreen.Initialized = false;
+
     LCDIF_INTEN = 0;                                                                                // Disable LCDIF interrupts
     LCDIF_START = LCDIF_INT_RESET;
 
@@ -237,6 +239,7 @@ boolean LCDIF_Initialize(void)
     if (LCDDRV_Initialize())
     {
         LCDIF_INTEN = LCDIF_CPL;                                                                    // Enable LCD interrupts
+        LCDScreen.Initialized = true;
         DebugPrint("Complete.\r\n");
         return true;
     }
@@ -373,6 +376,36 @@ boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScr
         return true;
     }
     return false;
+}
+
+TRECT LCDIF_GetScreenPosition(void)
+{
+    return GDI_LocalToGlobalRct(&LCDScreen.ScreenRgn, &LCDScreen.ScreenOffset);
+}
+
+boolean LCDIF_SetScreenPosition(TRECT Position, boolean UpdateScreen)
+{
+    TRECT PrevPosition = GDI_LocalToGlobalRct(&LCDScreen.ScreenRgn, &LCDScreen.ScreenOffset);
+
+    if (!LCDScreen.Initialized) return false;
+
+    if (memcmp(&PrevPosition, &Position, sizeof(TRECT)) != 0)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        LCDScreen.ScreenOffset = Position.lt;
+        LCDScreen.ScreenRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset);
+
+        LCDIF_WROIOFS = LCDIF_WROIOFX(LCDScreen.ScreenOffset.x) |
+                        LCDIF_WROIOFY(LCDScreen.ScreenOffset.y);
+        LCDIF_WROISIZE = LCDIF_WROICOL(LCDScreen.ScreenRgn.r - 1) |
+                         LCDIF_WROIROW(LCDScreen.ScreenRgn.b - 1);
+        RestoreInterrupts(intflags);
+
+        if (UpdateScreen)
+            LCDIF_UpdateRectangle(LCDScreen.ScreenRgn);
+    }
+    return true;
 }
 
 boolean LCDIF_IsLayerInitialized(TVLINDEX Layer)

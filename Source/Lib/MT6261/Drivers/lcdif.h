@@ -309,6 +309,7 @@ typedef struct tag_TSCREEN
     TPOINT    ScreenOffset;
     uint32_t  ScreenCount;
     uint32_t  ScreenIndex;
+    boolean   Initialized;
     TLCONTEXT VLayer[LCDIF_NUMLAYERS];
 } TSCREEN, *pSCREEN;
 
@@ -332,6 +333,8 @@ extern boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, u
 extern boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScreen);
 extern boolean LCDIF_GetLayerPosition(TVLINDEX Layer, pRECT Position);
 extern boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScreen);
+extern TRECT LCDIF_GetScreenPosition(void);
+extern boolean LCDIF_SetScreenPosition(TRECT Position, boolean UpdateScreen);
 extern boolean LCDIF_IsLayerInitialized(TVLINDEX Layer);
 extern void LCDIF_UpdateRectangle(TRECT Rct);
 extern void LCDIF_UpdateRectangleBlocked(pRECT Rct);
