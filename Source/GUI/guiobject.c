@@ -117,28 +117,32 @@ void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
 
     if ((Object == NULL) || (Position == NULL)) return;
 
-    NewPosition = (Object->Parent == NULL) ? *Position :
-                  GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
-    if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
+    if (Object->Parent == NULL)
+        LCDIF_SetLayerPosition(((pWIN)Object)->Layer, *Position, true);
+    else
     {
-        TPOINT dXY = GDI_GlobalToLocalPt(&NewPosition.lt, &Object->Position.lt);
-        pDLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
-
-        Object->Position = NewPosition;
-
-        if (GUI_IsWindowObject(Object))
-            GUI_UpdateChildPositions(Object, &dXY);
-        GUI_Invalidate(Object, NULL);
-
-        while (DL_GetItemsCount(UpdateRects))
+        NewPosition = GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
+        if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
         {
-            pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+            TPOINT dXY = GDI_GlobalToLocalPt(&NewPosition.lt, &Object->Position.lt);
+            pDLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
 
-            GUI_Invalidate(Object->Parent, (pRECT)tmpDLItem->Data);
-            free(tmpDLItem->Data);
-            DL_DeleteFirstItem(UpdateRects);
+            Object->Position = NewPosition;
+
+            if (GUI_IsWindowObject(Object))
+                GUI_UpdateChildPositions(Object, &dXY);
+            GUI_Invalidate(Object, NULL);
+
+            while (DL_GetItemsCount(UpdateRects))
+            {
+                pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+
+                GUI_Invalidate(Object->Parent, (pRECT)tmpDLItem->Data);
+                free(tmpDLItem->Data);
+                DL_DeleteFirstItem(UpdateRects);
+            }
+            DL_Delete(UpdateRects, false);
         }
-        DL_Delete(UpdateRects, false);
     }
 }
 
