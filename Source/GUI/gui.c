@@ -256,14 +256,12 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         if (Event->Object->Visible)
                         {
                             /* Update the tree of child objects. */
-                            if (GUI_UpdateChildTree(UpdateRgn, Event->Object, &Event->Object->Position))
-                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                            GUI_UpdateChildTree(UpdateRgn, Event->Object, &Event->Object->Position);
                         }
                         else if (Event->Object->Parent != NULL)
                         {
                             /* Update the tree of child objects. */
-                            if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
-                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                            GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position);
                         }
                         else
                         {
@@ -290,8 +288,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         else
                         {
                             /* Update the tree of child objects. */
-                            if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
-                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                            GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position);
                         }
                     }
                 }
