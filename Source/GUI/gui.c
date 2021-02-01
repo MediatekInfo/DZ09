@@ -170,51 +170,6 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
     }
 }
 
-/*
-1. If Object != NULL - Region coordinates relative to the object.
-2. If Object == NULL - Region coordinates relative to the screen.
-                     - Also needs layer index
-*/
-void GUI_InvalidateRegion(pGUIOBJECT Object, pDLIST Region, TVLINDEX Layer)
-{
-    TPAINTEV PaintEvent = {0};
-    pDLITEM  tmpItem;
-
-    if (Object != NULL)
-    {
-        PaintEvent.Object = Object;
-        PaintEvent.UpdateRect = Object->Position;
-        if (GUI_IsObjectVisibleAcrossParents(&PaintEvent))
-        {
-            tmpItem = DL_GetFirstItem(Region);
-            while(tmpItem != NULL)
-            {
-                if (tmpItem->Data != NULL)
-                {
-                    PaintEvent.UpdateRect = ((pGUIOBJECT)tmpItem->Data)->Position;
-                    EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
-                }
-                tmpItem = DL_GetNextItem(tmpItem);
-            }
-        }
-    }
-    else if ((Layer < LCDIF_NUMLAYERS) && LCDIF_IsLayerInitialized(Layer))
-    {
-        PaintEvent.Layer = Layer;
-
-        tmpItem = DL_GetFirstItem(Region);
-        while(tmpItem != NULL)
-        {
-            if (tmpItem->Data != NULL)
-            {
-                PaintEvent.UpdateRect = ((pGUIOBJECT)tmpItem->Data)->Position;
-                EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
-            }
-            tmpItem = DL_GetNextItem(tmpItem);
-        }
-    }
-}
-
 void GUI_OnPaintHandler(pPAINTEV Event)
 {
     if ((Event != NULL) &&
