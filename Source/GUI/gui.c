@@ -146,10 +146,8 @@ boolean GUI_Initialize(void)
 }
 
 /*
-1. If Object != NULL - Rct coordinates relative to the object.
+   If Object != NULL - Rct coordinates relative to the object.
    If Rct == NULL - Invalidate whole object
-2. If Object == NULL - Rct coordinates relative to the screen.
-   If Rct == NULL - Invalidate whole screen
 */
 void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
 {
@@ -158,16 +156,17 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
     if (Object != NULL)
     {
         PaintEvent.Object = Object;
-        PaintEvent.UpdateRect = (Rct != NULL) ? *Rct : Object->Position;
-
+        if (Rct == NULL) PaintEvent.UpdateRect = Object->Position;
+        else
+        {
+            if (Object->Parent != NULL)
+                PaintEvent.UpdateRect = GDI_LocalToGlobalRct(Rct, &Object->Parent->Position.lt);
+            else if (LCDIF_GetLayerPosition(((pWIN)Object)->Layer, &PaintEvent.UpdateRect))
+                PaintEvent.UpdateRect = GDI_GlobalToLocalRct(Rct, &PaintEvent.UpdateRect.lt);
+            else return;
+        }
         if (GUI_IsObjectVisibleAcrossParents(&PaintEvent))
             EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
-    }
-    else
-    {
-        PaintEvent.UpdateRect = (Rct != NULL) ? *Rct : LCDScreen.ScreenRgn;
-
-        EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
     }
 }
 
