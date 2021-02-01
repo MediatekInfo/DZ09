@@ -218,95 +218,87 @@ void GUI_InvalidateRegion(pGUIOBJECT Object, pDLIST Region, TVLINDEX Layer)
 
 void GUI_OnPaintHandler(pPAINTEV Event)
 {
-    if (Event != NULL)
+    if ((Event != NULL) &&
+            (GUI_IsWindowObject(Event->Object) || (Event->Object->Parent != NULL)))
     {
-        if (GUI_IsWindowObject(Event->Object) || (Event->Object->Parent != NULL))                   // Invalidate by object
+        TVLINDEX Layer = (GUI_IsWindowObject(Event->Object)) ?
+                         ((pWIN)Event->Object)->Layer : ((pWIN)Event->Object->Parent)->Layer;
+
+        if ((GUILayer[Layer] != NULL) &&
+                GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
         {
-            TVLINDEX Layer = (GUI_IsWindowObject(Event->Object)) ?
-                             ((pWIN)Event->Object)->Layer : ((pWIN)Event->Object->Parent)->Layer;
+            pDLIST UpdateRgn = DL_Create(0);
+            pRECT  SeedRect = malloc(sizeof(TRECT));
 
-            if ((GUILayer[Layer] != NULL) &&
-                    GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
+            if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
+                    (DL_AddItem(UpdateRgn, SeedRect) != NULL))
             {
-                pDLIST UpdateRgn = DL_Create(0);
-                pRECT  SeedRect = malloc(sizeof(TRECT));
+                pDLITEM    tmpDLItem;
+                pGUIOBJECT tmpObject;
 
-                if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
-                        (DL_AddItem(UpdateRgn, SeedRect) != NULL))
+                *SeedRect = Event->UpdateRect;
+
+                if (Event->Object->Parent != NULL)
                 {
-                    pDLITEM    tmpDLItem;
-                    pGUIOBJECT tmpObject;
-
-                    *SeedRect = Event->UpdateRect;
-
-                    if (Event->Object->Parent != NULL)
+                    tmpObject = Event->Object;
+                    /* Subtract the positions of the topmost child back through the parent tree. */
+                    while (tmpObject->Parent != NULL)
                     {
-                        tmpObject = Event->Object;
-                        /* Subtract the positions of the topmost child back through the parent tree. */
-                        while (tmpObject->Parent != NULL)
-                        {
-                            if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject)) break;
-                            tmpObject = tmpObject->Parent;
-                        }
+                        if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject)) break;
+                        tmpObject = tmpObject->Parent;
                     }
+                }
 
-                    if (DL_GetItemsCount(UpdateRgn))
+                if (DL_GetItemsCount(UpdateRgn))
+                {
+                    if (GUI_IsWindowObject(Event->Object))
                     {
-                        if (GUI_IsWindowObject(Event->Object))
+                        if (Event->Object->Visible)
                         {
-                            if (Event->Object->Visible)
-                            {
-                                /* Update the tree of child objects. */
-                                if (GUI_UpdateChildTree(UpdateRgn, Event->Object, &Event->Object->Position))
-                                    GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
-                            }
-                            else if (Event->Object->Parent != NULL)
-                            {
-                                /* Update the tree of child objects. */
-                                if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
-                                    GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
-                            }
-                            else
-                            {
-                                /* Root object, update the objects below. */
-                                tmpDLItem = DL_FindItemByData(&((pWIN)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
-
-                                while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
-                                {
-                                    tmpObject = tmpDLItem->Data;
-                                    if ((tmpObject != NULL) && tmpObject->Visible)
-                                    {
-                                        if (GUI_UpdateChildTree(UpdateRgn, tmpObject, &tmpObject->Position))
-                                            GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position);
-                                        else break;
-                                    }
-                                }
-                            }
+                            /* Update the tree of child objects. */
+                            if (GUI_UpdateChildTree(UpdateRgn, Event->Object, &Event->Object->Position))
+                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
                         }
                         else if (Event->Object->Parent != NULL)
                         {
-                            /* Here process non-window objects */
-                            if (Event->Object->Visible)
-                            {
+                            /* Update the tree of child objects. */
+                            if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
+                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                        }
+                        else
+                        {
+                            /* Root object, update the objects below. */
+                            tmpDLItem = DL_FindItemByData(&((pWIN)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
 
-                            }
-                            else
+                            while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
                             {
-                                /* Update the tree of child objects. */
-                                if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
-                                    GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                                tmpObject = tmpDLItem->Data;
+                                if ((tmpObject != NULL) && tmpObject->Visible)
+                                {
+                                    if (GUI_UpdateChildTree(UpdateRgn, tmpObject, &tmpObject->Position))
+                                        GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position);
+                                    else break;
+                                }
                             }
                         }
                     }
+                    else if (Event->Object->Parent != NULL)
+                    {
+                        /* Here process non-window objects */
+                        if (Event->Object->Visible)
+                            GUI_UpdateObjectByRegion(UpdateRgn, Event->Object, &Event->Object->Position);
+                        else
+                        {
+                            /* Update the tree of child objects. */
+                            if (GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position))
+                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                        }
+                    }
                 }
-                else if (SeedRect != NULL) free(SeedRect);
-
-                DL_Delete(UpdateRgn, true);
             }
-        }
-        else                                                                                        // Invalidate by screen
-        {
+            else if (SeedRect != NULL) free(SeedRect);
 
+            DL_Delete(UpdateRgn, true);
         }
     }
 }
