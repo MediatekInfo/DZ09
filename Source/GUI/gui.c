@@ -79,16 +79,27 @@ static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIOBJECT Object
 
 static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIOBJECT Object, pRECT Clip)
 {
-    pDLITEM tmpItem = DL_GetFirstItem(Region);
+    pDLITEM  tmpItem = DL_GetFirstItem(Region);
+    TVLINDEX Layer;
+
+    Layer = (GUI_IsWindowObject(Object)) ?
+            ((pWIN)Object)->Layer : ((pWIN)Object->Parent)->Layer;
 
     while(tmpItem != NULL)
     {
         if (tmpItem->Data != NULL)
         {
-            TRECT tmpRect = *(pRECT)tmpItem->Data;
+            TRECT UpdateRect = *(pRECT)tmpItem->Data;
 
-            if (GDI_ANDRectangles(&tmpRect, Clip))
-                GUI_DrawObjectDefault(Object, &tmpRect);
+            if (GDI_ANDRectangles(&UpdateRect, Clip))
+            {
+                if (Object->OnPaint != NULL) Object->OnPaint(Object, &UpdateRect);
+                else GUI_DrawObjectDefault(Object, &UpdateRect);
+
+                UpdateRect = GDI_LocalToGlobalRct(&UpdateRect, &LCDScreen.VLayer[Layer].LayerOffset);
+                UpdateRect = GDI_GlobalToLocalRct(&UpdateRect, &LCDScreen.ScreenOffset);
+                LCDIF_UpdateRectangle(UpdateRect);
+            }
         }
         tmpItem = DL_GetNextItem(tmpItem);
     }

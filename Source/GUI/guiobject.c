@@ -347,24 +347,14 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 {
     if ((Object != NULL) && (Clip != NULL))
     {
-        TRECT    UpdateRect;
-        TVLINDEX Layer;
-
-        if (Object->OnPaint != NULL) Object->OnPaint(Object, Clip);
-        else switch(Object->Type)
-            {
-            case GO_WINDOW:
-                GUI_DrawDefaultWindow(Object, Clip);
-                break;
-            default:
-                return;
-            }
-
-        Layer = (Object->Parent != NULL) ?
-                ((pWIN)Object->Parent)->Layer : ((pWIN)Object)->Layer;
-        UpdateRect = GDI_LocalToGlobalRct(Clip, &LCDScreen.VLayer[Layer].LayerOffset);
-        UpdateRect = GDI_GlobalToLocalRct(&UpdateRect, &LCDScreen.ScreenOffset);
-        LCDIF_UpdateRectangle(UpdateRect);
+        switch(Object->Type)
+        {
+        case GO_WINDOW:
+            GUI_DrawDefaultWindow(Object, Clip);
+            break;
+        default:
+            return;
+        }
     }
 }
 
