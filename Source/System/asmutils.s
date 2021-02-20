@@ -127,5 +127,21 @@ FreqLoopsCycles:
     .long   4000004
 FreqLoops:
     .long   1000000                                                                                 // 4000004 cycles summary loop
+///////////////////////////////////////////////////////////////////////////////////////////////////
+    .align  2
+    .globl  SecureMemSet
+    .type   SecureMemSet, %function
+    .func   SecureMemSet
+SecureMemSet:
+    stmfd   sp!, {r0, r3, lr}                                                                       // void *SecureMemSet(void *memptr, int val, size_t num);
+	mov	    r3, r0
+	add	    r2, r0, r2
+	bl      DisableInterrupts
+.loop_secmem_set:
+	cmp	    r3, r2
+	strbne	r1, [r3], #1
+	bne	    .loop_secmem_set
+	bl      RestoreInterrupts
+	ldmfd   sp!, {r0, r3, pc}
+    .endfunc
     .end
-
