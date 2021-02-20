@@ -52,31 +52,13 @@ typedef struct tag_GUIOBJECT
     void       (*OnDestroy)(pGUIOBJECT);
 } TGUIOBJECT, *pGUIOBJECT;
 
-typedef struct tag_WIN *pWIN;
-typedef struct tag_WIN
-{
-    TGUIOBJECT  Head;
-    boolean     Topmost;
-    boolean     Framed;
-    uint32_t    Layer;
-    uint32_t    ForeColor;
-    TDLIST      ChildObjects;
-    boolean     (*EventHandler)(pEVENT, pGUIOBJECT);
-} TWIN, *pWIN;
-
-extern pGUIOBJECT GUILayer[LCDIF_NUMLAYERS];
+#include "guiwin.h"
 
 extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
 extern boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern boolean GUI_GetObjectVisibilty(pGUIOBJECT Object);
 extern boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible);
-extern boolean GUI_IsWindowObject(pGUIOBJECT Object);
-extern boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
-                               uint8_t GlobalAlpha, uint32_t ForeColor);
-extern pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
-                                   boolean (*Handler)(pEVENT, pGUIOBJECT),
-                                   uint32_t ForeColor, TGOFLAGS Flags);
 extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
 extern void *GUI_DestroyObject(pGUIOBJECT Object);
 
