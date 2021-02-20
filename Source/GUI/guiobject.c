@@ -75,6 +75,70 @@ static void GUI_UpdateChildPositions(pGUIOBJECT Object, pPOINT dXY)
     }
 }
 
+static void GUI_DestroyChildTree(pGUIOBJECT Object)
+{
+    pDLIST  ChildList = &((pWIN)Object)->ChildObjects;
+    pDLITEM tmpItem;
+
+    while((tmpItem = DL_GetLastItem(ChildList)) != NULL)
+    {
+        pGUIOBJECT tmpObject = (pGUIOBJECT)tmpItem->Data;
+
+        if (GUI_IsWindowObject(tmpObject)) GUI_DestroyChildTree(tmpObject);
+
+        DL_DeleteLastItem(ChildList);
+        if ((tmpObject != NULL) && (tmpObject->OnDestroy != NULL))
+            tmpObject->OnDestroy(tmpObject);
+
+        SecureMemSet(tmpObject, 0x00, sizeof(TGUIOBJECT));
+        free(tmpObject);
+    }
+}
+
+static void *GUI_DestroySingleObject(pGUIOBJECT Object)
+{
+    uint32_t intflags;
+
+    if (Object->Parent != NULL)
+    {
+        pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
+        pDLITEM tmpItem = DL_FindItemByData(ChildList, Object, NULL);
+
+        if (tmpItem != NULL)
+        {
+            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
+
+            intflags = DisableInterrupts();
+            DL_DeleteItem(ChildList, tmpItem);
+            SecureMemSet(Object, 0x00, sizeof(TGUIOBJECT));
+            free(Object);
+            Object = NULL;
+
+            RestoreInterrupts(intflags);
+        }
+    }
+    else if (GUI_IsWindowObject(Object))
+    {
+        TVLINDEX LayerIndex = ((pWIN)Object)->Layer;
+
+        if (LayerIndex < LCDIF_NUMLAYERS)
+        {
+            GUI_SetObjectVisibility(Object, false);
+
+            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
+
+            intflags = DisableInterrupts();
+            LCDIF_SetupLayer(LayerIndex, Point(0, 0), 0, 0, CF_8IDX, 0, 0);
+            SecureMemSet(Object, 0x00, sizeof(TGUIOBJECT));
+            free(Object);
+            GUILayer[LayerIndex] = Object = NULL;
+
+            RestoreInterrupts(intflags);
+        }
+    }
+    return Object;
+}
+
 TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
 {
     TRECT ObjectRect = Object->Position;
@@ -358,7 +422,20 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
     }
 }
 
-void GUI_DestroyObject(pGUIOBJECT Object)
+void *GUI_DestroyObject(pGUIOBJECT Object)
 {
-
+    if (Object != NULL)
+    {
+        if (GUI_IsWindowObject(Object)) GUI_DestroyChildTree(Object);
+        if (Object->Parent != NULL)
+        {
+            if (Object->Visible)
+            {
+                GUI_SetObjectVisibility(Object, false);
+                EM_ProcessEvents();
+            }
+        }
+        Object = GUI_DestroySingleObject(Object);
+    }
+    return Object;
 }

@@ -49,6 +49,7 @@ typedef struct tag_GUIOBJECT
     void       (*OnMove)(pGUIOBJECT, pPOINT);
     void       (*OnClick)(pGUIOBJECT, pPOINT);
     void       (*OnPaint)(pGUIOBJECT, pRECT);
+    void       (*OnDestroy)(pGUIOBJECT);
 } TGUIOBJECT, *pGUIOBJECT;
 
 typedef struct tag_WIN *pWIN;
@@ -77,6 +78,6 @@ extern pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
                                    boolean (*Handler)(pEVENT, pGUIOBJECT),
                                    uint32_t ForeColor, TGOFLAGS Flags);
 extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
-extern void GUI_DestroyObject(pGUIOBJECT Object);
+extern void *GUI_DestroyObject(pGUIOBJECT Object);
 
 #endif /* _GUIOBJECT_H_ */
