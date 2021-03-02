@@ -183,37 +183,44 @@ int32_t GUI_GetWindowZIndex(pGUIOBJECT Win)
     return ZL;
 }
 
-pGUIOBJECT GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost)
+pGUIOBJECT GUI_GetTopWindow(pGUIOBJECT Parent, boolean Topmost, pDLITEM *ObjectItem)
 {
-    pWIN    tmpWIN, Res = NULL;
-    pDLITEM tmpItem;
+    pGUIOBJECT Result = NULL;
 
-    if ((Layer < LCDIF_NUMLAYERS) && (GUILayer[Layer] != NULL))
+    if ((Parent != NULL) && GUI_IsWindowObject(Parent))
     {
-        pWIN tmpLayer = (pWIN)GUILayer[Layer];
+        pGUIOBJECT Object;
+        pDLITEM    tmpDLItem;
 
+        tmpDLItem = DL_GetLastItem(&((pWIN)Parent)->ChildObjects);
         if (Topmost)
         {
-            tmpItem = DL_GetLastItem(&tmpLayer->ChildObjects);
-            tmpWIN = (tmpItem == NULL) ? NULL : (pWIN)tmpItem->Data;
-            Res = ((tmpWIN == NULL) || !tmpWIN->Topmost) ? NULL : tmpWIN;
+            Object = (tmpDLItem == NULL) ? NULL : (pGUIOBJECT)tmpDLItem->Data;
+            Result = ((Object != NULL) &&
+                      GUI_IsWindowObject(Object) &&
+                      ((pWIN)Object)->Topmost) ? Object : NULL;
+            *ObjectItem = ((ObjectItem != NULL) && (Result != NULL)) ? tmpDLItem : NULL;
         }
         else
         {
-            tmpItem = DL_GetLastItem(&tmpLayer->ChildObjects);
-            while(tmpItem != NULL)
+            while(tmpDLItem != NULL)
             {
-                tmpWIN = (pWIN)tmpItem->Data;
-                if ((tmpWIN != NULL) && !tmpWIN->Topmost)
+                Object = (pGUIOBJECT)tmpDLItem->Data;
+                if (Object != NULL)
                 {
-                    Res = tmpWIN;
-                    break;
+                    if (!GUI_IsWindowObject(Object)) break;
+                    if (!((pWIN)Object)->Topmost)
+                    {
+                        Result = Object;
+                        if (ObjectItem != NULL) *ObjectItem = tmpDLItem;
+                        break;
+                    }
                 }
-                tmpItem = DL_GetPrevItem(tmpItem);
+                tmpDLItem = DL_GetPrevItem(tmpDLItem);
             }
         }
     }
-    return (pGUIOBJECT)Res;
+    return Result;
 }
 
 pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)

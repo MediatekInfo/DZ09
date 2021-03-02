@@ -42,7 +42,7 @@ extern pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
                                    uint32_t ForeColor, TGOFLAGS Flags);
 extern boolean GUI_IsWindowObject(pGUIOBJECT Object);
 extern int32_t GUI_GetWindowZIndex(pGUIOBJECT Win);
-extern pGUIOBJECT GUI_GetTopWindow(TVLINDEX Layer, boolean Topmost);
+extern pGUIOBJECT GUI_GetTopWindow(pGUIOBJECT Parent, boolean Topmost, pDLITEM *ObjectItem);
 extern pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent);
 
 #endif /* _GUIWIN_H_ */
