@@ -112,6 +112,32 @@ static void *GUI_DestroySingleObject(pGUIOBJECT Object)
     return Object;
 }
 
+static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
+{
+    pDLIST     ChildList = &((pWIN)Parent)->ChildObjects;
+    pDLITEM    tmpDLItem = DL_GetLastItem(ChildList);
+    pGUIOBJECT ResObject;
+
+    while(tmpDLItem != NULL)
+    {
+        pGUIOBJECT tmpObject;
+
+        ResObject = (pGUIOBJECT)tmpDLItem->Data;
+        if ((ResObject != NULL) && ResObject->Visible &&
+                IsPointInRect(pt->x, pt->y, &ResObject->Position))
+        {
+            if (GUI_IsWindowObject(ResObject))
+            {
+                tmpObject = GUI_GetObjectRecursive(ResObject, pt);
+                if (tmpObject != NULL) ResObject = tmpObject;
+            }
+            return ResObject;
+        }
+        tmpDLItem = DL_GetNextItem(tmpDLItem);
+    }
+    return NULL;
+}
+
 TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
 {
     TRECT ObjectRect = Object->Position;
@@ -132,6 +158,50 @@ TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
     }
 
     return ObjectRect;
+}
+
+pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
+{
+    pGUIOBJECT tmpObject = NULL, tmpRoot = NULL;
+
+    if (pt != NULL)
+    {
+        int32_t i;
+
+        for(i = LCDIF_NUMLAYERS - 1; i >= 0; i--)
+        {
+            pDLIST  ChildList;
+            pDLITEM tmpDLItem;
+            TPOINT  tmpPoint;
+
+            if ((GUILayer[i] == NULL) || !GUILayer[i]->Visible) continue;
+
+            tmpPoint.x = pt->x + LCDScreen.ScreenOffset.x - LCDScreen.VLayer[i].LayerOffset.x;
+            tmpPoint.y = pt->y + LCDScreen.ScreenOffset.y - LCDScreen.VLayer[i].LayerOffset.y;
+
+            if (!IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position)) break;
+
+            tmpObject = tmpRoot = GUILayer[i];
+
+            ChildList = &((pWIN)GUILayer[i])->ChildObjects;
+            tmpDLItem = DL_GetLastItem(ChildList);
+            while(tmpDLItem != NULL)
+            {
+                tmpRoot = (pGUIOBJECT)tmpDLItem->Data;
+                if ((tmpRoot != NULL) && tmpRoot->Visible &&
+                        IsPointInRect(tmpPoint.x, tmpPoint.y, &tmpRoot->Position))
+                {
+                    tmpObject = GUI_GetObjectRecursive(tmpRoot, &tmpPoint);
+                    if (tmpObject == NULL) tmpObject = tmpRoot;
+                    break;
+                }
+                tmpDLItem = DL_GetPrevItem(tmpDLItem);
+            }
+        }
+    }
+    if (RootParent != NULL) *RootParent = tmpRoot;
+
+    return tmpObject;
 }
 
 pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
