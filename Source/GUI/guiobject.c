@@ -134,6 +134,32 @@ TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
     return ObjectRect;
 }
 
+pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
+{
+    pGUIOBJECT Result = NULL;
+
+    if ((Parent != NULL) && GUI_IsWindowObject(Parent))
+    {
+        pGUIOBJECT Object;
+        pDLITEM    tmpDLItem;
+
+        tmpDLItem = DL_GetLastItem(&((pWIN)Parent)->ChildObjects);
+        while(tmpDLItem != NULL)
+        {
+            Object = (pGUIOBJECT)tmpDLItem->Data;
+            if ((Object != NULL) && (Object->Type != GO_UNKNOWN) &&
+                    !GUI_IsWindowObject(Object))
+            {
+                Result = Object;
+                if (ObjectItem != NULL) *ObjectItem = tmpDLItem;
+                break;
+            }
+            tmpDLItem = DL_GetPrevItem(tmpDLItem);
+        }
+    }
+    return Result;
+}
+
 boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position)
 {
     if (Object == NULL) return false;

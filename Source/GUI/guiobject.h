@@ -55,6 +55,7 @@ typedef struct tag_GUIOBJECT
 #include "guiwin.h"
 
 extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
+extern pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem);
 extern boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern boolean GUI_GetObjectVisibilty(pGUIOBJECT Object);
