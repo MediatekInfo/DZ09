@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021, 2020, 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -69,8 +69,7 @@ void LCDIF_DeleteCommandFromQueue(void)
 
     if (tmpItem != NULL)
     {
-        if (((pLCDCMD)tmpItem->Data)->Commands != NULL)
-            free(((pLCDCMD)tmpItem->Data)->Commands);
+        free(((pLCDCMD)tmpItem->Data)->Commands);
         free(tmpItem->Data);
         DL_DeleteFirstItem(LCDIFQueue);
     }
@@ -140,7 +139,7 @@ boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT Upd
             free(CMD);
         }
     }
-    if (CmdArray != NULL) free(CmdArray);
+    free(CmdArray);
 
     return false;
 }
