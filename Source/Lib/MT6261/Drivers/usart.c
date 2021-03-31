@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021, 2020, 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -70,7 +70,7 @@ boolean USART_Initialize(TUSART Index, uint32_t Speed, void (*Handler)(void), ui
 
     if (Speed)
     {
-        uint32_t BR = ((2 * USARTDEFCLOCK / USARTDEFOVS) / Speed + 1) >> 1;                         // oversampling by 16, baud rate
+        uint32_t BR = (USARTDEFCLOCK + (USARTDEFOVS * Speed) / 2) / (USARTDEFOVS * Speed);          // oversampling by 16, baud rate
 
         if (BR <= 1) return false;                                                                  // Divider can not be lower or equal 1
 
