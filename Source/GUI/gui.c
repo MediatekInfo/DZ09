@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021, 2020, 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,12 +21,10 @@
 #include "systemconfig.h"
 #include "gui.h"
 
-pDLIST GUIWinZOrder[LCDIF_NUMLAYERS];
-
 static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 {
     boolean    IsStillVisible = false;
-    pGUIHEADER Object;
+    pGUIOBJECT Object;
 
     if ((PEvent != NULL) && ((Object = PEvent->Object) != NULL))
     {
@@ -39,9 +37,8 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
         }
         else ObjectPosition = Object->Position;
 
-        IsStillVisible = Object->Visible &&
-                         GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
-                         ((Object->Parent != NULL) || IsWindowObject(Object));                      // The topmost object in the hierarchy must be a TWIN object.
+        IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
+                         ((Object->Parent != NULL) || GUI_IsWindowObject(Object));                  // The topmost object in the hierarchy must be a TWIN object.
 
         while(IsStillVisible && (Object->Parent != NULL))
         {
@@ -49,17 +46,14 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 
             IsStillVisible = Object->Parent->Visible &&
                              GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
-                             IsWindowObject(Object->Parent);                                        // Only a TWIN object can be a parent.
+                             GUI_IsWindowObject(Object->Parent);                                    // Only a TWIN object can be a parent.
             Object = Object->Parent;
         }
-
-        if (IsStillVisible)
-            PEvent->RootParent = Object;
     }
     return IsStillVisible;
 }
 
-static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object)
+static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIOBJECT Object)
 {
     if (Object->Parent != NULL)
     {
@@ -69,7 +63,7 @@ static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object
         /* Subtract the positions of topmost child objects from the update region. */
         while((tmpDLItem != NULL) && DL_GetItemsCount(Region))
         {
-            pGUIHEADER tmpObject = (pGUIHEADER)tmpDLItem->Data;
+            pGUIOBJECT tmpObject = (pGUIOBJECT)tmpDLItem->Data;
 
             if ((uintptr_t)tmpObject == (uintptr_t)Object) break;
 
@@ -83,38 +77,49 @@ static boolean GUI_SubTopChildObjectsFromRegion(pDLIST Region, pGUIHEADER Object
     return DL_GetItemsCount(Region) != 0;
 }
 
-static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIHEADER Object, pRECT Clip)
+static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIOBJECT Object, pRECT Clip)
 {
-    pDLITEM tmpItem = DL_GetFirstItem(Region);
+    pDLITEM  tmpItem = DL_GetFirstItem(Region);
+    TVLINDEX Layer;
+
+    Layer = (GUI_IsWindowObject(Object)) ?
+            ((pWIN)Object)->Layer : ((pWIN)Object->Parent)->Layer;
 
     while(tmpItem != NULL)
     {
         if (tmpItem->Data != NULL)
         {
-            TRECT tmpRect = *(pRECT)tmpItem->Data;
+            TRECT UpdateRect = *(pRECT)tmpItem->Data;
 
-            if (GDI_ANDRectangles(&tmpRect, Clip))
-                GUI_DrawObjectDefault(Object, &tmpRect);
+            if (GDI_ANDRectangles(&UpdateRect, Clip))
+            {
+                if (Object->OnPaint != NULL) Object->OnPaint(Object, &UpdateRect);
+                else GUI_DrawObjectDefault(Object, &UpdateRect);
+
+                UpdateRect = GDI_LocalToGlobalRct(&UpdateRect, &LCDScreen.VLayer[Layer].LayerOffset);
+                UpdateRect = GDI_GlobalToLocalRct(&UpdateRect, &LCDScreen.ScreenOffset);
+                LCDIF_UpdateRectangle(UpdateRect);
+            }
         }
         tmpItem = DL_GetNextItem(tmpItem);
     }
 }
 
-static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pRECT Clip)
+static boolean GUI_UpdateChildTree(pDLIST Region, pGUIOBJECT Object, pRECT Clip)
 {
-    pDLITEM    tmpItem = DL_GetLastItem(&Win->ChildObjects);
-    pGUIHEADER tmpObject;
-    TRECT      tmpWinRect = GUI_CalculateClientArea((pGUIHEADER)Win);
+    pDLITEM    tmpItem = DL_GetLastItem(&((pWIN)Object)->ChildObjects);
+    pGUIOBJECT tmpObject;
+    TRECT      tmpWinRect = GUI_CalculateClientArea(Object);
 
-    while((tmpItem != NULL) && ((tmpObject = (pGUIHEADER)tmpItem->Data) != NULL))
+    while((tmpItem != NULL) && ((tmpObject = (pGUIOBJECT)tmpItem->Data) != NULL))
     {
         TRECT tmpObjectRect = tmpObject->Position;
 
         if ((tmpObject->Visible) && GDI_ANDRectangles(&tmpObjectRect, &tmpWinRect))
         {
-            if (IsWindowObject(tmpObject))
+            if (GUI_IsWindowObject(tmpObject))
             {
-                if (!GUI_UpdateChildTree(Region, (pWIN)tmpObject, &tmpObjectRect)) break;
+                if (!GUI_UpdateChildTree(Region, tmpObject, &tmpObjectRect)) break;
             }
             else GUI_UpdateObjectByRegion(Region, tmpObject, &tmpObjectRect);
             GDI_SUBRectFromRegion(Region, &tmpObjectRect);
@@ -122,7 +127,7 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pWIN Win, pRECT Clip)
         if (!DL_GetItemsCount(Region)) break;
         tmpItem = DL_GetPrevItem(tmpItem);
     }
-    GUI_UpdateObjectByRegion(Region, &Win->Head, Clip);
+    GUI_UpdateObjectByRegion(Region, Object, Clip);
 
     return DL_GetItemsCount(Region) != 0;
 }
@@ -136,26 +141,6 @@ boolean GUI_Initialize(void)
 
     DebugPrint(" LCD interface initialization...");
     Result = LCDIF_Initialize();                                                                    // Initialize subsystem
-
-    if (Result)
-    {
-        for(i = 0; i < LCDIF_NUMLAYERS; i++)
-        {
-// TODO (scorp#1#): May need to check for objects in the lists.
-            if (GUIWinZOrder[i] == NULL) GUIWinZOrder[i] = DL_Create(0);
-            if (GUIWinZOrder[i] == NULL)
-            {
-                while(i--)
-                {
-                    free(GUIWinZOrder[i]);
-                    GUIWinZOrder[i] = NULL;
-                }
-                LCDIF_DisableInterface();
-                Result = false;
-                break;
-            }
-        }
-    }
 
     BL_Initialize();
 
@@ -172,107 +157,110 @@ boolean GUI_Initialize(void)
 }
 
 /*
-1. If Object != NULL - Rct coordinates relative to the object.
+   If Object != NULL - Rct coordinates relative to the object.
    If Rct == NULL - Invalidate whole object
-2. If Object == NULL - Rct coordinates relative to the screen.
-   If Rct == NULL - Invalidate whole screen
 */
-void GUI_Invalidate(pGUIHEADER Object, pRECT Rct)
+void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
 {
     TPAINTEV PaintEvent = {0};
 
     if (Object != NULL)
     {
         PaintEvent.Object = Object;
-        PaintEvent.UpdateRect = (Rct != NULL) ? *Rct : Object->Position;
-
+        if (Rct == NULL) PaintEvent.UpdateRect = Object->Position;
+        else
+        {
+            if (Object->Parent != NULL)
+                PaintEvent.UpdateRect = GDI_LocalToGlobalRct(Rct, &Object->Parent->Position.lt);
+            else if (LCDIF_GetLayerPosition(((pWIN)Object)->Layer, &PaintEvent.UpdateRect))
+                PaintEvent.UpdateRect = *Rct;
+            else return;
+        }
         if (GUI_IsObjectVisibleAcrossParents(&PaintEvent))
             EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
-    }
-    else
-    {
-        PaintEvent.UpdateRect = (Rct != NULL) ? *Rct : LCDScreen.ScreenRgn;
-
-        EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
     }
 }
 
 void GUI_OnPaintHandler(pPAINTEV Event)
 {
-    if (Event != NULL)
+    if ((Event != NULL) &&
+            (GUI_IsWindowObject(Event->Object) || (Event->Object->Parent != NULL)))
     {
-        if (Event->RootParent != NULL)                                                              // Invalidate by object
+        TVLINDEX Layer = (GUI_IsWindowObject(Event->Object)) ?
+                         ((pWIN)Event->Object)->Layer : ((pWIN)Event->Object->Parent)->Layer;
+
+        if ((GUILayer[Layer] != NULL) &&
+                GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
         {
-            if (IsWindowObject(Event->RootParent) &&
-                    GDI_ANDRectangles(&Event->UpdateRect,
-                                      &LCDScreen.VLayer[((pWIN)Event->RootParent)->Layer].LayerRgn))
+            pDLIST UpdateRgn = DL_Create(0);
+            pRECT  SeedRect = malloc(sizeof(TRECT));
+
+            if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
+                    (DL_AddItem(UpdateRgn, SeedRect) != NULL))
             {
-                pDLIST UpdateRgn = DL_Create(0);
-                pRECT  SeedRect = malloc(sizeof(TRECT));
+                pDLITEM    tmpDLItem;
+                pGUIOBJECT tmpObject;
 
-                if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
-                        (DL_AddItem(UpdateRgn, SeedRect) != NULL))
+                *SeedRect = Event->UpdateRect;
+
+                if (Event->Object->Parent != NULL)
                 {
-                    pDLITEM    tmpDLItem;
-                    pGUIHEADER tmpObject;
-
-                    *SeedRect = Event->UpdateRect;
-
-                    /* Subtract the positions of topmost windows from the update region. */
-                    tmpDLItem = DL_GetLastItem(GUIWinZOrder[((pWIN)Event->RootParent)->Layer]);
-                    while((tmpDLItem != NULL) && DL_GetItemsCount(UpdateRgn))
+                    tmpObject = Event->Object;
+                    /* Subtract the positions of the topmost child back through the parent tree. */
+                    while (tmpObject->Parent != NULL)
                     {
-                        tmpObject = (pGUIHEADER)tmpDLItem->Data;
-
-                        if ((uintptr_t)tmpObject == (uintptr_t)Event->RootParent) break;
-                        if ((tmpObject != NULL) && tmpObject->Visible &&
-                                !GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position)) break;
-
-                        tmpDLItem = DL_GetPrevItem(tmpDLItem);
+                        if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject)) break;
+                        tmpObject = tmpObject->Parent;
                     }
+                }
 
-                    if (DL_GetItemsCount(UpdateRgn))
+                if (DL_GetItemsCount(UpdateRgn))
+                {
+                    if (GUI_IsWindowObject(Event->Object))
                     {
-                        if (Event->Object->Parent != NULL)
-                        {
-                            tmpObject = Event->Object;
-                            /* Subtract the positions of the topmost child back through the parent tree. */
-                            while (tmpObject->Parent != NULL)
-                            {
-                                if (!GUI_SubTopChildObjectsFromRegion(UpdateRgn, tmpObject)) break;
-                                tmpObject = tmpObject->Parent;
-                            }
-                        }
-
-                        if (IsWindowObject(Event->Object) && DL_GetItemsCount(UpdateRgn))
+                        if (Event->Object->Visible)
                         {
                             /* Update the tree of child objects. */
-                            if (GUI_UpdateChildTree(UpdateRgn, (pWIN)Event->Object, &Event->Object->Position))
-                                GDI_SUBRectFromRegion(UpdateRgn, &Event->Object->Position);
+                            GUI_UpdateChildTree(UpdateRgn, Event->Object, &Event->Object->Position);
                         }
-
-                        /* Draw parts of the object */
-                        while((tmpDLItem = DL_GetFirstItem(UpdateRgn)) != NULL)
+                        else if (Event->Object->Parent != NULL)
                         {
-                            pRECT tmpObjectRect = (pRECT)tmpDLItem->Data;
+                            /* Update the tree of child objects. */
+                            GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position);
+                        }
+                        else
+                        {
+                            /* Root object, update the objects below. */
+                            tmpDLItem = DL_FindItemByData(&((pWIN)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
 
-                            if (tmpObjectRect != NULL)
+                            while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
                             {
-                                GUI_DrawObjectDefault(Event->Object, tmpObjectRect);
-                                free(tmpDLItem->Data);
+                                tmpObject = tmpDLItem->Data;
+                                if ((tmpObject != NULL) && tmpObject->Visible)
+                                {
+                                    if (GUI_UpdateChildTree(UpdateRgn, tmpObject, &tmpObject->Position))
+                                        GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position);
+                                    else break;
+                                }
                             }
-                            DL_DeleteFirstItem(UpdateRgn);
+                        }
+                    }
+                    else if (Event->Object->Parent != NULL)
+                    {
+                        /* Here process non-window objects */
+                        if (Event->Object->Visible)
+                            GUI_UpdateObjectByRegion(UpdateRgn, Event->Object, &Event->Object->Position);
+                        else
+                        {
+                            /* Update the tree of child objects. */
+                            GUI_UpdateChildTree(UpdateRgn, Event->Object->Parent, &Event->Object->Position);
                         }
                     }
                 }
-                else if (SeedRect != NULL) free(SeedRect);
-
-                DL_Delete(UpdateRgn, false);
             }
-        }
-        else                                                                                        // Invalidate by screen
-        {
+            else free(SeedRect);
 
+            DL_Delete(UpdateRgn, true);
         }
     }
 }

@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021, 2020, 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ extern uint32_t DisableInterrupts(void);                                        
 extern void RestoreInterrupts(uint32_t flags);                                                      // From asmutils.s
 extern uint32_t CTZ(uint32_t Value);                                                                // From asmutils.s
 extern uint32_t GetCPUFreqTicks(void);                                                              // from asmutils.s
+extern void *SecureMemSet(void *memptr, int val, size_t num);                                       // from asmutils.s
 extern uint32_t GetCPUFrequency(void);
 
 #endif /* _UTILS_H_ */

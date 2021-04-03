@@ -233,8 +233,8 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
             tmpRectB = malloc(sizeof(TRECT));
             if ((tmpRectA == NULL) || (tmpRectB == NULL))
             {
-                if (tmpRectA != NULL) free(tmpRectA);
-                if (tmpRectB != NULL) free(tmpRectB);
+                free(tmpRectA);
+                free(tmpRectB);
                 free(ResRects);
                 return NULL;
             }

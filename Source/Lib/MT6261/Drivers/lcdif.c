@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021, 2020, 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -69,8 +69,7 @@ void LCDIF_DeleteCommandFromQueue(void)
 
     if (tmpItem != NULL)
     {
-        if (((pLCDCMD)tmpItem->Data)->Commands != NULL)
-            free(((pLCDCMD)tmpItem->Data)->Commands);
+        free(((pLCDCMD)tmpItem->Data)->Commands);
         free(tmpItem->Data);
         DL_DeleteFirstItem(LCDIFQueue);
     }
@@ -140,7 +139,7 @@ boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT Upd
             free(CMD);
         }
     }
-    if (CmdArray != NULL) free(CmdArray);
+    free(CmdArray);
 
     return false;
 }
@@ -169,6 +168,8 @@ boolean LCDIF_UnregisterISR(void)
 
 void LCDIF_DisableInterface(void)
 {
+    LCDScreen.Initialized = false;
+
     LCDIF_INTEN = 0;                                                                                // Disable LCDIF interrupts
     LCDIF_START = LCDIF_INT_RESET;
 
@@ -237,6 +238,7 @@ boolean LCDIF_Initialize(void)
     if (LCDDRV_Initialize())
     {
         LCDIF_INTEN = LCDIF_CPL;                                                                    // Enable LCD interrupts
+        LCDScreen.Initialized = true;
         DebugPrint("Complete.\r\n");
         return true;
     }
@@ -247,7 +249,7 @@ boolean LCDIF_Initialize(void)
 }
 
 boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
-                         TCFORMAT CFormat, uint8_t Alpha)
+                         TCFORMAT CFormat, uint8_t GlobalAlpha, uint32_t ForeColor)
 {
     if (Layer >= LCDIF_NUMLAYERS) return false;
 
@@ -276,8 +278,8 @@ boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t
             if (LCDScreen.VLayer[Layer].FrameBuffer != NULL)
             {
                 LCDIF_LAYER[Layer]->LCDIF_LWINCON = LCDIF_LROTATE(LCDIF_LR_NO) | LCDIF_LCF(CFormat);
-                if ((CFormat == LCDIF_LCF_ARGB8888) || (CFormat == LCDIF_LCF_PARGB8888) || (Alpha != 0xFF))
-                    LCDIF_LAYER[Layer]->LCDIF_LWINCON |= LCDIF_LALPHA(Alpha) | LCDIF_LALPHA_EN;
+                if ((CFormat == LCDIF_LCF_ARGB8888) || (CFormat == LCDIF_LCF_PARGB8888) || (GlobalAlpha != 0xFF))
+                    LCDIF_LAYER[Layer]->LCDIF_LWINCON |= LCDIF_LALPHA(GlobalAlpha) | LCDIF_LALPHA_EN;
 
                 LCDIF_LAYER[Layer]->LCDIF_LWINOFFS  = LCDIF_LWINOF_X(Offset.x) | LCDIF_LWINOF_Y(Offset.y);
                 LCDIF_LAYER[Layer]->LCDIF_LWINADD   = (uint32_t)LCDScreen.VLayer[Layer].FrameBuffer;
@@ -318,6 +320,92 @@ boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScr
         }
     }
     return LCDScreen.VLayer[Layer].Enabled;
+}
+
+boolean LCDIF_GetLayerPosition(TVLINDEX Layer, pRECT Position)
+{
+    if ((Layer >= LCDIF_NUMLAYERS) || !LCDScreen.VLayer[Layer].Initialized) return false;
+
+    if (Position != NULL)
+        *Position = GDI_LocalToGlobalRct(&LCDScreen.VLayer[Layer].LayerRgn,
+                                         &LCDScreen.VLayer[Layer].LayerOffset);
+    return true;
+}
+
+boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScreen)
+{
+    if ((Layer < LCDIF_NUMLAYERS) && LCDScreen.VLayer[Layer].Initialized)
+    {
+        TRECT PrevLayerPosition = GDI_LocalToGlobalRct(&LCDScreen.VLayer[Layer].LayerRgn,
+                                  &LCDScreen.VLayer[Layer].LayerOffset);
+
+        if (memcmp(&PrevLayerPosition, &Position, sizeof(TRECT)) != 0)
+        {
+            uint32_t intflags = DisableInterrupts();
+
+            LCDScreen.VLayer[Layer].LayerOffset = Position.lt;
+            LCDScreen.VLayer[Layer].LayerRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.VLayer[Layer].LayerOffset);
+
+            LCDIF_LAYER[Layer]->LCDIF_LWINOFFS = LCDIF_LWINOF_X(LCDScreen.VLayer[Layer].LayerOffset.x) |
+                                                 LCDIF_LWINOF_Y(LCDScreen.VLayer[Layer].LayerOffset.y);
+            LCDIF_LAYER[Layer]->LCDIF_LWINSIZE  = LCDIF_LCOLS(LCDScreen.VLayer[Layer].LayerRgn.r - 1) |
+                                                  LCDIF_LROWS(LCDScreen.VLayer[Layer].LayerRgn.b - 1);
+            RestoreInterrupts(intflags);
+
+            if (UpdateScreen)
+            {
+                pDLIST  UpdateRects = GDI_SUBRectangles(&PrevLayerPosition, &Position);
+                pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+
+                Position = GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset);
+                LCDIF_UpdateRectangle(Position);
+
+                while(tmpDLItem != NULL)
+                {
+                    LCDIF_UpdateRectangle(GDI_GlobalToLocalRct((pRECT)tmpDLItem->Data, &LCDScreen.ScreenOffset));
+                    tmpDLItem = DL_GetNextItem(tmpDLItem);
+                }
+                DL_Delete(UpdateRects, true);
+            }
+        }
+        return true;
+    }
+    return false;
+}
+
+TRECT LCDIF_GetScreenPosition(void)
+{
+    return GDI_LocalToGlobalRct(&LCDScreen.ScreenRgn, &LCDScreen.ScreenOffset);
+}
+
+boolean LCDIF_SetScreenPosition(TRECT Position, boolean UpdateScreen)
+{
+    TRECT PrevPosition = GDI_LocalToGlobalRct(&LCDScreen.ScreenRgn, &LCDScreen.ScreenOffset);
+
+    if (!LCDScreen.Initialized) return false;
+
+    if (memcmp(&PrevPosition, &Position, sizeof(TRECT)) != 0)
+    {
+        uint32_t intflags = DisableInterrupts();
+
+        LCDScreen.ScreenOffset = Position.lt;
+        LCDScreen.ScreenRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset);
+
+        LCDIF_WROIOFS = LCDIF_WROIOFX(LCDScreen.ScreenOffset.x) |
+                        LCDIF_WROIOFY(LCDScreen.ScreenOffset.y);
+        LCDIF_WROISIZE = LCDIF_WROICOL(LCDScreen.ScreenRgn.r - 1) |
+                         LCDIF_WROIROW(LCDScreen.ScreenRgn.b - 1);
+        RestoreInterrupts(intflags);
+
+        if (UpdateScreen)
+            LCDIF_UpdateRectangle(LCDScreen.ScreenRgn);
+    }
+    return true;
+}
+
+boolean LCDIF_IsLayerInitialized(TVLINDEX Layer)
+{
+    return LCDScreen.VLayer[Layer].Initialized;
 }
 
 void LCDIF_UpdateRectangle(TRECT Rct)
