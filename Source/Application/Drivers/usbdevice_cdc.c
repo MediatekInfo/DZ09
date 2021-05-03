@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2021 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -204,20 +204,20 @@ static void USB_CDC_TXTimeoutHandler(pTIMER Timer)
 
 static void USB_CDC_RestartTXTimeout(void)
 {
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
 
     LRT_Start(CDC_TimeoutTimer);
     USB_CDC_TXTimeout = false;
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 }
 
 static void USB_CDC_StopTXTimeout(void)
 {
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
 
     LRT_Stop(CDC_TimeoutTimer);
     USB_CDC_TXTimeout = false;
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 }
 
 static void USB_CDC_SetConnectedStatus(boolean Connected)
@@ -414,22 +414,22 @@ TCDCSTATUS USB_CDC_Open(pCDCEVENTER EventerInfo)
         if (CDC_OUTRingBuffer == NULL) tmpRingBuffer = RB_Create(RingBufferSize);
         else if (CDC_OUTRingBuffer->BufferSize != RingBufferSize)
         {
-            uint32_t intflags = DisableInterrupts();
+            uint32_t intflags = __disable_interrupts();
 
             CDC_OUTRingBuffer = RB_Destroy(CDC_OUTRingBuffer);
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
             tmpRingBuffer = RB_Create(RingBufferSize);
         }
         else tmpRingBuffer = CDC_OUTRingBuffer;
 
         if (tmpRingBuffer != NULL)
         {
-            uint32_t intflags = DisableInterrupts();
+            uint32_t intflags = __disable_interrupts();
 
             IntEventerInfo = EventerInfo;
             CDC_OUTRingBuffer = tmpRingBuffer;
             IntEventerInfo->OutBufferSize = CDC_OUTRingBuffer->BufferSize;
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
             return CDC_OK;
         }
     }
@@ -440,12 +440,12 @@ TCDCSTATUS USB_CDC_Close(pCDCEVENTER EventerInfo)
 {
     if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo))
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         USB_CDC_IntFlashTXBuffer();
         CDC_OUTRingBuffer = RB_Destroy(CDC_OUTRingBuffer);
         IntEventerInfo = NULL;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
 
         return CDC_OK;
     }
@@ -489,10 +489,10 @@ TCDCSTATUS USB_CDC_FlashRXBuffer(pCDCEVENTER EventerInfo)
 {
     if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && CDCInterfaceInitialized)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         USB_CDC_IntFlashRXBuffer();
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return CDC_OK;
     }
     return CDC_FAILED;
@@ -502,10 +502,10 @@ TCDCSTATUS USB_CDC_FlashTXBuffer(pCDCEVENTER EventerInfo)
 {
     if ((EventerInfo != NULL) && (EventerInfo == IntEventerInfo) && CDCInterfaceInitialized)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         USB_CDC_IntFlashTXBuffer();
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return CDC_OK;
     }
     return CDC_FAILED;

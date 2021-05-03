@@ -1,9 +1,7 @@
-// This is an independent project of an individual developer. Dear PVS-Studio, please check it.
-// PVS-Studio Static Code Analyzer for C, C++ and C#: http://www.viva64.com
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,17 +16,21 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#include "systemconfig.h"
-#include "utils.h"
+#ifndef _GUIBUTTON__H_
+#define _GUIBUTTON__H_
 
-extern uint32_t __freq_loops_cycles;
-
-uint32_t GetCPUFrequency(void)
+typedef struct tag_BUTTON
 {
-    uint32_t CPUTicks = __get_cpu_freq_ticks();
-    uint32_t CPUFrequency;
+    TGUIOBJECT Head;
+    TTEXT      Caption;
+    boolean    Autorepeat;
+    boolean    Pressed;
+    TCOLOR     ForeColor;
+} TBUTTON, *pBUTTON;
 
-    CPUFrequency = (__freq_loops_cycles + CPUTicks / 2) / CPUTicks;
+extern void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip);
+extern pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
+                                   TCOLOR ForeColor, TGOFLAGS Flags);
+extern void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea);
 
-    return CPUFrequency;
-}
+#endif /* _GUIBUTTON__H_ */

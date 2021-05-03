@@ -63,7 +63,7 @@ static void GUI_DestroyChildTree(pGUIOBJECT Object)
         if ((tmpObject != NULL) && (tmpObject->OnDestroy != NULL))
             tmpObject->OnDestroy(tmpObject);
 
-        SecureMemSet(tmpObject, 0x00, sizeof(TGUIOBJECT));
+        __secure_memset(tmpObject, 0x00, sizeof(TGUIOBJECT));
         free(tmpObject);
     }
 }
@@ -81,13 +81,13 @@ static void *GUI_DestroySingleObject(pGUIOBJECT Object)
         {
             if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
 
-            intflags = DisableInterrupts();
+            intflags = __disable_interrupts();
             DL_DeleteItem(ChildList, tmpItem);
-            SecureMemSet(Object, 0x00, sizeof(TGUIOBJECT));
+            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
             free(Object);
             Object = NULL;
 
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
         }
     }
     else if (GUI_IsWindowObject(Object))
@@ -100,13 +100,13 @@ static void *GUI_DestroySingleObject(pGUIOBJECT Object)
 
             if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
 
-            intflags = DisableInterrupts();
+            intflags = __disable_interrupts();
             LCDIF_SetupLayer(LayerIndex, Point(0, 0), 0, 0, CF_8IDX, 0, 0);
-            SecureMemSet(Object, 0x00, sizeof(TGUIOBJECT));
+            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
             free(Object);
             GUILayer[LayerIndex] = Object = NULL;
 
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
         }
     }
     return Object;
@@ -140,22 +140,23 @@ static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
 
 TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
 {
-    TRECT ObjectRect = Object->Position;
+    TRECT ObjectRect;
 
-    switch (Object->Type)
+    if ((Object != NULL) &&
+            (Object->Type < GO_NUMTYPES) && (Object->Type != GO_UNKNOWN))
     {
-    case GO_WINDOW:
-        if (((pWIN)Object)->Framed)
+        static void (*const CalcClientArea[GO_NUMTYPES])(pGUIOBJECT, pRECT) =
         {
-            ObjectRect.l++;
-            ObjectRect.t++;
-            ObjectRect.r--;
-            ObjectRect.b--;
-        }
-        break;
-    default:
-        break;
+            NULL,
+            GUI_CalcClientAreaWindow,
+            GUI_CalcClientAreaButton
+        };
+
+        if (CalcClientArea[Object->Type] != NULL)
+            CalcClientArea[Object->Type](Object, &ObjectRect);
+        else ObjectRect = Object->Position;
     }
+    else ObjectRect = Rect(-1, -1, -1, -1);                                                         // UB!!!
 
     return ObjectRect;
 }
@@ -209,6 +210,7 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
 pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
 {
     pGUIOBJECT Result = NULL;
+    pDLITEM    ResObjectItem = NULL;
 
     if ((Parent != NULL) && GUI_IsWindowObject(Parent))
     {
@@ -223,12 +225,14 @@ pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
                     !GUI_IsWindowObject(Object))
             {
                 Result = Object;
-                if (ObjectItem != NULL) *ObjectItem = tmpDLItem;
+                ResObjectItem = tmpDLItem;
                 break;
             }
             tmpDLItem = DL_GetPrevItem(tmpDLItem);
         }
     }
+    if (ObjectItem != NULL) *ObjectItem = ResObjectItem;
+
     return Result;
 }
 
@@ -304,16 +308,17 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
 
 void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 {
-    if ((Object != NULL) && (Clip != NULL))
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES) && (Clip != NULL))
     {
-        switch(Object->Type)
+        static void (*const DrawDefault[GO_NUMTYPES])(pGUIOBJECT, pRECT) =
         {
-        case GO_WINDOW:
-            GUI_DrawDefaultWindow(Object, Clip);
-            break;
-        default:
-            return;
-        }
+            NULL,
+            GUI_DrawDefaultWindow,
+            GUI_DrawDefaultButton,
+        };
+
+        if (DrawDefault[Object->Type] != NULL)
+            DrawDefault[Object->Type](Object, Clip);
     }
 }
 

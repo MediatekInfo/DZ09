@@ -184,8 +184,8 @@ SECTIONS
 		*(.stack)
 	} > TCM
 
-	__rom_image_base = ORIGIN(ROM);
-	__rom_image_limit = ORIGIN(ROM) + LENGTH(ROM);
+	__ROMImageBase = ORIGIN(ROM);
+	__ROMImageLimit = ORIGIN(ROM) + LENGTH(ROM);
 
 
 	/* Set stack top to end of RAM, and stack limit move down by

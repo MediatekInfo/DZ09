@@ -177,7 +177,7 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
 
     if (DList != NULL)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
 
         tmpItem = DL_FirstItem(DList);
         if (FreeData)
@@ -201,7 +201,7 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
         }
         free(DList);
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     return NULL;
 }
@@ -212,10 +212,10 @@ uint32_t DL_GetItemsCount(pDLIST DList)
 
     if (DList != NULL)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         n = DList->Count;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     else n = 0;
 
@@ -225,10 +225,10 @@ uint32_t DL_GetItemsCount(pDLIST DList)
 pDLITEM DL_GetFirstItem(pDLIST DList)
 {
     pDLITEM  Item;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
 
     Item = DL_FirstItem(DList);
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Item;
 }
@@ -236,10 +236,10 @@ pDLITEM DL_GetFirstItem(pDLIST DList)
 pDLITEM DL_GetLastItem(pDLIST DList)
 {
     pDLITEM  Item;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
 
     Item = DL_LastItem(DList);
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Item;
 }
@@ -247,10 +247,10 @@ pDLITEM DL_GetLastItem(pDLIST DList)
 pDLITEM DL_GetPrevItem(pDLITEM LItem)
 {
     pDLITEM  Item;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
 
     Item = DL_PrevItem(LItem);
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Item;
 }
@@ -258,43 +258,43 @@ pDLITEM DL_GetPrevItem(pDLITEM LItem)
 pDLITEM DL_GetNextItem(pDLITEM LItem)
 {
     pDLITEM  Item;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
 
     Item = DL_NextItem(LItem);
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Item;
 }
 
 int32_t DL_GetItemIndex(pDLIST DList, pDLITEM Item)
 {
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     int32_t  Result;
 
     Result = DL_IndexOfItem(DList, Item);
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Result;
 }
 
 pDLITEM DL_FindItemByData(pDLIST DList, void *Data, int32_t *Index)
 {
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     pDLITEM  tmpItem;
 
     tmpItem = DL_ItemByData(DList, Data, Index);
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return tmpItem;
 }
 
 pDLITEM DL_FindItemByIndex(pDLIST DList, uint32_t Index)
 {
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     pDLITEM  tmpItem;
 
     tmpItem = DL_ItemByIndex(DList, Index);
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return tmpItem;
 }
@@ -309,7 +309,7 @@ pDLITEM DL_AddItem(pDLIST DList, void *Data)
     tmpItem = malloc(sizeof(TDLITEM));
     if (tmpItem != NULL)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
 
         tmpItem->Data = Data;
         tmpItem->Next = NULL;
@@ -326,7 +326,7 @@ pDLITEM DL_AddItem(pDLIST DList, void *Data)
             DList->Last = tmpItem;
         }
         DList->Count++;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     return tmpItem;
 }
@@ -338,7 +338,7 @@ pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data)
 
     if (DList == NULL) return NULL;
 
-    intflags = DisableInterrupts();
+    intflags = __disable_interrupts();
     if (Index >= DList->Count)
     {
         tmpItem = DL_AddItem(DList, Data);
@@ -365,7 +365,7 @@ pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data)
             }
         }
     }
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
     return tmpItem;
 }
 
@@ -380,7 +380,7 @@ pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
     tmpItem = malloc(sizeof(TDLITEM));
     if (tmpItem != NULL)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
 
         tmpItem->Data = Data;
         tmpItem->Next = Item;
@@ -391,7 +391,7 @@ pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
         else tmpItem->Prev->Next = tmpItem;
 
         DList->Count++;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     return tmpItem;
 }
@@ -407,7 +407,7 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
     tmpItem = malloc(sizeof(TDLITEM));
     if (tmpItem != NULL)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
 
         tmpItem->Data = Data;
         tmpItem->Prev = Item;
@@ -418,7 +418,7 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
         else tmpItem->Next->Prev = tmpItem;
 
         DList->Count++;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     return tmpItem;
 }
@@ -426,7 +426,7 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
 boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
 {
     boolean  Result = false;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
 
     if ((DList != NULL) && (Item != NULL))
     {
@@ -442,7 +442,7 @@ boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
         free(Item);
         Result = true;
     }
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Result;
 }
@@ -450,7 +450,7 @@ boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
 boolean DL_DeleteItemByData(pDLIST DList, void *Data)
 {
     boolean  Result = false;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     pDLITEM  tmpItem;
 
     tmpItem = DL_ItemByData(DList, Data, NULL);
@@ -468,7 +468,7 @@ boolean DL_DeleteItemByData(pDLIST DList, void *Data)
         free(tmpItem);
         Result = true;
     }
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Result;
 }
@@ -476,7 +476,7 @@ boolean DL_DeleteItemByData(pDLIST DList, void *Data)
 boolean DL_DeleteItemByIndex(pDLIST DList, uint32_t Index)
 {
     boolean  Result = false;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     pDLITEM  tmpItem;
 
     tmpItem = DL_ItemByIndex(DList, Index);
@@ -494,7 +494,7 @@ boolean DL_DeleteItemByIndex(pDLIST DList, uint32_t Index)
         free(tmpItem);
         Result = true;
     }
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Result;
 }
@@ -502,7 +502,7 @@ boolean DL_DeleteItemByIndex(pDLIST DList, uint32_t Index)
 boolean DL_DeleteFirstItem(pDLIST DList)
 {
     boolean  Result = false;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     pDLITEM  tmpItem;
 
     tmpItem = DL_FirstItem(DList);
@@ -518,7 +518,7 @@ boolean DL_DeleteFirstItem(pDLIST DList)
         free(tmpItem);
         Result = true;
     }
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Result;
 }
@@ -526,7 +526,7 @@ boolean DL_DeleteFirstItem(pDLIST DList)
 boolean DL_DeleteLastItem(pDLIST DList)
 {
     boolean  Result = false;
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     pDLITEM  tmpItem;
 
     tmpItem = DL_LastItem(DList);
@@ -542,7 +542,7 @@ boolean DL_DeleteLastItem(pDLIST DList)
         free(tmpItem);
         Result = true;
     }
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Result;
 }
@@ -555,7 +555,7 @@ boolean DL_MoveItemToIndex(pDLIST DList, uint32_t OldIndex, uint32_t NewIndex)
 
     if (OldIndex != NewIndex)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
         OldIndexItem = DL_ItemByIndex(DList, OldIndex);
         if (OldIndexItem != NULL)
         {
@@ -594,7 +594,7 @@ boolean DL_MoveItemToIndex(pDLIST DList, uint32_t OldIndex, uint32_t NewIndex)
                 }
             }
         }
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     else return true;
 
@@ -609,14 +609,14 @@ boolean DL_ReplaceItemData(pDLIST DList, void *OldData, void *NewData)
 
     if (DList == NULL) return false;
 
-    intflags = DisableInterrupts();
+    intflags = __disable_interrupts();
     tmpItem = DL_ItemByData(DList, OldData, NULL);
     if (tmpItem != NULL)
     {
         tmpItem->Data = NewData;
         Result = true;
     }
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Result;
 }

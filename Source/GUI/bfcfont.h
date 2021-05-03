@@ -69,16 +69,16 @@ extern "C" {     /* Make sure we have C-declarations in C++ programs */
 
     typedef struct BFC_FONT_PROP
     {
-        USHORT  FirstChar;                                                  /* index of first character */
-        USHORT  LastChar;                                                   /* index of last character */
+        ULONG FirstChar;                                                    /* index of first character */
+        ULONG LastChar;                                                     /* index of last character */
         const BFC_CHARINFO *pFirstCharInfo;                                 /* address of first character */
         const struct BFC_FONT_PROP *pNextProp;                              /* pointer to next BFC_FONT_PROP */
     } BFC_FONT_PROP, *pBFC_FONT_PROP;
 
     typedef struct BFC_FONT_MONO
     {
-        USHORT  FirstChar;                                                  /* index of first character */
-        USHORT  LastChar;                                                   /* index of last character */
+        ULONG   FirstChar;                                                  /* index of first character */
+        ULONG   LastChar;                                                   /* index of last character */
         USHORT  FontWidth;                                                  /* font width in pixels */
         USHORT  DataSize;                                                   /* # bytes/words/dwords data of single character */
         union

@@ -30,27 +30,22 @@ void GUI_DrawDefaultWindow(pGUIOBJECT Object, pRECT Clip)
     TRECT WinRect;
 
     if ((Object == NULL) || !Object->Visible ||
-            !GUI_IsWindowObject((pGUIOBJECT)Object) || (Clip == NULL)) return;
+            !GUI_IsWindowObject(Object) || (Clip == NULL)) return;
 
     WinRect = Object->Position;
     if (Win->Framed)
-    {
         GDI_DrawFrame(Win->Layer, &WinRect, Clip, clWhite);
-        WinRect.l++;
-        WinRect.t++;
-        WinRect.r--;
-        WinRect.b--;
-    }
 
-    if ((WinRect.l <= WinRect.r) && (WinRect.t <= WinRect.b) &&
-            GDI_ANDRectangles(&WinRect, Clip))
+    GUI_CalcClientAreaWindow(Object, &WinRect);
+
+    if (!IsRectCollapsed(&WinRect) && GDI_ANDRectangles(&WinRect, Clip))
     {
         GDI_FillRectangle(Win->Layer, WinRect, Win->ForeColor);
     }
 }
 
 boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
-                        uint8_t GlobalAlpha, uint32_t ForeColor)
+                        uint8_t GlobalAlpha, TCOLOR ForeColor)
 {
     pWIN    LObject;
     boolean Result = false;
@@ -74,11 +69,11 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
         if (!Result) free(LObject);
         else
         {
-            uint32_t intflags = DisableInterrupts();
+            uint32_t intflags = __disable_interrupts();
 
             LObject->Head.Type = GO_WINDOW;
             GUILayer[Layer] = (pGUIOBJECT)LObject;
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
         }
     }
     return Result;
@@ -86,7 +81,7 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
 
 pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
                             boolean (*Handler)(pEVENT, pGUIOBJECT),
-                            uint32_t ForeColor, TGOFLAGS Flags)
+                            TCOLOR ForeColor, TGOFLAGS Flags)
 {
     pWIN    Win;
     boolean Result;
@@ -195,4 +190,19 @@ pGUIOBJECT GUI_GetTopWindow(pGUIOBJECT Parent, boolean Topmost, pDLITEM *ObjectI
         }
     }
     return Result;
+}
+
+void GUI_CalcClientAreaWindow(pGUIOBJECT Object, pRECT ClientArea)
+{
+    if ((Object != NULL) && (ClientArea != NULL))
+    {
+        if (((pWIN)Object)->Framed)
+        {
+            ClientArea->l = Object->Position.l + 1;
+            ClientArea->t = Object->Position.t + 1;
+            ClientArea->r = Object->Position.r - 1;
+            ClientArea->b = Object->Position.b - 1;
+        }
+        else *ClientArea = Object->Position;
+    }
 }

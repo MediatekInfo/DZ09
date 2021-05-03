@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,10 @@
     .code   32
     .align  2
 
-    .globl  NVIC_IRQ_Handler
-    .type   NVIC_IRQ_Handler, %function
-    .func   NVIC_IRQ_Handler
-NVIC_IRQ_Handler:
+    .globl  __nvic_irq_handler
+    .type   __nvic_irq_handler, %function
+    .func   __nvic_irq_handler
+__nvic_irq_handler:
     stmfd   sp!, {r0}                                                                               // NoteXXX: SW workaround for ARM7 family common bug
     mrs     r0, SPSR                                                                                // An interrupt may trigger when an MSR is executed to set I-bit.
     tst     r0, #_I_

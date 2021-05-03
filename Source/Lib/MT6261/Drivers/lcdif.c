@@ -110,11 +110,11 @@ boolean LCDIF_GetCommandFromQueue(void)
 
 void LCDIF_RestartQueue(void)
 {
-    uint32_t flags = DisableInterrupts();
+    uint32_t flags = __disable_interrupts();
 
     if (!LCDIF_IsQueueRunning() && LCDIF_GetCommandFromQueue()) LCDIF_StartLCDTransfer();
 
-    RestoreInterrupts(flags);
+    __restore_interrupts(flags);
 }
 
 boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect)
@@ -341,7 +341,7 @@ boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScr
 
         if (memcmp(&PrevLayerPosition, &Position, sizeof(TRECT)) != 0)
         {
-            uint32_t intflags = DisableInterrupts();
+            uint32_t intflags = __disable_interrupts();
 
             LCDScreen.VLayer[Layer].LayerOffset = Position.lt;
             LCDScreen.VLayer[Layer].LayerRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.VLayer[Layer].LayerOffset);
@@ -350,7 +350,7 @@ boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScr
                                                  LCDIF_LWINOF_Y(LCDScreen.VLayer[Layer].LayerOffset.y);
             LCDIF_LAYER[Layer]->LCDIF_LWINSIZE  = LCDIF_LCOLS(LCDScreen.VLayer[Layer].LayerRgn.r - 1) |
                                                   LCDIF_LROWS(LCDScreen.VLayer[Layer].LayerRgn.b - 1);
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
 
             if (UpdateScreen)
             {
@@ -386,7 +386,7 @@ boolean LCDIF_SetScreenPosition(TRECT Position, boolean UpdateScreen)
 
     if (memcmp(&PrevPosition, &Position, sizeof(TRECT)) != 0)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         LCDScreen.ScreenOffset = Position.lt;
         LCDScreen.ScreenRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset);
@@ -395,7 +395,7 @@ boolean LCDIF_SetScreenPosition(TRECT Position, boolean UpdateScreen)
                         LCDIF_WROIOFY(LCDScreen.ScreenOffset.y);
         LCDIF_WROISIZE = LCDIF_WROICOL(LCDScreen.ScreenRgn.r - 1) |
                          LCDIF_WROIROW(LCDScreen.ScreenRgn.b - 1);
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
 
         if (UpdateScreen)
             LCDIF_UpdateRectangle(LCDScreen.ScreenRgn);

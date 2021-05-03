@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2021 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -93,13 +93,13 @@ void PMUBL_SetBacklightMode(TBLMODE Mode)
 
 void PMUBL_SetupValue(uint32_t Value)
 {
-    uint32_t iflags = DisableInterrupts();
+    uint32_t iflags = __disable_interrupts();
 
     BLState.Value = Value;
     if (!BLState.Reduced) PMUBL_UpdateValues(BLState.Value, BLState.Enabled);
     else PMUBL_UpdateValues(BLState.Value / 3, BLState.Enabled);
 
-    RestoreInterrupts(iflags);
+    __restore_interrupts(iflags);
 }
 
 void PMUBL_TurnOn(boolean TurnOn)
@@ -108,23 +108,23 @@ void PMUBL_TurnOn(boolean TurnOn)
 
     if (!TurnOn)
     {
-        uint32_t iflags = DisableInterrupts();
+        uint32_t iflags = __disable_interrupts();
 
         LRT_Stop(BLReduceTimer);
         PMUBL_UpdateValues(BLState.Value, BLState.Enabled);
         BLState.Reduced = false;
-        RestoreInterrupts(iflags);
+        __restore_interrupts(iflags);
     }
     else PMUBL_RestartReduceTimer();
 }
 
 void PMUBL_RestartReduceTimer(void)
 {
-    uint32_t iflags = DisableInterrupts();
+    uint32_t iflags = __disable_interrupts();
 
     BLState.Reduced = false;
     LRT_SetInterval(BLReduceTimer, BACKLIGHTREDUCE);
     LRT_Start(BLReduceTimer);
     PMUBL_UpdateValues(BLState.Value, BLState.Enabled);
-    RestoreInterrupts(iflags);
+    __restore_interrupts(iflags);
 }

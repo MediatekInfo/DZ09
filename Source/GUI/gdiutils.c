@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021, 2020, 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,16 @@ TRECT Rect(int16_t l, int16_t t, int16_t r, int16_t b)
     return Result;
 }
 
+TSIZEXY SizeXY(uint16_t sx, uint16_t sy)
+{
+    TSIZEXY Result;
+
+    Result.sx = sx;
+    Result.sy = sy;
+
+    return Result;
+}
+
 boolean IsRectsOverlaps(pRECT a, pRECT b)
 {
     if ((a != NULL) && (b != NULL))
@@ -110,6 +120,12 @@ boolean IsRectInRect(pRECT a, pRECT b)
         return true;
     }
     return false;
+}
+
+boolean IsRectCollapsed(pRECT rct)
+{
+    return (rct == NULL) ||
+           (rct->l > rct->r) || (rct->t > rct->b);
 }
 
 TPOINT GDI_LocalToGlobalPt(pPOINT pt, pPOINT Offset)
@@ -474,7 +490,7 @@ uint8_t *GDI_GetPixelPtr(pLCONTEXT lc, TPOINT pt)
     return &p[(pt.y * (lc->LayerRgn.r - lc->LayerRgn.l + 1) + pt.x) * lc->BPP];
 }
 
-void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, uint32_t Color)
+void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, TCOLOR Color)
 {
     int32_t  x, y, dpx;
 

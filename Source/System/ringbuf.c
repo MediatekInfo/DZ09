@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2021 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -61,12 +61,12 @@ pRINGBUF RB_Destroy(pRINGBUF RingBuffer)
 {
     if (RingBuffer != NULL)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         if ((RingBuffer->Buffer != NULL) &&
                 IsDynamicMemory(RingBuffer->Buffer)) free(RingBuffer->Buffer);
         if (IsDynamicMemory(RingBuffer)) free(RingBuffer);
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     return NULL;
 }
@@ -77,7 +77,7 @@ uint32_t RB_WriteData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count)
 
     if ((RingBuffer != NULL) && (Data != NULL) && Count)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         if ((RingBuffer->Buffer != NULL) && (RingBuffer->Tail != NULL))
         {
@@ -106,7 +106,7 @@ uint32_t RB_WriteData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count)
                 RingBuffer->DataCount = min(RingBuffer->DataCount + NWrite, RingBuffer->BufferSize);
             }
         }
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     return WCount;
 }
@@ -117,7 +117,7 @@ uint32_t RB_ReadData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count)
 
     if ((RingBuffer != NULL) && (Data != NULL) && Count)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         if ((RingBuffer->Buffer != NULL) && (RingBuffer->Tail != NULL))
         {
@@ -134,7 +134,7 @@ uint32_t RB_ReadData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count)
                 RingBuffer->Tail = RB_ShiftPointer(RingBuffer, RingBuffer->Tail, NRead);
             }
             RingBuffer->DataCount -= RCount;
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
         }
     }
     return RCount;
@@ -146,10 +146,10 @@ uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer)
 
     if (RingBuffer != NULL)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         n = RingBuffer->DataCount;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     else n = 0;
 
@@ -162,10 +162,10 @@ uint32_t RB_GetCurrentFreeSpace(pRINGBUF RingBuffer)
 
     if (RingBuffer != NULL)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         n = RingBuffer->BufferSize - RingBuffer->DataCount;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
     else n = 0;
 
@@ -176,10 +176,10 @@ void RB_FlashBuffer(pRINGBUF RingBuffer)
 {
     if (RingBuffer != NULL)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         RingBuffer->Tail = RingBuffer->Buffer;
         RingBuffer->DataCount = 0;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
     }
 }

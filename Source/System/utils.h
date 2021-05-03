@@ -23,12 +23,12 @@
 #define max(a,b)    (((a) > (b)) ? (a) : (b))
 #define min(a,b)    (((a) < (b)) ? (a) : (b))
 
-extern uint32_t EnableInterrupts(void);                                                             // From asmutils.s
-extern uint32_t DisableInterrupts(void);                                                            // From asmutils.s
-extern void RestoreInterrupts(uint32_t flags);                                                      // From asmutils.s
-extern uint32_t CTZ(uint32_t Value);                                                                // From asmutils.s
-extern uint32_t GetCPUFreqTicks(void);                                                              // from asmutils.s
-extern void *SecureMemSet(void *memptr, int val, size_t num);                                       // from asmutils.s
+extern uint32_t __enable_interrupts(void);                                                          // From asmutils.s
+extern uint32_t __disable_interrupts(void);                                                         // From asmutils.s
+extern void __restore_interrupts(uint32_t flags);                                                   // From asmutils.s
+extern uint32_t __ctz(uint32_t Value);                                                              // From asmutils.s
+extern uint32_t __get_cpu_freq_ticks(void);                                                         // from asmutils.s
+extern void *__secure_memset(void *memptr, int val, size_t num);                                    // from asmutils.s
 extern uint32_t GetCPUFrequency(void);
 
 #endif /* _UTILS_H_ */

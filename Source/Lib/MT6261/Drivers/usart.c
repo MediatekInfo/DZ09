@@ -112,7 +112,7 @@ void USART_EnableInterrupts(TUSART Index, TUSART_FLAGS Flags)
     if (Index < USART_MODULES)
     {
 #ifdef USEINTERRUPTS
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
         uint8_t  tmpLCR = USARTINFO[Index].USART->LCR;
 
         USARTINFO[Index].USART->LCR &= ~U_DLAB;
@@ -122,7 +122,7 @@ void USART_EnableInterrupts(TUSART Index, TUSART_FLAGS Flags)
         if (Flags & USART_ERRInt_EnFlag) USARTINFO[Index].USART->IER |= ELSI;                       // Enable errors interrupt
         USARTINFO[Index].USART->LCR = tmpLCR;
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
 #endif
     }
 }
@@ -132,7 +132,7 @@ void USART_DisableInterrupts(TUSART Index, TUSART_FLAGS Flags)
     if (Index < USART_MODULES)
     {
 #ifdef USEINTERRUPTS
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
         uint8_t  tmpLCR = USARTINFO[Index].USART->LCR;
 
         USARTINFO[Index].USART->LCR &= ~U_DLAB;
@@ -142,7 +142,7 @@ void USART_DisableInterrupts(TUSART Index, TUSART_FLAGS Flags)
         if (Flags & USART_ERRInt_EnFlag) USARTINFO[Index].USART->IER &= ~ELSI;                      // Disable errors interrupt
         USARTINFO[Index].USART->LCR = tmpLCR;
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
 #endif
     }
 }

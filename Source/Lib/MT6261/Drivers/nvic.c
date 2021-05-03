@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -34,7 +34,7 @@ static uint32_t NVIC_GetIRQStatus2(void)
 
 static uint32_t NVIC_GetEINTStatus2(void)
 {
-    return CTZ(EINT_STATUS);
+    return __ctz(EINT_STATUS);
 }
 
 static uint32_t NVIC_GetAIRQStatus2(void)
@@ -44,7 +44,7 @@ static uint32_t NVIC_GetAIRQStatus2(void)
 
 static uint32_t NVIC_GetAEINTStatus2(void)
 {
-    return CTZ(ADIE_EINT_STATUS & 0xFFFF);
+    return __ctz(ADIE_EINT_STATUS & 0xFFFF);
 }
 
 static void NVIC_SetIRQ_EOI(uint32_t SourceIdx)
@@ -301,7 +301,7 @@ void NVIC_AEINTCHandler(void)
 
 void NVIC_Initialize(void)
 {
-    uint32_t i, intflags = DisableInterrupts();
+    uint32_t i, intflags = __disable_interrupts();
 
     IRQ_MASK_SET0 = IRQ_MASK0_ALL;                                                                  // Disable All interrupt sources
     IRQ_MASK_SET1 = IRQ_MASK1_ALL;
@@ -333,7 +333,7 @@ void NVIC_Initialize(void)
     NVIC_RegisterIRQ(IRQ_ADIE_EINT_CODE, NVIC_AEINTCHandler, IRQ_SENS_EDGE, true);                  // Register ADIE EINT interrupt
     NVIC_RegisterIRQ(IRQ_DIE2DIE_CODE, NVIC_ADIE_C_IRQ_Handler, IRQ_SENS_LEVEL, true);              // Register ADIE NVIC interrupt
 
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 }
 
 boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense, boolean Enable)
@@ -343,14 +343,14 @@ boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sens
         if (Handler == NULL)  NVIC_UnregisterIRQ(SourceIdx);
         else
         {
-            uint32_t intflags = DisableInterrupts();
+            uint32_t intflags = __disable_interrupts();
 
             IRQHandlers[SourceIdx].Handler = Handler;
             if (Sense == IRQ_SENS_EDGE) NVIC_SetIRQSenseEdge(SourceIdx);
             else NVIC_SetIRQSenseLevel(SourceIdx);
             (Enable) ? NVIC_UnmaskIRQ2(SourceIdx) : NVIC_MaskIRQ2(SourceIdx);
 
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
         }
         return true;
     }
@@ -359,7 +359,7 @@ boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sens
         if (Handler == NULL) NVIC_UnregisterIRQ(SourceIdx);
         else
         {
-            uint32_t intflags = DisableInterrupts();
+            uint32_t intflags = __disable_interrupts();
 
             SourceIdx -= TOTAL_IRQ_SOURCES;
             AIRQHandlers[SourceIdx].Handler = Handler;
@@ -369,7 +369,7 @@ boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sens
             else NVIC_SetIRQSenseLevel(SourceIdx);
             (Enable) ? NVIC_UnmaskIRQ2(SourceIdx) : NVIC_MaskIRQ2(SourceIdx);
 
-            RestoreInterrupts(intflags);
+            __restore_interrupts(intflags);
         }
         return true;
     }
@@ -382,18 +382,18 @@ boolean NVIC_UnregisterIRQ(uint32_t SourceIdx)
 
     if (SourceIdx < NUM_IRQ_SOURCES)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
         NVIC_MaskIRQ2(SourceIdx);
         IRQHandlers[SourceIdx].Handler = NULL;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     if ((SourceIdx >= TOTAL_IRQ_SOURCES) && (SourceIdx < GLB_IRQ_SOURCES))
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
         NVIC_MaskIRQ2(SourceIdx);
         AIRQHandlers[SourceIdx - TOTAL_IRQ_SOURCES].Handler = NULL;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;
@@ -413,7 +413,7 @@ boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sen
 
         if (EINTHandlers[SourceIdx].Handler == Handler) return true;
 
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
         EINTHandlers[SourceIdx].Handler = Handler;
         if (Sense == EINT_SENS_EDGE) NVIC_SetEINTSenseEdge(SourceIdx);
         else NVIC_SetEINTSenseLevel(SourceIdx);
@@ -422,7 +422,7 @@ boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sen
         (Enable) ? NVIC_EnableEINT_D0Event2(SourceIdx) : NVIC_DisableEINT_D0Event2(SourceIdx);
         (Enable) ?         NVIC_UnmaskEINT2(SourceIdx) :            NVIC_MaskEINT2(SourceIdx);
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     if (SourceIdx < GLB_EINT_SOURCES)
@@ -435,7 +435,7 @@ boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sen
 
         if (AEINTHandlers[SourceIdx - NUM_EINT_SOURCES].Handler == Handler) return true;
 
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
         AEINTHandlers[SourceIdx - NUM_EINT_SOURCES].Handler = Handler;
 
         if (Sense == EINT_SENS_EDGE) NVIC_SetEINTSenseEdge(SourceIdx);
@@ -446,7 +446,7 @@ boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sen
         (Enable) ? NVIC_EnableEINT_D0Event2(SourceIdx) : NVIC_DisableEINT_D0Event2(SourceIdx);
         (Enable) ?         NVIC_UnmaskEINT2(SourceIdx) :            NVIC_MaskEINT2(SourceIdx);
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;
@@ -458,20 +458,20 @@ boolean NVIC_UnregisterEINT(uint32_t SourceIdx)
 
     if (SourceIdx < NUM_EINT_SOURCES)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
         NVIC_MaskEINT2(SourceIdx);
         EINTHandlers[SourceIdx].Handler = NULL;
         NVIC_SetEINTDebounce(SourceIdx, 0x0000);
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     if (SourceIdx < GLB_EINT_SOURCES)
     {
-        intflags = DisableInterrupts();
+        intflags = __disable_interrupts();
         NVIC_MaskEINT2(SourceIdx);
         AEINTHandlers[SourceIdx - NUM_EINT_SOURCES].Handler = NULL;
         NVIC_SetEINTDebounce(SourceIdx, 0x0000);
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;
@@ -481,12 +481,12 @@ boolean NVIC_EnableEINT(uint32_t SourceIdx)
 {
     if (SourceIdx < GLB_EINT_SOURCES)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         NVIC_EnableEINT_D0Event2(SourceIdx);
         NVIC_UnmaskEINT2(SourceIdx);
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;
@@ -496,12 +496,12 @@ boolean NVIC_DisableEINT(uint32_t SourceIdx)
 {
     if (SourceIdx < GLB_EINT_SOURCES)
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         NVIC_DisableEINT_D0Event2(SourceIdx);
         NVIC_MaskEINT2(SourceIdx);
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;
@@ -511,11 +511,11 @@ boolean NVIC_EnableIRQ(uint32_t SourceIdx)
 {
     if ((SourceIdx < NUM_IRQ_SOURCES) || ((SourceIdx >= TOTAL_IRQ_SOURCES) && (SourceIdx < GLB_IRQ_SOURCES)))
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         NVIC_UnmaskIRQ2(SourceIdx);
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;
@@ -525,11 +525,11 @@ boolean NVIC_DisableIRQ(uint32_t SourceIdx)
 {
     if ((SourceIdx < NUM_IRQ_SOURCES) || ((SourceIdx >= TOTAL_IRQ_SOURCES) && (SourceIdx < GLB_IRQ_SOURCES)))
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         NVIC_MaskIRQ2(SourceIdx);
 
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;

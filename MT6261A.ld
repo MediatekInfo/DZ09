@@ -186,8 +186,8 @@ SECTIONS
 		*(.stack)
 	} > RAM
 
-	__rom_image_base = ORIGIN(ROM);
-	__rom_image_limit = __etext + __data_end__ - __data_start__;
+	__ROMImageBase = ORIGIN(ROM);
+	__ROMImageLimit = __etext + __data_end__ - __data_start__;
 
 
 	/* Set stack top to end of RAM, and stack limit move down by

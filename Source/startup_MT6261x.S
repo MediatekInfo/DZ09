@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -34,13 +34,13 @@
     .equ    Stack_Size, SUMM_StackSz
 
     .globl  SUMM_StackSz
-    .globl  __StackTop
-    .globl  __StackLimit
-__StackLimit:
+    .globl  __stack_top
+    .globl  __stack_limit
+__stack_limit:
     .space  Stack_Size
-    .size   __StackLimit, . - __StackLimit
-__StackTop:
-    .size   __StackTop, . - __StackTop
+    .size   __stack_limit, . - __stack_limit
+__stack_top:
+    .size   __stack_top, . - __stack_top
 
     .section .heap
     .align  2
@@ -49,48 +49,48 @@ __StackTop:
 #else
     .equ    Heap_Size, 0x0C00
 #endif
-    .globl  __HeapBase
-    .globl  __HeapLimit
-__HeapBase:
+    .globl  __heap_base
+    .globl  __heap_limit
+__heap_base:
     .if Heap_Size
     .space  Heap_Size
     .endif
-    .size   __HeapBase, . - __HeapBase
-__HeapLimit:
-    .size   __HeapLimit, . - __HeapLimit
+    .size   __heap_base, . - __heap_base
+__heap_limit:
+    .size   __heap_limit, . - __heap_limit
 
     .section .isr_vectors
     .align  2
     .globl  __isr_vectors
-    .globl  ROM_Image_Base, ROM_Image_Limit
+    .globl  __rom_image_base, __rom_image_limit
 __isr_vectors:
-    ldr     pc, Reset_Address
-    ldr     pc, Undef_Address
-    ldr     pc, SWI_Address
-    ldr     pc, Prefetch_Address
-    ldr     pc, Abort_Address
+    ldr     pc, __reset_address
+    ldr     pc, __undef_address
+    ldr     pc, __swi_address
+    ldr     pc, __prefetch_address
+    ldr     pc, __abort_address
     .long   0x00000000
-    ldr     pc, IRQ_Address
-    ldr     pc, FIQ_Address
-Reset_Address:
-    .long   Reset_Handler
-Undef_Address:
-    .long   Undefined_Handler
-SWI_Address:
-    .long   SWI_Handler
-Prefetch_Address:
-    .long   Prefetch_Handler
-Abort_Address:
-    .long   Abort_Handler
-IRQ_Address:
-    .long   NVIC_IRQ_Handler
-FIQ_Address:
-    .long   FIQ_Handler
+    ldr     pc, __irq_address
+    ldr     pc, __fiq_address
+__reset_address:
+    .long   __reset_handler
+__undef_address:
+    .long   __undefined_handler
+__swi_address:
+    .long   __swi_handler
+__prefetch_address:
+    .long   __prefetch_handler
+__abort_address:
+    .long   __abort_handler
+__irq_address:
+    .long   __nvic_irq_handler
+__fiq_address:
+    .long   __nvic_fiq_handler
 
-ROM_Image_Base:
-    .long   __rom_image_base
-ROM_Image_Limit:
-    .long   __rom_image_limit
+__rom_image_base:
+    .long   __ROMImageBase
+__rom_image_limit:
+    .long   __ROMImageLimit
 
     .size    __isr_vectors, . - __isr_vectors
 
@@ -108,10 +108,10 @@ ROM_Image_Limit:
 
     .section .reset_handler
     .align  2
-    .globl  Reset_Handler
-    .type   Reset_Handler, %function
+    .globl  __reset_handler
+    .type   __reset_handler, %function
 
-Reset_Handler:
+__reset_handler:
     ldr     r0, =__StackTop
 // Setup MCU modes and stack pointers
     msr     cpsr_c, Mode_FIQ | _I_ | _F_
@@ -133,28 +133,28 @@ Reset_Handler:
     mov     r0, #0
     ldr     r1, = __bss_start__
     ldr     r2, = __bss_end__
-.loop_zero_bss:
+__loop_zero_bss:
     cmp     r1, r2
     strcc   r0, [r1], #4
-    bcc     .loop_zero_bss
+    bcc     __loop_zero_bss
 
     /* Copy flash data to RAM */
     ldr    r1, =__etext
     ldr    r2, =__data_start__
     ldr    r3, =__data_end__
 
-.flash_to_ram_loop:
+__flash_to_ram_loop:
     cmp     r2, r3
     ldrcc   r0, [r1], #4
     strcc   r0, [r2], #4
-    bcc     .flash_to_ram_loop
+    bcc     __flash_to_ram_loop
 
     /* Jump to our main */
     bl      main
     b       .
 
     .pool
-    .size   Reset_Handler, . - Reset_Handler
+    .size   __reset_handler, . - __reset_handler
 
     .text
     .align  2
@@ -170,11 +170,11 @@ Reset_Handler:
     .size    \handler_name, . - \handler_name
     .endm
 
-    def_irq_handler    Undefined_Handler
-    def_irq_handler    SWI_Handler
-    def_irq_handler    Prefetch_Handler
-    def_irq_handler    Abort_Handler
-    def_irq_handler    NVIC_IRQ_Handler
-    def_irq_handler    FIQ_Handler
+    def_irq_handler    __undefined_handler
+    def_irq_handler    __swi_handler
+    def_irq_handler    __prefetch_handler
+    def_irq_handler    __abort_handler
+    def_irq_handler    __nvic_irq_handler
+    def_irq_handler    __nvic_fiq_handler
 
     .end

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -131,10 +131,10 @@ boolean LRT_Start(pTIMER Timer)
     {
         if (Timer->Flags & TF_ENABLED)
         {
-            uint32_t iflags = DisableInterrupts();
+            uint32_t iflags = __disable_interrupts();
 
             Timer->Flags &= ~TF_ENABLED;
-            RestoreInterrupts(iflags);
+            __restore_interrupts(iflags);
         }
         Timer->StartTicks = USC_GetCurrentTicks();
         Timer->Flags |= TF_ENABLED;
@@ -149,10 +149,10 @@ boolean LRT_Stop(pTIMER Timer)
     {
         if (Timer->Flags & TF_ENABLED)
         {
-            uint32_t iflags = DisableInterrupts();
+            uint32_t iflags = __disable_interrupts();
 
             Timer->Flags &= ~TF_ENABLED;
-            RestoreInterrupts(iflags);
+            __restore_interrupts(iflags);
         }
         return true;
     }
@@ -163,11 +163,11 @@ boolean LRT_SetMode(pTIMER Timer, TMRFLAGS Flags)
 {
     if (Timer != NULL)
     {
-        uint32_t iflags = DisableInterrupts();
+        uint32_t iflags = __disable_interrupts();
 
         Timer->Flags = Flags;
         if (Flags & TF_ENABLED) Timer->StartTicks = USC_GetCurrentTicks();
-        RestoreInterrupts(iflags);
+        __restore_interrupts(iflags);
 
         return true;
     }
@@ -178,11 +178,11 @@ boolean LRT_SetInterval(pTIMER Timer, uint32_t Interval)
 {
     if (Timer != NULL)
     {
-        uint32_t iflags = DisableInterrupts();
+        uint32_t iflags = __disable_interrupts();
 
         Timer->Interval = 1000 * Interval;                                                          // Set interval to us
         if (Timer->Flags & TF_ENABLED) Timer->StartTicks = USC_GetCurrentTicks();
-        RestoreInterrupts(iflags);
+        __restore_interrupts(iflags);
 
         return true;
     }

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -557,10 +557,10 @@ uint32_t USB_GetDataAmount(TEP Endpoint)
 
 TEPSTAGE USB_GetEPStage(TEP Endpoint)
 {
-    uint32_t intflags = DisableInterrupts();
+    uint32_t intflags = __disable_interrupts();
     TEPSTAGE Stage = (Endpoint < USB_EPNUM) ? EPState[Endpoint].Stage : EPSTAGE_IDLE;
 
-    RestoreInterrupts(intflags);
+    __restore_interrupts(intflags);
 
     return Stage;
 }
@@ -569,10 +569,10 @@ boolean USB_SetEPStage(TEP Endpoint, TEPSTAGE Stage)
 {
     if ((Endpoint < USB_EPNUM) && (Stage <= EPSTAGE_IN))
     {
-        uint32_t intflags = DisableInterrupts();
+        uint32_t intflags = __disable_interrupts();
 
         EPState[Endpoint].Stage = Stage;
-        RestoreInterrupts(intflags);
+        __restore_interrupts(intflags);
         return true;
     }
     return false;

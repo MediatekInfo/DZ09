@@ -19,31 +19,34 @@
 #ifndef _GDITYPES_H_
 #define _GDITYPES_H_
 
-#define clBlack         0xFF000000
-#define clBrown         0xFF003366
-#define clMaroon        0xFF000080
-#define clGreen         0xFF008000
-#define clOlive         0xFF008080
-#define clDarkBlue      0xFF400000
-#define clDarkGray      0xFF404040
-#define clNavy          0xFF800000
-#define clPurple        0xFF800080
-#define clTeal          0xFF808000
-#define clGray          0xFF808080
-#define clSilver        0xFFC0C0C0
-#define clRed           0xFF0000FF
-#define clMidGreen      0xFF00C000
-#define clLime          0xFF00FF00
-#define clYellow        0xFF00FFFF
-#define clBlue          0xFFFF0000
-#define clFuchsia       0xFFFF00FF
-#define clAqua          0xFFFFFF00
-#define clWhite         0xFFFFFFFF
-#define clMoneyGreen    0xFFC0DCC0
-#define clSkyBlue       0xFFF0C8A4
-#define clCream         0xFFF0F8FC
-#define clMedGray       0xFFA4A0A0
-#define clBtnFace       0xFFC8D0D4
+typedef enum tag_COLOR
+{
+    clBlack         = 0xFF000000,
+    clBrown         = 0xFF003366,
+    clMaroon        = 0xFF000080,
+    clGreen         = 0xFF008000,
+    clOlive         = 0xFF008080,
+    clDarkBlue      = 0xFF400000,
+    clDarkGray      = 0xFF404040,
+    clNavy          = 0xFF800000,
+    clPurple        = 0xFF800080,
+    clTeal          = 0xFF808000,
+    clGray          = 0xFF808080,
+    clSilver        = 0xFFC0C0C0,
+    clRed           = 0xFF0000FF,
+    clMidGreen      = 0xFF00C000,
+    clLime          = 0xFF00FF00,
+    clYellow        = 0xFF00FFFF,
+    clBlue          = 0xFFFF0000,
+    clFuchsia       = 0xFFFF00FF,
+    clAqua          = 0xFFFFFF00,
+    clWhite         = 0xFFFFFFFF,
+    clMoneyGreen    = 0xFFC0DCC0,
+    clSkyBlue       = 0xFFF0C8A4,
+    clCream         = 0xFFF0F8FC,
+    clMedGray       = 0xFFA4A0A0,
+    clBtnFace       = 0xFFC8D0D4
+} TCOLOR;
 
 typedef enum
 {
@@ -83,8 +86,8 @@ typedef union
 
 typedef struct
 {
-    int16_t sx;
-    int16_t sy;
+    uint16_t sx;
+    uint16_t sy;
 } TSIZEXY, *pSIZEXY;
 
 #endif /* _GDITYPES_H_ */

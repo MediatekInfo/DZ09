@@ -27,7 +27,7 @@ typedef struct tag_WIN
     boolean     Topmost;
     boolean     Framed;
     uint32_t    Layer;
-    uint32_t    ForeColor;
+    TCOLOR      ForeColor;
     TDLIST      ChildObjects;
     boolean     (*EventHandler)(pEVENT, pGUIOBJECT);
 } TWIN, *pWIN;
@@ -36,12 +36,13 @@ extern pGUIOBJECT GUILayer[LCDIF_NUMLAYERS];
 
 extern void GUI_DrawDefaultWindow(pGUIOBJECT Object, pRECT Clip);
 extern boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
-                               uint8_t GlobalAlpha, uint32_t ForeColor);
+                               uint8_t GlobalAlpha, TCOLOR ForeColor);
 extern pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
                                    boolean (*Handler)(pEVENT, pGUIOBJECT),
-                                   uint32_t ForeColor, TGOFLAGS Flags);
+                                   TCOLOR ForeColor, TGOFLAGS Flags);
 extern boolean GUI_IsWindowObject(pGUIOBJECT Object);
 extern int32_t GUI_GetWindowZIndex(pGUIOBJECT Win);
 extern pGUIOBJECT GUI_GetTopWindow(pGUIOBJECT Parent, boolean Topmost, pDLITEM *ObjectItem);
+extern void GUI_CalcClientAreaWindow(pGUIOBJECT Object, pRECT ClientArea);
 
 #endif /* _GUIWIN_H_ */

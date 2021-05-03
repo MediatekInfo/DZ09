@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,52 +26,52 @@ static uint8_t MemoryPool[SYSMEMSIZE] __attribute__ ((aligned (8), section (".no
 
 size_t InitializeMemoryPool(void)
 {
-    uint32_t iflags = DisableInterrupts();
+    uint32_t iflags = __disable_interrupts();
     size_t   Result;
 
     destroy_memory_pool(MemoryPool);
 
     Result = init_memory_pool(SYSMEMSIZE, MemoryPool);
-    RestoreInterrupts(iflags);
+    __restore_interrupts(iflags);
 
     return Result;
 }
 
 void *malloc(size_t size)
 {
-    uint32_t iflags = DisableInterrupts();
+    uint32_t iflags = __disable_interrupts();
     void     *Result = tlsf_malloc(size);
 
-    RestoreInterrupts(iflags);
+    __restore_interrupts(iflags);
 
     return Result;
 }
 
 void free(void *ptr)
 {
-    uint32_t iflags = DisableInterrupts();
+    uint32_t iflags = __disable_interrupts();
 
     tlsf_free(ptr);
 
-    RestoreInterrupts(iflags);
+    __restore_interrupts(iflags);
 }
 
 void *realloc(void *ptr, size_t size)
 {
-    uint32_t iflags = DisableInterrupts();
+    uint32_t iflags = __disable_interrupts();
     void     *Result = tlsf_realloc(ptr, size);
 
-    RestoreInterrupts(iflags);
+    __restore_interrupts(iflags);
 
     return Result;
 }
 
 void *calloc(size_t nelem, size_t elem_size)
 {
-    uint32_t iflags = DisableInterrupts();
+    uint32_t iflags = __disable_interrupts();
     void     *Result = tlsf_calloc(nelem, elem_size);
 
-    RestoreInterrupts(iflags);
+    __restore_interrupts(iflags);
 
     return Result;
 }

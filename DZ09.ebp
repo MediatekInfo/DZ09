@@ -149,6 +149,13 @@
 		<Unit filename="Source\GUI\gdi.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\GUI\gdifont.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\gdifont.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\GUI\gditypes.h" />
 		<Unit filename="Source\GUI\gdiutils.c">
 			<Option compilerVar="CC" />
@@ -162,6 +169,13 @@
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\GUI\gui.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\guibutton.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\guibutton.h">
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\GUI\guilib.h">
@@ -179,6 +193,12 @@
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\GUI\guiwin.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\Resource\fontlib.a">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\Resource\fontlib.h">
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\Lib\appheader.c">

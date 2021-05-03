@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -61,7 +61,7 @@ void Init(void)
 //    PMU_SetISINKParameters(ISINK_CH0, IC_8mA, true);
 ////////////////////////////////////////////////////////////
 //
-    EnableInterrupts();
+    __enable_interrupts();
     APP_Initialize();
 
 }

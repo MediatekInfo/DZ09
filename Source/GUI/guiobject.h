@@ -23,16 +23,18 @@ typedef enum tag_GOTYPE
 {
     GO_UNKNOWN,
     GO_WINDOW,
+    GO_BUTTON,
 
     GO_NUMTYPES
 } TGOTYPE;
 
 typedef enum tag_GOFLAGS
 {
-    GF_ENABLED  = (1 << 0),
-    GF_VISIBLE  = (1 << 1),
-    GF_TOPMOST  = (1 << 2),
-    GF_FRAMED   = (1 << 3)
+    GF_ENABLED    = (1 << 0),
+    GF_VISIBLE    = (1 << 1),
+    GF_TOPMOST    = (1 << 2),
+    GF_FRAMED     = (1 << 3),
+    GF_AUTOREPEAT = (1 << 4)
 } TGOFLAGS;
 
 typedef struct tag_GUIOBJECT *pGUIOBJECT;
@@ -53,6 +55,7 @@ typedef struct tag_GUIOBJECT
 } TGUIOBJECT, *pGUIOBJECT;
 
 #include "guiwin.h"
+#include "guibutton.h"
 
 extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
 extern pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent);
