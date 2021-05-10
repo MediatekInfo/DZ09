@@ -24,6 +24,8 @@
 
 static uint8_t MemoryPool[SYSMEMSIZE] __attribute__ ((aligned (8), section (".noinit")));
 
+extern uintptr_t __stack_top, __stack_limit;
+
 size_t InitializeMemoryPool(void)
 {
     uint32_t iflags = __disable_interrupts();
@@ -85,6 +87,12 @@ boolean IsDynamicMemory(void *Memory)
 {
     return (((uintptr_t)Memory >= (uintptr_t)&MemoryPool[0]) &&
             ((uintptr_t)Memory <= (uintptr_t)&MemoryPool[SYSMEMSIZE - 1])) ? true : false;
+}
+
+boolean IsStackMemory(void *Memory)
+{
+    return (((uintptr_t)Memory >= (uintptr_t)&__stack_limit) &&
+            ((uintptr_t)Memory < (uintptr_t)&__stack_top)) ? true : false;
 }
 
 size_t GetTotalUsedMemory(void)

@@ -45,8 +45,8 @@ void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
                                             &Button->Caption,
                                             &ButtonRect,
                                             Clip,
-                                            (Button->Head.Enabled) ? Button->Caption.ForeColor : clGray,
-                                            Button->Caption.BackColor);
+                                            (Button->Head.Enabled) ? Button->Caption.Color.ForeColor : clGray,
+                                            Button->Caption.Color.BackColor);
             if (BackRects != NULL)
             {
                 pDLITEM tmpItem;
@@ -116,6 +116,25 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
     return (pGUIOBJECT)Button;
 }
 
+void GUI_DestroyButton(pGUIOBJECT Object)
+{
+    if ((Object != NULL) && (Object->Type == GO_BUTTON))
+    {
+        pBUTTON  Button = (pBUTTON)Object;
+        uint32_t intflags = __disable_interrupts();
+
+        if ((Button->Caption.Font != NULL) && (IsDynamicMemory(Button->Caption.Font)))
+            free(Button->Caption.Font);
+        Button->Caption.Font = NULL;
+
+        if ((Button->Caption.Text != NULL) && (IsDynamicMemory(Button->Caption.Text)))
+            free(Button->Caption.Text);
+        Button->Caption.Text = NULL;
+
+        __restore_interrupts(intflags);
+    }
+}
+
 void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea)
 {
     if ((Object != NULL) && (ClientArea != NULL))
@@ -125,4 +144,25 @@ void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea)
         ClientArea->r = Object->Position.r - 1;
         ClientArea->b = Object->Position.b - 1;
     }
+}
+
+pTEXT GUI_GetTextButton(pGUIOBJECT Object)
+{
+    if ((Object != NULL) && (Object->Type == GO_BUTTON))
+        return &((pBUTTON)Object)->Caption;
+    else return NULL;
+}
+
+boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
+{
+    if ((Object != NULL) && (Object->Type == GO_BUTTON) && (ObjectText != NULL))
+    {
+        uint32_t intflags = __disable_interrupts();
+
+        ((pBUTTON)Object)->Caption = *ObjectText;
+        __restore_interrupts(intflags);
+
+        return true;
+    }
+    return false;
 }

@@ -33,17 +33,23 @@ typedef enum tag_TXTALIGN
     AV_MASK     = (3 << 2)
 } TTXTALIGN;
 
+typedef struct tag_TEXTCOLOR
+{
+    TCOLOR  ForeColor;
+    TCOLOR  BackColor;
+} TTEXTCOLOR, *pTEXTCOLOR;
+
 typedef struct tag_TEXT
 {
     TSIZEXY     Extent;
     TTXTALIGN   Align;
-    TCOLOR      ForeColor;
-    TCOLOR      BackColor;
+    TTEXTCOLOR  Color;
     pBFC_FONT   Font;
     char        *Text;
 } TTEXT, *pTEXT;
 
-extern TTEXT Text(const BFC_FONT *Font, char *Caption, TTXTALIGN Align, TCOLOR ForeColor, TCOLOR BackColor);
+extern TTEXTCOLOR TextColor(TCOLOR ForeColor, TCOLOR BackColor);
+extern TTEXT Text(const BFC_FONT *Font, char *Caption, TTXTALIGN Align, TTEXTCOLOR Color);
 extern void GDI_UpdateTextExtent(pTEXT Text);
 extern char *GDI_GetStringPosByXShift(pBFC_CHARINFO *CharInfo, pTEXT Text, int32_t ReqXShift,
                                       uint32_t *DataBitIndex);

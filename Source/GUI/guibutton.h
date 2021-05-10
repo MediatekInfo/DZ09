@@ -31,6 +31,9 @@ typedef struct tag_BUTTON
 extern void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip);
 extern pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
                                    TCOLOR ForeColor, TGOFLAGS Flags);
+extern void GUI_DestroyButton(pGUIOBJECT Object);
 extern void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea);
+extern pTEXT GUI_GetTextButton(pGUIOBJECT Object);
+extern boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText);
 
 #endif /* _GUIBUTTON__H_ */

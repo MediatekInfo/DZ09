@@ -135,6 +135,11 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
     return (pGUIOBJECT)Win;
 }
 
+void GUI_DestroyWindow(pGUIOBJECT Object)
+{
+    return;
+}
+
 boolean GUI_IsWindowObject(pGUIOBJECT Object)
 {
     return ((Object != NULL) && (Object->Type == GO_WINDOW));

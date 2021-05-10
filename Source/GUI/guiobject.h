@@ -61,9 +61,17 @@ extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
 extern pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent);
 extern pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem);
 extern boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position);
-extern void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position);
+extern boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern boolean GUI_GetObjectVisibilty(pGUIOBJECT Object);
 extern boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible);
+extern pTEXT GUI_GetObjectText(pGUIOBJECT Object);
+extern boolean GUI_SetObjectText(pGUIOBJECT Object, TTEXT ObjectText);
+extern pBFC_FONT GUI_GetObjectFont(pGUIOBJECT Object);
+extern boolean GUI_SetObjectFont(pGUIOBJECT Object, pBFC_FONT ObjectFont);
+extern pTEXTCOLOR GUI_GetObjectTextColor(pGUIOBJECT Object);
+extern boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color);
+extern char *GUI_GetObjectCaption(pGUIOBJECT Object);
+extern boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption);
 extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
 extern void *GUI_DestroyObject(pGUIOBJECT Object);
 

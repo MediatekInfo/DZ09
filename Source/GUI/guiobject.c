@@ -79,7 +79,17 @@ static void *GUI_DestroySingleObject(pGUIOBJECT Object)
 
         if (tmpItem != NULL)
         {
+            static void (*const DestroyObject[GO_NUMTYPES])(pGUIOBJECT) =
+            {
+                NULL,
+                GUI_DestroyWindow,
+                GUI_DestroyButton
+            };
+
             if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
+
+            if (DestroyObject[Object->Type] != NULL)
+                DestroyObject[Object->Type](Object);
 
             intflags = __disable_interrupts();
             DL_DeleteItem(ChildList, tmpItem);
@@ -250,14 +260,14 @@ boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position)
     return true;
 }
 
-void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
+boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
 {
     TRECT NewPosition;
 
-    if ((Object == NULL) || (Position == NULL)) return;
+    if ((Object == NULL) || (Position == NULL)) return false;
 
     if (Object->Parent == NULL)
-        LCDIF_SetLayerPosition(((pWIN)Object)->Layer, *Position, true);
+        return LCDIF_SetLayerPosition(((pWIN)Object)->Layer, *Position, true);
     else
     {
         NewPosition = GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
@@ -283,6 +293,7 @@ void GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
             DL_Delete(UpdateRects, false);
         }
     }
+    return true;
 }
 
 boolean GUI_GetObjectVisibilty(pGUIOBJECT Object)
@@ -306,6 +317,217 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
     return true;
 }
 
+pTEXT GUI_GetObjectText(pGUIOBJECT Object)
+{
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetTextButton
+        };
+
+        if (GetTextObject[Object->Type] != NULL)
+            return GetTextObject[Object->Type](Object);
+    }
+    return NULL;
+}
+
+boolean GUI_SetObjectText(pGUIOBJECT Object, TTEXT ObjectText)
+{
+    boolean Result = false;
+
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        static boolean (*const SetTextObject[GO_NUMTYPES])(pGUIOBJECT, pTEXT) =
+        {
+            NULL,
+            NULL,
+            GUI_SetTextButton
+        };
+
+        if (SetTextObject[Object->Type] != NULL)
+        {
+            GDI_UpdateTextExtent(&ObjectText);
+
+            if ((Result = SetTextObject[Object->Type](Object, &ObjectText)) == true)
+                GUI_Invalidate(Object, NULL);
+        }
+    }
+    return Result;
+}
+
+pBFC_FONT GUI_GetObjectFont(pGUIOBJECT Object)
+{
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetTextButton
+        };
+
+        if (GetTextObject[Object->Type] != NULL)
+        {
+            pTEXT tmpText = GetTextObject[Object->Type](Object);
+
+            return (tmpText != NULL) ? tmpText->Font : NULL;
+        }
+    }
+    return NULL;
+}
+
+boolean GUI_SetObjectFont(pGUIOBJECT Object, pBFC_FONT ObjectFont)
+{
+    boolean Result = false;
+
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        pTEXT  ObjectText;
+        static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetTextButton
+        };
+
+        if ((GetTextObject[Object->Type] != NULL) &&
+                ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
+        {
+            uint32_t intflags = __disable_interrupts();
+
+            ObjectText->Font = ObjectFont;
+            GDI_UpdateTextExtent(ObjectText);
+            __restore_interrupts(intflags);
+
+            GUI_Invalidate(Object, NULL);
+            Result = true;
+        }
+    }
+    return Result;
+}
+
+pTEXTCOLOR GUI_GetObjectTextColor(pGUIOBJECT Object)
+{
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetTextButton
+        };
+
+        if (GetTextObject[Object->Type] != NULL)
+        {
+            pTEXT tmpText = GetTextObject[Object->Type](Object);
+
+            return (tmpText != NULL) ? &tmpText->Color : NULL;
+        }
+    }
+    return NULL;
+}
+
+boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
+{
+    boolean Result = false;
+
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        pTEXT  ObjectText;
+        static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetTextButton
+        };
+
+        if ((GetTextObject[Object->Type] != NULL) &&
+                ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
+        {
+            uint32_t intflags = __disable_interrupts();
+
+            ObjectText->Color = Color;
+            __restore_interrupts(intflags);
+
+            GUI_Invalidate(Object, NULL);
+            Result = true;
+        }
+    }
+    return Result;
+}
+
+char *GUI_GetObjectCaption(pGUIOBJECT Object)
+{
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetTextButton
+        };
+
+        if (GetTextObject[Object->Type] != NULL)
+        {
+            pTEXT tmpText = GetTextObject[Object->Type](Object);
+
+            return (tmpText != NULL) ? tmpText->Text : NULL;
+        }
+    }
+    return NULL;
+}
+
+boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
+{
+    boolean Result = false;
+
+    if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
+    {
+        pTEXT  ObjectText;
+        static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetTextButton
+        };
+
+        if ((GetTextObject[Object->Type] != NULL) &&
+                ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
+        {
+            uint32_t intflags = __disable_interrupts();
+
+            if ((ObjectText->Text != NULL) && IsDynamicMemory(ObjectText->Text))
+                free(ObjectText->Text);
+
+            ObjectText->Text = NULL;
+
+            if ((Caption != NULL) && IsStackMemory(Caption))
+            {
+                uint32_t CaptionLength = strlen(Caption);
+                char     *NewCaption = malloc(CaptionLength + 1);
+
+                if (NewCaption != NULL)
+                {
+                    memcpy(NewCaption, Caption, CaptionLength);
+                    NewCaption[CaptionLength] = '\0';
+                }
+                Caption = NewCaption;
+            }
+            ObjectText->Text = Caption;
+            GDI_UpdateTextExtent(ObjectText);
+
+            __restore_interrupts(intflags);
+
+            GUI_Invalidate(Object, NULL);
+            Result = true;
+        }
+    }
+    return Result;
+}
+
 void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 {
     if ((Object != NULL) && (Object->Type < GO_NUMTYPES) && (Clip != NULL))
@@ -314,7 +536,7 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
         {
             NULL,
             GUI_DrawDefaultWindow,
-            GUI_DrawDefaultButton,
+            GUI_DrawDefaultButton
         };
 
         if (DrawDefault[Object->Type] != NULL)

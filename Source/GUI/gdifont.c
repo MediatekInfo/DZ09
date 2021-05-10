@@ -279,18 +279,27 @@ static pDLIST GDI_DrawText32(pLCONTEXT lc, pTEXT Text, pRECT Client, pRECT Clip,
     return SubRects;
 }
 
-TTEXT Text(const BFC_FONT *Font, char *Caption, TTXTALIGN Align, TCOLOR ForeColor, TCOLOR BackColor)
+TTEXTCOLOR TextColor(TCOLOR ForeColor, TCOLOR BackColor)
 {
-    TTEXT Text;
+    TTEXTCOLOR tmpTextColor;
 
-    Text.Align = Align;
-    Text.Font = (pBFC_FONT)Font;
-    Text.Text = Caption;
-    Text.ForeColor = ForeColor;
-    Text.BackColor = BackColor;
-    GDI_UpdateTextExtent(&Text);
+    tmpTextColor.ForeColor = ForeColor;
+    tmpTextColor.BackColor = BackColor;
 
-    return Text;
+    return tmpTextColor;
+}
+
+TTEXT Text(const BFC_FONT *Font, char *Caption, TTXTALIGN Align, TTEXTCOLOR Color)
+{
+    TTEXT tmpText;
+
+    tmpText.Align = Align;
+    tmpText.Font = (pBFC_FONT)Font;
+    tmpText.Text = Caption;
+    tmpText.Color = Color;
+    GDI_UpdateTextExtent(&tmpText);
+
+    return tmpText;
 }
 
 void GDI_UpdateTextExtent(pTEXT Text)

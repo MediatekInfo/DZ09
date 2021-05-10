@@ -40,6 +40,7 @@ extern boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
 extern pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
                                    boolean (*Handler)(pEVENT, pGUIOBJECT),
                                    TCOLOR ForeColor, TGOFLAGS Flags);
+extern void GUI_DestroyWindow(pGUIOBJECT Object);
 extern boolean GUI_IsWindowObject(pGUIOBJECT Object);
 extern int32_t GUI_GetWindowZIndex(pGUIOBJECT Win);
 extern pGUIOBJECT GUI_GetTopWindow(pGUIOBJECT Parent, boolean Topmost, pDLITEM *ObjectItem);
