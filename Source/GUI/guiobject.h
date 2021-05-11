@@ -24,6 +24,7 @@ typedef enum tag_GOTYPE
     GO_UNKNOWN,
     GO_WINDOW,
     GO_BUTTON,
+    GO_LABEL,
 
     GO_NUMTYPES
 } TGOTYPE;
@@ -56,6 +57,7 @@ typedef struct tag_GUIOBJECT
 
 #include "guiwin.h"
 #include "guibutton.h"
+#include "guilabel.h"
 
 extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
 extern pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent);

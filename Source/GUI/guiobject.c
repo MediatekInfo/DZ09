@@ -83,7 +83,8 @@ static void *GUI_DestroySingleObject(pGUIOBJECT Object)
             {
                 NULL,
                 GUI_DestroyWindow,
-                GUI_DestroyButton
+                GUI_DestroyButton,
+                GUI_DestroyLabel
             };
 
             if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
@@ -159,7 +160,8 @@ TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
         {
             NULL,
             GUI_CalcClientAreaWindow,
-            GUI_CalcClientAreaButton
+            GUI_CalcClientAreaButton,
+            NULL
         };
 
         if (CalcClientArea[Object->Type] != NULL)
@@ -325,7 +327,8 @@ pTEXT GUI_GetObjectText(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -344,7 +347,8 @@ boolean GUI_SetObjectText(pGUIOBJECT Object, TTEXT ObjectText)
         {
             NULL,
             NULL,
-            GUI_SetTextButton
+            GUI_SetTextButton,
+            GUI_SetTextLabel
         };
 
         if (SetTextObject[Object->Type] != NULL)
@@ -366,7 +370,8 @@ pBFC_FONT GUI_GetObjectFont(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -390,7 +395,8 @@ boolean GUI_SetObjectFont(pGUIOBJECT Object, pBFC_FONT ObjectFont)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if ((GetTextObject[Object->Type] != NULL) &&
@@ -417,7 +423,8 @@ pTEXTCOLOR GUI_GetObjectTextColor(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -441,7 +448,8 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if ((GetTextObject[Object->Type] != NULL) &&
@@ -467,7 +475,8 @@ char *GUI_GetObjectCaption(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -491,7 +500,8 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if ((GetTextObject[Object->Type] != NULL) &&
@@ -536,7 +546,8 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
         {
             NULL,
             GUI_DrawDefaultWindow,
-            GUI_DrawDefaultButton
+            GUI_DrawDefaultButton,
+            GUI_DrawDefaultLabel
         };
 
         if (DrawDefault[Object->Type] != NULL)
