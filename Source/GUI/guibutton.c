@@ -94,6 +94,7 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
 
         GDI_UpdateTextExtent(&Caption);
         Button->Caption = Caption;
+        Button->Caption.Color.BackColor = Button->ForeColor;
 
         if (!ObjectsList->Count) Result = DL_AddItem(ObjectsList, Button) != NULL;
         else
@@ -149,7 +150,11 @@ void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea)
 pTEXT GUI_GetTextButton(pGUIOBJECT Object)
 {
     if ((Object != NULL) && (Object->Type == GO_BUTTON))
+    {
+        ((pBUTTON)Object)->Caption.Color.BackColor = ((pBUTTON)Object)->ForeColor;
+
         return &((pBUTTON)Object)->Caption;
+    }
     else return NULL;
 }
 
@@ -160,6 +165,7 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
         uint32_t intflags = __disable_interrupts();
 
         ((pBUTTON)Object)->Caption = *ObjectText;
+        ((pBUTTON)Object)->Caption.Color.BackColor = ((pBUTTON)Object)->ForeColor;
         __restore_interrupts(intflags);
 
         return true;

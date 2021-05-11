@@ -443,7 +443,7 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
 
     if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
     {
-        pTEXT  ObjectText;
+        pTEXT  tmpText;
         static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
         {
             NULL,
@@ -453,15 +453,25 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
         };
 
         if ((GetTextObject[Object->Type] != NULL) &&
-                ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
+                ((tmpText = GetTextObject[Object->Type](Object)) != NULL))
         {
             uint32_t intflags = __disable_interrupts();
+            TTEXT    ObjectText = *tmpText;
+            static boolean (*const SetTextObject[GO_NUMTYPES])(pGUIOBJECT, pTEXT) =
+            {
+                NULL,
+                NULL,
+                GUI_SetTextButton,
+                GUI_SetTextLabel
+            };
 
-            ObjectText->Color = Color;
+            ObjectText.Color = Color;
+            if (SetTextObject[Object->Type] != NULL)
+                Result = SetTextObject[Object->Type](Object, &ObjectText);
+
             __restore_interrupts(intflags);
 
-            GUI_Invalidate(Object, NULL);
-            Result = true;
+            if (Result) GUI_Invalidate(Object, NULL);
         }
     }
     return Result;
