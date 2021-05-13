@@ -21,7 +21,7 @@
 
 // --- System stack locations
     .equ    FIQ_StackSz, 0
-    .equ    IRQ_StackSz, 1024
+    .equ    IRQ_StackSz, 4096
     .equ    ABT_StackSz, 0
     .equ    UND_StackSz, 0
     .equ    SVC_StackSz, 1024
@@ -30,7 +30,11 @@
     .section .stack
     .align  2
 
+#if defined(TARGET_SYSTEM)
+    .equ    SUMM_StackSz, (ABT_StackSz + UND_StackSz + SVC_StackSz + USR_StackSz)
+#else
     .equ    SUMM_StackSz, (FIQ_StackSz + IRQ_StackSz + ABT_StackSz + UND_StackSz + SVC_StackSz + USR_StackSz)
+#endif
     .equ    Stack_Size, SUMM_StackSz
 
     .globl  SUMM_StackSz
@@ -41,6 +45,23 @@ __stack_limit:
     .size   __stack_limit, . - __stack_limit
 __stack_top:
     .size   __stack_top, . - __stack_top
+
+#if defined(TARGET_SYSTEM)
+    .section .intstack
+    .align  2
+
+    .equ    SUMM_Int_StackSz, (FIQ_StackSz + IRQ_StackSz)
+    .equ    Int_Stack_Size, SUMM_Int_StackSz
+
+    .globl  SUMM_Int_StackSz
+    .globl  __int_stack_top
+    .globl  __int_stack_limit
+__int_stack_limit:
+    .space  Int_Stack_Size
+    .size   __int_stack_limit, . - __int_stack_limit
+__int_stack_top:
+    .size   __int_stack_top, . - __int_stack_top
+#endif
 
     .section .heap
     .align  2
@@ -112,7 +133,11 @@ __rom_image_limit:
     .type   __reset_handler, %function
 
 __reset_handler:
+#if defined(TARGET_SYSTEM)
+    ldr     r0, =__IntStackTop
+#else
     ldr     r0, =__StackTop
+#endif
 // Setup MCU modes and stack pointers
     msr     cpsr_c, Mode_FIQ | _I_ | _F_
     mov     sp, r0
@@ -120,6 +145,9 @@ __reset_handler:
     msr     cpsr_c, Mode_IRQ | _I_ | _F_
     mov     sp, r0
     sub     r0, r0, IRQ_StackSz
+#if defined(TARGET_SYSTEM)
+    ldr     r0, =__StackTop
+#endif
     msr     cpsr_c, Mode_ABT | _I_ | _F_
     mov     sp, r0
     sub     r0, r0, ABT_StackSz

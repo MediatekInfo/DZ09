@@ -25,6 +25,7 @@
 static uint8_t MemoryPool[SYSMEMSIZE] __attribute__ ((aligned (8), section (".noinit")));
 
 extern uintptr_t __stack_top, __stack_limit;
+extern uintptr_t __int_stack_top, __int_stack_limit;
 
 size_t InitializeMemoryPool(void)
 {
@@ -91,8 +92,10 @@ boolean IsDynamicMemory(void *Memory)
 
 boolean IsStackMemory(void *Memory)
 {
-    return (((uintptr_t)Memory >= (uintptr_t)&__stack_limit) &&
-            ((uintptr_t)Memory < (uintptr_t)&__stack_top)) ? true : false;
+    return ((((uintptr_t)Memory >= (uintptr_t)&__stack_limit) &&
+             ((uintptr_t)Memory < (uintptr_t)&__stack_top)) ||
+            (((uintptr_t)Memory >= (uintptr_t)&__int_stack_limit) &&
+             ((uintptr_t)Memory < (uintptr_t)&__int_stack_top))) ? true : false;
 }
 
 size_t GetTotalUsedMemory(void)

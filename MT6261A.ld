@@ -39,7 +39,7 @@ MEMORY
 {
     ROM  (rx) : ORIGIN = 0x10006000, LENGTH = 8M - 0x6000
     RAM (rwx) : ORIGIN = 0x00000000, LENGTH = 4M
-    TCM (rwx) : ORIGIN = 0x70000000, LENGTH = 0x0000B000
+    TCM (rwx) : ORIGIN = 0x70000000, LENGTH = 0x0000B000                                            // Minimum of 12KiB available for general use + cache (32KiB max)
 }
 
 /* Linker script to place sections and symbol values. Should be used together
@@ -186,9 +186,19 @@ SECTIONS
 		*(.stack)
 	} > RAM
 
+	/* .stack_dummy section doesn't contains any symbols. It is only
+	 * used for linker to calculate size of stack sections, and assign
+	 * values to stack symbols later */
+	__IntStackTop = ORIGIN(TCM) + LENGTH(TCM);
+	__IntStackLimit = __IntStackTop - SUMM_Int_StackSz;
+
+	.int_stack_dummy __IntStackLimit (NOLOAD):
+	{
+		*(.intstack)
+	} > TCM
+
 	__ROMImageBase = ORIGIN(ROM);
 	__ROMImageLimit = __etext + __data_end__ - __data_start__;
-
 
 	/* Set stack top to end of RAM, and stack limit move down by
 	 * size of stack_dummy section */
