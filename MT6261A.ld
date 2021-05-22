@@ -39,7 +39,7 @@ MEMORY
 {
     ROM  (rx) : ORIGIN = 0x10006000, LENGTH = 8M - 0x6000
     RAM (rwx) : ORIGIN = 0x00000000, LENGTH = 4M
-    TCM (rwx) : ORIGIN = 0x70000000, LENGTH = 0x0000B000                                            // Minimum of 12KiB available for general use + cache (32KiB max)
+    TCM (rwx) : ORIGIN = 0x70000000, LENGTH = 0x0000B000                                            /* Minimum of 12KiB available for general use + cache (32KiB max) */
 }
 
 /* Linker script to place sections and symbol values. Should be used together
