@@ -64,7 +64,7 @@ extern pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent);
 extern pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem);
 extern boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position);
-extern boolean GUI_GetObjectVisibilty(pGUIOBJECT Object);
+extern boolean GUI_GetObjectVisibility(pGUIOBJECT Object);
 extern boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible);
 extern pTEXT GUI_GetObjectText(pGUIOBJECT Object);
 extern boolean GUI_SetObjectText(pGUIOBJECT Object, TTEXT ObjectText);

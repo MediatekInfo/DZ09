@@ -298,7 +298,7 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
     return true;
 }
 
-boolean GUI_GetObjectVisibilty(pGUIOBJECT Object)
+boolean GUI_GetObjectVisibility(pGUIOBJECT Object)
 {
     return ((Object != NULL) && Object->Visible);
 }

@@ -28,7 +28,7 @@ typedef struct tag_LABEL
 
 extern void GUI_DrawDefaultLabel(pGUIOBJECT Object, pRECT Clip);
 extern pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
-                                   TCOLOR ForeColor, TGOFLAGS Flags);
+                                  TCOLOR ForeColor, TGOFLAGS Flags);
 extern void GUI_DestroyLabel(pGUIOBJECT Object);
 extern pTEXT GUI_GetTextLabel(pGUIOBJECT Object);
 extern boolean GUI_SetTextLabel(pGUIOBJECT Object, pTEXT ObjectText);
