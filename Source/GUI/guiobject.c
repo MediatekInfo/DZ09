@@ -164,6 +164,7 @@ static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
             if (tmpObject != NULL)
             {
                 tmpObject->InheritedEnabled = Object->Enabled;
+                tmpObject->InheritedVisible = Object->Visible;
 
                 if (GUI_IsWindowObject(tmpObject))
                     GUI_UpdateChildTreeInheritance(tmpObject);
@@ -358,9 +359,18 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
         if (Object->Parent == NULL)
         {
             if (GUI_IsWindowObject(Object))
+            {
+                GUI_UpdateChildTreeInheritance(Object);
                 LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, true);
+            }
         }
-        else GUI_Invalidate(Object, NULL);
+        else
+        {
+            if (GUI_IsWindowObject(Object))
+                GUI_UpdateChildTreeInheritance(Object);
+
+            GUI_Invalidate(Object, NULL);
+        }
     }
     return true;
 }
@@ -618,7 +628,7 @@ void *GUI_DestroyObject(pGUIOBJECT Object)
         if (GUI_IsWindowObject(Object)) GUI_DestroyChildTree(Object);
         if (Object->Parent != NULL)
         {
-            if (Object->Visible)
+            if (Object->Visible && Object->InheritedVisible)
             {
                 GUI_SetObjectVisibility(Object, false);
                 EM_ProcessEvents();

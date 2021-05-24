@@ -84,6 +84,7 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Label->Head.Enabled = !!(Flags & GF_ENABLED);
         Label->Head.Visible = !!(Flags & GF_VISIBLE);
         Label->Head.InheritedEnabled = Parent->Enabled;
+        Label->Head.InheritedVisible = Parent->Visible;
 
         Label->ForeColor = ForeColor;
 

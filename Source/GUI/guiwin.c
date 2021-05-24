@@ -61,6 +61,7 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
         LObject->Head.Enabled = true;
         LObject->Head.Visible = true;
         LObject->Head.InheritedEnabled = true;
+        LObject->Head.InheritedVisible = true;
         LObject->Layer = Layer;
         LObject->ForeColor = ForeColor;
 
@@ -101,6 +102,7 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
         Win->Head.Enabled = (Flags & GF_ENABLED) != 0;
         Win->Head.Visible = (Flags & GF_VISIBLE) != 0;
         Win->Head.InheritedEnabled = Parent->Enabled;
+        Win->Head.InheritedVisible = Parent->Visible;
 
         Win->Topmost = (Flags & GF_TOPMOST) != 0;
         Win->Framed = (Flags & GF_FRAMED) != 0;

@@ -44,8 +44,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
         {
             ObjectPosition = GUI_CalculateClientArea(Object->Parent);
 
-            IsStillVisible = Object->Parent->Visible &&
-                             GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
+            IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
                              GUI_IsWindowObject(Object->Parent);                                    // Only a TWIN object can be a parent.
             Object = Object->Parent;
         }
@@ -164,7 +163,7 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
 {
     TPAINTEV PaintEvent = {0};
 
-    if (Object != NULL)
+    if ((Object != NULL) && Object->InheritedVisible)
     {
         PaintEvent.Object = Object;
         if (Rct == NULL) PaintEvent.UpdateRect = Object->Position;
