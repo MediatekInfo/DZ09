@@ -40,7 +40,8 @@ void GUI_DrawDefaultLabel(pGUIOBJECT Object, pRECT Clip)
                                         &Label->Caption,
                                         &LabelRect,
                                         Clip,
-                                        (Label->Head.Enabled) ? Label->Caption.Color.ForeColor : clGray,
+                                        (Label->Head.Enabled && Label->Head.InheritedEnabled) ?
+                                        Label->Caption.Color.ForeColor : clGray,
                                         Label->Caption.Color.BackColor);
         if (BackRects != NULL)
         {
@@ -82,6 +83,7 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Label->Head.Parent = Parent;
         Label->Head.Enabled = !!(Flags & GF_ENABLED);
         Label->Head.Visible = !!(Flags & GF_VISIBLE);
+        Label->Head.InheritedEnabled = Parent->Enabled;
 
         Label->ForeColor = ForeColor;
 

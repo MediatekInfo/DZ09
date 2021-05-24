@@ -149,6 +149,30 @@ static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
     return NULL;
 }
 
+static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
+{
+    pDLIST ChildList = &((pWIN)Object)->ChildObjects;
+
+    if (DL_GetItemsCount(ChildList))
+    {
+        pDLITEM tmpItem = DL_GetFirstItem(ChildList);
+
+        while (tmpItem != NULL)
+        {
+            pGUIOBJECT tmpObject = (pGUIOBJECT)tmpItem->Data;
+
+            if (tmpObject != NULL)
+            {
+                tmpObject->InheritedEnabled = Object->Enabled;
+
+                if (GUI_IsWindowObject(tmpObject))
+                    GUI_UpdateChildTreeInheritance(tmpObject);
+            }
+            tmpItem = DL_GetNextItem(tmpItem);
+        }
+    }
+}
+
 TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
 {
     TRECT ObjectRect;
@@ -293,6 +317,28 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
                 DL_DeleteFirstItem(UpdateRects);
             }
             DL_Delete(UpdateRects, false);
+        }
+    }
+    return true;
+}
+
+boolean GUI_GetObjectEnabled(pGUIOBJECT Object)
+{
+    return ((Object != NULL) && Object->Enabled);
+}
+
+boolean GUI_SetObjectEnabled(pGUIOBJECT Object, boolean Enabled)
+{
+    if (Object == NULL) return false;
+    if (Object->Enabled != Enabled)
+    {
+        Object->Enabled = Enabled;
+        if (Object->Parent != NULL)
+        {
+            if (GUI_IsWindowObject(Object))
+                GUI_UpdateChildTreeInheritance(Object);
+
+            GUI_Invalidate(Object, NULL);
         }
     }
     return true;

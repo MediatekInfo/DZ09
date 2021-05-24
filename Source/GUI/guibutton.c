@@ -45,7 +45,8 @@ void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
                                             &Button->Caption,
                                             &ButtonRect,
                                             Clip,
-                                            (Button->Head.Enabled) ? Button->Caption.Color.ForeColor : clGray,
+                                            (Button->Head.Enabled && Button->Head.InheritedEnabled) ?
+                                            Button->Caption.Color.ForeColor : clGray,
                                             Button->Caption.Color.BackColor);
             if (BackRects != NULL)
             {
@@ -88,6 +89,7 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Button->Head.Parent = Parent;
         Button->Head.Enabled = !!(Flags & GF_ENABLED);
         Button->Head.Visible = !!(Flags & GF_VISIBLE);
+        Button->Head.InheritedEnabled = Parent->Enabled;
 
         Button->ForeColor = ForeColor;
         Button->Autorepeat = !!(Flags & GF_AUTOREPEAT);

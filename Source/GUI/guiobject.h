@@ -46,6 +46,7 @@ typedef struct tag_GUIOBJECT
     TGOTYPE    Type;
     boolean    Enabled;
     boolean    Visible;
+    boolean    InheritedEnabled;
     int32_t    Tag;
     void       (*OnPressed)(pGUIOBJECT, pPOINT);
     void       (*OnReleased)(pGUIOBJECT, pPOINT);
