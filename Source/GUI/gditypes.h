@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ typedef enum tag_COLOR
     clBtnFace       = 0xFFC8D0D4
 } TCOLOR;
 
-typedef enum
+typedef enum tag_CFORMAT
 {
     CF_8IDX,                                                                                        // 1BPP
     CF_RGB565,                                                                                      // 2BPP
@@ -62,13 +62,13 @@ typedef enum
 
 #define clAlpha(c, alpha)   (((c) & 0x00FFFFFF) | (((alpha) & 0xFF) << 24))
 
-typedef struct
+typedef struct tag_POINT
 {
     int16_t x;
     int16_t y;
 } TPOINT, *pPOINT;
 
-typedef union
+typedef union tag_RECT
 {
     struct
     {
@@ -84,7 +84,7 @@ typedef union
     };
 } TRECT, *pRECT;
 
-typedef struct
+typedef struct tag_SIZEXY
 {
     uint16_t sx;
     uint16_t sy;
