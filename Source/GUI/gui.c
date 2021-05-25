@@ -229,19 +229,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         }
                         else
                         {
-                            /* Root object, update the objects below. */
-                            tmpDLItem = DL_FindItemByData(&((pWIN)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
-
-                            while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
-                            {
-                                tmpObject = tmpDLItem->Data;
-                                if ((tmpObject != NULL) && tmpObject->Visible)
-                                {
-                                    if (GUI_UpdateChildTree(UpdateRgn, tmpObject, &tmpObject->Position))
-                                        GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position);
-                                    else break;
-                                }
-                            }
+                            /* The case of an invisible layer object. */
                         }
                     }
                     else if (Event->Object->Parent != NULL)
