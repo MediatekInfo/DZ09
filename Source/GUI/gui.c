@@ -171,7 +171,7 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
         {
             if (Object->Parent != NULL)
                 PaintEvent.UpdateRect = GDI_LocalToGlobalRct(Rct, &Object->Parent->Position.lt);
-            else if (LCDIF_GetLayerPosition(((pWIN)Object)->Layer, &PaintEvent.UpdateRect))
+            else if (LCDIF_GetLayerPosition(((pWIN)Object)->Layer, NULL) && Object->Visible)
                 PaintEvent.UpdateRect = *Rct;
             else return;
         }
