@@ -70,7 +70,8 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
     pLABEL  Label;
     boolean Result;
 
-    if ((Parent == NULL) || !GUI_IsWindowObject(Parent)) return NULL;
+    if ((Parent == NULL) ||
+            !GUI_IsWindowObject(Parent) || GUI_IsLayerObject(Parent)) return NULL;
 
     Label = malloc(sizeof(TLABEL));
     if (Label != NULL)

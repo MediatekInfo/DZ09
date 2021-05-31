@@ -76,7 +76,8 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
     pBUTTON Button;
     boolean Result;
 
-    if ((Parent == NULL) || !GUI_IsWindowObject(Parent)) return NULL;
+    if ((Parent == NULL) ||
+            !GUI_IsWindowObject(Parent) || GUI_IsLayerObject(Parent)) return NULL;
 
     Button = malloc(sizeof(TBUTTON));
     if (Button != NULL)

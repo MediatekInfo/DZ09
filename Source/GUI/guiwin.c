@@ -144,6 +144,18 @@ void GUI_DestroyWindow(pGUIOBJECT Object)
     return;
 }
 
+boolean GUI_IsLayerObject(pGUIOBJECT Object)
+{
+    uint32_t i;
+
+    if ((Object != NULL) && GUI_IsWindowObject(Object))
+        for(i = 0; i < LCDIF_NUMLAYERS; i++)
+            if ((uintptr_t)Object == (uintptr_t)GUILayer[i])
+                return true;
+
+    return false;
+}
+
 boolean GUI_IsWindowObject(pGUIOBJECT Object)
 {
     return ((Object != NULL) && (Object->Type == GO_WINDOW));
