@@ -208,8 +208,6 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
 
         for(i = LCDIF_NUMLAYERS - 1; i >= 0; i--)
         {
-            pDLIST  ChildList;
-            pDLITEM tmpDLItem;
             TPOINT  tmpPoint;
 
             if ((GUILayer[i] == NULL) || !GUILayer[i]->Visible) continue;
@@ -217,25 +215,30 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
             tmpPoint.x = pt->x + LCDScreen.ScreenOffset.x - LCDScreen.VLayer[i].LayerOffset.x;
             tmpPoint.y = pt->y + LCDScreen.ScreenOffset.y - LCDScreen.VLayer[i].LayerOffset.y;
 
-            if (!IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position)) break;
-
-            Object = RootObject = GUILayer[i];
-
-            ChildList = &((pWIN)GUILayer[i])->ChildObjects;
-            tmpDLItem = DL_GetLastItem(ChildList);
-            while(tmpDLItem != NULL)
+            if (IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position))
             {
-                pGUIOBJECT tmpRoot = (pGUIOBJECT)tmpDLItem->Data;
+                pDLIST  ChildList;
+                pDLITEM tmpDLItem;
 
-                if ((tmpRoot != NULL) && tmpRoot->Visible &&
-                        IsPointInRect(tmpPoint.x, tmpPoint.y, &tmpRoot->Position))
+                Object = RootObject = GUILayer[i];
+
+                ChildList = &((pWIN)GUILayer[i])->ChildObjects;
+                tmpDLItem = DL_GetLastItem(ChildList);
+                while(tmpDLItem != NULL)
                 {
-                    if ((Object = GUI_GetObjectRecursive(tmpRoot, &tmpPoint)) == NULL)
-                        Object = tmpRoot;
-                    RootObject = tmpRoot;
-                    break;
+                    pGUIOBJECT tmpRoot = (pGUIOBJECT)tmpDLItem->Data;
+
+                    if ((tmpRoot != NULL) && tmpRoot->Visible &&
+                            IsPointInRect(tmpPoint.x, tmpPoint.y, &tmpRoot->Position))
+                    {
+                        if ((Object = GUI_GetObjectRecursive(tmpRoot, &tmpPoint)) == NULL)
+                            Object = tmpRoot;
+                        RootObject = tmpRoot;
+                        break;
+                    }
+                    tmpDLItem = DL_GetPrevItem(tmpDLItem);
                 }
-                tmpDLItem = DL_GetPrevItem(tmpDLItem);
+                break;
             }
         }
     }
