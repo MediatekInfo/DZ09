@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 */
 #include "systemconfig.h"
 #include "guiobject.h"
+
+static pGUIOBJECT ActiveObject;
 
 static void GUI_UpdateChildPositions(pGUIOBJECT Object, pPOINT dXY)
 {
@@ -165,6 +167,11 @@ static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
             {
                 tmpObject->InheritedEnabled = Object->Enabled;
                 tmpObject->InheritedVisible = Object->Visible;
+
+                if (((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()) &&
+                        (!Object->Enabled ||
+                         !Object->Visible))
+                    GUI_SetActiveObject(NULL, false);
 
                 if (GUI_IsWindowObject(tmpObject))
                     GUI_UpdateChildTreeInheritance(tmpObject);
@@ -339,6 +346,9 @@ boolean GUI_SetObjectEnabled(pGUIOBJECT Object, boolean Enabled)
         Object->Enabled = Enabled;
         if (Object->Parent != NULL)
         {
+            if (!Enabled && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
+                GUI_SetActiveObject(NULL, false);
+
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
@@ -369,6 +379,9 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
         }
         else
         {
+            if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
+                GUI_SetActiveObject(NULL, false);
+
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
@@ -605,6 +618,41 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
         }
     }
     return Result;
+}
+
+pGUIOBJECT GUI_GetActiveObject(void)
+{
+    return ActiveObject;
+}
+
+void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
+{
+    if ((uintptr_t)Object != (uintptr_t)ActiveObject)
+    {
+        uint32_t intflags = __disable_interrupts();
+        static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
+        {
+            NULL,
+            NULL,
+            GUI_SetActiveButton,
+            NULL
+        };
+
+        if (ActiveObject != NULL)
+        {
+            if (SetActive[ActiveObject->Type] != NULL)
+                SetActive[ActiveObject->Type](ActiveObject, false);
+            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+        }
+
+        if ((ActiveObject = Object) != NULL)
+        {
+            if (SetActive[ActiveObject->Type] != NULL)
+                SetActive[ActiveObject->Type](ActiveObject, false);
+            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+        }
+        __restore_interrupts(intflags);
+    }
 }
 
 void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
