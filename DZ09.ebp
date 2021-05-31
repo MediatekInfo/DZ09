@@ -178,6 +178,13 @@
 		<Unit filename="Source\GUI\guibutton.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\GUI\guilabel.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\GUI\guilabel.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\GUI\guilib.h">
 			<Option target="SYSTEM" />
 		</Unit>

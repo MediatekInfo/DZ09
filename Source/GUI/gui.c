@@ -44,8 +44,7 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
         {
             ObjectPosition = GUI_CalculateClientArea(Object->Parent);
 
-            IsStillVisible = Object->Parent->Visible &&
-                             GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
+            IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
                              GUI_IsWindowObject(Object->Parent);                                    // Only a TWIN object can be a parent.
             Object = Object->Parent;
         }
@@ -164,7 +163,7 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
 {
     TPAINTEV PaintEvent = {0};
 
-    if (Object != NULL)
+    if ((Object != NULL) && Object->InheritedVisible)
     {
         PaintEvent.Object = Object;
         if (Rct == NULL) PaintEvent.UpdateRect = Object->Position;
@@ -172,7 +171,7 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
         {
             if (Object->Parent != NULL)
                 PaintEvent.UpdateRect = GDI_LocalToGlobalRct(Rct, &Object->Parent->Position.lt);
-            else if (LCDIF_GetLayerPosition(((pWIN)Object)->Layer, &PaintEvent.UpdateRect))
+            else if (LCDIF_GetLayerPosition(((pWIN)Object)->Layer, NULL) && Object->Visible)
                 PaintEvent.UpdateRect = *Rct;
             else return;
         }
@@ -230,19 +229,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
                         }
                         else
                         {
-                            /* Root object, update the objects below. */
-                            tmpDLItem = DL_FindItemByData(&((pWIN)GUILayer[Layer])->ChildObjects, Event->Object, NULL);
-
-                            while((tmpDLItem = DL_GetPrevItem(tmpDLItem)) != NULL)
-                            {
-                                tmpObject = tmpDLItem->Data;
-                                if ((tmpObject != NULL) && tmpObject->Visible)
-                                {
-                                    if (GUI_UpdateChildTree(UpdateRgn, tmpObject, &tmpObject->Position))
-                                        GDI_SUBRectFromRegion(UpdateRgn, &tmpObject->Position);
-                                    else break;
-                                }
-                            }
+                            /* The case of an invisible layer object. */
                         }
                     }
                     else if (Event->Object->Parent != NULL)

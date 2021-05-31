@@ -45,7 +45,8 @@ void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
                                             &Button->Caption,
                                             &ButtonRect,
                                             Clip,
-                                            (Button->Head.Enabled) ? Button->Caption.Color.ForeColor : clGray,
+                                            (Button->Head.Enabled && Button->Head.InheritedEnabled) ?
+                                            Button->Caption.Color.ForeColor : clGray,
                                             Button->Caption.Color.BackColor);
             if (BackRects != NULL)
             {
@@ -75,7 +76,8 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
     pBUTTON Button;
     boolean Result;
 
-    if ((Parent == NULL) || !GUI_IsWindowObject(Parent)) return NULL;
+    if ((Parent == NULL) ||
+            !GUI_IsWindowObject(Parent) || GUI_IsLayerObject(Parent)) return NULL;
 
     Button = malloc(sizeof(TBUTTON));
     if (Button != NULL)
@@ -88,12 +90,15 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Button->Head.Parent = Parent;
         Button->Head.Enabled = !!(Flags & GF_ENABLED);
         Button->Head.Visible = !!(Flags & GF_VISIBLE);
+        Button->Head.InheritedEnabled = Parent->Enabled;
+        Button->Head.InheritedVisible = Parent->Visible;
 
         Button->ForeColor = ForeColor;
         Button->Autorepeat = !!(Flags & GF_AUTOREPEAT);
 
         GDI_UpdateTextExtent(&Caption);
         Button->Caption = Caption;
+        Button->Caption.Color.BackColor = Button->ForeColor;
 
         if (!ObjectsList->Count) Result = DL_AddItem(ObjectsList, Button) != NULL;
         else
@@ -149,7 +154,11 @@ void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea)
 pTEXT GUI_GetTextButton(pGUIOBJECT Object)
 {
     if ((Object != NULL) && (Object->Type == GO_BUTTON))
+    {
+        ((pBUTTON)Object)->Caption.Color.BackColor = ((pBUTTON)Object)->ForeColor;
+
         return &((pBUTTON)Object)->Caption;
+    }
     else return NULL;
 }
 
@@ -160,6 +169,7 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
         uint32_t intflags = __disable_interrupts();
 
         ((pBUTTON)Object)->Caption = *ObjectText;
+        ((pBUTTON)Object)->Caption.Color.BackColor = ((pBUTTON)Object)->ForeColor;
         __restore_interrupts(intflags);
 
         return true;

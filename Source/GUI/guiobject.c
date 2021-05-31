@@ -83,7 +83,8 @@ static void *GUI_DestroySingleObject(pGUIOBJECT Object)
             {
                 NULL,
                 GUI_DestroyWindow,
-                GUI_DestroyButton
+                GUI_DestroyButton,
+                GUI_DestroyLabel
             };
 
             if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
@@ -148,6 +149,31 @@ static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
     return NULL;
 }
 
+static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
+{
+    pDLIST ChildList = &((pWIN)Object)->ChildObjects;
+
+    if (DL_GetItemsCount(ChildList))
+    {
+        pDLITEM tmpItem = DL_GetFirstItem(ChildList);
+
+        while (tmpItem != NULL)
+        {
+            pGUIOBJECT tmpObject = (pGUIOBJECT)tmpItem->Data;
+
+            if (tmpObject != NULL)
+            {
+                tmpObject->InheritedEnabled = Object->Enabled;
+                tmpObject->InheritedVisible = Object->Visible;
+
+                if (GUI_IsWindowObject(tmpObject))
+                    GUI_UpdateChildTreeInheritance(tmpObject);
+            }
+            tmpItem = DL_GetNextItem(tmpItem);
+        }
+    }
+}
+
 TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
 {
     TRECT ObjectRect;
@@ -159,7 +185,8 @@ TRECT GUI_CalculateClientArea(pGUIOBJECT Object)
         {
             NULL,
             GUI_CalcClientAreaWindow,
-            GUI_CalcClientAreaButton
+            GUI_CalcClientAreaButton,
+            NULL
         };
 
         if (CalcClientArea[Object->Type] != NULL)
@@ -181,8 +208,6 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
 
         for(i = LCDIF_NUMLAYERS - 1; i >= 0; i--)
         {
-            pDLIST  ChildList;
-            pDLITEM tmpDLItem;
             TPOINT  tmpPoint;
 
             if ((GUILayer[i] == NULL) || !GUILayer[i]->Visible) continue;
@@ -190,25 +215,30 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
             tmpPoint.x = pt->x + LCDScreen.ScreenOffset.x - LCDScreen.VLayer[i].LayerOffset.x;
             tmpPoint.y = pt->y + LCDScreen.ScreenOffset.y - LCDScreen.VLayer[i].LayerOffset.y;
 
-            if (!IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position)) break;
-
-            Object = RootObject = GUILayer[i];
-
-            ChildList = &((pWIN)GUILayer[i])->ChildObjects;
-            tmpDLItem = DL_GetLastItem(ChildList);
-            while(tmpDLItem != NULL)
+            if (IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position))
             {
-                pGUIOBJECT tmpRoot = (pGUIOBJECT)tmpDLItem->Data;
+                pDLIST  ChildList;
+                pDLITEM tmpDLItem;
 
-                if ((tmpRoot != NULL) && tmpRoot->Visible &&
-                        IsPointInRect(tmpPoint.x, tmpPoint.y, &tmpRoot->Position))
+                Object = RootObject = GUILayer[i];
+
+                ChildList = &((pWIN)GUILayer[i])->ChildObjects;
+                tmpDLItem = DL_GetLastItem(ChildList);
+                while(tmpDLItem != NULL)
                 {
-                    if ((Object = GUI_GetObjectRecursive(tmpRoot, &tmpPoint)) == NULL)
-                        Object = tmpRoot;
-                    RootObject = tmpRoot;
-                    break;
+                    pGUIOBJECT tmpRoot = (pGUIOBJECT)tmpDLItem->Data;
+
+                    if ((tmpRoot != NULL) && tmpRoot->Visible &&
+                            IsPointInRect(tmpPoint.x, tmpPoint.y, &tmpRoot->Position))
+                    {
+                        if ((Object = GUI_GetObjectRecursive(tmpRoot, &tmpPoint)) == NULL)
+                            Object = tmpRoot;
+                        RootObject = tmpRoot;
+                        break;
+                    }
+                    tmpDLItem = DL_GetPrevItem(tmpDLItem);
                 }
-                tmpDLItem = DL_GetPrevItem(tmpDLItem);
+                break;
             }
         }
     }
@@ -296,7 +326,29 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
     return true;
 }
 
-boolean GUI_GetObjectVisibilty(pGUIOBJECT Object)
+boolean GUI_GetObjectEnabled(pGUIOBJECT Object)
+{
+    return ((Object != NULL) && Object->Enabled);
+}
+
+boolean GUI_SetObjectEnabled(pGUIOBJECT Object, boolean Enabled)
+{
+    if (Object == NULL) return false;
+    if (Object->Enabled != Enabled)
+    {
+        Object->Enabled = Enabled;
+        if (Object->Parent != NULL)
+        {
+            if (GUI_IsWindowObject(Object))
+                GUI_UpdateChildTreeInheritance(Object);
+
+            GUI_Invalidate(Object, NULL);
+        }
+    }
+    return true;
+}
+
+boolean GUI_GetObjectVisibility(pGUIOBJECT Object)
 {
     return ((Object != NULL) && Object->Visible);
 }
@@ -310,9 +362,18 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
         if (Object->Parent == NULL)
         {
             if (GUI_IsWindowObject(Object))
+            {
+                GUI_UpdateChildTreeInheritance(Object);
                 LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, true);
+            }
         }
-        else GUI_Invalidate(Object, NULL);
+        else
+        {
+            if (GUI_IsWindowObject(Object))
+                GUI_UpdateChildTreeInheritance(Object);
+
+            GUI_Invalidate(Object, NULL);
+        }
     }
     return true;
 }
@@ -325,7 +386,8 @@ pTEXT GUI_GetObjectText(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -344,7 +406,8 @@ boolean GUI_SetObjectText(pGUIOBJECT Object, TTEXT ObjectText)
         {
             NULL,
             NULL,
-            GUI_SetTextButton
+            GUI_SetTextButton,
+            GUI_SetTextLabel
         };
 
         if (SetTextObject[Object->Type] != NULL)
@@ -366,7 +429,8 @@ pBFC_FONT GUI_GetObjectFont(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -390,7 +454,8 @@ boolean GUI_SetObjectFont(pGUIOBJECT Object, pBFC_FONT ObjectFont)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if ((GetTextObject[Object->Type] != NULL) &&
@@ -417,7 +482,8 @@ pTEXTCOLOR GUI_GetObjectTextColor(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -436,24 +502,35 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
 
     if ((Object != NULL) && (Object->Type < GO_NUMTYPES))
     {
-        pTEXT  ObjectText;
+        pTEXT  tmpText;
         static pTEXT (*const GetTextObject[GO_NUMTYPES])(pGUIOBJECT) =
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if ((GetTextObject[Object->Type] != NULL) &&
-                ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
+                ((tmpText = GetTextObject[Object->Type](Object)) != NULL))
         {
             uint32_t intflags = __disable_interrupts();
+            TTEXT    ObjectText = *tmpText;
+            static boolean (*const SetTextObject[GO_NUMTYPES])(pGUIOBJECT, pTEXT) =
+            {
+                NULL,
+                NULL,
+                GUI_SetTextButton,
+                GUI_SetTextLabel
+            };
 
-            ObjectText->Color = Color;
+            ObjectText.Color = Color;
+            if (SetTextObject[Object->Type] != NULL)
+                Result = SetTextObject[Object->Type](Object, &ObjectText);
+
             __restore_interrupts(intflags);
 
-            GUI_Invalidate(Object, NULL);
-            Result = true;
+            if (Result) GUI_Invalidate(Object, NULL);
         }
     }
     return Result;
@@ -467,7 +544,8 @@ char *GUI_GetObjectCaption(pGUIOBJECT Object)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if (GetTextObject[Object->Type] != NULL)
@@ -491,7 +569,8 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
         {
             NULL,
             NULL,
-            GUI_GetTextButton
+            GUI_GetTextButton,
+            GUI_GetTextLabel
         };
 
         if ((GetTextObject[Object->Type] != NULL) &&
@@ -536,7 +615,8 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
         {
             NULL,
             GUI_DrawDefaultWindow,
-            GUI_DrawDefaultButton
+            GUI_DrawDefaultButton,
+            GUI_DrawDefaultLabel
         };
 
         if (DrawDefault[Object->Type] != NULL)
@@ -551,7 +631,7 @@ void *GUI_DestroyObject(pGUIOBJECT Object)
         if (GUI_IsWindowObject(Object)) GUI_DestroyChildTree(Object);
         if (Object->Parent != NULL)
         {
-            if (Object->Visible)
+            if (Object->Visible && Object->InheritedVisible)
             {
                 GUI_SetObjectVisibility(Object, false);
                 EM_ProcessEvents();

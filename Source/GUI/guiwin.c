@@ -60,6 +60,8 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
         LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
         LObject->Head.Enabled = true;
         LObject->Head.Visible = true;
+        LObject->Head.InheritedEnabled = true;
+        LObject->Head.InheritedVisible = true;
         LObject->Layer = Layer;
         LObject->ForeColor = ForeColor;
 
@@ -99,6 +101,8 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
         Win->Head.Parent = Parent;
         Win->Head.Enabled = (Flags & GF_ENABLED) != 0;
         Win->Head.Visible = (Flags & GF_VISIBLE) != 0;
+        Win->Head.InheritedEnabled = Parent->Enabled;
+        Win->Head.InheritedVisible = Parent->Visible;
 
         Win->Topmost = (Flags & GF_TOPMOST) != 0;
         Win->Framed = (Flags & GF_FRAMED) != 0;
@@ -138,6 +142,18 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
 void GUI_DestroyWindow(pGUIOBJECT Object)
 {
     return;
+}
+
+boolean GUI_IsLayerObject(pGUIOBJECT Object)
+{
+    uint32_t i;
+
+    if ((Object != NULL) && GUI_IsWindowObject(Object))
+        for(i = 0; i < LCDIF_NUMLAYERS; i++)
+            if ((uintptr_t)Object == (uintptr_t)GUILayer[i])
+                return true;
+
+    return false;
 }
 
 boolean GUI_IsWindowObject(pGUIOBJECT Object)
