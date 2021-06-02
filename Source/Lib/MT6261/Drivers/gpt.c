@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -147,6 +147,35 @@ boolean GPT_StopTimer(TGPT Index)
     }
 
     GPT_UpdatePowerState();
+    return Result;
+}
+
+boolean GPT_DisableTimer(TGPT Index)
+{
+    boolean Result = GPT_StopTimer(Index);
+
+    if (Result && GPTStatus.GPT.GPTIntsRegistered)
+    {
+        switch (Index)
+        {
+        case GP_TIMER1:
+            if (GPTStatus.GPT.GPT1_Handler != NULL)
+            {
+                GPTStatus.GPT.GPT1_Handler = NULL;
+                GPT_TryUnregisterInterrupt();
+            }
+            break;
+        case GP_TIMER2:
+            if (GPTStatus.GPT.GPT2_Handler != NULL)
+            {
+                GPTStatus.GPT.GPT2_Handler = NULL;
+                GPT_TryUnregisterInterrupt();
+            }
+            break;
+        default:
+            break;
+        }
+    }
     return Result;
 }
 

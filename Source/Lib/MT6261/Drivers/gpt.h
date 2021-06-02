@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -94,6 +94,7 @@ typedef union tag_GPTSTATE
 extern void     GPT_InitializeTimers(void);
 extern boolean  GPT_StartTimer(TGPT Index);
 extern boolean  GPT_StopTimer(TGPT Index);
+extern boolean  GPT_DisableTimer(TGPT Index);
 extern uint32_t GPT_Get26MTicksCount(void);
 extern boolean  GPT_SetupTimer(TGPT Index, uint16_t Freq, boolean Arepeat, void (*Handler)(void), boolean Start);
 extern void     GPT_SleepTimers(void);
