@@ -59,7 +59,7 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
 
         LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
         LObject->Head.Enabled = true;
-        LObject->Head.Visible = true;
+        LObject->Head.Visible = false;
         LObject->Head.InheritedEnabled = true;
         LObject->Head.InheritedVisible = true;
         LObject->Layer = Layer;
