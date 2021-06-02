@@ -94,7 +94,7 @@ void GPT_InitializeTimers(void)
     GPTIMER2_CON = 0;                                                                               // Disable GPT2
     if (!(GPTIMER4_CON & GPT4_LOCK)) GPTIMER4_CON &= ~GPT4_Enable;                                  // Disable GPT4 if it not locked
     memset(&GPTStatus, 0x00, sizeof(GPTStatus));
-    GPTStatus.GPT.GPT4_Enabled = GPTIMER4_CON & GPT4_Enable;                                        // Update GPT4 status
+    GPTStatus.GPT.GPT4_Enabled = !!(PTIMER4_CON & GPT4_Enable);                                     // Update GPT4 status
     GPT_UpdatePowerState();                                                                         // Disable clock for GPT
 }
 
@@ -108,15 +108,15 @@ boolean GPT_StartTimer(TGPT Index)
     {
     case GP_TIMER1:
         GPTIMER1_CON |= GPT_Enable;
-        Result = GPTStatus.GPT.GPT1_Enabled = (GPTIMER1_CON & GPT_Enable) ? true : false;
+        Result = GPTStatus.GPT.GPT1_Enabled = !!(GPTIMER1_CON & GPT_Enable);
         break;
     case GP_TIMER2:
         GPTIMER2_CON |= GPT_Enable;
-        Result = GPTStatus.GPT.GPT2_Enabled = (GPTIMER2_CON & GPT_Enable) ? true : false;
+        Result = GPTStatus.GPT.GPT2_Enabled = !!(GPTIMER2_CON & GPT_Enable);
         break;
     case GP_TIMER4:
         if (!(GPTIMER4_CON & GPT4_LOCK)) GPTIMER4_CON |= GPT4_Enable;                               // Try to enable timer
-        Result = GPTStatus.GPT.GPT4_Enabled = (GPTIMER4_CON & GPT4_Enable) ? true : false;
+        Result = GPTStatus.GPT.GPT4_Enabled = !!(GPTIMER4_CON & GPT4_Enable);
         break;
     }
 
@@ -194,7 +194,7 @@ boolean GPT_SetupTimer(TGPT Index, uint16_t Frequency, boolean Arepeat, void (*H
     case GP_TIMER1:
         if (!GPT_IsPoweredUp()) GPT_PowerUp();
         GPTIMER1_CON = 0;
-        GPTStatus.GPT.GPT1_Enabled = (GPTIMER1_CON & GPT_Enable) ? true : false;
+        GPTStatus.GPT.GPT1_Enabled = !!(GPTIMER1_CON & GPT_Enable);
 
         if (Frequency > (MAX_GPT_FREQ >> 1)) break;
         if (!Frequency)
@@ -220,13 +220,13 @@ boolean GPT_SetupTimer(TGPT Index, uint16_t Frequency, boolean Arepeat, void (*H
 
         GPTIMER1_CON = ((Arepeat) ? GPT_ARepeat : GPT_OneShot);
         if (Start) GPTIMER1_CON |= GPT_Enable;
-        GPTStatus.GPT.GPT1_Enabled = GPTIMER1_CON & GPT_Enable;
+        GPTStatus.GPT.GPT1_Enabled = !!(GPTIMER1_CON & GPT_Enable);
         Result = true;
         break;
     case GP_TIMER2:
         if (!GPT_IsPoweredUp()) GPT_PowerUp();
         GPTIMER2_CON = 0;
-        GPTStatus.GPT.GPT2_Enabled = (GPTIMER2_CON & GPT_Enable) ? true : false;
+        GPTStatus.GPT.GPT2_Enabled = !!(GPTIMER2_CON & GPT_Enable);
 
         if (Frequency > (MAX_GPT_FREQ >> 1)) break;
         if (!Frequency)
@@ -252,7 +252,7 @@ boolean GPT_SetupTimer(TGPT Index, uint16_t Frequency, boolean Arepeat, void (*H
 
         GPTIMER2_CON = ((Arepeat) ? GPT_ARepeat : GPT_OneShot);
         if (Start) GPTIMER2_CON |= GPT_Enable;
-        GPTStatus.GPT.GPT2_Enabled = GPTIMER2_CON & GPT_Enable;
+        GPTStatus.GPT.GPT2_Enabled = !!(GPTIMER2_CON & GPT_Enable);
         Result = true;
         break;
     default:

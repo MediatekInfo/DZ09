@@ -107,7 +107,7 @@ boolean MPU_AddRegion(uint32_t RegionStart, uint32_t RegionEnd, boolean Cacheabl
 
 boolean MPU_DisableCache(void)
 {
-    boolean IsCacheEnabled = CACHE_CON & MCEN;
+    boolean IsCacheEnabled = !!(CACHE_CON & MCEN);
 
     CACHE_CON &= ~MCEN;
 
