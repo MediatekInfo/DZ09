@@ -94,7 +94,7 @@ void GPT_InitializeTimers(void)
     GPTIMER2_CON = 0;                                                                               // Disable GPT2
     if (!(GPTIMER4_CON & GPT4_LOCK)) GPTIMER4_CON &= ~GPT4_Enable;                                  // Disable GPT4 if it not locked
     memset(&GPTStatus, 0x00, sizeof(GPTStatus));
-    GPTStatus.GPT.GPT4_Enabled = !!(PTIMER4_CON & GPT4_Enable);                                     // Update GPT4 status
+    GPTStatus.GPT.GPT4_Enabled = !!(GPTIMER4_CON & GPT4_Enable);                                    // Update GPT4 status
     GPT_UpdatePowerState();                                                                         // Disable clock for GPT
 }
 
