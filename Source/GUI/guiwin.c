@@ -24,6 +24,33 @@
 
 pGUIOBJECT GUILayer[LCDIF_NUMLAYERS];
 
+static boolean GUI_MoveWindowToTop(pGUIOBJECT Object)
+{
+    pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
+    int32_t CurrentZIndex, NewZIndex = ChildList->Count - 1;
+    pDLITEM ObjectItem = DL_FindItemByDataReverse(ChildList, Object, &CurrentZIndex);
+
+    if (!((pWIN)Object)->Topmost)
+    {
+        pDLITEM tmpDLItem = DL_GetLastItem(ChildList);
+
+        while(tmpDLItem != NULL)
+        {
+            pGUIOBJECT tmpObject = (pGUIOBJECT)tmpDLItem->Data;
+
+            if ((tmpObject == NULL) ||
+                    !GUI_IsWindowObject(tmpObject) || !((pWIN)tmpObject)->Topmost)
+                break;
+            tmpDLItem = DL_GetPrevItem(tmpDLItem);
+            NewZIndex--;
+        }
+    }
+    if (CurrentZIndex != NewZIndex)
+        DL_MoveItemToIndex(ChildList, CurrentZIndex, NewZIndex);
+
+    return (CurrentZIndex != NewZIndex);
+}
+
 void GUI_DrawDefaultWindow(pGUIOBJECT Object, pRECT Clip)
 {
     pWIN  Win = (pWIN)Object;
@@ -211,6 +238,25 @@ pGUIOBJECT GUI_GetTopWindow(pGUIOBJECT Parent, boolean Topmost, pDLITEM *ObjectI
         }
     }
     return Result;
+}
+
+pGUIOBJECT GUI_MoveWindowTreeToTop(pGUIOBJECT Object)
+{
+    pGUIOBJECT ObjectToInvalidate = NULL;
+
+    if ((Object != NULL) &&
+            GUI_IsWindowObject(Object) && !GUI_IsLayerObject(Object))
+    {
+        while(Object->Parent != NULL)
+        {
+            if (GUI_MoveWindowToTop(Object) &&
+                    Object->Visible && Object->InheritedVisible)
+                ObjectToInvalidate = Object;
+
+            Object = Object->Parent;
+        }
+    }
+    return ObjectToInvalidate;
 }
 
 void GUI_CalcClientAreaWindow(pGUIOBJECT Object, pRECT ClientArea)
