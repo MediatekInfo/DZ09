@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,7 @@ extern pDLITEM DL_GetPrevItem(pDLITEM DLItem);
 extern pDLITEM DL_GetNextItem(pDLITEM DLItem);
 extern int32_t DL_GetItemIndex(pDLIST DList, pDLITEM Item);
 extern pDLITEM DL_FindItemByData(pDLIST DList, void *Data, int32_t *Index);
+extern pDLITEM DL_FindItemByDataReverse(pDLIST DList, void *Data, int32_t *Index);
 extern pDLITEM DL_FindItemByIndex(pDLIST List, uint32_t Index);
 extern pDLITEM DL_AddItem(pDLIST List, void *Data);
 extern pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data);
