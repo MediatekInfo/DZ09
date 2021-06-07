@@ -634,6 +634,7 @@ void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
 {
     if ((uintptr_t)Object != (uintptr_t)ActiveObject)
     {
+        boolean  NeedInvalidate = false;
         uint32_t intflags = __disable_interrupts();
         static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
         {
@@ -647,16 +648,18 @@ void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
         {
             if (SetActive[ActiveObject->Type] != NULL)
                 SetActive[ActiveObject->Type](ActiveObject, false);
-            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+            NeedInvalidate = Invalidate;
         }
 
         if ((ActiveObject = Object) != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
                 SetActive[ActiveObject->Type](ActiveObject, false);
-            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+            NeedInvalidate = Invalidate;
         }
         __restore_interrupts(intflags);
+
+        if (NeedInvalidate) GUI_Invalidate(ActiveObject, NULL);
     }
 }
 
