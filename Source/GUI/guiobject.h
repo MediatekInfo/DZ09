@@ -49,8 +49,8 @@ typedef struct tag_GUIOBJECT
     boolean    InheritedEnabled;
     boolean    InheritedVisible;
     int32_t    Tag;
-    void       (*OnPressed)(pGUIOBJECT, pPOINT);
-    void       (*OnReleased)(pGUIOBJECT, pPOINT);
+    void       (*OnPress)(pGUIOBJECT, pPOINT);
+    void       (*OnRelease)(pGUIOBJECT, pPOINT);
     void       (*OnMove)(pGUIOBJECT, pPOINT);
     void       (*OnClick)(pGUIOBJECT, pPOINT);
     void       (*OnPaint)(pGUIOBJECT, pRECT);
