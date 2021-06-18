@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -70,6 +70,42 @@ static pDLITEM DL_ItemByData(pDLIST DList, void *Data, int32_t *Index)
                     break;
                 }
                 tmpItem = DL_NextItem(tmpItem);
+            }
+        }
+    }
+    if (Index != NULL) *Index = Result;
+
+    return tmpItem;
+}
+
+static pDLITEM DL_ItemByDataRev(pDLIST DList, void *Data, int32_t *Index)
+{
+    pDLITEM tmpItem = NULL;
+    int32_t Result = -1;
+
+    if ((DList != NULL) && (Data != NULL))
+    {
+        tmpItem = DL_LastItem(DList);
+        if (Index == NULL)
+        {
+            while(tmpItem != NULL)
+            {
+                if (tmpItem->Data == Data) break;
+                tmpItem = DL_PrevItem(tmpItem);
+            }
+        }
+        else
+        {
+            int32_t  i;
+
+            for(i = DList->Count - 1; tmpItem != NULL; i--)
+            {
+                if (tmpItem->Data == Data)
+                {
+                    Result = i;
+                    break;
+                }
+                tmpItem = DL_PrevItem(tmpItem);
             }
         }
     }
@@ -283,6 +319,17 @@ pDLITEM DL_FindItemByData(pDLIST DList, void *Data, int32_t *Index)
     pDLITEM  tmpItem;
 
     tmpItem = DL_ItemByData(DList, Data, Index);
+    __restore_interrupts(intflags);
+
+    return tmpItem;
+}
+
+pDLITEM DL_FindItemByDataReverse(pDLIST DList, void *Data, int32_t *Index)
+{
+    uint32_t intflags = __disable_interrupts();
+    pDLITEM  tmpItem;
+
+    tmpItem = DL_ItemByDataRev(DList, Data, Index);
     __restore_interrupts(intflags);
 
     return tmpItem;

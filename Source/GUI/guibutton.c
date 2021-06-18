@@ -176,3 +176,15 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
     }
     return false;
 }
+
+void GUI_SetActiveButton(pGUIOBJECT Object, boolean Active)
+{
+    if ((Object != NULL) && (Object->Type == GO_BUTTON))
+    {
+        uint32_t intflags = __disable_interrupts();
+
+        ((pBUTTON)Object)->Pressed = Active;
+        __restore_interrupts(intflags);
+    }
+    return;
+}

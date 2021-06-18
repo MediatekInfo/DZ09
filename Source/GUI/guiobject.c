@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 */
 #include "systemconfig.h"
 #include "guiobject.h"
+
+static pGUIOBJECT ActiveObject;
 
 static void GUI_UpdateChildPositions(pGUIOBJECT Object, pPOINT dXY)
 {
@@ -166,6 +168,11 @@ static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
                 tmpObject->InheritedEnabled = Object->Enabled;
                 tmpObject->InheritedVisible = Object->Visible;
 
+                if (((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()) &&
+                        (!Object->Enabled ||
+                         !Object->Visible))
+                    GUI_SetActiveObject(NULL, false);
+
                 if (GUI_IsWindowObject(tmpObject))
                     GUI_UpdateChildTreeInheritance(tmpObject);
             }
@@ -276,6 +283,66 @@ pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
     return Result;
 }
 
+boolean GUI_SetObjectHandlerOnPress(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnPress = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnRelease(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnRelease = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnMove(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnMove = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnClick(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnClick = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnPaint(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pRECT))
+{
+    if (Object != NULL)
+    {
+        Object->OnPaint = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnDestroy(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT))
+{
+    if (Object != NULL)
+    {
+        Object->OnDestroy = Handler;
+        return true;
+    }
+    else return false;
+}
+
 boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position)
 {
     if (Object == NULL) return false;
@@ -339,6 +406,9 @@ boolean GUI_SetObjectEnabled(pGUIOBJECT Object, boolean Enabled)
         Object->Enabled = Enabled;
         if (Object->Parent != NULL)
         {
+            if (!Enabled && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
+                GUI_SetActiveObject(NULL, false);
+
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
@@ -364,11 +434,19 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
             if (GUI_IsWindowObject(Object))
             {
                 GUI_UpdateChildTreeInheritance(Object);
-                LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, true);
+                if (Visible)
+                {
+                    LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, false);
+                    GUI_Invalidate(Object, NULL);
+                }
+                else LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, true);
             }
         }
         else
         {
+            if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
+                GUI_SetActiveObject(NULL, false);
+
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
@@ -605,6 +683,44 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
         }
     }
     return Result;
+}
+
+pGUIOBJECT GUI_GetActiveObject(void)
+{
+    return ActiveObject;
+}
+
+void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
+{
+    if ((uintptr_t)Object != (uintptr_t)ActiveObject)
+    {
+        boolean  NeedInvalidate = false;
+        uint32_t intflags = __disable_interrupts();
+        static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
+        {
+            NULL,
+            NULL,
+            GUI_SetActiveButton,
+            NULL
+        };
+
+        if (ActiveObject != NULL)
+        {
+            if (SetActive[ActiveObject->Type] != NULL)
+                SetActive[ActiveObject->Type](ActiveObject, false);
+            NeedInvalidate = Invalidate;
+        }
+
+        if ((ActiveObject = Object) != NULL)
+        {
+            if (SetActive[ActiveObject->Type] != NULL)
+                SetActive[ActiveObject->Type](ActiveObject, false);
+            NeedInvalidate = Invalidate;
+        }
+        __restore_interrupts(intflags);
+
+        if (NeedInvalidate) GUI_Invalidate(ActiveObject, NULL);
+    }
 }
 
 void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)

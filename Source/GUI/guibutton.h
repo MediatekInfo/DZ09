@@ -35,5 +35,6 @@ extern void GUI_DestroyButton(pGUIOBJECT Object);
 extern void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea);
 extern pTEXT GUI_GetTextButton(pGUIOBJECT Object);
 extern boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText);
+extern void GUI_SetActiveButton(pGUIOBJECT Object, boolean Active);
 
 #endif /* _GUIBUTTON__H_ */

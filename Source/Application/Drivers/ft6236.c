@@ -90,11 +90,11 @@ void FT6236_ISR(void)
             case PE_PRESS:
                 FT6326_PenCoordinates[TSEvent.PenIndex] = TSEvent.PXY;
                 FT6236_PenPressed[TSEvent.PenIndex] = true;
-                EM_PostEvent(ET_PENPRESSED, NULL, &TSEvent, sizeof(TPENEVENT));
+                EM_PostEvent(ET_PENPRESS, NULL, &TSEvent, sizeof(TPENEVENT));
                 break;
             case PE_LIFTUP:
                 if (FT6236_PenPressed[TSEvent.PenIndex])
-                    EM_PostEvent(ET_PENRELEASED, NULL, &TSEvent, sizeof(TPENEVENT));
+                    EM_PostEvent(ET_PENRELEASE, NULL, &TSEvent, sizeof(TPENEVENT));
                 FT6236_PenPressed[TSEvent.PenIndex] = false;
                 break;
             case PE_CONTACT:
@@ -103,7 +103,7 @@ void FT6236_ISR(void)
                         (FT6326_PenCoordinates[TSEvent.PenIndex].y != TSEvent.PXY.y))
                 {
                     FT6326_PenCoordinates[TSEvent.PenIndex] = TSEvent.PXY;
-                    EM_PostEvent(ET_PENMOVED, NULL, &TSEvent, sizeof(TPENEVENT));
+                    EM_PostEvent(ET_PENMOVE, NULL, &TSEvent, sizeof(TPENEVENT));
                 }
                 break;
             case PE_NOEVENT:

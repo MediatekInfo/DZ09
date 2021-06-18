@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ typedef enum tag_VLINDEX
     LCDIF_LAYER0,
     LCDIF_LAYER1,
     LCDIF_LAYER2,
-    LCDIF_LAYER3,
+    LCDIF_LAYER3,                                                                                   // Topmost layer
     LCDIF_NUMLAYERS
 } TVLINDEX;
 
