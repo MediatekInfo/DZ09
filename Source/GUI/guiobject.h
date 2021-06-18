@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -64,6 +64,12 @@ typedef struct tag_GUIOBJECT
 extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
 extern pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent);
 extern pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem);
+extern boolean GUI_SetObjectHandlerOnPress(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT));
+extern boolean GUI_SetObjectHandlerOnRelease(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT));
+extern boolean GUI_SetObjectHandlerOnMove(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT));
+extern boolean GUI_SetObjectHandlerOnClick(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT));
+extern boolean GUI_SetObjectHandlerOnPaint(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pRECT));
+extern boolean GUI_SetObjectHandlerOnDestroy(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT));
 extern boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position);
 extern boolean GUI_GetObjectVisibility(pGUIOBJECT Object);

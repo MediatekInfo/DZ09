@@ -283,6 +283,66 @@ pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
     return Result;
 }
 
+boolean GUI_SetObjectHandlerOnPress(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnPress = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnRelease(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnRelease = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnMove(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnMove = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnClick(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT))
+{
+    if (Object != NULL)
+    {
+        Object->OnClick = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnPaint(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pRECT))
+{
+    if (Object != NULL)
+    {
+        Object->OnPaint = Handler;
+        return true;
+    }
+    else return false;
+}
+
+boolean GUI_SetObjectHandlerOnDestroy(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT))
+{
+    if (Object != NULL)
+    {
+        Object->OnDestroy = Handler;
+        return true;
+    }
+    else return false;
+}
+
 boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position)
 {
     if (Object == NULL) return false;
