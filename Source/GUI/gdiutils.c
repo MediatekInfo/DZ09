@@ -108,14 +108,12 @@ boolean IsRectInRect(pRECT a, pRECT b)
     if ((a == NULL) || (b == NULL)) return false;
     if (!IsRectsOverlaps(a, b)) return false;
 
-    if (IsPointInRect(a->l, a->t, b) && IsPointInRect(a->r, a->t, b) &&
-            IsPointInRect(a->l, a->b, b) && IsPointInRect(a->r, a->b, b))
+    if (IsPointInRect(a->l, a->t, b) && IsPointInRect(a->r, a->b, b))
     {
         memcpy(a, b, sizeof(TRECT));
         return true;
     }
-    else if (IsPointInRect(b->l, b->t, a) && IsPointInRect(b->r, b->t, a) &&
-             IsPointInRect(b->l, b->b, a) && IsPointInRect(b->r, b->b, a))
+    else if (IsPointInRect(b->l, b->t, a) && IsPointInRect(b->r, b->b, a))
     {
         return true;
     }
