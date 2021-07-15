@@ -53,6 +53,6 @@ extern TTEXT Text(const BFC_FONT *Font, char *Caption, TTXTALIGN Align, TTEXTCOL
 extern void GDI_UpdateTextExtent(pTEXT Text);
 extern char *GDI_GetStringPosByXShift(pBFC_CHARINFO *CharInfo, pTEXT Text, int32_t ReqXShift,
                                       uint32_t *DataBitIndex);
-extern pDLIST GDI_DrawText(TVLINDEX Layer, pTEXT Text, pRECT Client, pRECT Clip,
+extern pRLIST GDI_DrawText(TVLINDEX Layer, pTEXT Text, pRECT Client, pRECT Clip,
                            TCOLOR ForeColor, TCOLOR BackColor);
 #endif /* _GDIFONT_H_ */

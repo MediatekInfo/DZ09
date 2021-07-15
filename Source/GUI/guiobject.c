@@ -371,7 +371,7 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
         if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
         {
             TPOINT dXY = GDI_GlobalToLocalPt(&NewPosition.lt, &Object->Position.lt);
-            pDLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
+            pRLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
 
             Object->Position = NewPosition;
 
@@ -379,15 +379,15 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
                 GUI_UpdateChildPositions(Object, &dXY);
             GUI_Invalidate(Object, NULL);
 
-            while (DL_GetItemsCount(UpdateRects))
+            if (UpdateRects != NULL)
             {
-                pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+                uint32_t i;
 
-                GUI_Invalidate(Object->Parent, (pRECT)tmpDLItem->Data);
-                free(tmpDLItem->Data);
-                DL_DeleteFirstItem(UpdateRects);
+                for(i = 0; i < UpdateRects->Count; i++)
+                    GUI_Invalidate(Object->Parent, &UpdateRects->Item[i]);
+
+                GDI_DeleteRList(UpdateRects);
             }
-            DL_Delete(UpdateRects, false);
         }
     }
     return true;

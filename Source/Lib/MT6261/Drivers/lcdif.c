@@ -354,18 +354,19 @@ boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScr
 
             if (UpdateScreen)
             {
-                pDLIST  UpdateRects = GDI_SUBRectangles(&PrevLayerPosition, &Position);
-                pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+                pRLIST   UpdateRects = GDI_SUBRectangles(&PrevLayerPosition, &Position);
 
                 Position = GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset);
                 LCDIF_UpdateRectangle(Position);
-
-                while(tmpDLItem != NULL)
+                if (UpdateRects != NULL)
                 {
-                    LCDIF_UpdateRectangle(GDI_GlobalToLocalRct((pRECT)tmpDLItem->Data, &LCDScreen.ScreenOffset));
-                    tmpDLItem = DL_GetNextItem(tmpDLItem);
+                    uint32_t i;
+
+                    for (i = 0; i < UpdateRects->Count; i++)
+                        LCDIF_UpdateRectangle(GDI_GlobalToLocalRct(&UpdateRects->Item[i], &LCDScreen.ScreenOffset));
+
+                    GDI_DeleteRList(UpdateRects);
                 }
-                DL_Delete(UpdateRects, true);
             }
         }
         return true;

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -124,6 +124,23 @@ boolean IsRectCollapsed(pRECT rct)
 {
     return (rct == NULL) ||
            (rct->l > rct->r) || (rct->t > rct->b);
+}
+
+pRLIST GDI_CreateRList(void)
+{
+    pRLIST tmpRList = malloc(sizeof(TRLIST));
+
+    if (tmpRList != NULL)
+        tmpRList->Count = 0;
+
+    return tmpRList;
+}
+
+pRLIST GDI_DeleteRList(pRLIST RList)
+{
+    free(RList);
+
+    return NULL;
 }
 
 TPOINT GDI_LocalToGlobalPt(pPOINT pt, pPOINT Offset)
@@ -359,6 +376,60 @@ pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
             Rct->b = a->b;
             DL_AddItem(Rlist, Rct);
         }
+    }
+    return Rlist;
+}
+
+// a - b
+pRLIST GDI_SUBRectangles(pRECT a, pRECT b)
+{
+    pRLIST Rlist = GDI_CreateRList();
+    pRECT  Rct;
+
+    if (Rlist == NULL) return NULL;
+    if ((a == NULL) || (b == NULL)) return Rlist;
+
+    if (!IsRectsOverlaps(a, b))
+    {
+        Rlist->Item[Rlist->Count++] = *a;
+
+        return Rlist;
+    }
+    if (((b->l - a->l) > 0) && ((a->b - a->t) >= 0))
+    {
+        /* Left vertical rectangle */
+        Rlist->Item[Rlist->Count].l = a->l;
+        Rlist->Item[Rlist->Count].t = a->t;
+        Rlist->Item[Rlist->Count].r = b->l - 1;
+        Rlist->Item[Rlist->Count].b = a->b;
+        Rlist->Count++;
+    }
+    if (((b->r - b->l) >= 0) && ((b->t - a->t) > 0))
+    {
+        /* Top horizontal rectangle */
+        Rlist->Item[Rlist->Count].l = max(a->l, b->l);
+        Rlist->Item[Rlist->Count].t = a->t;
+        Rlist->Item[Rlist->Count].r = min(a->r, b->r);
+        Rlist->Item[Rlist->Count].b = b->t - 1;
+        Rlist->Count++;
+    }
+    if (((a->r - b->r) > 0) && ((a->b - a->t) >= 0))
+    {
+        /* Right vertical rectangle */
+        Rlist->Item[Rlist->Count].l = b->r + 1;
+        Rlist->Item[Rlist->Count].t = a->t;
+        Rlist->Item[Rlist->Count].r = a->r;
+        Rlist->Item[Rlist->Count].b = a->b;
+        Rlist->Count++;
+    }
+    if (((b->r - b->l) >= 0) && ((a->b - b->b) > 0))
+    {
+        /* Bottom horizontal rectangle */
+        Rlist->Item[Rlist->Count].l = max(a->l, b->l);
+        Rlist->Item[Rlist->Count].t = b->b + 1;
+        Rlist->Item[Rlist->Count].r = min(a->r, b->r);
+        Rlist->Item[Rlist->Count].b = a->b;
+        Rlist->Count++;
     }
     return Rlist;
 }

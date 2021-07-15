@@ -36,7 +36,7 @@ void GUI_DrawDefaultLabel(pGUIOBJECT Object, pRECT Clip)
 
     if (Label->Caption.Text != NULL)
     {
-        pDLIST BackRects = GDI_DrawText(((pWIN)Label->Head.Parent)->Layer,
+        pRLIST BackRects = GDI_DrawText(((pWIN)Label->Head.Parent)->Layer,
                                         &Label->Caption,
                                         &LabelRect,
                                         Clip,
@@ -45,18 +45,12 @@ void GUI_DrawDefaultLabel(pGUIOBJECT Object, pRECT Clip)
                                         Label->Caption.Color.BackColor);
         if (BackRects != NULL)
         {
-            pDLITEM tmpItem;
+            uint32_t i;
 
-            while ((tmpItem = DL_GetFirstItem(BackRects)) != NULL)
-            {
-                if (tmpItem->Data != NULL)
-                {
-                    GDI_FillRectangle(Layer, *(pRECT)tmpItem->Data, Label->ForeColor);
-                    free(tmpItem->Data);
-                }
-                DL_DeleteFirstItem(BackRects);
-            }
-            DL_Delete(BackRects, false);
+            for(i = 0; i < BackRects->Count; i++)
+                GDI_FillRectangle(Layer, BackRects->Item[i], Label->ForeColor);
+
+            GDI_DeleteRList(BackRects);
             return;
         }
     }

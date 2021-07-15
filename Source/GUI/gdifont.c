@@ -43,13 +43,13 @@ static pBFC_CHARINFO GDI_GetFontCharInfo(pBFC_FONT Font, uint32_t Symbol)
     return Result;
 }
 
-static pDLIST GDI_DrawText16(pLCONTEXT lc, pTEXT Text, pRECT Client, pRECT Clip,
+static pRLIST GDI_DrawText16(pLCONTEXT lc, pTEXT Text, pRECT Client, pRECT Clip,
                              TCOLOR ForeColor, TCOLOR BackColor)
 {
     uint16_t  *FrameBuffer;
     int16_t   FrameWidth, XShift, YShift;
     TRECT     TextRect;
-    pDLIST    SubRects = NULL;
+    pRLIST    SubRects = NULL;
 
     if (lc->ColorFormat != CF_RGB565) return NULL;
 
@@ -156,18 +156,18 @@ static pDLIST GDI_DrawText16(pLCONTEXT lc, pTEXT Text, pRECT Client, pRECT Clip,
                 }
             }
         }
-        else SubRects = DL_Delete(SubRects, true);
+        else SubRects = GDI_DeleteRList(SubRects);
     }
     return SubRects;
 }
 
-static pDLIST GDI_DrawText32(pLCONTEXT lc, pTEXT Text, pRECT Client, pRECT Clip,
+static pRLIST GDI_DrawText32(pLCONTEXT lc, pTEXT Text, pRECT Client, pRECT Clip,
                              TCOLOR ForeColor, TCOLOR BackColor)
 {
     uint32_t  *FrameBuffer;
     int16_t   FrameWidth, XShift, YShift;
     TRECT     TextRect;
-    pDLIST    SubRects = NULL;
+    pRLIST    SubRects = NULL;
 
     if ((lc->ColorFormat != CF_ARGB8888) &&
             (lc->ColorFormat != CF_PARGB8888) &&
@@ -274,7 +274,7 @@ static pDLIST GDI_DrawText32(pLCONTEXT lc, pTEXT Text, pRECT Client, pRECT Clip,
                 }
             }
         }
-        else SubRects = DL_Delete(SubRects, true);
+        else SubRects = GDI_DeleteRList(SubRects);
     }
     return SubRects;
 }
@@ -356,10 +356,10 @@ char *GDI_GetStringPosByXShift(pBFC_CHARINFO *CharInfo, pTEXT Text, int32_t ReqX
     return NULL;
 }
 
-pDLIST GDI_DrawText(TVLINDEX Layer, pTEXT Text, pRECT Client, pRECT Clip,
+pRLIST GDI_DrawText(TVLINDEX Layer, pTEXT Text, pRECT Client, pRECT Clip,
                     TCOLOR ForeColor, TCOLOR BackColor)
 {
-    static pDLIST (*const DrawText[CF_NUM])(pLCONTEXT, pTEXT, pRECT, pRECT, TCOLOR, TCOLOR) =
+    static pRLIST (*const DrawText[CF_NUM])(pLCONTEXT, pTEXT, pRECT, pRECT, TCOLOR, TCOLOR) =
     {
         NULL,                                                                                       // CF_8IDX
         GDI_DrawText16,                                                                             // CF_RGB565

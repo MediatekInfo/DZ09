@@ -41,7 +41,7 @@ void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
     {
         if (Button->Caption.Text != NULL)
         {
-            pDLIST BackRects = GDI_DrawText(((pWIN)Button->Head.Parent)->Layer,
+            pRLIST BackRects = GDI_DrawText(((pWIN)Button->Head.Parent)->Layer,
                                             &Button->Caption,
                                             &ButtonRect,
                                             Clip,
@@ -50,18 +50,12 @@ void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
                                             Button->Caption.Color.BackColor);
             if (BackRects != NULL)
             {
-                pDLITEM tmpItem;
+                uint32_t i;
 
-                while ((tmpItem = DL_GetFirstItem(BackRects)) != NULL)
-                {
-                    if (tmpItem->Data != NULL)
-                    {
-                        GDI_FillRectangle(Layer, *(pRECT)tmpItem->Data, Button->ForeColor);
-                        free(tmpItem->Data);
-                    }
-                    DL_DeleteFirstItem(BackRects);
-                }
-                DL_Delete(BackRects, false);
+                for(i = 0; i < BackRects->Count; i++)
+                    GDI_FillRectangle(Layer, BackRects->Item[i], Button->ForeColor);
+
+                GDI_DeleteRList(BackRects);
                 return;
             }
         }

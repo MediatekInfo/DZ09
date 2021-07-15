@@ -90,4 +90,10 @@ typedef struct tag_SIZEXY
     uint16_t sy;
 } TSIZEXY, *pSIZEXY;
 
+typedef struct tag_RLIST
+{
+    uint32_t Count;
+    TRECT    Item[4];
+} TRLIST, *pRLIST;
+
 #endif /* _GDITYPES_H_ */

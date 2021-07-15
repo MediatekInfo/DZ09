@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -27,13 +27,16 @@ extern TSIZEXY SizeXY(uint16_t sx, uint16_t sy);
 extern boolean IsRectsOverlaps(pRECT a, pRECT b);
 extern boolean IsPointInRect(int16_t x, int16_t y, pRECT Rct);
 extern boolean IsRectCollapsed(pRECT rct);
+extern pRLIST GDI_CreateRList(void);
+extern pRLIST GDI_DeleteRList(pRLIST RList);
 extern TPOINT GDI_LocalToGlobalPt(pPOINT pt, pPOINT Offset);
 extern TPOINT GDI_GlobalToLocalPt(pPOINT pt, pPOINT Offset);
 extern TRECT GDI_LocalToGlobalRct(pRECT rct, pPOINT Offset);
 extern TRECT GDI_GlobalToLocalRct(pRECT rct, pPOINT Offset);
 extern boolean GDI_ANDRectangles(pRECT a, pRECT b);
 extern pDLIST GDI_ADDRectangles(pRECT a, pRECT b);
-extern pDLIST GDI_SUBRectangles(pRECT a, pRECT b);
+extern pDLIST GDI_SUBRectangles_Old(pRECT a, pRECT b);
+extern pRLIST GDI_SUBRectangles(pRECT a, pRECT b);
 extern boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct);
 extern boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct);
 extern void GDI_FillRectangleX(pLCONTEXT lc, pRECT Rct, TCOLOR Color);
