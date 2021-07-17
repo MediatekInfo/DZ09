@@ -35,7 +35,6 @@ extern TRECT GDI_LocalToGlobalRct(pRECT rct, pPOINT Offset);
 extern TRECT GDI_GlobalToLocalRct(pRECT rct, pPOINT Offset);
 extern boolean GDI_ANDRectangles(pRECT a, pRECT b);
 extern pDLIST GDI_ADDRectangles(pRECT a, pRECT b);
-extern pDLIST GDI_SUBRectangles_Old(pRECT a, pRECT b);
 extern pRLIST GDI_SUBRectangles(pRECT a, pRECT b);
 extern boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct);
 extern boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct);

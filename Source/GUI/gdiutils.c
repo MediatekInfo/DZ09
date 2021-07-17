@@ -294,90 +294,36 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
         }
         else
         {
-            ResRects = GDI_SUBRectangles(a, b);
-            if (ResRects == NULL) ResRects = DL_Create(0);
-            if (ResRects != NULL)
+            pRLIST tmpRList = GDI_SUBRectangles(a, b);
+
+            if (tmpRList != NULL)
             {
-                tmpRectB = malloc(sizeof(TRECT));
-                if (tmpRectB != NULL)
+                if (tmpRList->Count &&
+                        ((ResRects = DL_Create(0)) != NULL))
                 {
-                    *tmpRectB = *b;
-                    DL_AddItem(ResRects, tmpRectB);
+                    uint32_t i;
+
+                    for(i = 0; i < tmpRList->Count; i++)
+                    {
+                        tmpRectB = malloc(sizeof(TRECT));
+                        if (tmpRectB != NULL)
+                        {
+                            *tmpRectB = tmpRList->Item[i];
+                            DL_AddItem(ResRects, tmpRectB);
+                        }
+                    }
+                    tmpRectB = malloc(sizeof(TRECT));
+                    if (tmpRectB != NULL)
+                    {
+                        *tmpRectB = *b;
+                        DL_AddItem(ResRects, tmpRectB);
+                    }
                 }
+                free(tmpRList);
             }
         }
     }
     return ResRects;
-}
-
-// a - b
-pDLIST GDI_SUBRectangles(pRECT a, pRECT b)
-{
-    pDLIST Rlist = DL_Create(0);
-    pRECT  Rct;
-
-    if (Rlist == NULL) return NULL;
-    if ((a == NULL) || (b == NULL)) return Rlist;
-
-    if (!IsRectsOverlaps(a, b))
-    {
-        Rct = malloc(sizeof(TRECT));
-        if (Rct != NULL)
-        {
-            *Rct = *a;
-            DL_AddItem(Rlist, Rct);
-        }
-        return Rlist;
-    }
-    if (((b->l - a->l) > 0) && ((a->b - a->t) >= 0))
-    {
-        Rct = malloc(sizeof(TRECT));                                                                // Left vertical rectangle
-        if (Rct != NULL)
-        {
-            Rct->l = a->l;
-            Rct->t = a->t;
-            Rct->r = b->l - 1;
-            Rct->b = a->b;
-            DL_AddItem(Rlist, Rct);
-        }
-    }
-    if (((b->r - b->l) >= 0) && ((b->t - a->t) > 0))
-    {
-        Rct = malloc(sizeof(TRECT));                                                                // Top horizontal rectangle
-        if (Rct != NULL)
-        {
-            Rct->l = max(a->l, b->l);
-            Rct->t = a->t;
-            Rct->r = min(a->r, b->r);
-            Rct->b = b->t - 1;
-            DL_AddItem(Rlist, Rct);
-        }
-    }
-    if (((a->r - b->r) > 0) && ((a->b - a->t) >= 0))
-    {
-        Rct = malloc(sizeof(TRECT));                                                                // Right vertical rectangle
-        if (Rct != NULL)
-        {
-            Rct->l = b->r + 1;
-            Rct->t = a->t;
-            Rct->r = a->r;
-            Rct->b = a->b;
-            DL_AddItem(Rlist, Rct);
-        }
-    }
-    if (((b->r - b->l) >= 0) && ((a->b - b->b) > 0))
-    {
-        Rct = malloc(sizeof(TRECT));                                                                // Bottom horizontal rectangle
-        if (Rct != NULL)
-        {
-            Rct->l = max(a->l, b->l);
-            Rct->t = b->b + 1;
-            Rct->r = min(a->r, b->r);
-            Rct->b = a->b;
-            DL_AddItem(Rlist, Rct);
-        }
-    }
-    return Rlist;
 }
 
 // a - b
@@ -450,29 +396,28 @@ boolean GDI_ADDRectToRegion(pDLIST Region, pRECT Rct)
 
             if (IsRectsOverlaps(tmpRect, Rct))
             {
-                pDLIST tmpList = GDI_SUBRectangles(tmpRect, Rct);
+                pRLIST tmpList = GDI_SUBRectangles(tmpRect, Rct);
 
                 if (tmpList != NULL)
                 {
-                    pDLITEM tmpSUBItem;
-
-                    if (DL_GetItemsCount(tmpList))
+                    if (tmpList->Count)
                     {
-                        tmpSUBItem = DL_GetFirstItem(tmpList);
+                        uint32_t i;
 
-                        *tmpRect = *(pRECT)tmpSUBItem->Data;
-                        free(tmpSUBItem->Data);
-                        DL_DeleteFirstItem(tmpList);
+                        *tmpRect = tmpList->Item[0];
 
-                        while((tmpSUBItem = DL_GetFirstItem(tmpList)) != NULL)
+                        for(i = 1; i < tmpList->Count; i++)
                         {
-                            DL_InsertItemBefore(Region, tmpItem, tmpSUBItem->Data);
-                            DL_DeleteFirstItem(tmpList);
+                            if ((tmpRect = malloc(sizeof(TRECT))) != NULL)
+                            {
+                                *tmpRect = tmpList->Item[i];
+                                DL_InsertItemBefore(Region, tmpItem, tmpRect);
+                            }
                         }
                     }
                     else
                     {
-                        tmpSUBItem = DL_GetNextItem(tmpItem);
+                        pDLITEM tmpSUBItem = DL_GetNextItem(tmpItem);
 
                         free(tmpItem->Data);
                         DL_DeleteItem(Region, tmpItem);
@@ -511,29 +456,28 @@ boolean GDI_SUBRectFromRegion(pDLIST Region, pRECT Rct)
 
             if (IsRectsOverlaps(tmpRect, Rct))
             {
-                pDLIST tmpList = GDI_SUBRectangles(tmpRect, Rct);
+                pRLIST tmpList = GDI_SUBRectangles(tmpRect, Rct);
 
                 if (tmpList != NULL)
                 {
-                    pDLITEM tmpSUBItem;
-
-                    if (DL_GetItemsCount(tmpList))
+                    if (tmpList->Count)
                     {
-                        tmpSUBItem = DL_GetFirstItem(tmpList);
+                        uint32_t i;
 
-                        *tmpRect = *(pRECT)tmpSUBItem->Data;
-                        free(tmpSUBItem->Data);
-                        DL_DeleteFirstItem(tmpList);
+                        *tmpRect = tmpList->Item[0];
 
-                        while((tmpSUBItem = DL_GetFirstItem(tmpList)) != NULL)
+                        for(i = 1; i < tmpList->Count; i++)
                         {
-                            DL_InsertItemBefore(Region, tmpItem, tmpSUBItem->Data);
-                            DL_DeleteFirstItem(tmpList);
+                            if ((tmpRect = malloc(sizeof(TRECT))) != NULL)
+                            {
+                                *tmpRect = tmpList->Item[i];
+                                DL_InsertItemBefore(Region, tmpItem, tmpRect);
+                            }
                         }
                     }
                     else
                     {
-                        tmpSUBItem = DL_GetNextItem(tmpItem);
+                        pDLITEM tmpSUBItem = DL_GetNextItem(tmpItem);
 
                         free(tmpItem->Data);
                         DL_DeleteItem(Region, tmpItem);
