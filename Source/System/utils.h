@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,8 +20,16 @@
 #define _UTILS_H_
 
 #define MAX_UL      (~1UL + 1)
-#define max(a,b)    (((a) > (b)) ? (a) : (b))
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
+#define max(a,b)    ({\
+                        typeof(a) _a = a;\
+                        typeof(b) _b = b;\
+                        (_a > _b) ? _a : _b;\
+                    })
+#define min(a,b)    ({\
+                        typeof(a) _a = a;\
+                        typeof(b) _b = b;\
+                        (_a < _b) ? _a : _b;\
+                    })
 
 extern uint32_t __enable_interrupts(void);                                                          // From asmutils.s
 extern uint32_t __disable_interrupts(void);                                                         // From asmutils.s

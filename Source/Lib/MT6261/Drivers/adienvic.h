@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -58,8 +58,9 @@
 // v - SourceNum
 #define ADIE_IRQ_SEL(x, v)  do\
                             {\
-                                (*(volatile uint16_t *)(ADIE_CIRQ_BASE + 0x0200 + 4 * ((x) >> 1))) &= ~(0x03 << (8 * ((x) & 0x01)));\
-                                (*(volatile uint16_t *)(ADIE_CIRQ_BASE + 0x0200 + 4 * ((x) >> 1))) |= ((v) & 0x03) << (8 * ((x) & 0x01));\
+                                typeof(x) _x = x;\
+                                (*(volatile uint16_t *)(ADIE_CIRQ_BASE + 0x0200 + 4 * ((_x) >> 1))) &= ~(0x03 << (8 * ((_x) & 0x01)));\
+                                (*(volatile uint16_t *)(ADIE_CIRQ_BASE + 0x0200 + 4 * ((_x) >> 1))) |= ((v) & 0x03) << (8 * ((_x) & 0x01));\
                             }\
                             while(0)
 // ADIE CIRQ Interrupt Sources

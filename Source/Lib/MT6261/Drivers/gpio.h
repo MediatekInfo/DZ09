@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -98,7 +98,7 @@
 #define GPIO_DIR1_MASK              0x00CFFFFFF
 #define GPIO_SETDIRIN(Pin)          do\
                                     {\
-                                        uint32_t  p = (Pin);\
+                                        typeof(Pin) p = Pin;\
                                         if (p < 0x20) GPIO_DIR0_CLR = (1UL << p);\
                                         else if (p < 0x40)\
                                             GPIO_DIR1_CLR = (1UL << (p - 0x20));\
@@ -106,7 +106,7 @@
                                     while(0)
 #define GPIO_SETDIROUT(Pin)         do\
                                     {\
-                                        uint32_t  p = (Pin);\
+                                        typeof(Pin) p = Pin;\
                                         if (p < 0x20) GPIO_DIR0_SET = (1UL << p);\
                                         else if (p < 0x40)\
                                             GPIO_DIR1_SET = (1UL << (p - 0x20));\
@@ -124,7 +124,8 @@
 #define PULLEN1_MASK                0x00F01800
 #define GPIO_PULLENABLE(Pin)        do\
                                     {\
-                                        uint32_t  v, p = (Pin);\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = (1UL << p);\
@@ -143,7 +144,8 @@
                                     while(0)
 #define GPIO_PULLDISABLE(Pin)       do\
                                     {\
-                                        uint32_t  v, p = (Pin);\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = (1UL << p);\
@@ -176,7 +178,8 @@
 #define GPIO_DOUT1_CLR              (*(volatile uint32_t *)(GPIO_BASE + 0x0318))
 #define GPIO_DATAOUT(Pin, Data)     do\
                                     {\
-                                        uint32_t  v, p = (Pin);\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = 1UL << p;\
@@ -192,8 +195,11 @@
 
 #define GPIO_DIN0                   (*(volatile uint32_t *)(GPIO_BASE + 0x0400))
 #define GPIO_DIN1                   (*(volatile uint32_t *)(GPIO_BASE + 0x0410))
-#define GPIO_DATAIN(Pin)            (((Pin) < 0x20) ? ((GPIO_DIN0 & (1UL << (Pin))) ? true : false) :\
-                                     ((Pin) < 0x40) ? ((GPIO_DIN1 & (1UL << ((Pin) - 0x20))) ? true : false) : false)
+#define GPIO_DATAIN(Pin)            ({\
+                                        typeof(Pin) p = Pin;\
+                                        (p < 0x20) ? ((GPIO_DIN0 & (1UL << p)) ? true : false) :\
+                                        (p < 0x40) ? ((GPIO_DIN1 & (1UL << (p - 0x20))) ? true : false) : false;\
+                                    })
 
 #define GPIO_PULLSEL0               (*(volatile uint32_t *)(GPIO_BASE + 0x0500))                    // 0 - PullDown/1 - PullUp
 #define GPIO_PULLSEL0_SET           (*(volatile uint32_t *)(GPIO_BASE + 0x0504))
@@ -205,7 +211,8 @@
 #define PULLSEL1_MASK               0x00F01800
 #define GPIO_SETPULLUP(Pin)         do\
                                     {\
-                                        uint32_t  v, p = (Pin);\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = (1UL << p);\
@@ -224,7 +231,8 @@
                                     while(0)
 #define GPIO_SETPULLDOWN(Pin)       do\
                                     {\
-                                        uint32_t  v, p = (Pin);\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = (1UL << p);\
@@ -252,7 +260,8 @@
 #define GPIO_SMT1_MASK              0x00001FE0
 #define GPIO_SMTENABLE(Pin)         do\
                                     {\
-                                        uint32_t p = (Pin), v;\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = 1UL << p;\
@@ -267,7 +276,8 @@
                                     while(0)
 #define GPIO_SMTDISABLE(Pin)        do\
                                     {\
-                                        uint32_t p = (Pin), v;\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = 1UL << p;\
@@ -308,7 +318,8 @@
 #define GPIO_IES1_MASK              0x00001FE0
 #define GPIO_SETINPUTEN(Pin)        do\
                                     {\
-                                        uint32_t p = (Pin), v;\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = 1UL << p;\
@@ -323,7 +334,8 @@
                                     while(0)
 #define GPIO_SETINPUTDIS(Pin)       do\
                                     {\
-                                        uint32_t p = (Pin), v;\
+                                        typeof(Pin) p = Pin;\
+                                        uint32_t    v;\
                                         if (p < 0x20)\
                                         {\
                                             v = 1UL << p;\
@@ -815,19 +827,20 @@
 
 #define GPIO_SETMODE(Pin, Mode)     do\
                                     {\
-                                        if ((Pin) <= GPIOMAX)\
+                                        typeof(Pin) p = Pin;\
+                                        if (p <= GPIOMAX)\
                                         {\
-                                            uint8_t  RegIdx = ((Pin) >> 3) & 0x07;                  /* Index of GPIO_MODE_XXX register */\
-                                            uint8_t  ModePos = ((Pin) & 0x07) << 2;                 /* Mode bits position */\
+                                            uint8_t  RegIdx = (p >> 3) & 0x07;                      /* Index of GPIO_MODE_XXX register */\
+                                            uint8_t  ModePos = (p & 0x07) << 2;                     /* Mode bits position */\
                                             uint32_t Mask = 0;                                      /* Bit field mask */\
 \
-                                            if (Pin < 8) Mask = GPIO_MODE0MASK;\
-                                            else if (Pin < 16) Mask = GPIO_MODE1MASK;\
-                                            else if (Pin < 24) Mask = GPIO_MODE2MASK;\
-                                            else if (Pin < 32) Mask = GPIO_MODE3MASK;\
-                                            else if (Pin < 40) Mask = GPIO_MODE4MASK;\
-                                            else if (Pin < 48) Mask = GPIO_MODE5MASK;\
-                                            else if (Pin < 56) Mask = GPIO_MODE6MASK;\
+                                            if (p < 8) Mask = GPIO_MODE0MASK;\
+                                            else if (p < 16) Mask = GPIO_MODE1MASK;\
+                                            else if (p < 24) Mask = GPIO_MODE2MASK;\
+                                            else if (p < 32) Mask = GPIO_MODE3MASK;\
+                                            else if (p < 40) Mask = GPIO_MODE4MASK;\
+                                            else if (p < 48) Mask = GPIO_MODE5MASK;\
+                                            else if (p < 56) Mask = GPIO_MODE6MASK;\
                                             GPIO_MODE(RegIdx) = (GPIO_MODE(RegIdx) & Mask) |\
                                                                 (((Mode) & Mask) << ModePos);\
                                         }\

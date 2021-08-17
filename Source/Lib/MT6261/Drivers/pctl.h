@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -101,26 +101,28 @@
 
 #define PCTL_PowerDown(x)           do\
                                     {\
-                                        if ((x) <= PD_CNFG_MAX)\
+                                        typeof(x) _x = x;\
+                                        if (_x <= PD_CNFG_MAX)\
                                         {\
-                                            CNFG_PDN_CON_SET(x >> 4) = (1UL << ((x) & 0x0F));\
+                                            CNFG_PDN_CON_SET(_x >> 4) = (1UL << (_x & 0x0F));\
                                         }\
-                                        else if ((x) <= PD_ACFG_MAX)\
+                                        else if (_x <= PD_ACFG_MAX)\
                                         {\
-                                            ACFG_CLK_CON_SET = (1UL << ((x) & 0x0F));\
+                                            ACFG_CLK_CON_SET = (1UL << (_x & 0x0F));\
                                         }\
                                     }\
                                     while(0)
 
 #define PCTL_PowerUp(x)             do\
                                     {\
-                                        if ((x) <= PD_CNFG_MAX)\
+                                        typeof(x) _x = x;\
+                                        if (_x <= PD_CNFG_MAX)\
                                         {\
-                                            CNFG_PDN_CON_CLR(x >> 4) = (1UL << ((x) & 0x0F));\
+                                            CNFG_PDN_CON_CLR(_x >> 4) = (1UL << (_x & 0x0F));\
                                         }\
-                                        else if ((x) <= PD_ACFG_MAX)\
+                                        else if (_x <= PD_ACFG_MAX)\
                                         {\
-                                            ACFG_CLK_CON_CLR = (1UL << ((x) & 0x0F));\
+                                            ACFG_CLK_CON_CLR = (1UL << (_x & 0x0F));\
                                         }\
                                     }\
                                     while(0)

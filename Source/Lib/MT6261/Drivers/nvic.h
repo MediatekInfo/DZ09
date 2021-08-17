@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -77,8 +77,9 @@
 // v - SourceNum
 #define IRQ_SEL(x, v)   do\
                         {\
-                            (*(volatile uint32_t *)(CIRQ_BASE + 0x0200 + 4 * ((x) >> 2))) &= ~(0xFF << (8 * ((x) & 0x03)));\
-                            (*(volatile uint32_t *)(CIRQ_BASE + 0x0200 + 4 * ((x) >> 2))) |= ((v) & 0x3F) << (8 * ((x) & 0x03));\
+                            typeof(x) _x = x;\
+                            (*(volatile uint32_t *)(CIRQ_BASE + 0x0200 + 4 * (_x >> 2))) &= ~(0xFF << (8 * (_x & 0x03)));\
+                            (*(volatile uint32_t *)(CIRQ_BASE + 0x0200 + 4 * (_x >> 2))) |= ((v) & 0x3F) << (8 * (_x & 0x03));\
                         }\
                         while(0)
 
