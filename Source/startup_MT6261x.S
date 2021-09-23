@@ -83,7 +83,6 @@ __heap_limit:
     .section .isr_vectors
     .align  2
     .globl  __isr_vectors
-    .globl  __rom_image_base, __rom_image_limit
 __isr_vectors:
     ldr     pc, __reset_address
     ldr     pc, __undef_address
@@ -107,11 +106,6 @@ __irq_address:
     .long   __nvic_irq_handler
 __fiq_address:
     .long   __nvic_fiq_handler
-
-__rom_image_base:
-    .long   __ROMImageBase
-__rom_image_limit:
-    .long   __ROMImageLimit
 
     .size    __isr_vectors, . - __isr_vectors
 

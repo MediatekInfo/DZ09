@@ -21,8 +21,7 @@
 #include "systemconfig.h"
 #include "tcmcache.h"
 
-extern uint32_t __rom_image_base;
-extern uint32_t __rom_image_limit;
+extern uint32_t __ROMImageBase, __ROMImageLimit;
 
 #if _DEBUG_
 const char *AccRightsStr[] =
@@ -60,7 +59,7 @@ void MPU_Initialize(void)
 
     memset(&MpuInfo, 0x00, sizeof(TMPUINFO));
 
-    MPU_AddRegion(__rom_image_base, __rom_image_limit, true, PRIV_RW_USER_RW);
+    MPU_AddRegion((uint32_t)&__ROMImageBase, (uint32_t)&__ROMImageLimit, true, PRIV_RW_USER_RW);
 }
 
 // TODO (scorp#1#): Need to come up with a more intelligent cache management algorithm

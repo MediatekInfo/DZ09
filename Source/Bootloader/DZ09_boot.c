@@ -30,17 +30,17 @@
         (((uint32_t)(x) & (uint32_t)0x00ff0000UL) >>  8) |\
         (((uint32_t)(x) & (uint32_t)0xff000000UL) >> 24)))
 
-extern uint32_t __rom_image_base, __rom_image_limit;
+extern uint32_t __ROMImageBase, __ROMImageLimit;
 
 void *BL_CheckFileByDescriptor(BL_Descr File)
 {
     void *ExtBLEntryPoint = NULL;
 
-    File.m_bl_begin_dev_addr += __rom_image_base;
-    File.m_bl_boundary_dev_addr += __rom_image_base;
+    File.m_bl_begin_dev_addr += (uint32_t)&__ROMImageBase;
+    File.m_bl_boundary_dev_addr += (uint32_t)&__ROMImageBase;
 
-    if ((File.m_bl_begin_dev_addr > __rom_image_base) &&
-            (File.m_bl_boundary_dev_addr < __rom_image_limit))
+    if ((File.m_bl_begin_dev_addr > (uint32_t)&__ROMImageBase) &&
+            (File.m_bl_boundary_dev_addr < (uint32_t)&__ROMImageLimit))
     {
         pFILE_INFO_v1 FileInfo = (pFILE_INFO_v1)File.m_bl_begin_dev_addr;
 
@@ -53,8 +53,8 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
                 (FileInfo->hdr.size == sizeof(FILE_INFO_v1)) &&
                 (FileInfo->file_type == ARM_EXT_BL) &&
                 (FileInfo->flash_dev == F_SF) &&
-                (FileInfo->load_addr >= __rom_image_base) &&
-                (FileInfo->load_addr + FileInfo->file_len < __rom_image_limit))
+                (FileInfo->load_addr >= (uint32_t)&__ROMImageBase) &&
+                (FileInfo->load_addr + FileInfo->file_len < (uint32_t)&__ROMImageLimit))
         {
             uint32_t SizeToCheck = FileInfo->file_len - FileInfo->sig_len;
             pSHA1    CheckedHash;
@@ -95,7 +95,7 @@ void *BL_CheckFileByDescriptor(BL_Descr File)
 
 int main(void)
 {
-    pSF_HEADER_v1 sf_header = (pSF_HEADER_v1)__rom_image_base;
+    pSF_HEADER_v1 sf_header = (pSF_HEADER_v1)&__ROMImageLimit;
 
     /* Setup system watchdog */
     RGU_SetWDTInterval(WDTINTERVAL, true);                                                          // Setup system watchdog
@@ -119,7 +119,7 @@ int main(void)
         DebugPrint("SF header ID: \"%s\"\r\n", sf_header->m_identifier);
 
         /* Check boot regions layout for validity */
-        BR_Layout = (pBR_Layout_v1)(sf_header->m_dev_rw_unit + __rom_image_base);
+        BR_Layout = (pBR_Layout_v1)(sf_header->m_dev_rw_unit + (uint32_t)&__ROMImageLimit);
         if (!strcmp(BR_Layout->m_identifier, BRLYT_ID) &&
                 (BR_Layout->m_ver == BRLYT_VER))
         {
