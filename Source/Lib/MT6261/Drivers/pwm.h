@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2021 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -72,12 +72,12 @@ typedef struct tag_PWM_CONTEXT
 #define PWM2_DUTY_100               (2 << 0)
 #define PWM2_DUTY_MASK              0x03
 
-#define PWM2_base                   (PWM_2CH_BASE + 0x000C)
-#define PWM3_base                   (PWM_2CH_BASE + 0x0018)
+#define PWM2_BASE                   (PWM23_BASE + 0x000C)
+#define PWM3_BASE                   (PWM23_BASE + 0x0018)
 
 #define PWM1                        ((volatile TPWMREGS *) PWM1_BASE)
-#define PWM2                        ((volatile TPWMREGS *) PWM2_base)
-#define PWM3                        ((volatile TPWMREGS *) PWM3_base)
+#define PWM2                        ((volatile TPWMREGS *) PWM2_BASE)
+#define PWM3                        ((volatile TPWMREGS *) PWM3_BASE)
 #define PWM4                        ((volatile TPWMREGS *) PWM4_BASE)
 
 extern boolean PWM_SetupChannel(TPWM Index, uint16_t Count, uint16_t Threshold, TPWM_FLAGS Flags);

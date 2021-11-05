@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2021 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ boolean PWM_SetupChannel(TPWM Index, uint16_t Count, uint16_t Threshold, TPWM_FL
             /* PWM1, PWM2, PWM4 setup */
             PWM->Ctrl |= PWM_CLKDIV(Flags & PWF_CLKDIV8);
             PWM->Count = PWM_COUNT(Count);
-            if (((uintptr_t)PWM == PWM3_base) && (Flags & PWF_ALW_HIGH))
+            if (((uintptr_t)PWM == PWM3_BASE) && (Flags & PWF_ALW_HIGH))
                 PWM->Ctrl |= PWM3_ALWAYS_HIGH;
         }
         PWM->Threshold = PWM_THRESH(Threshold);
