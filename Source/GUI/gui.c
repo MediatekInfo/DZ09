@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2021 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -250,4 +250,19 @@ void GUI_OnPaintHandler(pPAINTEV Event)
             DL_Delete(UpdateRgn, true);
         }
     }
+}
+
+void GUI_OnPenPressHandler(pPENEVENT Event)
+{
+
+}
+
+void GUI_OnPenMoveHandler(pPENEVENT Event)
+{
+
+}
+
+void GUI_OnPenReleaseHandler(pPENEVENT Event)
+{
+
 }

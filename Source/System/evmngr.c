@@ -73,45 +73,25 @@ void EM_ProcessEvents(void)
         switch(tmpEvent->Event)
         {
         case ET_PENPRESS:
-        {
-            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
-
-            if (tmpEvent->ParamSz)
-            {
-//                GUI_OnPenPressed(TSEvent);
-                DebugPrint("Pen %u Pressed x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
-            }
-        }
-        break;
+            if (tmpEvent->ParamSz == sizeof(TPENEVENT))
+                GUI_OnPenPressHandler((pPENEVENT)tmpEvent->Param);
+            break;
         case ET_PENRELEASE:
-        {
-            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
-
-            if (tmpEvent->ParamSz)
-            {
-//                GUI_OnPenReleased(TSEvent);
-                DebugPrint("Pen %u Released x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
-            }
-        }
-        break;
+            if (tmpEvent->ParamSz == sizeof(TPENEVENT))
+                GUI_OnPenMoveHandler((pPENEVENT)tmpEvent->Param);
+            break;
         case ET_PENMOVE:
-        {
-            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
-
-            if (tmpEvent->ParamSz)
-            {
-//                GUI_OnPenMoved(TSEvent);
-                DebugPrint("Pen %u Moved x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
-            }
-        }
-        break;
+            if (tmpEvent->ParamSz == sizeof(TPENEVENT))
+                GUI_OnPenReleaseHandler((pPENEVENT)tmpEvent->Param);
+            break;
         case ET_ONPAINT:
-            GUI_OnPaintHandler((pPAINTEV)tmpEvent->Param);
+            if (tmpEvent->ParamSz == sizeof(TPAINTEV))
+                GUI_OnPaintHandler((pPAINTEV)tmpEvent->Param);
             break;
         case ET_PWRKEY:
             break;
         case ET_ONTIMER:
-            if (tmpEvent->ParamSz)
+            if (tmpEvent->ParamSz == sizeof(pTIMER))
             {
                 pTIMER EvTimer = *(pTIMER *)tmpEvent->Param;
 
@@ -124,8 +104,3 @@ void EM_ProcessEvents(void)
         free(tmpEvent);
     }
 }
-
-
-
-
-
