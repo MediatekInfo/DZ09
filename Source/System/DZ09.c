@@ -20,7 +20,6 @@
 */
 #include "systemconfig.h"
 
-
 int main(void)
 {
     Init();
