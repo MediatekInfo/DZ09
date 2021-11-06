@@ -168,10 +168,10 @@ static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
                 tmpObject->InheritedEnabled = Object->Enabled;
                 tmpObject->InheritedVisible = Object->Visible;
 
-                if (((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()) &&
+                if (((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()) &&
                         (!Object->Enabled ||
                          !Object->Visible))
-                    GUI_SetActiveObject(NULL, false);
+                    GUI_SetObjectActive(NULL, false);
 
                 if (GUI_IsWindowObject(tmpObject))
                     GUI_UpdateChildTreeInheritance(tmpObject);
@@ -406,8 +406,8 @@ boolean GUI_SetObjectEnabled(pGUIOBJECT Object, boolean Enabled)
         Object->Enabled = Enabled;
         if (Object->Parent != NULL)
         {
-            if (!Enabled && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
-                GUI_SetActiveObject(NULL, false);
+            if (!Enabled && ((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()))
+                GUI_SetObjectActive(NULL, false);
 
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
@@ -444,8 +444,8 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
         }
         else
         {
-            if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
-                GUI_SetActiveObject(NULL, false);
+            if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()))
+                GUI_SetObjectActive(NULL, false);
 
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
@@ -685,12 +685,12 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
     return Result;
 }
 
-pGUIOBJECT GUI_GetActiveObject(void)
+pGUIOBJECT GUI_GetObjectActive(void)
 {
     return ActiveObject;
 }
 
-void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
+void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
 {
     if ((uintptr_t)Object != (uintptr_t)ActiveObject)
     {
