@@ -35,8 +35,8 @@ typedef struct tag_PAINTEV
 extern boolean GUI_Initialize(void);
 extern void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct);
 extern void GUI_OnPaintHandler(pPAINTEV Event);
-extern void GUI_OnPenPressHandler(pPENEVENT Event);
-extern void GUI_OnPenMoveHandler(pPENEVENT Event);
-extern void GUI_OnPenReleaseHandler(pPENEVENT Event);
+extern void GUI_OnPenPressHandler(pEVENT Event);
+extern void GUI_OnPenMoveHandler(pEVENT Event);
+extern void GUI_OnPenReleaseHandler(pEVENT Event);
 
 #endif /* _GUI_H_ */

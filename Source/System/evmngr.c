@@ -74,15 +74,15 @@ void EM_ProcessEvents(void)
         {
         case ET_PENPRESS:
             if (tmpEvent->ParamSz == sizeof(TPENEVENT))
-                GUI_OnPenPressHandler((pPENEVENT)tmpEvent->Param);
+                GUI_OnPenPressHandler(tmpEvent);
             break;
         case ET_PENRELEASE:
             if (tmpEvent->ParamSz == sizeof(TPENEVENT))
-                GUI_OnPenMoveHandler((pPENEVENT)tmpEvent->Param);
+                GUI_OnPenMoveHandler(tmpEvent);
             break;
         case ET_PENMOVE:
             if (tmpEvent->ParamSz == sizeof(TPENEVENT))
-                GUI_OnPenReleaseHandler((pPENEVENT)tmpEvent->Param);
+                GUI_OnPenReleaseHandler(tmpEvent);
             break;
         case ET_ONPAINT:
             if (tmpEvent->ParamSz == sizeof(TPAINTEV))

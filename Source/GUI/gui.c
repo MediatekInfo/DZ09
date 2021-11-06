@@ -252,17 +252,53 @@ void GUI_OnPaintHandler(pPAINTEV Event)
     }
 }
 
-void GUI_OnPenPressHandler(pPENEVENT Event)
+void GUI_OnPenPressHandler(pEVENT Event)
+{
+    pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+    pGUIOBJECT RootParent;
+    pGUIOBJECT Object = GUI_GetObjectFromPoint(&PenEvent->PXY, &RootParent);
+
+    if (Object != NULL)
+    {
+// ParentToInvalidate = NULL if Z-order position not changed
+        pGUIOBJECT ParentToInvalidate = GUI_MoveWindowTreeToTop((GUI_IsWindowObject(Object)) ?
+                                        Object : Object->Parent);
+
+// TODO (scorp#1#): Correct the click coordinates to a single format (local or global).
+        if (GUI_IsWindowObject(Object->Parent) &&
+                (((pWIN)Object->Parent)->EventHandler != NULL))
+            ((pWIN)Object->Parent)->EventHandler(Event, Object);
+
+        GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
+        GUI_Invalidate(ParentToInvalidate, NULL);
+
+// TODO (scorp#1#): Correct the click coordinates to a single format (local or global).
+        if (Object->OnPress != NULL) Object->OnPress(Object, &PenEvent->PXY);
+    }
+    else GUI_SetObjectActive(NULL, true);
+}
+
+void GUI_OnPenMoveHandler(pEVENT Event)
 {
 
 }
 
-void GUI_OnPenMoveHandler(pPENEVENT Event)
+void GUI_OnPenReleaseHandler(pEVENT Event)
 {
+    pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+    pGUIOBJECT tmpActiveObject = GUI_GetObjectActive();
 
-}
+    if (tmpActiveObject != NULL)
+    {
+        if (GUI_IsWindowObject(tmpActiveObject->Parent) &&
+                (((pWIN)tmpActiveObject->Parent)->EventHandler != NULL))
+            ((pWIN)tmpActiveObject->Parent)->EventHandler(Event, tmpActiveObject);
 
-void GUI_OnPenReleaseHandler(pPENEVENT Event)
-{
+        GUI_SetObjectActive(NULL, false);
+        if (tmpActiveObject->OnRelease != NULL) tmpActiveObject->OnRelease(tmpActiveObject, &PenEvent->PXY);
 
+// TODO (scorp#1#): Check the PXY in Object rectangle
+// TODO (scorp#1#): Correct the release coordinates to a single format (local or global).
+        if (tmpActiveObject->OnClick != NULL) tmpActiveObject->OnClick(tmpActiveObject, &PenEvent->PXY);
+    }
 }
