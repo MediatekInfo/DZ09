@@ -714,7 +714,7 @@ void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
         if ((ActiveObject = Object) != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
-                SetActive[ActiveObject->Type](ActiveObject, false);
+                SetActive[ActiveObject->Type](ActiveObject, true);
             NeedInvalidate = Invalidate;
         }
         __restore_interrupts(intflags);
