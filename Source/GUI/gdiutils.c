@@ -231,6 +231,20 @@ TRECT GDI_GlobalToLocalRct(pRECT rct, pPOINT Offset)
     return Res;
 }
 
+TPOINT GDI_ScreenToLayerPt(TVLINDEX Layer, pPOINT pt)
+{
+    TPOINT Res;
+
+    if ((pt == NULL) || (Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] != NULL))
+        Res = *pt;
+    else
+    {
+        Res.x = pt->x + LCDScreen.ScreenOffset.x - LCDScreen.VLayer[Layer].LayerOffset.x;
+        Res.y = pt->y + LCDScreen.ScreenOffset.y - LCDScreen.VLayer[Layer].LayerOffset.y;
+    }
+    return Res;
+}
+
 // a = a & b
 boolean GDI_ANDRectangles(pRECT a, pRECT b)
 {

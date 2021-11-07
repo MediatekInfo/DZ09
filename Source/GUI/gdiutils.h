@@ -33,6 +33,7 @@ extern TPOINT GDI_LocalToGlobalPt(pPOINT pt, pPOINT Offset);
 extern TPOINT GDI_GlobalToLocalPt(pPOINT pt, pPOINT Offset);
 extern TRECT GDI_LocalToGlobalRct(pRECT rct, pPOINT Offset);
 extern TRECT GDI_GlobalToLocalRct(pRECT rct, pPOINT Offset);
+extern TPOINT GDI_ScreenToLayerPt(TVLINDEX Layer, pPOINT pt);
 extern boolean GDI_ANDRectangles(pRECT a, pRECT b);
 extern pDLIST GDI_ADDRectangles(pRECT a, pRECT b);
 extern pRLIST GDI_SUBRectangles(pRECT a, pRECT b);

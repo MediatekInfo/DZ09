@@ -219,8 +219,7 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
 
             if ((GUILayer[i] == NULL) || !GUILayer[i]->Visible) continue;
 
-            tmpPoint.x = pt->x + LCDScreen.ScreenOffset.x - LCDScreen.VLayer[i].LayerOffset.x;
-            tmpPoint.y = pt->y + LCDScreen.ScreenOffset.y - LCDScreen.VLayer[i].LayerOffset.y;
+            tmpPoint = GDI_ScreenToLayerPt(i, pt);
 
             if (IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position))
             {
