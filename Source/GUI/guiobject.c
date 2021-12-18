@@ -538,11 +538,8 @@ boolean GUI_SetObjectFont(pGUIOBJECT Object, pBFC_FONT ObjectFont)
         if ((GetTextObject[Object->Type] != NULL) &&
                 ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
         {
-            uint32_t intflags = __disable_interrupts();
-
             ObjectText->Font = ObjectFont;
             GDI_UpdateTextExtent(ObjectText);
-            __restore_interrupts(intflags);
 
             GUI_Invalidate(Object, NULL);
             Result = true;
@@ -591,8 +588,7 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
         if ((GetTextObject[Object->Type] != NULL) &&
                 ((tmpText = GetTextObject[Object->Type](Object)) != NULL))
         {
-            uint32_t intflags = __disable_interrupts();
-            TTEXT    ObjectText = *tmpText;
+            TTEXT  ObjectText = *tmpText;
             static boolean (*const SetTextObject[GO_NUMTYPES])(pGUIOBJECT, pTEXT) =
             {
                 NULL,
@@ -604,8 +600,6 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
             ObjectText.Color = Color;
             if (SetTextObject[Object->Type] != NULL)
                 Result = SetTextObject[Object->Type](Object, &ObjectText);
-
-            __restore_interrupts(intflags);
 
             if (Result) GUI_Invalidate(Object, NULL);
         }
@@ -653,8 +647,6 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
         if ((GetTextObject[Object->Type] != NULL) &&
                 ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
         {
-            uint32_t intflags = __disable_interrupts();
-
             if ((ObjectText->Text != NULL) && IsDynamicMemory(ObjectText->Text))
                 free(ObjectText->Text);
 
@@ -675,8 +667,6 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
             ObjectText->Text = Caption;
             GDI_UpdateTextExtent(ObjectText);
 
-            __restore_interrupts(intflags);
-
             GUI_Invalidate(Object, NULL);
             Result = true;
         }
@@ -693,8 +683,7 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
 {
     if ((uintptr_t)Object != (uintptr_t)ActiveObject)
     {
-        boolean  NeedInvalidate = false;
-        uint32_t intflags = __disable_interrupts();
+        boolean NeedInvalidate = false;
         static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
         {
             NULL,
@@ -716,7 +705,6 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
                 SetActive[ActiveObject->Type](ActiveObject, true);
             NeedInvalidate = Invalidate;
         }
-        __restore_interrupts(intflags);
 
         if (NeedInvalidate) GUI_Invalidate(ActiveObject, NULL);
     }
