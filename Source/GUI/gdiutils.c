@@ -235,8 +235,8 @@ TPOINT GDI_ScreenToLayerPt(TVLINDEX Layer, pPOINT pt)
 {
     TPOINT Res;
 
-    if ((pt == NULL) || (Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] != NULL))
-        Res = *pt;
+    if ((pt == NULL) || (Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] == NULL))
+        Res.x = Res.y = 0;
     else
     {
         Res.x = pt->x + LCDScreen.ScreenOffset.x - LCDScreen.VLayer[Layer].LayerOffset.x;
