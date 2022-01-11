@@ -46,7 +46,19 @@ void LRT_GPTHandler(void)
                     {
                         if (tmpLRT->Handler != NULL)
                         {
-                            if (tmpLRT->Flags & TF_DIRECT) tmpLRT->Handler(tmpLRT);
+                            if (tmpLRT->Flags & TF_DIRECT)
+                            {
+                                tmpLRT->Handler(tmpLRT);
+                                /* The tmrItem->Data value could have been changed from LRT_Destroy(), called in handler */
+                                if ((volatile void *)tmrItem->Data == NULL)
+                                {
+                                    pDLITEM tmpItem = tmrItem;
+
+                                    tmrItem = DL_GetNextItem(tmpItem);
+                                    DL_DeleteItem(TimersList, tmpItem);
+                                    continue;
+                                }
+                            }
                             else EM_PostEvent(ET_ONTIMER, tmpLRT->Parent, &tmpLRT, sizeof(pTIMER));
                         }
                         if (tmpLRT->Flags & TF_AUTOREPEAT) tmpLRT->StartTicks = CurrTicks;
@@ -109,7 +121,7 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TM
     return tmpTimer;
 }
 
-boolean LRT_Destroy(pTIMER Timer)                                                                   // Do not use this method in the timer handler in TFDIRECT mode!!!
+boolean LRT_Destroy(pTIMER Timer)
 {
     if (Timer != NULL)
     {
@@ -117,8 +129,16 @@ boolean LRT_Destroy(pTIMER Timer)                                               
 
         if (tmpItem != NULL)
         {
-            free(tmpItem->Data);
-            DL_DeleteItem(TimersList, tmpItem);
+            uint32_t intflags = __disable_interrupts();
+            pTIMER   tmpTimer = tmpItem->Data;
+
+            if (__is_in_isr_mode()) tmpItem->Data = NULL;                                           // This node will be removed when returning to LRT_GPTHandler()
+            else DL_DeleteItem(TimersList, tmpItem);                                                // Direct remove node
+
+            __restore_interrupts(intflags);
+
+            __secure_memset(tmpTimer, 0x00, sizeof(TTIMER));
+            free(tmpTimer);
             return true;
         }
     }

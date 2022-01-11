@@ -19,6 +19,14 @@
     .syntax unified
     .arch armv5te
 
+    .equ    Mode_USR, 0x10
+    .equ    Mode_FIQ, 0x11
+    .equ    Mode_IRQ, 0x12
+    .equ    Mode_SVC, 0x13
+    .equ    Mode_ABT, 0x17
+    .equ    Mode_UND, 0x1B
+    .equ    Mode_SYS, 0x1F                                                                          // available on ARM Arch 4 and later
+    .equ    Mode_Msk, 0x1F
     .equ    _I_, 0x80                                                                               // when I bit is set, IRQ is disabled
     .equ    _F_, 0x40                                                                               // when F bit is set, FIQ is disabled
 
@@ -144,4 +152,22 @@ __loop_secmem_set:
 	bl      __restore_interrupts
 	ldmfd   sp!, {r0, r3, pc}
     .endfunc
+///////////////////////////////////////////////////////////////////////////////////////////////////
+    .globl  __is_in_isr_mode
+    .type   __is_in_isr_mode, %function
+    .func   __is_in_isr_mode
+__is_in_isr_mode:
+    stmfd   sp!,{lr}                                                                                // boolean __is_in_isr_mode(void); (Privileged modes)
+    mrs     lr, cpsr
+
+    mov     r0, #0
+    and     lr, lr, Mode_Msk
+    subs    lr, lr, Mode_FIQ                                                                        // Mode_FIQ = 0x11
+    moveq   r0, #1
+    subs    lr, lr, #1                                                                              // Mode_IRQ = 0x12
+    moveq   r0, #1
+
+    ldmfd   sp!,{pc}
+    .endfunc
+
     .end

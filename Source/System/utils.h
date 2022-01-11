@@ -37,6 +37,7 @@ extern void __restore_interrupts(uint32_t flags);                               
 extern uint32_t __ctz(uint32_t Value);                                                              // From asmutils.s
 extern uint32_t __get_cpu_freq_ticks(void);                                                         // from asmutils.s
 extern void *__secure_memset(void *memptr, int val, size_t num);                                    // from asmutils.s
+extern boolean __is_in_isr_mode(void);                                                              // from asmutils.s
 extern uint32_t GetCPUFrequency(void);
 
 #endif /* _UTILS_H_ */
