@@ -91,6 +91,8 @@ boolean LRT_Initialize(void)
             return true;
         GPT_SetupTimer(LRTMRHWTIMER, 0, false, NULL, false);
     }
+    TimersList = DL_Delete(TimersList, false);
+
     return false;
 }
 
@@ -98,7 +100,7 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TM
 {
     pTIMER tmpTimer = NULL;
 
-    if (Interval)
+    if (Interval && (TimersList != NULL))
     {
         Interval *= 1000;                                                                           // Set interval to us
 
@@ -133,7 +135,7 @@ boolean LRT_Destroy(pTIMER Timer)
             pTIMER   tmpTimer = tmpItem->Data;
 
             if (__is_in_isr_mode()) tmpItem->Data = NULL;                                           // This node will be removed when returning to LRT_GPTHandler()
-            else DL_DeleteItem(TimersList, tmpItem);                                                // Direct remove node
+            else DL_DeleteItem(TimersList, tmpItem);                                                // Direct node deletion
 
             __restore_interrupts(intflags);
 
