@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ void LRT_GPTHandler(void)
                                     continue;
                                 }
                             }
-                            else EM_PostEvent(ET_ONTIMER, tmpLRT->Parent, &tmpLRT, sizeof(pTIMER));
+                            else EM_PostEvent(ET_ONTIMER, NULL, &tmpLRT, sizeof(pTIMER));
                         }
                         if (tmpLRT->Flags & TF_AUTOREPEAT) tmpLRT->StartTicks = CurrTicks;
                         else tmpLRT->Flags &= ~TF_ENABLED;
@@ -96,7 +96,7 @@ boolean LRT_Initialize(void)
     return false;
 }
 
-pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TMRFLAGS Flags)
+pTIMER LRT_Create(uint32_t Interval, void (*Handler)(pTIMER), TMRFLAGS Flags)
 {
     pTIMER tmpTimer = NULL;
 
@@ -111,7 +111,6 @@ pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TM
             tmpTimer->Flags = Flags;
             tmpTimer->Interval = Interval;
             tmpTimer->StartTicks = USC_GetCurrentTicks();
-            tmpTimer->Parent = Parent;
             tmpTimer->Handler = Handler;
             if (DL_AddItem(TimersList, tmpTimer) == NULL)
             {

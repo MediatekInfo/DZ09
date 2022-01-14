@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -33,12 +33,11 @@ typedef struct tag_TIMER
     TMRFLAGS   Flags;
     uint32_t   Interval;
     uint32_t   StartTicks;
-    pHANDLE    Parent;
     void       (*Handler)(pTIMER);
 } TTIMER, *pTIMER;
 
 extern boolean LRT_Initialize(void);
-extern pTIMER LRT_Create(uint32_t Interval, pHANDLE Parent, void (*Handler)(pTIMER), TMRFLAGS Flags);
+extern pTIMER LRT_Create(uint32_t Interval, void (*Handler)(pTIMER), TMRFLAGS Flags);
 extern boolean LRT_Destroy(pTIMER Timer);
 extern boolean LRT_Start(pTIMER Timer);
 extern boolean LRT_Stop(pTIMER Timer);

@@ -71,7 +71,7 @@ static void PMUBL_HideTimerHandler(pTIMER Timer)
 
 void PMUBL_Initialize(void)
 {
-    BLReduceTimer = LRT_Create(BACKLIGHTREDUCE, NULL, PMUBL_HideTimerHandler, TF_DIRECT | TF_AUTOREPEAT);
+    BLReduceTimer = LRT_Create(BACKLIGHTREDUCE, PMUBL_HideTimerHandler, TF_DIRECT | TF_AUTOREPEAT);
     memset(&BLState, 0x00, sizeof(TBLSTATE));
 
     PMU_DisableISINKs();

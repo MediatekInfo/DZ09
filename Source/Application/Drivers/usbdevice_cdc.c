@@ -376,7 +376,7 @@ void *USB_CDC_Initialize(void)
     }
 
     if (CDC_TimeoutTimer == NULL)
-        CDC_TimeoutTimer = LRT_Create(CDC_TRANSMITTIMEOUT, NULL, USB_CDC_TXTimeoutHandler, TF_DIRECT);
+        CDC_TimeoutTimer = LRT_Create(CDC_TRANSMITTIMEOUT, USB_CDC_TXTimeoutHandler, TF_DIRECT);
     if (CDC_TimeoutTimer == NULL) return NULL;
 
     USB_CDC_Interface.DeviceDescriptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
