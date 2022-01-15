@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2020 AJScorp
+* Copyright (C) 2022 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -44,7 +44,11 @@ static void PMUBL_UpdateValues(uint32_t Value, boolean TurnOn)
 #define BLMINVALUE    100
 #endif
         PMU_SetISINKParameters(BACKLIGHTCHNL, IC_20mA, TurnOn);
-        if (!TurnOn) PWM_SetPowerDown(LCD_PWMCHANNEL, true);
+        if (!TurnOn)
+        {
+            PWM_SetPowerDown(LCD_PWMCHANNEL, true);
+            GUI_SetLockState(true);
+        }
         else
         {
             Value = BLMINVALUE + (Value * (100 - BLMINVALUE)) / 100;

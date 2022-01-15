@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 */
 #include "systemconfig.h"
 #include "gui.h"
+
+boolean GUILocked;
 
 static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 {
@@ -131,12 +133,19 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pGUIOBJECT Object, pRECT Clip)
     return DL_GetItemsCount(Region) != 0;
 }
 
+void GUI_SetLockState(boolean Locked)
+{
+    GUILocked = Locked;
+}
+
 boolean GUI_Initialize(void)
 {
     uint32_t i;
     boolean  Result;
 
     DebugPrint("GUI subsystem initialization:\r\n");
+
+    GUILocked = true;
 
     DebugPrint(" LCD interface initialization...");
     Result = LCDIF_Initialize();                                                                    // Initialize subsystem
@@ -254,70 +263,84 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
 void GUI_OnPenPressHandler(pEVENT Event)
 {
-    pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
-    pGUIOBJECT RootParent;
-    pGUIOBJECT Object = GUI_GetObjectFromPoint(&PenEvent->PXY, &RootParent);
-
     BL_RestartReduceTimer();
 
-    if (Object != NULL)
+    if (GUILocked) return;
+    else
     {
-        TVLINDEX   Layer = ((pWIN)RootParent)->Layer;
-        TPOINT     OnPressXY;
-        /* ParentToInvalidate = root object whose z-order has been changed or NULL if no z-order was changed */
-        pGUIOBJECT ParentToInvalidate = GUI_MoveWindowTreeToTop((GUI_IsWindowObject(Object)) ?
-                                        Object : Object->Parent);
+        pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+        pGUIOBJECT RootParent;
+        pGUIOBJECT Object = GUI_GetObjectFromPoint(&PenEvent->PXY, &RootParent);
 
-        PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
-        /* Store object local coordinates */
-        OnPressXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
-
-        GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
-        GUI_Invalidate(ParentToInvalidate, NULL);
-
-        if (Object->Parent != NULL)
+        if (Object != NULL)
         {
-            if (((pWIN)Object->Parent)->EventHandler != NULL)
+            TVLINDEX   Layer = ((pWIN)RootParent)->Layer;
+            TPOINT     OnPressXY;
+            /* ParentToInvalidate = root object whose z-order has been changed or NULL if no z-order was changed */
+            pGUIOBJECT ParentToInvalidate = GUI_MoveWindowTreeToTop((GUI_IsWindowObject(Object)) ?
+                                            Object : Object->Parent);
+
+            PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+            /* Store object local coordinates */
+            OnPressXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+
+            GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
+            GUI_Invalidate(ParentToInvalidate, NULL);
+
+            if (Object->Parent != NULL)
             {
-                /* Correct coordinates to parent local */
-                PenEvent->PXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Parent->Position.lt);
-                /* Call object's parent event handler */
-                ((pWIN)Object->Parent)->EventHandler(Event, Object);
+                if (((pWIN)Object->Parent)->EventHandler != NULL)
+                {
+                    /* Correct coordinates to parent local */
+                    PenEvent->PXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Parent->Position.lt);
+                    /* Call object's parent event handler */
+                    ((pWIN)Object->Parent)->EventHandler(Event, Object);
+                }
             }
-        }
-        else if (((pWIN)Object)->EventHandler != NULL)
-        {
-            /* Call layer event handler */
-            ((pWIN)Object)->EventHandler(Event, Object);
-        }
+            else if (((pWIN)Object)->EventHandler != NULL)
+            {
+                /* Call layer event handler */
+                ((pWIN)Object)->EventHandler(Event, Object);
+            }
 
-        if ((Object->Type != GO_UNKNOWN) && (Object->OnPress != NULL))
-            Object->OnPress(Object, &OnPressXY);
+            if ((Object->Type != GO_UNKNOWN) && (Object->OnPress != NULL))
+                Object->OnPress(Object, &OnPressXY);
+        }
+        else GUI_SetObjectActive(NULL, true);
     }
-    else GUI_SetObjectActive(NULL, true);
-}
-
-void GUI_OnPenMoveHandler(pEVENT Event)
-{
-
 }
 
 void GUI_OnPenReleaseHandler(pEVENT Event)
 {
-    pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
-    pGUIOBJECT tmpActiveObject = GUI_GetObjectActive();
-
-    if (tmpActiveObject != NULL)
+    BL_RestartReduceTimer();
+    if (GUILocked)
     {
-        if (GUI_IsWindowObject(tmpActiveObject->Parent) &&
-                (((pWIN)tmpActiveObject->Parent)->EventHandler != NULL))
-            ((pWIN)tmpActiveObject->Parent)->EventHandler(Event, tmpActiveObject);
+        GUILocked = false;
+        return;
+    }
+    else
+    {
+        pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+        pGUIOBJECT tmpActiveObject = GUI_GetObjectActive();
 
-        GUI_SetObjectActive(NULL, false);
-        if (tmpActiveObject->OnRelease != NULL) tmpActiveObject->OnRelease(tmpActiveObject, &PenEvent->PXY);
+        if (tmpActiveObject != NULL)
+        {
+            if (GUI_IsWindowObject(tmpActiveObject->Parent) &&
+                    (((pWIN)tmpActiveObject->Parent)->EventHandler != NULL))
+                ((pWIN)tmpActiveObject->Parent)->EventHandler(Event, tmpActiveObject);
+
+            GUI_SetObjectActive(NULL, false);
+            if (tmpActiveObject->OnRelease != NULL) tmpActiveObject->OnRelease(tmpActiveObject, &PenEvent->PXY);
 
 // TODO (scorp#1#): Check the PXY in Object rectangle
 // TODO (scorp#1#): Correct the release coordinates to a single format (local or global).
-        if (tmpActiveObject->OnClick != NULL) tmpActiveObject->OnClick(tmpActiveObject, &PenEvent->PXY);
+            if (tmpActiveObject->OnClick != NULL) tmpActiveObject->OnClick(tmpActiveObject, &PenEvent->PXY);
+        }
     }
+}
+
+void GUI_OnPenMoveHandler(pEVENT Event)
+{
+    BL_RestartReduceTimer();
+    if (GUILocked) return;
 }
