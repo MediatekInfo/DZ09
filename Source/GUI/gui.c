@@ -258,22 +258,41 @@ void GUI_OnPenPressHandler(pEVENT Event)
     pGUIOBJECT RootParent;
     pGUIOBJECT Object = GUI_GetObjectFromPoint(&PenEvent->PXY, &RootParent);
 
+    BL_RestartReduceTimer();
+
     if (Object != NULL)
     {
-// ParentToInvalidate = NULL if Z-order position not changed
+        TVLINDEX   Layer = ((pWIN)RootParent)->Layer;
+        TPOINT     OnPressXY;
+        /* ParentToInvalidate = root object whose z-order has been changed or NULL if no z-order was changed */
         pGUIOBJECT ParentToInvalidate = GUI_MoveWindowTreeToTop((GUI_IsWindowObject(Object)) ?
                                         Object : Object->Parent);
 
-// TODO (scorp#1#): Correct the click coordinates to a single format (local or global).
-        if (GUI_IsWindowObject(Object->Parent) &&
-                (((pWIN)Object->Parent)->EventHandler != NULL))
-            ((pWIN)Object->Parent)->EventHandler(Event, Object);
+        PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+        /* Store object local coordinates */
+        OnPressXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
         GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
         GUI_Invalidate(ParentToInvalidate, NULL);
 
-// TODO (scorp#1#): Correct the click coordinates to a single format (local or global).
-        if (Object->OnPress != NULL) Object->OnPress(Object, &PenEvent->PXY);
+        if (Object->Parent != NULL)
+        {
+            if (((pWIN)Object->Parent)->EventHandler != NULL)
+            {
+                /* Correct coordinates to parent local */
+                PenEvent->PXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Parent->Position.lt);
+                /* Call object's parent event handler */
+                ((pWIN)Object->Parent)->EventHandler(Event, Object);
+            }
+        }
+        else if (((pWIN)Object)->EventHandler != NULL)
+        {
+            /* Call layer event handler */
+            ((pWIN)Object)->EventHandler(Event, Object);
+        }
+
+        if ((Object->Type != GO_UNKNOWN) && (Object->OnPress != NULL))
+            Object->OnPress(Object, &OnPressXY);
     }
     else GUI_SetObjectActive(NULL, true);
 }
