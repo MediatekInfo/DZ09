@@ -321,21 +321,43 @@ void GUI_OnPenReleaseHandler(pEVENT Event)
     else
     {
         pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
-        pGUIOBJECT tmpActiveObject = GUI_GetObjectActive();
+        pGUIOBJECT RootParent;
+        pGUIOBJECT Object = GUI_GetObjectFromPoint(&PenEvent->PXY, &RootParent);
 
-        if (tmpActiveObject != NULL)
+        if ((Object != NULL) && (Object == GUI_GetObjectActive()))
         {
-            if (GUI_IsWindowObject(tmpActiveObject->Parent) &&
-                    (((pWIN)tmpActiveObject->Parent)->EventHandler != NULL))
-                ((pWIN)tmpActiveObject->Parent)->EventHandler(Event, tmpActiveObject);
+            TVLINDEX Layer = ((pWIN)RootParent)->Layer;
+            TPOINT   OnReleaseXY;
 
-            GUI_SetObjectActive(NULL, false);
-            if (tmpActiveObject->OnRelease != NULL) tmpActiveObject->OnRelease(tmpActiveObject, &PenEvent->PXY);
+            PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+            /* Store object local coordinates */
+            OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
-// TODO (scorp#1#): Check the PXY in Object rectangle
-// TODO (scorp#1#): Correct the release coordinates to a single format (local or global).
-            if (tmpActiveObject->OnClick != NULL) tmpActiveObject->OnClick(tmpActiveObject, &PenEvent->PXY);
+            GUI_SetObjectActive(NULL, true);
+
+            if (Object->Parent != NULL)
+            {
+                if (((pWIN)Object->Parent)->EventHandler != NULL)
+                {
+                    /* Correct coordinates to parent local */
+                    PenEvent->PXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Parent->Position.lt);
+                    /* Call object's parent event handler */
+                    ((pWIN)Object->Parent)->EventHandler(Event, Object);
+                }
+            }
+            else if (((pWIN)Object)->EventHandler != NULL)
+            {
+                /* Call layer event handler */
+                ((pWIN)Object)->EventHandler(Event, Object);
+            }
+
+            if (Object->Type != GO_UNKNOWN)
+            {
+                if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
+                if (Object->OnClick != NULL) Object->OnClick(Object, &OnReleaseXY);
+            }
         }
+        else GUI_SetObjectActive(NULL, true);
     }
 }
 
