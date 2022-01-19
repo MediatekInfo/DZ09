@@ -280,31 +280,16 @@ void GUI_OnPenPressHandler(pEVENT Event)
             pGUIOBJECT ParentToInvalidate = GUI_MoveWindowTreeToTop((GUI_IsWindowObject(Object)) ?
                                             Object : Object->Parent);
 
-            PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
-            /* Store object local coordinates */
-            OnPressXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+            if ((Object->Enabled) && (Object->InheritedEnabled))
+            {
+                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                /* Store object local coordinates */
+                OnPressXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
-            GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
+                GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
+                if (Object->OnPress != NULL) Object->OnPress(Object, &OnPressXY);
+            }
             GUI_Invalidate(ParentToInvalidate, NULL);
-
-            if (Object->Parent != NULL)
-            {
-                if (((pWIN)Object->Parent)->EventHandler != NULL)
-                {
-                    /* Correct coordinates to parent local */
-                    PenEvent->PXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Parent->Position.lt);
-                    /* Call object's parent event handler */
-                    ((pWIN)Object->Parent)->EventHandler(Event, Object);
-                }
-            }
-            else if (((pWIN)Object)->EventHandler != NULL)
-            {
-                /* Call layer event handler */
-                ((pWIN)Object)->EventHandler(Event, Object);
-            }
-
-            if ((Object->Type != GO_UNKNOWN) && (Object->OnPress != NULL))
-                Object->OnPress(Object, &OnPressXY);
         }
         else GUI_SetObjectActive(NULL, true);
     }
@@ -313,6 +298,7 @@ void GUI_OnPenPressHandler(pEVENT Event)
 void GUI_OnPenReleaseHandler(pEVENT Event)
 {
     BL_RestartReduceTimer();
+
     if (GUILocked)
     {
         GUILocked = false;
@@ -321,49 +307,42 @@ void GUI_OnPenReleaseHandler(pEVENT Event)
     else
     {
         pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
-        pGUIOBJECT RootParent;
-        pGUIOBJECT Object = GUI_GetObjectFromPoint(&PenEvent->PXY, &RootParent);
+        pGUIOBJECT Object = GUI_GetObjectActive();
 
-        if ((Object != NULL) && (Object == GUI_GetObjectActive()))
+        if (Object != NULL)
         {
-            TVLINDEX Layer = ((pWIN)RootParent)->Layer;
+            TVLINDEX Layer;
             TPOINT   OnReleaseXY;
 
-            PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
-            /* Store object local coordinates */
-            OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+            if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
+            else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
+            else
+            {
+                GUI_SetObjectActive(NULL, true);
+                return;
+            }
 
             GUI_SetObjectActive(NULL, true);
 
-            if (Object->Parent != NULL)
+            if ((Object->Enabled) && (Object->InheritedEnabled))
             {
-                if (((pWIN)Object->Parent)->EventHandler != NULL)
-                {
-                    /* Correct coordinates to parent local */
-                    PenEvent->PXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Parent->Position.lt);
-                    /* Call object's parent event handler */
-                    ((pWIN)Object->Parent)->EventHandler(Event, Object);
-                }
-            }
-            else if (((pWIN)Object)->EventHandler != NULL)
-            {
-                /* Call layer event handler */
-                ((pWIN)Object)->EventHandler(Event, Object);
-            }
+                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                /* Store object local coordinates */
+                OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
-            if (Object->Type != GO_UNKNOWN)
-            {
+                if ((Object->OnClick != NULL) &&
+                        (IsPointInRect(PenEvent->PXY.x, PenEvent->PXY.y, &Object->Position)))
+                    Object->OnClick(Object, &OnReleaseXY);
                 if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
-                if (Object->OnClick != NULL) Object->OnClick(Object, &OnReleaseXY);
             }
         }
-        else GUI_SetObjectActive(NULL, true);
     }
 }
 
 void GUI_OnPenMoveHandler(pEVENT Event)
 {
     BL_RestartReduceTimer();
+
     if (GUILocked) return;
     else
     {
@@ -383,12 +362,12 @@ void GUI_OnPenMoveHandler(pEVENT Event)
                 return;
             }
 
-            PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
-            /* Store object local coordinates */
-            OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
-
             if ((Object->Enabled) && (Object->InheritedEnabled))
             {
+                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                /* Store object local coordinates */
+                OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+
                 if (Object->OnMove != NULL) Object->OnMove(Object, &OnMoveXY);
                 GUI_UpdateActiveState(Object, IsPointInRect(PenEvent->PXY.x, PenEvent->PXY.y, &Object->Position), true);
             }
