@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -25,7 +25,7 @@ extern TPOINT Point(int16_t x, int16_t y);
 extern TRECT Rect(int16_t l, int16_t t, int16_t r, int16_t b);
 extern TSIZEXY SizeXY(uint16_t sx, uint16_t sy);
 extern boolean IsRectsOverlaps(pRECT a, pRECT b);
-extern boolean IsPointInRect(int16_t x, int16_t y, pRECT Rct);
+extern boolean IsPointInRect(pPOINT Pt, pRECT Rct);
 extern boolean IsRectCollapsed(pRECT rct);
 extern pRLIST GDI_CreateRList(void);
 extern pRLIST GDI_DeleteRList(pRLIST RList);

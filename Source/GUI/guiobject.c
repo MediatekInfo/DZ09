@@ -137,7 +137,7 @@ static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
 
         ResObject = (pGUIOBJECT)tmpDLItem->Data;
         if ((ResObject != NULL) && ResObject->Visible &&
-                IsPointInRect(pt->x, pt->y, &ResObject->Position))
+                IsPointInRect(pt, &ResObject->Position))
         {
             if (GUI_IsWindowObject(ResObject))
             {
@@ -221,7 +221,7 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
 
             tmpPoint = GDI_ScreenToLayerPt(i, pt);
 
-            if (IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position))
+            if (IsPointInRect(&tmpPoint, &GUILayer[i]->Position))
             {
                 pDLIST  ChildList;
                 pDLITEM tmpDLItem;
@@ -235,7 +235,7 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
                     pGUIOBJECT tmpRoot = (pGUIOBJECT)tmpDLItem->Data;
 
                     if ((tmpRoot != NULL) && tmpRoot->Visible &&
-                            IsPointInRect(tmpPoint.x, tmpPoint.y, &tmpRoot->Position))
+                            IsPointInRect(&tmpPoint, &tmpRoot->Position))
                     {
                         if ((Object = GUI_GetObjectRecursive(tmpRoot, &tmpPoint)) == NULL)
                             Object = tmpRoot;

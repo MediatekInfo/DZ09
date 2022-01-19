@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -95,11 +95,11 @@ boolean IsRectsOverlaps(pRECT a, pRECT b)
     return false;
 }
 
-boolean IsPointInRect(int16_t x, int16_t y, pRECT Rct)
+boolean IsPointInRect(pPOINT Pt, pRECT Rct)
 {
-    return ((Rct != NULL) &&
-            (x >= Rct->l) && (x <= Rct->r) &&
-            (y >= Rct->t) && (y <= Rct->b)) ? true : false;
+    return ((Rct != NULL) && (Pt != NULL) &&
+            (Pt->x >= Rct->l) && (Pt->x <= Rct->r) &&
+            (Pt->y >= Rct->t) && (Pt->y <= Rct->b)) ? true : false;
 }
 
 // a in b or b in a, a = larger rectangle
@@ -108,12 +108,12 @@ boolean IsRectInRect(pRECT a, pRECT b)
     if ((a == NULL) || (b == NULL)) return false;
     if (!IsRectsOverlaps(a, b)) return false;
 
-    if (IsPointInRect(a->l, a->t, b) && IsPointInRect(a->r, a->b, b))
+    if (IsPointInRect(&a->lt, b) && IsPointInRect(&a->rb, b))
     {
         memcpy(a, b, sizeof(TRECT));
         return true;
     }
-    else if (IsPointInRect(b->l, b->t, a) && IsPointInRect(b->r, b->b, a))
+    else if (IsPointInRect(&b->lt, a) && IsPointInRect(&b->rb, a))
     {
         return true;
     }

@@ -331,7 +331,7 @@ void GUI_OnPenReleaseHandler(pEVENT Event)
                 OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
                 if ((Object->OnClick != NULL) &&
-                        (IsPointInRect(PenEvent->PXY.x, PenEvent->PXY.y, &Object->Position)))
+                        (IsPointInRect(&PenEvent->PXY, &Object->Position)))
                     Object->OnClick(Object, &OnReleaseXY);
                 if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
             }
@@ -369,7 +369,7 @@ void GUI_OnPenMoveHandler(pEVENT Event)
                 OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
                 if (Object->OnMove != NULL) Object->OnMove(Object, &OnMoveXY);
-                GUI_UpdateActiveState(Object, IsPointInRect(PenEvent->PXY.x, PenEvent->PXY.y, &Object->Position), true);
+                GUI_UpdateActiveState(Object, IsPointInRect(&PenEvent->PXY, &Object->Position), true);
             }
         }
     }
