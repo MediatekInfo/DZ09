@@ -365,4 +365,33 @@ void GUI_OnPenMoveHandler(pEVENT Event)
 {
     BL_RestartReduceTimer();
     if (GUILocked) return;
+    else
+    {
+        pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+        pGUIOBJECT Object = GUI_GetObjectActive();
+
+        if (Object != NULL)
+        {
+            TVLINDEX Layer;
+            TPOINT   OnMoveXY;
+
+            if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
+            else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
+            else
+            {
+                GUI_SetObjectActive(NULL, true);
+                return;
+            }
+
+            PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+            /* Store object local coordinates */
+            OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+
+            if ((Object->Enabled) && (Object->InheritedEnabled))
+            {
+                if (Object->OnMove != NULL) Object->OnMove(Object, &OnMoveXY);
+                GUI_UpdateActiveState(Object, IsPointInRect(PenEvent->PXY.x, PenEvent->PXY.y, &Object->Position), true);
+            }
+        }
+    }
 }

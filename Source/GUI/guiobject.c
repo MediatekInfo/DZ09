@@ -710,6 +710,37 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
     }
 }
 
+void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active, boolean Invalidate)
+{
+    if ((ActiveObject != NULL) && ((uintptr_t)Object == (uintptr_t)ActiveObject))
+    {
+        boolean NeedInvalidate = false;
+        static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
+        {
+            NULL,
+            NULL,
+            GUI_SetActiveButton,
+            NULL
+        };
+        static boolean (*const GetActive[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetActiveButton,
+            NULL
+        };
+
+        if ((SetActive[ActiveObject->Type] != NULL) && (GetActive[ActiveObject->Type] != NULL) &&
+                (GetActive[ActiveObject->Type](ActiveObject) != Active))
+        {
+            SetActive[ActiveObject->Type](ActiveObject, Active);
+            NeedInvalidate = Invalidate;
+        }
+
+        if (NeedInvalidate) GUI_Invalidate(ActiveObject, NULL);
+    }
+}
+
 void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 {
     if ((Object != NULL) && (Object->Type < GO_NUMTYPES) && (Clip != NULL))

@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -86,5 +86,6 @@ extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
 extern void *GUI_DestroyObject(pGUIOBJECT Object);
 extern pGUIOBJECT GUI_GetObjectActive(void);
 extern void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate);
+extern void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active, boolean Invalidate);
 
 #endif /* _GUIOBJECT_H_ */
