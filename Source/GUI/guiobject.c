@@ -684,7 +684,6 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
 {
     if ((uintptr_t)Object != (uintptr_t)ActiveObject)
     {
-        boolean NeedInvalidate = false;
         static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
         {
             NULL,
@@ -697,17 +696,14 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
         {
             if (SetActive[ActiveObject->Type] != NULL)
                 SetActive[ActiveObject->Type](ActiveObject, false);
-            NeedInvalidate = Invalidate;
+            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
         }
-
         if ((ActiveObject = Object) != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
                 SetActive[ActiveObject->Type](ActiveObject, true);
-            NeedInvalidate = Invalidate;
+            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
         }
-
-        if (NeedInvalidate) GUI_Invalidate(ActiveObject, NULL);
     }
 }
 
