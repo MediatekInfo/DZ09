@@ -428,6 +428,10 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
     if (Object->Visible != Visible)
     {
         Object->Visible = Visible;
+
+        if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()))
+            GUI_SetObjectActive(NULL, false);
+
         if (Object->Parent == NULL)
         {
             if (GUI_IsWindowObject(Object))
@@ -443,9 +447,6 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
         }
         else
         {
-            if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()))
-                GUI_SetObjectActive(NULL, false);
-
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
