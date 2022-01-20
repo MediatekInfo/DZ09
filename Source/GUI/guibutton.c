@@ -84,8 +84,8 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Button->Head.Parent = Parent;
         Button->Head.Enabled = !!(Flags & GF_ENABLED);
         Button->Head.Visible = !!(Flags & GF_VISIBLE);
-        Button->Head.InheritedEnabled = Parent->Enabled;
-        Button->Head.InheritedVisible = Parent->Visible;
+        Button->Head.InheritedEnabled = Parent->Enabled && Parent->InheritedEnabled;
+        Button->Head.InheritedVisible = Parent->Visible && Parent->InheritedVisible;
 
         Button->ForeColor = ForeColor;
         Button->Autorepeat = !!(Flags & GF_AUTOREPEAT);

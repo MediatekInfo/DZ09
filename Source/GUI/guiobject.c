@@ -165,12 +165,12 @@ static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
 
             if (tmpObject != NULL)
             {
-                tmpObject->InheritedEnabled = Object->Enabled;
-                tmpObject->InheritedVisible = Object->Visible;
+                tmpObject->InheritedEnabled = Object->Enabled && Object->InheritedEnabled;
+                tmpObject->InheritedVisible = Object->Visible && Object->InheritedVisible;
 
-                if (((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()) &&
-                        (!Object->Enabled ||
-                         !Object->Visible))
+                if (((uintptr_t)tmpObject == (uintptr_t)GUI_GetObjectActive()) &&
+                        (!tmpObject->InheritedEnabled ||
+                         !tmpObject->InheritedVisible))
                     GUI_SetObjectActive(NULL, false);
 
                 if (GUI_IsWindowObject(tmpObject))
