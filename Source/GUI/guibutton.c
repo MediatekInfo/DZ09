@@ -120,7 +120,6 @@ void GUI_DestroyButton(pGUIOBJECT Object)
     if ((Object != NULL) && (Object->Type == GO_BUTTON))
     {
         pBUTTON  Button = (pBUTTON)Object;
-        uint32_t intflags = __disable_interrupts();
 
         if ((Button->Caption.Font != NULL) && (IsDynamicMemory(Button->Caption.Font)))
             free(Button->Caption.Font);
@@ -129,8 +128,6 @@ void GUI_DestroyButton(pGUIOBJECT Object)
         if ((Button->Caption.Text != NULL) && (IsDynamicMemory(Button->Caption.Text)))
             free(Button->Caption.Text);
         Button->Caption.Text = NULL;
-
-        __restore_interrupts(intflags);
     }
 }
 
@@ -160,11 +157,8 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
 {
     if ((Object != NULL) && (Object->Type == GO_BUTTON) && (ObjectText != NULL))
     {
-        uint32_t intflags = __disable_interrupts();
-
         ((pBUTTON)Object)->Caption = *ObjectText;
         ((pBUTTON)Object)->Caption.Color.BackColor = ((pBUTTON)Object)->ForeColor;
-        __restore_interrupts(intflags);
 
         return true;
     }
@@ -174,25 +168,13 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
 void GUI_SetActiveButton(pGUIOBJECT Object, boolean Active)
 {
     if ((Object != NULL) && (Object->Type == GO_BUTTON))
-    {
-        uint32_t intflags = __disable_interrupts();
-
         ((pBUTTON)Object)->Pressed = Active;
-        __restore_interrupts(intflags);
-    }
+
     return;
 }
 
 boolean GUI_GetActiveButton(pGUIOBJECT Object)
 {
-    boolean Result = false;
-
-    if ((Object != NULL) && (Object->Type == GO_BUTTON))
-    {
-        uint32_t intflags = __disable_interrupts();
-
-        Result = ((pBUTTON)Object)->Pressed;
-        __restore_interrupts(intflags);
-    }
-    return Result;
+    return ((Object != NULL) && (Object->Type == GO_BUTTON)) ?
+           ((pBUTTON)Object)->Pressed : false;
 }

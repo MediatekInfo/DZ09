@@ -113,7 +113,6 @@ void GUI_DestroyLabel(pGUIOBJECT Object)
     if ((Object != NULL) && (Object->Type == GO_LABEL))
     {
         pLABEL   Label = (pLABEL)Object;
-        uint32_t intflags = __disable_interrupts();
 
         if ((Label->Caption.Font != NULL) && (IsDynamicMemory(Label->Caption.Font)))
             free(Label->Caption.Font);
@@ -122,8 +121,6 @@ void GUI_DestroyLabel(pGUIOBJECT Object)
         if ((Label->Caption.Text != NULL) && (IsDynamicMemory(Label->Caption.Text)))
             free(Label->Caption.Text);
         Label->Caption.Text = NULL;
-
-        __restore_interrupts(intflags);
     }
 }
 
@@ -142,11 +139,8 @@ boolean GUI_SetTextLabel(pGUIOBJECT Object, pTEXT ObjectText)
 {
     if ((Object != NULL) && (Object->Type == GO_LABEL) && (ObjectText != NULL))
     {
-        uint32_t intflags = __disable_interrupts();
-
         ((pLABEL)Object)->Caption = *ObjectText;
         ((pLABEL)Object)->Caption.Color.BackColor = ((pLABEL)Object)->ForeColor;
-        __restore_interrupts(intflags);
 
         return true;
     }
