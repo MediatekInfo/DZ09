@@ -88,6 +88,10 @@ void EM_ProcessEvents(void)
             if (tmpEvent->ParamSz == sizeof(TPAINTEV))
                 GUI_OnPaintHandler((pPAINTEV)tmpEvent->Param);
             break;
+        case ET_GODESTROY:
+            if (tmpEvent->ParamSz == sizeof(TGODESTROYEV))
+                GUI_OnDestroyHandler((pGODESTROYEV)tmpEvent->Param);
+            break;
         case ET_PWRKEY:
             break;
         case ET_ONTIMER:

@@ -82,10 +82,10 @@ extern pTEXTCOLOR GUI_GetObjectTextColor(pGUIOBJECT Object);
 extern boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color);
 extern char *GUI_GetObjectCaption(pGUIOBJECT Object);
 extern boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption);
-extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
-extern void *GUI_DestroyObject(pGUIOBJECT Object);
 extern pGUIOBJECT GUI_GetObjectActive(void);
 extern void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate);
 extern void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active, boolean Invalidate);
+extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
+extern void *GUI_DestroyObject(pGUIOBJECT Object);
 
 #endif /* _GUIOBJECT_H_ */

@@ -32,6 +32,11 @@ typedef struct tag_PAINTEV
     TVLINDEX   Layer;
 } TPAINTEV, *pPAINTEV;
 
+typedef struct tag_GODESTROYEV
+{
+    pGUIOBJECT Object;
+} TGODESTROYEV, *pGODESTROYEV;
+
 extern void GUI_SetLockState(boolean Locked);
 extern boolean GUI_Initialize(void);
 extern void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct);
@@ -39,5 +44,6 @@ extern void GUI_OnPaintHandler(pPAINTEV Event);
 extern void GUI_OnPenPressHandler(pEVENT Event);
 extern void GUI_OnPenMoveHandler(pEVENT Event);
 extern void GUI_OnPenReleaseHandler(pEVENT Event);
+extern void GUI_OnDestroyHandler(pGODESTROYEV Event);
 
 #endif /* _GUI_H_ */

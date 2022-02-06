@@ -50,81 +50,6 @@ static void GUI_UpdateChildPositions(pGUIOBJECT Object, pPOINT dXY)
     }
 }
 
-static void GUI_DestroyChildTree(pGUIOBJECT Object)
-{
-    pDLIST  ChildList = &((pWIN)Object)->ChildObjects;
-    pDLITEM tmpItem;
-
-    while((tmpItem = DL_GetLastItem(ChildList)) != NULL)
-    {
-        pGUIOBJECT tmpObject = (pGUIOBJECT)tmpItem->Data;
-
-        if (GUI_IsWindowObject(tmpObject)) GUI_DestroyChildTree(tmpObject);
-
-        DL_DeleteLastItem(ChildList);
-        if ((tmpObject != NULL) && (tmpObject->OnDestroy != NULL))
-            tmpObject->OnDestroy(tmpObject);
-
-        __secure_memset(tmpObject, 0x00, sizeof(TGUIOBJECT));
-        free(tmpObject);
-    }
-}
-
-static void *GUI_DestroySingleObject(pGUIOBJECT Object)
-{
-    uint32_t intflags;
-
-    if (Object->Parent != NULL)
-    {
-        pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
-        pDLITEM tmpItem = DL_FindItemByData(ChildList, Object, NULL);
-
-        if (tmpItem != NULL)
-        {
-            static void (*const DestroyObject[GO_NUMTYPES])(pGUIOBJECT) =
-            {
-                NULL,
-                GUI_DestroyWindow,
-                GUI_DestroyButton,
-                GUI_DestroyLabel
-            };
-
-            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
-
-            if (DestroyObject[Object->Type] != NULL)
-                DestroyObject[Object->Type](Object);
-
-            intflags = __disable_interrupts();
-            DL_DeleteItem(ChildList, tmpItem);
-            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
-            free(Object);
-            Object = NULL;
-
-            __restore_interrupts(intflags);
-        }
-    }
-    else if (GUI_IsWindowObject(Object))
-    {
-        TVLINDEX LayerIndex = ((pWIN)Object)->Layer;
-
-        if (LayerIndex < LCDIF_NUMLAYERS)
-        {
-            GUI_SetObjectVisibility(Object, false);
-
-            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
-
-            intflags = __disable_interrupts();
-            LCDIF_SetupLayer(LayerIndex, Point(0, 0), 0, 0, CF_8IDX, 0, 0);
-            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
-            free(Object);
-            GUILayer[LayerIndex] = Object = NULL;
-
-            __restore_interrupts(intflags);
-        }
-    }
-    return Object;
-}
-
 static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
 {
     pDLIST     ChildList = &((pWIN)Parent)->ChildObjects;
@@ -757,18 +682,14 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 
 void *GUI_DestroyObject(pGUIOBJECT Object)
 {
-    if (Object != NULL)
+    if ((Object != NULL) && (Object->Type != GO_UNKNOWN))
     {
-        if (GUI_IsWindowObject(Object)) GUI_DestroyChildTree(Object);
-        if (Object->Parent != NULL)
-        {
-            if (Object->Visible && Object->InheritedVisible)
-            {
-                GUI_SetObjectVisibility(Object, false);
-                EM_ProcessEvents();
-            }
-        }
-        Object = GUI_DestroySingleObject(Object);
+        TGODESTROYEV DestroyEvent = {0};
+
+        GUI_SetObjectVisibility(Object, false);
+
+        DestroyEvent.Object = Object;
+        EM_PostEvent(ET_GODESTROY, NULL, &DestroyEvent, sizeof(TGODESTROYEV));
     }
-    return Object;
+    return NULL;
 }
