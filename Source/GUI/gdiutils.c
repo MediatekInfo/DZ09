@@ -344,7 +344,6 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
 pRLIST GDI_SUBRectangles(pRECT a, pRECT b)
 {
     pRLIST Rlist = GDI_CreateRList();
-    pRECT  Rct;
 
     if (Rlist == NULL) return NULL;
     if ((a == NULL) || (b == NULL)) return Rlist;
