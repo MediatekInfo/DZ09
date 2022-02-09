@@ -625,7 +625,7 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
                 if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
             }
         }
-        if ((ActiveObject = Object) != NULL)
+        if ((Object->Type < GO_NUMTYPES) && (ActiveObject = Object) != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
             {
@@ -633,6 +633,7 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
                 if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
             }
         }
+        else ActiveObject = NULL;
     }
 }
 
@@ -683,7 +684,7 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 
 void *GUI_DestroyObject(pGUIOBJECT Object)
 {
-    if ((Object != NULL) && (Object->Type != GO_UNKNOWN))
+    if ((Object != NULL) && (Object->Type != GO_UNKNOWN) && (Object->Type < GO_NUMTYPES))
     {
         TGODESTROYEV DestroyEvent = {0};
 
