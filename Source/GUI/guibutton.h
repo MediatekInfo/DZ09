@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 AJScorp
+* Copyright (C) 2022 - 2021 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -36,5 +36,6 @@ extern void GUI_CalcClientAreaButton(pGUIOBJECT Object, pRECT ClientArea);
 extern pTEXT GUI_GetTextButton(pGUIOBJECT Object);
 extern boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText);
 extern void GUI_SetActiveButton(pGUIOBJECT Object, boolean Active);
+extern boolean GUI_GetActiveButton(pGUIOBJECT Object);
 
 #endif /* _GUIBUTTON__H_ */

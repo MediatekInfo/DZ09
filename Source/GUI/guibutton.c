@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 AJScorp
+* Copyright (C) 2022 - 2021 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -41,7 +41,7 @@ void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
     {
         if (Button->Caption.Text != NULL)
         {
-            pDLIST BackRects = GDI_DrawText(((pWIN)Button->Head.Parent)->Layer,
+            pRLIST BackRects = GDI_DrawText(((pWIN)Button->Head.Parent)->Layer,
                                             &Button->Caption,
                                             &ButtonRect,
                                             Clip,
@@ -50,18 +50,12 @@ void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
                                             Button->Caption.Color.BackColor);
             if (BackRects != NULL)
             {
-                pDLITEM tmpItem;
+                uint32_t i;
 
-                while ((tmpItem = DL_GetFirstItem(BackRects)) != NULL)
-                {
-                    if (tmpItem->Data != NULL)
-                    {
-                        GDI_FillRectangle(Layer, *(pRECT)tmpItem->Data, Button->ForeColor);
-                        free(tmpItem->Data);
-                    }
-                    DL_DeleteFirstItem(BackRects);
-                }
-                DL_Delete(BackRects, false);
+                for(i = 0; i < BackRects->Count; i++)
+                    GDI_FillRectangle(Layer, BackRects->Item[i], Button->ForeColor);
+
+                GDI_DeleteRList(BackRects);
                 return;
             }
         }
@@ -90,8 +84,8 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Button->Head.Parent = Parent;
         Button->Head.Enabled = !!(Flags & GF_ENABLED);
         Button->Head.Visible = !!(Flags & GF_VISIBLE);
-        Button->Head.InheritedEnabled = Parent->Enabled;
-        Button->Head.InheritedVisible = Parent->Visible;
+        Button->Head.InheritedEnabled = Parent->Enabled && Parent->InheritedEnabled;
+        Button->Head.InheritedVisible = Parent->Visible && Parent->InheritedVisible;
 
         Button->ForeColor = ForeColor;
         Button->Autorepeat = !!(Flags & GF_AUTOREPEAT);
@@ -111,7 +105,13 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
                       DL_AddItemAtIndex(ObjectsList, 0, Button) :
                       DL_InsertItemAfter(ObjectsList, tmpDLItem, Button)) != NULL;
         }
-        if (Result) Button->Head.Type = GO_BUTTON;
+
+        if (Result)
+        {
+            Button->Head.Type = GO_BUTTON;
+            if (Button->Head.Visible && Button->Head.InheritedVisible)
+                GUI_Invalidate((pGUIOBJECT)Button, NULL);
+        }
         else
         {
             free(Button);
@@ -126,7 +126,6 @@ void GUI_DestroyButton(pGUIOBJECT Object)
     if ((Object != NULL) && (Object->Type == GO_BUTTON))
     {
         pBUTTON  Button = (pBUTTON)Object;
-        uint32_t intflags = __disable_interrupts();
 
         if ((Button->Caption.Font != NULL) && (IsDynamicMemory(Button->Caption.Font)))
             free(Button->Caption.Font);
@@ -135,8 +134,6 @@ void GUI_DestroyButton(pGUIOBJECT Object)
         if ((Button->Caption.Text != NULL) && (IsDynamicMemory(Button->Caption.Text)))
             free(Button->Caption.Text);
         Button->Caption.Text = NULL;
-
-        __restore_interrupts(intflags);
     }
 }
 
@@ -166,11 +163,8 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
 {
     if ((Object != NULL) && (Object->Type == GO_BUTTON) && (ObjectText != NULL))
     {
-        uint32_t intflags = __disable_interrupts();
-
         ((pBUTTON)Object)->Caption = *ObjectText;
         ((pBUTTON)Object)->Caption.Color.BackColor = ((pBUTTON)Object)->ForeColor;
-        __restore_interrupts(intflags);
 
         return true;
     }
@@ -180,11 +174,13 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
 void GUI_SetActiveButton(pGUIOBJECT Object, boolean Active)
 {
     if ((Object != NULL) && (Object->Type == GO_BUTTON))
-    {
-        uint32_t intflags = __disable_interrupts();
-
         ((pBUTTON)Object)->Pressed = Active;
-        __restore_interrupts(intflags);
-    }
+
     return;
+}
+
+boolean GUI_GetActiveButton(pGUIOBJECT Object)
+{
+    return ((Object != NULL) && (Object->Type == GO_BUTTON)) ?
+           ((pBUTTON)Object)->Pressed : false;
 }

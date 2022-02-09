@@ -28,6 +28,7 @@ typedef enum tag_EVTYPE
     ET_PENMOVE,
     /* GUI events */
     ET_ONPAINT,
+    ET_GODESTROY,
     /* System events */
     ET_PWRKEY,
     ET_ONTIMER

@@ -36,7 +36,7 @@ void GUI_DrawDefaultLabel(pGUIOBJECT Object, pRECT Clip)
 
     if (Label->Caption.Text != NULL)
     {
-        pDLIST BackRects = GDI_DrawText(((pWIN)Label->Head.Parent)->Layer,
+        pRLIST BackRects = GDI_DrawText(((pWIN)Label->Head.Parent)->Layer,
                                         &Label->Caption,
                                         &LabelRect,
                                         Clip,
@@ -45,18 +45,12 @@ void GUI_DrawDefaultLabel(pGUIOBJECT Object, pRECT Clip)
                                         Label->Caption.Color.BackColor);
         if (BackRects != NULL)
         {
-            pDLITEM tmpItem;
+            uint32_t i;
 
-            while ((tmpItem = DL_GetFirstItem(BackRects)) != NULL)
-            {
-                if (tmpItem->Data != NULL)
-                {
-                    GDI_FillRectangle(Layer, *(pRECT)tmpItem->Data, Label->ForeColor);
-                    free(tmpItem->Data);
-                }
-                DL_DeleteFirstItem(BackRects);
-            }
-            DL_Delete(BackRects, false);
+            for(i = 0; i < BackRects->Count; i++)
+                GDI_FillRectangle(Layer, BackRects->Item[i], Label->ForeColor);
+
+            GDI_DeleteRList(BackRects);
             return;
         }
     }
@@ -84,8 +78,8 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Label->Head.Parent = Parent;
         Label->Head.Enabled = !!(Flags & GF_ENABLED);
         Label->Head.Visible = !!(Flags & GF_VISIBLE);
-        Label->Head.InheritedEnabled = Parent->Enabled;
-        Label->Head.InheritedVisible = Parent->Visible;
+        Label->Head.InheritedEnabled = Parent->Enabled && Parent->InheritedEnabled;
+        Label->Head.InheritedVisible = Parent->Visible && Parent->InheritedVisible;
 
         Label->ForeColor = ForeColor;
 
@@ -104,7 +98,13 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
                       DL_AddItemAtIndex(ObjectsList, 0, Label) :
                       DL_InsertItemAfter(ObjectsList, tmpDLItem, Label)) != NULL;
         }
-        if (Result) Label->Head.Type = GO_LABEL;
+
+        if (Result)
+        {
+            Label->Head.Type = GO_LABEL;
+            if (Label->Head.Visible && Label->Head.InheritedVisible)
+                GUI_Invalidate((pGUIOBJECT)Label, NULL);
+        }
         else
         {
             free(Label);
@@ -119,7 +119,6 @@ void GUI_DestroyLabel(pGUIOBJECT Object)
     if ((Object != NULL) && (Object->Type == GO_LABEL))
     {
         pLABEL   Label = (pLABEL)Object;
-        uint32_t intflags = __disable_interrupts();
 
         if ((Label->Caption.Font != NULL) && (IsDynamicMemory(Label->Caption.Font)))
             free(Label->Caption.Font);
@@ -128,8 +127,6 @@ void GUI_DestroyLabel(pGUIOBJECT Object)
         if ((Label->Caption.Text != NULL) && (IsDynamicMemory(Label->Caption.Text)))
             free(Label->Caption.Text);
         Label->Caption.Text = NULL;
-
-        __restore_interrupts(intflags);
     }
 }
 
@@ -148,11 +145,8 @@ boolean GUI_SetTextLabel(pGUIOBJECT Object, pTEXT ObjectText)
 {
     if ((Object != NULL) && (Object->Type == GO_LABEL) && (ObjectText != NULL))
     {
-        uint32_t intflags = __disable_interrupts();
-
         ((pLABEL)Object)->Caption = *ObjectText;
         ((pLABEL)Object)->Caption.Color.BackColor = ((pLABEL)Object)->ForeColor;
-        __restore_interrupts(intflags);
 
         return true;
     }

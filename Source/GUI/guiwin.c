@@ -128,8 +128,8 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
         Win->Head.Parent = Parent;
         Win->Head.Enabled = (Flags & GF_ENABLED) != 0;
         Win->Head.Visible = (Flags & GF_VISIBLE) != 0;
-        Win->Head.InheritedEnabled = Parent->Enabled;
-        Win->Head.InheritedVisible = Parent->Visible;
+        Win->Head.InheritedEnabled = Parent->Enabled && Parent->InheritedEnabled;
+        Win->Head.InheritedVisible = Parent->Visible && Parent->InheritedVisible;
 
         Win->Topmost = (Flags & GF_TOPMOST) != 0;
         Win->Framed = (Flags & GF_FRAMED) != 0;
@@ -156,7 +156,13 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
             }
             if (tmpItem == NULL) Result = DL_AddItemAtIndex(ObjectsList, 0, Win) != NULL;
         }
-        if (Result) Win->Head.Type = GO_WINDOW;
+
+        if (Result)
+        {
+            Win->Head.Type = GO_WINDOW;
+            if (Win->Head.Visible && Win->Head.InheritedVisible)
+                GUI_Invalidate((pGUIOBJECT)Win, NULL);
+        }
         else
         {
             free(Win);

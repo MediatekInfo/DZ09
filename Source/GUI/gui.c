@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 */
 #include "systemconfig.h"
 #include "gui.h"
+
+boolean GUILocked;
 
 static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
 {
@@ -131,12 +133,105 @@ static boolean GUI_UpdateChildTree(pDLIST Region, pGUIOBJECT Object, pRECT Clip)
     return DL_GetItemsCount(Region) != 0;
 }
 
+static void *GUI_DestroySingleObject(pGUIOBJECT Object)
+{
+    uint32_t intflags;
+
+    if (Object->Parent != NULL)
+    {
+        pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
+        pDLITEM tmpItem = DL_FindItemByData(ChildList, Object, NULL);
+
+        if (tmpItem != NULL)
+        {
+            static void (*const DestroyObject[GO_NUMTYPES])(pGUIOBJECT) =
+            {
+                NULL,
+                GUI_DestroyWindow,
+                GUI_DestroyButton,
+                GUI_DestroyLabel
+            };
+
+            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
+            if (DestroyObject[Object->Type] != NULL)
+                DestroyObject[Object->Type](Object);
+
+            intflags = __disable_interrupts();
+            DL_DeleteItem(ChildList, tmpItem);
+            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
+            free(Object);
+            Object = NULL;
+
+            __restore_interrupts(intflags);
+        }
+    }
+    else if (GUI_IsWindowObject(Object))
+    {
+        TVLINDEX LayerIndex = ((pWIN)Object)->Layer;
+
+        if (LayerIndex < LCDIF_NUMLAYERS)
+        {
+            GUI_SetObjectVisibility(Object, false);
+
+            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
+
+            intflags = __disable_interrupts();
+            LCDIF_SetupLayer(LayerIndex, Point(0, 0), 0, 0, CF_8IDX, 0, 0);
+            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
+            free(Object);
+            GUILayer[LayerIndex] = Object = NULL;
+
+            __restore_interrupts(intflags);
+        }
+    }
+    return Object;
+}
+
+static void GUI_DestroyChildTree(pGUIOBJECT Object)
+{
+    pDLIST  ChildList = &((pWIN)Object)->ChildObjects;
+    pDLITEM tmpItem;
+    static void (*const DestroyObject[GO_NUMTYPES])(pGUIOBJECT) =
+    {
+        NULL,
+        GUI_DestroyWindow,
+        GUI_DestroyButton,
+        GUI_DestroyLabel
+    };
+
+    while((tmpItem = DL_GetLastItem(ChildList)) != NULL)
+    {
+        pGUIOBJECT tmpObject = (pGUIOBJECT)tmpItem->Data;
+        uint32_t   intflags;
+
+        if (GUI_IsWindowObject(tmpObject)) GUI_DestroyChildTree(tmpObject);
+
+        if (tmpObject->OnDestroy != NULL) tmpObject->OnDestroy(tmpObject);
+        if (DestroyObject[Object->Type] != NULL)
+            DestroyObject[Object->Type](Object);
+
+        intflags = __disable_interrupts();
+        DL_DeleteLastItem(ChildList);
+        __secure_memset(tmpObject, 0x00, sizeof(TGUIOBJECT));
+        free(tmpObject);
+
+        __restore_interrupts(intflags);
+    }
+}
+
+void GUI_SetLockState(boolean Locked)
+{
+    GUILocked = Locked;
+}
+
 boolean GUI_Initialize(void)
 {
     uint32_t i;
     boolean  Result;
 
     DebugPrint("GUI subsystem initialization:\r\n");
+
+    GUILocked = true;
 
     DebugPrint(" LCD interface initialization...");
     Result = LCDIF_Initialize();                                                                    // Initialize subsystem
@@ -171,7 +266,7 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
         {
             if (Object->Parent != NULL)
                 PaintEvent.UpdateRect = GDI_LocalToGlobalRct(Rct, &Object->Parent->Position.lt);
-            else if (LCDIF_GetLayerPosition(((pWIN)Object)->Layer, NULL) && Object->Visible)
+            else if (LCDIF_IsLayerInitialized(((pWIN)Object)->Layer) && Object->Visible)
                 PaintEvent.UpdateRect = *Rct;
             else return;
         }
@@ -249,5 +344,131 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
             DL_Delete(UpdateRgn, true);
         }
+    }
+}
+
+void GUI_OnPenPressHandler(pEVENT Event)
+{
+    BL_RestartReduceTimer();
+
+    if (GUILocked) return;
+    else
+    {
+        pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+        pGUIOBJECT RootParent;
+        pGUIOBJECT Object = GUI_GetObjectFromPoint(&PenEvent->PXY, &RootParent);
+
+        if (Object != NULL)
+        {
+            TVLINDEX   Layer = ((pWIN)RootParent)->Layer;
+            TPOINT     OnPressXY;
+            /* ParentToInvalidate = root object whose z-order has been changed or NULL if no z-order was changed */
+            pGUIOBJECT ParentToInvalidate = GUI_MoveWindowTreeToTop((GUI_IsWindowObject(Object)) ?
+                                            Object : Object->Parent);
+
+            if ((Object->Enabled) && (Object->InheritedEnabled))
+            {
+                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                /* Store object local coordinates */
+                OnPressXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+
+                GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
+                if (Object->OnPress != NULL) Object->OnPress(Object, &OnPressXY);
+            }
+            GUI_Invalidate(ParentToInvalidate, NULL);
+        }
+        else GUI_SetObjectActive(NULL, true);
+    }
+}
+
+void GUI_OnPenReleaseHandler(pEVENT Event)
+{
+    BL_RestartReduceTimer();
+
+    if (GUILocked)
+    {
+        GUILocked = false;
+        return;
+    }
+    else
+    {
+        pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+        pGUIOBJECT Object = GUI_GetObjectActive();
+
+        if (Object != NULL)
+        {
+            TVLINDEX Layer;
+            TPOINT   OnReleaseXY;
+
+            if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
+            else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
+            else
+            {
+                GUI_SetObjectActive(NULL, true);
+                return;
+            }
+
+            GUI_SetObjectActive(NULL, true);
+
+            if ((Object->Enabled) && (Object->InheritedEnabled))
+            {
+                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                /* Store object local coordinates */
+                OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+
+                if ((Object->OnClick != NULL) &&
+                        (IsPointInRect(&PenEvent->PXY, &Object->Position)))
+                    Object->OnClick(Object, &OnReleaseXY);
+                if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
+            }
+        }
+    }
+}
+
+void GUI_OnPenMoveHandler(pEVENT Event)
+{
+    BL_RestartReduceTimer();
+
+    if (GUILocked) return;
+    else
+    {
+        pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+        pGUIOBJECT Object = GUI_GetObjectActive();
+
+        if (Object != NULL)
+        {
+            TVLINDEX Layer;
+            TPOINT   OnMoveXY;
+
+            if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
+            else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
+            else
+            {
+                GUI_SetObjectActive(NULL, true);
+                return;
+            }
+
+            if ((Object->Enabled) && (Object->InheritedEnabled))
+            {
+                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                /* Store object local coordinates */
+                OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+
+                if (Object->OnMove != NULL) Object->OnMove(Object, &OnMoveXY);
+                GUI_UpdateActiveState(Object, IsPointInRect(&PenEvent->PXY, &Object->Position));
+            }
+        }
+    }
+}
+
+void GUI_OnDestroyHandler(pGODESTROYEV Event)
+{
+    if ((Event != NULL) && (Event->Object != NULL))
+    {
+        pGUIOBJECT Object = (pGUIOBJECT)Event->Object;
+
+        /* Here the object is already invisible and updated on the screen */
+        if (GUI_IsWindowObject(Object)) GUI_DestroyChildTree(Object);
+        GUI_DestroySingleObject(Object);
     }
 }

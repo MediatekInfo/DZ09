@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ void GDI_SetPixel(TVLINDEX Layer, TPOINT P, TCOLOR Color)
     Rct.lt = Rct.rb = P;
 
     lc = &LCDScreen.VLayer[Layer];
-    if (IsPointInRect(P.x, P.y, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
+    if (IsPointInRect(&P, &lc->LayerRgn)) GDI_FillRectangleX(lc, &Rct, Color);
 }
 
 void GDI_DrawFrame(TVLINDEX Layer, pRECT Client, pRECT Clip, TCOLOR Color)

@@ -26,7 +26,7 @@ typedef struct tag_WIN
     TGUIOBJECT  Head;
     boolean     Topmost;
     boolean     Framed;
-    uint32_t    Layer;
+    TVLINDEX    Layer;
     TCOLOR      ForeColor;
     TDLIST      ChildObjects;
     boolean     (*EventHandler)(pEVENT, pGUIOBJECT);

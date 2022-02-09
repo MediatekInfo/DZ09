@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -50,81 +50,6 @@ static void GUI_UpdateChildPositions(pGUIOBJECT Object, pPOINT dXY)
     }
 }
 
-static void GUI_DestroyChildTree(pGUIOBJECT Object)
-{
-    pDLIST  ChildList = &((pWIN)Object)->ChildObjects;
-    pDLITEM tmpItem;
-
-    while((tmpItem = DL_GetLastItem(ChildList)) != NULL)
-    {
-        pGUIOBJECT tmpObject = (pGUIOBJECT)tmpItem->Data;
-
-        if (GUI_IsWindowObject(tmpObject)) GUI_DestroyChildTree(tmpObject);
-
-        DL_DeleteLastItem(ChildList);
-        if ((tmpObject != NULL) && (tmpObject->OnDestroy != NULL))
-            tmpObject->OnDestroy(tmpObject);
-
-        __secure_memset(tmpObject, 0x00, sizeof(TGUIOBJECT));
-        free(tmpObject);
-    }
-}
-
-static void *GUI_DestroySingleObject(pGUIOBJECT Object)
-{
-    uint32_t intflags;
-
-    if (Object->Parent != NULL)
-    {
-        pDLIST  ChildList = &((pWIN)Object->Parent)->ChildObjects;
-        pDLITEM tmpItem = DL_FindItemByData(ChildList, Object, NULL);
-
-        if (tmpItem != NULL)
-        {
-            static void (*const DestroyObject[GO_NUMTYPES])(pGUIOBJECT) =
-            {
-                NULL,
-                GUI_DestroyWindow,
-                GUI_DestroyButton,
-                GUI_DestroyLabel
-            };
-
-            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
-
-            if (DestroyObject[Object->Type] != NULL)
-                DestroyObject[Object->Type](Object);
-
-            intflags = __disable_interrupts();
-            DL_DeleteItem(ChildList, tmpItem);
-            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
-            free(Object);
-            Object = NULL;
-
-            __restore_interrupts(intflags);
-        }
-    }
-    else if (GUI_IsWindowObject(Object))
-    {
-        TVLINDEX LayerIndex = ((pWIN)Object)->Layer;
-
-        if (LayerIndex < LCDIF_NUMLAYERS)
-        {
-            GUI_SetObjectVisibility(Object, false);
-
-            if (Object->OnDestroy != NULL) Object->OnDestroy(Object);
-
-            intflags = __disable_interrupts();
-            LCDIF_SetupLayer(LayerIndex, Point(0, 0), 0, 0, CF_8IDX, 0, 0);
-            __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
-            free(Object);
-            GUILayer[LayerIndex] = Object = NULL;
-
-            __restore_interrupts(intflags);
-        }
-    }
-    return Object;
-}
-
 static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
 {
     pDLIST     ChildList = &((pWIN)Parent)->ChildObjects;
@@ -137,7 +62,7 @@ static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
 
         ResObject = (pGUIOBJECT)tmpDLItem->Data;
         if ((ResObject != NULL) && ResObject->Visible &&
-                IsPointInRect(pt->x, pt->y, &ResObject->Position))
+                IsPointInRect(pt, &ResObject->Position))
         {
             if (GUI_IsWindowObject(ResObject))
             {
@@ -146,7 +71,7 @@ static pGUIOBJECT GUI_GetObjectRecursive(pGUIOBJECT Parent, pPOINT pt)
             }
             return ResObject;
         }
-        tmpDLItem = DL_GetNextItem(tmpDLItem);
+        tmpDLItem = DL_GetPrevItem(tmpDLItem);
     }
     return NULL;
 }
@@ -165,13 +90,13 @@ static void GUI_UpdateChildTreeInheritance(pGUIOBJECT Object)
 
             if (tmpObject != NULL)
             {
-                tmpObject->InheritedEnabled = Object->Enabled;
-                tmpObject->InheritedVisible = Object->Visible;
+                tmpObject->InheritedEnabled = Object->Enabled && Object->InheritedEnabled;
+                tmpObject->InheritedVisible = Object->Visible && Object->InheritedVisible;
 
-                if (((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()) &&
-                        (!Object->Enabled ||
-                         !Object->Visible))
-                    GUI_SetActiveObject(NULL, false);
+                if (((uintptr_t)tmpObject == (uintptr_t)GUI_GetObjectActive()) &&
+                        (!tmpObject->InheritedEnabled ||
+                         !tmpObject->InheritedVisible))
+                    GUI_SetObjectActive(NULL, false);
 
                 if (GUI_IsWindowObject(tmpObject))
                     GUI_UpdateChildTreeInheritance(tmpObject);
@@ -219,10 +144,9 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
 
             if ((GUILayer[i] == NULL) || !GUILayer[i]->Visible) continue;
 
-            tmpPoint.x = pt->x + LCDScreen.ScreenOffset.x - LCDScreen.VLayer[i].LayerOffset.x;
-            tmpPoint.y = pt->y + LCDScreen.ScreenOffset.y - LCDScreen.VLayer[i].LayerOffset.y;
+            tmpPoint = GDI_ScreenToLayerPt(i, pt);
 
-            if (IsPointInRect(tmpPoint.x, tmpPoint.y, &GUILayer[i]->Position))
+            if (IsPointInRect(&tmpPoint, &GUILayer[i]->Position))
             {
                 pDLIST  ChildList;
                 pDLITEM tmpDLItem;
@@ -236,7 +160,7 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
                     pGUIOBJECT tmpRoot = (pGUIOBJECT)tmpDLItem->Data;
 
                     if ((tmpRoot != NULL) && tmpRoot->Visible &&
-                            IsPointInRect(tmpPoint.x, tmpPoint.y, &tmpRoot->Position))
+                            IsPointInRect(&tmpPoint, &tmpRoot->Position))
                     {
                         if ((Object = GUI_GetObjectRecursive(tmpRoot, &tmpPoint)) == NULL)
                             Object = tmpRoot;
@@ -371,7 +295,7 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
         if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
         {
             TPOINT dXY = GDI_GlobalToLocalPt(&NewPosition.lt, &Object->Position.lt);
-            pDLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
+            pRLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &NewPosition);
 
             Object->Position = NewPosition;
 
@@ -379,15 +303,15 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
                 GUI_UpdateChildPositions(Object, &dXY);
             GUI_Invalidate(Object, NULL);
 
-            while (DL_GetItemsCount(UpdateRects))
+            if (UpdateRects != NULL)
             {
-                pDLITEM tmpDLItem = DL_GetFirstItem(UpdateRects);
+                uint32_t i;
 
-                GUI_Invalidate(Object->Parent, (pRECT)tmpDLItem->Data);
-                free(tmpDLItem->Data);
-                DL_DeleteFirstItem(UpdateRects);
+                for(i = 0; i < UpdateRects->Count; i++)
+                    GUI_Invalidate(Object->Parent, &UpdateRects->Item[i]);
+
+                GDI_DeleteRList(UpdateRects);
             }
-            DL_Delete(UpdateRects, false);
         }
     }
     return true;
@@ -406,8 +330,8 @@ boolean GUI_SetObjectEnabled(pGUIOBJECT Object, boolean Enabled)
         Object->Enabled = Enabled;
         if (Object->Parent != NULL)
         {
-            if (!Enabled && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
-                GUI_SetActiveObject(NULL, false);
+            if (!Enabled && ((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()))
+                GUI_SetObjectActive(NULL, false);
 
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
@@ -429,6 +353,10 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
     if (Object->Visible != Visible)
     {
         Object->Visible = Visible;
+
+        if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetObjectActive()))
+            GUI_SetObjectActive(NULL, false);
+
         if (Object->Parent == NULL)
         {
             if (GUI_IsWindowObject(Object))
@@ -444,9 +372,6 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
         }
         else
         {
-            if (!Visible && ((uintptr_t)Object == (uintptr_t)GUI_GetActiveObject()))
-                GUI_SetActiveObject(NULL, false);
-
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
@@ -539,11 +464,8 @@ boolean GUI_SetObjectFont(pGUIOBJECT Object, pBFC_FONT ObjectFont)
         if ((GetTextObject[Object->Type] != NULL) &&
                 ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
         {
-            uint32_t intflags = __disable_interrupts();
-
             ObjectText->Font = ObjectFont;
             GDI_UpdateTextExtent(ObjectText);
-            __restore_interrupts(intflags);
 
             GUI_Invalidate(Object, NULL);
             Result = true;
@@ -592,8 +514,7 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
         if ((GetTextObject[Object->Type] != NULL) &&
                 ((tmpText = GetTextObject[Object->Type](Object)) != NULL))
         {
-            uint32_t intflags = __disable_interrupts();
-            TTEXT    ObjectText = *tmpText;
+            TTEXT  ObjectText = *tmpText;
             static boolean (*const SetTextObject[GO_NUMTYPES])(pGUIOBJECT, pTEXT) =
             {
                 NULL,
@@ -605,8 +526,6 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
             ObjectText.Color = Color;
             if (SetTextObject[Object->Type] != NULL)
                 Result = SetTextObject[Object->Type](Object, &ObjectText);
-
-            __restore_interrupts(intflags);
 
             if (Result) GUI_Invalidate(Object, NULL);
         }
@@ -654,8 +573,6 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
         if ((GetTextObject[Object->Type] != NULL) &&
                 ((ObjectText = GetTextObject[Object->Type](Object)) != NULL))
         {
-            uint32_t intflags = __disable_interrupts();
-
             if ((ObjectText->Text != NULL) && IsDynamicMemory(ObjectText->Text))
                 free(ObjectText->Text);
 
@@ -676,8 +593,6 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
             ObjectText->Text = Caption;
             GDI_UpdateTextExtent(ObjectText);
 
-            __restore_interrupts(intflags);
-
             GUI_Invalidate(Object, NULL);
             Result = true;
         }
@@ -685,17 +600,15 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
     return Result;
 }
 
-pGUIOBJECT GUI_GetActiveObject(void)
+pGUIOBJECT GUI_GetObjectActive(void)
 {
     return ActiveObject;
 }
 
-void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
+void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
 {
     if ((uintptr_t)Object != (uintptr_t)ActiveObject)
     {
-        boolean  NeedInvalidate = false;
-        uint32_t intflags = __disable_interrupts();
         static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
         {
             NULL,
@@ -707,19 +620,47 @@ void GUI_SetActiveObject(pGUIOBJECT Object, boolean Invalidate)
         if (ActiveObject != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
+            {
                 SetActive[ActiveObject->Type](ActiveObject, false);
-            NeedInvalidate = Invalidate;
+                if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+            }
         }
-
         if ((ActiveObject = Object) != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
-                SetActive[ActiveObject->Type](ActiveObject, false);
-            NeedInvalidate = Invalidate;
+            {
+                SetActive[ActiveObject->Type](ActiveObject, true);
+                if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+            }
         }
-        __restore_interrupts(intflags);
+    }
+}
 
-        if (NeedInvalidate) GUI_Invalidate(ActiveObject, NULL);
+void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active)
+{
+    if ((ActiveObject != NULL) && ((uintptr_t)Object == (uintptr_t)ActiveObject))
+    {
+        static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
+        {
+            NULL,
+            NULL,
+            GUI_SetActiveButton,
+            NULL
+        };
+        static boolean (*const GetActive[GO_NUMTYPES])(pGUIOBJECT) =
+        {
+            NULL,
+            NULL,
+            GUI_GetActiveButton,
+            NULL
+        };
+
+        if ((SetActive[ActiveObject->Type] != NULL) && (GetActive[ActiveObject->Type] != NULL) &&
+                (GetActive[ActiveObject->Type](ActiveObject) != Active))
+        {
+            SetActive[ActiveObject->Type](ActiveObject, Active);
+            GUI_Invalidate(ActiveObject, NULL);
+        }
     }
 }
 
@@ -742,18 +683,14 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 
 void *GUI_DestroyObject(pGUIOBJECT Object)
 {
-    if (Object != NULL)
+    if ((Object != NULL) && (Object->Type != GO_UNKNOWN))
     {
-        if (GUI_IsWindowObject(Object)) GUI_DestroyChildTree(Object);
-        if (Object->Parent != NULL)
-        {
-            if (Object->Visible && Object->InheritedVisible)
-            {
-                GUI_SetObjectVisibility(Object, false);
-                EM_ProcessEvents();
-            }
-        }
-        Object = GUI_DestroySingleObject(Object);
+        TGODESTROYEV DestroyEvent = {0};
+
+        GUI_SetObjectVisibility(Object, false);
+
+        DestroyEvent.Object = Object;
+        EM_PostEvent(ET_GODESTROY, NULL, &DestroyEvent, sizeof(TGODESTROYEV));
     }
-    return Object;
+    return NULL;
 }

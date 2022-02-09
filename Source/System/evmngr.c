@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -73,45 +73,29 @@ void EM_ProcessEvents(void)
         switch(tmpEvent->Event)
         {
         case ET_PENPRESS:
-        {
-            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
-
-            if (tmpEvent->ParamSz)
-            {
-//                GUI_OnPenPressed(TSEvent);
-                DebugPrint("Pen %u Pressed x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
-            }
-        }
-        break;
+            if (tmpEvent->ParamSz == sizeof(TPENEVENT))
+                GUI_OnPenPressHandler(tmpEvent);
+            break;
         case ET_PENRELEASE:
-        {
-            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
-
-            if (tmpEvent->ParamSz)
-            {
-//                GUI_OnPenReleased(TSEvent);
-                DebugPrint("Pen %u Released x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
-            }
-        }
-        break;
+            if (tmpEvent->ParamSz == sizeof(TPENEVENT))
+                GUI_OnPenReleaseHandler(tmpEvent);
+            break;
         case ET_PENMOVE:
-        {
-            pPENEVENT TSEvent = (pPENEVENT)tmpEvent->Param;
-
-            if (tmpEvent->ParamSz)
-            {
-//                GUI_OnPenMoved(TSEvent);
-                DebugPrint("Pen %u Moved x= %d, y= %d\r\n", TSEvent->PenIndex, TSEvent->PXY.x, TSEvent->PXY.y);
-            }
-        }
-        break;
+            if (tmpEvent->ParamSz == sizeof(TPENEVENT))
+                GUI_OnPenMoveHandler(tmpEvent);
+            break;
         case ET_ONPAINT:
-            GUI_OnPaintHandler((pPAINTEV)tmpEvent->Param);
+            if (tmpEvent->ParamSz == sizeof(TPAINTEV))
+                GUI_OnPaintHandler((pPAINTEV)tmpEvent->Param);
+            break;
+        case ET_GODESTROY:
+            if (tmpEvent->ParamSz == sizeof(TGODESTROYEV))
+                GUI_OnDestroyHandler((pGODESTROYEV)tmpEvent->Param);
             break;
         case ET_PWRKEY:
             break;
         case ET_ONTIMER:
-            if (tmpEvent->ParamSz)
+            if (tmpEvent->ParamSz == sizeof(pTIMER))
             {
                 pTIMER EvTimer = *(pTIMER *)tmpEvent->Param;
 
@@ -124,8 +108,3 @@ void EM_ProcessEvents(void)
         free(tmpEvent);
     }
 }
-
-
-
-
-
