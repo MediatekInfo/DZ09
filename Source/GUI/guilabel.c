@@ -98,7 +98,13 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
                       DL_AddItemAtIndex(ObjectsList, 0, Label) :
                       DL_InsertItemAfter(ObjectsList, tmpDLItem, Label)) != NULL;
         }
-        if (Result) Label->Head.Type = GO_LABEL;
+
+        if (Result)
+        {
+            Label->Head.Type = GO_LABEL;
+            if (Label->Head.Visible && Label->Head.InheritedVisible)
+                GUI_Invalidate((pGUIOBJECT)Label, NULL);
+        }
         else
         {
             free(Label);

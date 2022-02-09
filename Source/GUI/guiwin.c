@@ -156,7 +156,13 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
             }
             if (tmpItem == NULL) Result = DL_AddItemAtIndex(ObjectsList, 0, Win) != NULL;
         }
-        if (Result) Win->Head.Type = GO_WINDOW;
+
+        if (Result)
+        {
+            Win->Head.Type = GO_WINDOW;
+            if (Win->Head.Visible && Win->Head.InheritedVisible)
+                GUI_Invalidate((pGUIOBJECT)Win, NULL);
+        }
         else
         {
             free(Win);

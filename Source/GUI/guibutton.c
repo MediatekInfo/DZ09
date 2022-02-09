@@ -105,7 +105,13 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
                       DL_AddItemAtIndex(ObjectsList, 0, Button) :
                       DL_InsertItemAfter(ObjectsList, tmpDLItem, Button)) != NULL;
         }
-        if (Result) Button->Head.Type = GO_BUTTON;
+
+        if (Result)
+        {
+            Button->Head.Type = GO_BUTTON;
+            if (Button->Head.Visible && Button->Head.InheritedVisible)
+                GUI_Invalidate((pGUIOBJECT)Button, NULL);
+        }
         else
         {
             free(Button);
