@@ -455,7 +455,7 @@ void GUI_OnPenMoveHandler(pEVENT Event)
                 OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
                 if (Object->OnMove != NULL) Object->OnMove(Object, &OnMoveXY);
-                GUI_UpdateActiveState(Object, IsPointInRect(&PenEvent->PXY, &Object->Position), true);
+                GUI_UpdateActiveState(Object, IsPointInRect(&PenEvent->PXY, &Object->Position));
             }
         }
     }

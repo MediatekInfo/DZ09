@@ -84,7 +84,7 @@ extern char *GUI_GetObjectCaption(pGUIOBJECT Object);
 extern boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption);
 extern pGUIOBJECT GUI_GetObjectActive(void);
 extern void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate);
-extern void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active, boolean Invalidate);
+extern void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active);
 extern void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip);
 extern void *GUI_DestroyObject(pGUIOBJECT Object);
 

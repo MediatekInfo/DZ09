@@ -632,11 +632,10 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
     }
 }
 
-void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active, boolean Invalidate)
+void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active)
 {
     if ((ActiveObject != NULL) && ((uintptr_t)Object == (uintptr_t)ActiveObject))
     {
-        boolean NeedInvalidate = false;
         static void (*const SetActive[GO_NUMTYPES])(pGUIOBJECT, boolean) =
         {
             NULL,
@@ -656,10 +655,8 @@ void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active, boolean Invalidate
                 (GetActive[ActiveObject->Type](ActiveObject) != Active))
         {
             SetActive[ActiveObject->Type](ActiveObject, Active);
-            NeedInvalidate = Invalidate;
+            GUI_Invalidate(ActiveObject, NULL);
         }
-
-        if (NeedInvalidate) GUI_Invalidate(ActiveObject, NULL);
     }
 }
 
