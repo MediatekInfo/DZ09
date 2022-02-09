@@ -620,14 +620,18 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
         if (ActiveObject != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
+            {
                 SetActive[ActiveObject->Type](ActiveObject, false);
-            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+                if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+            }
         }
         if ((ActiveObject = Object) != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
+            {
                 SetActive[ActiveObject->Type](ActiveObject, true);
-            if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+                if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+            }
         }
     }
 }
