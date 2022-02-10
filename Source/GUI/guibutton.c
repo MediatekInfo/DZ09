@@ -22,6 +22,38 @@
 #include "guiobject.h"
 #include "guibutton.h"
 
+#define BUTTONLONGDELAY             1000
+#define BUTTONAUTOREPEAT            75
+
+static pTIMER     ButtonTimer;
+static pGUIOBJECT ArepeatButton;
+static boolean    ButtonDelayDone;
+
+static void GUI_DisableButtonTimer(void)
+{
+    LRT_Stop(ButtonTimer);
+    LRT_Destroy(ButtonTimer);
+    ButtonTimer = NULL;
+    ArepeatButton = NULL;
+}
+
+static void GUI_ButtonTimerHandler(pTIMER Timer)
+{
+    if (((uintptr_t)GUI_GetObjectActive() == (uintptr_t)ArepeatButton) &&
+            ((pBUTTON)ArepeatButton)->Autorepeat && (ArepeatButton->OnClick != NULL))
+    {
+        TPOINT DummyPoint = {0};
+
+        if (!ButtonDelayDone)
+        {
+            ButtonDelayDone = true;
+            LRT_SetInterval(Timer, BUTTONAUTOREPEAT);
+        }
+        ArepeatButton->OnClick(ArepeatButton, &DummyPoint);
+    }
+    else GUI_DisableButtonTimer();
+}
+
 void GUI_DrawDefaultButton(pGUIOBJECT Object, pRECT Clip)
 {
     pBUTTON  Button = (pBUTTON)Object;
@@ -177,8 +209,18 @@ boolean GUI_SetTextButton(pGUIOBJECT Object, pTEXT ObjectText)
 void GUI_SetActiveButton(pGUIOBJECT Object, boolean Active)
 {
     if ((Object != NULL) && (Object->Type == GO_BUTTON))
+    {
         ((pBUTTON)Object)->Pressed = Active;
 
+        if (Active && ((pBUTTON)Object)->Autorepeat)
+        {
+            ButtonDelayDone = false;
+            ButtonTimer = LRT_Create(BUTTONLONGDELAY, NULL, GUI_ButtonTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
+            ArepeatButton = (ButtonTimer != NULL) ? Object : NULL;
+        }
+        else if (ButtonTimer != NULL)
+            GUI_DisableButtonTimer();
+    }
     return;
 }
 
