@@ -178,7 +178,7 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
     return Object;
 }
 
-pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
+pGUIOBJECT GUI_GetTopNonWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
 {
     pGUIOBJECT Result = NULL;
     pDLITEM    ResObjectItem = NULL;

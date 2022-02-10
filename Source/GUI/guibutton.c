@@ -102,7 +102,7 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         {
             pDLITEM tmpDLItem;
 
-            GUI_GetTopNoWindowObject(Parent, &tmpDLItem);
+            GUI_GetTopNonWindowObject(Parent, &tmpDLItem);
 
             Result = ((tmpDLItem == NULL) ?
                       DL_AddItemAtIndex(ObjectsList, 0, Button) :
