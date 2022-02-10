@@ -80,6 +80,9 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
 
         memset(Button, 0x00, sizeof(TBUTTON));
 
+        NORMALIZEVAL(Position.l, Position.r);
+        NORMALIZEVAL(Position.t, Position.b);
+
         Button->Head.Position = GDI_LocalToGlobalRct(&Position, &Parent->Position.lt);
         Button->Head.Parent = Parent;
         Button->Head.Enabled = !!(Flags & GF_ENABLED);

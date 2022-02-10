@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 AJScorp
+* Copyright (C) 2022 - 2021 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -73,6 +73,9 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         pDLIST ObjectsList = &((pWIN)Parent)->ChildObjects;
 
         memset(Label, 0x00, sizeof(TLABEL));
+
+        NORMALIZEVAL(Position.l, Position.r);
+        NORMALIZEVAL(Position.t, Position.b);
 
         Label->Head.Position = GDI_LocalToGlobalRct(&Position, &Parent->Position.lt);
         Label->Head.Parent = Parent;

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020 AJScorp
+* Copyright (C) 2022 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -84,6 +84,9 @@ boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
     {
         memset(LObject, 0x00, sizeof(TWIN));
 
+        NORMALIZEVAL(Position.l, Position.r);
+        NORMALIZEVAL(Position.t, Position.b);
+
         LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
         LObject->Head.Enabled = true;
         LObject->Head.Visible = false;
@@ -123,6 +126,9 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
         pDLIST ObjectsList = &((pWIN)Parent)->ChildObjects;
 
         memset(Win, 0x00, sizeof(TWIN));
+
+        NORMALIZEVAL(Position.l, Position.r);
+        NORMALIZEVAL(Position.t, Position.b);
 
         Win->Head.Position = GDI_LocalToGlobalRct(&Position, &Parent->Position.lt);
         Win->Head.Parent = Parent;

@@ -269,6 +269,9 @@ void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
             else if (LCDIF_IsLayerInitialized(((pWIN)Object)->Layer) && Object->Visible)
                 PaintEvent.UpdateRect = *Rct;
             else return;
+
+            NORMALIZEVAL(PaintEvent.UpdateRect.l, PaintEvent.UpdateRect.r);
+            NORMALIZEVAL(PaintEvent.UpdateRect.t, PaintEvent.UpdateRect.b);
         }
         if (GUI_IsObjectVisibleAcrossParents(&PaintEvent))
             EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
