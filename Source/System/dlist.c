@@ -183,7 +183,8 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
         {
             while(tmpItem != NULL)
             {
-                if (IsDynamicMemory(tmpItem->Data)) free(tmpItem->Data);
+                if (((uintptr_t)tmpItem->Data != (uintptr_t)tmpItem) &&
+                        IsDynamicMemory(tmpItem->Data)) free(tmpItem->Data);
                 tmpItemToFree = tmpItem;
                 tmpItem = tmpItem->Next;
                 free(tmpItemToFree);
