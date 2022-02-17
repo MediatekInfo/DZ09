@@ -464,7 +464,7 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
     return tmpItem;
 }
 
-boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
+boolean DL_ExcludeItem(pDLIST DList, pDLITEM Item)
 {
     boolean  Result = false;
     uint32_t intflags = __disable_interrupts();
@@ -480,9 +480,20 @@ boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
         else DList->Last = Item->Prev;
 
         DList->Count--;
-        free(Item);
         Result = true;
     }
+    __restore_interrupts(intflags);
+
+    return Result;
+}
+
+boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
+{
+    boolean  Result;
+    uint32_t intflags = __disable_interrupts();
+
+    if ((Result = DL_ExcludeItem(DList, Item)) == true)
+        free(Item);
     __restore_interrupts(intflags);
 
     return Result;

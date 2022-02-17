@@ -51,6 +51,7 @@ extern boolean DL_AddItemPtr(pDLIST DList, pDLITEM Item);
 extern pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data);
 extern pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data);
 extern pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data);
+extern boolean DL_ExcludeItem(pDLIST DList, pDLITEM Item);
 extern boolean DL_DeleteItem(pDLIST DList, pDLITEM Item);
 extern boolean DL_DeleteItemByData(pDLIST List, void *Data);
 extern boolean DL_DeleteItemByIndex(pDLIST List, uint32_t Index);
