@@ -63,7 +63,7 @@ typedef struct tag_GUIOBJECT
 
 extern TRECT GUI_CalculateClientArea(pGUIOBJECT Object);
 extern pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent);
-extern pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem);
+extern pGUIOBJECT GUI_GetTopNonWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem);
 extern boolean GUI_SetObjectHandlerOnPress(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT));
 extern boolean GUI_SetObjectHandlerOnRelease(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT));
 extern boolean GUI_SetObjectHandlerOnMove(pGUIOBJECT Object, void (*Handler)(pGUIOBJECT, pPOINT));

@@ -19,7 +19,19 @@
 #ifndef _GDIUTILS_H_
 #define _GDIUTILS_H_
 
-#define RGB_565(v)    ((((v) & 0xF80000) >> 8) | (((v) & 0xFC00) >> 5) | ((v) & 0x1F))
+#define RGB_565(v)                  ((((v) & 0xF80000) >> 8) | (((v) & 0xFC00) >> 5) | ((v) & 0x1F))
+#define NORMALIZEVAL(c0, c1)        do\
+                                    {\
+                                        typeof(c0) tval;\
+\
+                                        if (c0 > c1)\
+                                        {\
+                                            tval = c0;\
+                                            c0 = c1;\
+                                            c1 = tval;\
+                                        }\
+                                    }\
+                                    while(0)
 
 extern TPOINT Point(int16_t x, int16_t y);
 extern TRECT Rect(int16_t l, int16_t t, int16_t r, int16_t b);

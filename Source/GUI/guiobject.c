@@ -178,7 +178,7 @@ pGUIOBJECT GUI_GetObjectFromPoint(pPOINT pt, pGUIOBJECT *RootParent)
     return Object;
 }
 
-pGUIOBJECT GUI_GetTopNoWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
+pGUIOBJECT GUI_GetTopNonWindowObject(pGUIOBJECT Parent, pDLITEM *ObjectItem)
 {
     pGUIOBJECT Result = NULL;
     pDLITEM    ResObjectItem = NULL;
@@ -283,15 +283,24 @@ boolean GUI_GetObjectPosition(pGUIOBJECT Object, pRECT Position)
 
 boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
 {
-    TRECT NewPosition;
-
     if ((Object == NULL) || (Position == NULL)) return false;
 
     if (Object->Parent == NULL)
-        return LCDIF_SetLayerPosition(((pWIN)Object)->Layer, *Position, true);
+    {
+        TRECT LayerPosition = *Position;
+
+        NORMALIZEVAL(LayerPosition.l, LayerPosition.r);
+        NORMALIZEVAL(LayerPosition.t, LayerPosition.b);
+
+        return LCDIF_SetLayerPosition(((pWIN)Object)->Layer, LayerPosition, true);
+    }
     else
     {
-        NewPosition = GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
+        TRECT NewPosition = GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
+
+        NORMALIZEVAL(NewPosition.l, NewPosition.r);
+        NORMALIZEVAL(NewPosition.t,NewPosition.b);
+
         if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
         {
             TPOINT dXY = GDI_GlobalToLocalPt(&NewPosition.lt, &Object->Position.lt);
@@ -625,7 +634,7 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
                 if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
             }
         }
-        if ((ActiveObject = Object) != NULL)
+        if ((Object->Type < GO_NUMTYPES) && (ActiveObject = Object) != NULL)
         {
             if (SetActive[ActiveObject->Type] != NULL)
             {
@@ -633,6 +642,7 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
                 if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
             }
         }
+        else ActiveObject = NULL;
     }
 }
 
@@ -683,7 +693,7 @@ void GUI_DrawObjectDefault(pGUIOBJECT Object, pRECT Clip)
 
 void *GUI_DestroyObject(pGUIOBJECT Object)
 {
-    if ((Object != NULL) && (Object->Type != GO_UNKNOWN))
+    if ((Object != NULL) && (Object->Type != GO_UNKNOWN) && (Object->Type < GO_NUMTYPES))
     {
         TGODESTROYEV DestroyEvent = {0};
 
