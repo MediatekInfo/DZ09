@@ -112,7 +112,7 @@ pTIMER LRT_Create(uint32_t Interval, void (*Handler)(pTIMER), TMRFLAGS Flags)
             tmpTimer->Interval = Interval;
             tmpTimer->StartTicks = USC_GetCurrentTicks();
             tmpTimer->Handler = Handler;
-            if (DL_AddItem(TimersList, tmpTimer) == NULL)
+            if (DL_AddItemPtr(TimersList, &tmpTimer->ListHeader))
             {
                 free(tmpTimer);
                 tmpTimer = NULL;
@@ -124,24 +124,17 @@ pTIMER LRT_Create(uint32_t Interval, void (*Handler)(pTIMER), TMRFLAGS Flags)
 
 boolean LRT_Destroy(pTIMER Timer)
 {
-    if (Timer != NULL)
+    if ((Timer != NULL) && (DL_GetItemIndex(TimersList, &Timer->ListHeader) != -1))
     {
-        pDLITEM tmpItem = DL_FindItemByData(TimersList, Timer, NULL);
+        uint32_t intflags = __disable_interrupts();
 
-        if (tmpItem != NULL)
-        {
-            uint32_t intflags = __disable_interrupts();
-            pTIMER   tmpTimer = tmpItem->Data;
+        __secure_memset(&Timer->Flags, 0x00, sizeof(TTIMER) - offsetof(TTIMER, Flags));
 
-            if (__is_in_isr_mode()) tmpItem->Data = NULL;                                           // This node will be removed when returning to LRT_GPTHandler()
-            else DL_DeleteItem(TimersList, tmpItem);                                                // Direct node deletion
+        if (__is_in_isr_mode()) Timer->ListHeader.Data = NULL;                                      // This node will be removed when returning to LRT_GPTHandler()
+        else DL_DeleteItem(TimersList, &Timer->ListHeader);                                         // Direct node deletion
 
-            __restore_interrupts(intflags);
-
-            __secure_memset(tmpTimer, 0x00, sizeof(TTIMER));
-            free(tmpTimer);
-            return true;
-        }
+        __restore_interrupts(intflags);
+        return true;
     }
     return false;
 }
