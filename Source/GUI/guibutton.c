@@ -215,7 +215,7 @@ void GUI_SetActiveButton(pGUIOBJECT Object, boolean Active)
         if (Active && ((pBUTTON)Object)->Autorepeat)
         {
             ButtonDelayDone = false;
-            ButtonTimer = LRT_Create(BUTTONLONGDELAY, NULL, GUI_ButtonTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
+            ButtonTimer = LRT_Create(BUTTONLONGDELAY, GUI_ButtonTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
             ArepeatButton = (ButtonTimer != NULL) ? Object : NULL;
         }
         else if (ButtonTimer != NULL)
