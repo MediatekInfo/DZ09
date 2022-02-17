@@ -342,6 +342,36 @@ pDLITEM DL_AddItem(pDLIST DList, void *Data)
     return tmpItem;
 }
 
+boolean DL_AddItemPtr(pDLIST DList, pDLITEM Item)
+{
+    if ((DList == NULL) || (Item == NULL)) return false;
+    else
+    {
+        uint32_t intflags = __disable_interrupts();;
+
+        Item->Next = NULL;
+// NOTE (ajscorp#1#): Keep in mind that the Item->Data pointer is assigned here. For now, let it be so.
+        Item->Data = Item;
+
+        if (DList->Last != NULL)
+        {
+            Item->Prev = DList->Last;
+            DList->Last->Next = Item;
+            DList->Last = Item;
+        }
+        else
+        {
+            Item->Prev = NULL;
+            DList->First = Item;
+            DList->Last = Item;
+        }
+        DList->Count++;
+        __restore_interrupts(intflags);
+
+        return true;
+    }
+}
+
 pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data)
 {
     uint32_t intflags;
