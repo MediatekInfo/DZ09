@@ -49,13 +49,13 @@ static pDLITEM DL_ItemByData(pDLIST DList, void *Data, int32_t *Index)
 
     if ((DList != NULL) && (Data != NULL))
     {
-        tmpItem = DL_FirstItem(DList);
+        tmpItem = DList->First;
         if (Index == NULL)
         {
             while(tmpItem != NULL)
             {
                 if (tmpItem->Data == Data) break;
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
             }
         }
         else
@@ -69,7 +69,7 @@ static pDLITEM DL_ItemByData(pDLIST DList, void *Data, int32_t *Index)
                     Result = i;
                     break;
                 }
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
             }
         }
     }
@@ -85,13 +85,13 @@ static pDLITEM DL_ItemByDataRev(pDLIST DList, void *Data, int32_t *Index)
 
     if ((DList != NULL) && (Data != NULL))
     {
-        tmpItem = DL_LastItem(DList);
+        tmpItem = DList->Last;
         if (Index == NULL)
         {
             while(tmpItem != NULL)
             {
                 if (tmpItem->Data == Data) break;
-                tmpItem = DL_PrevItem(tmpItem);
+                tmpItem = tmpItem->Prev;
             }
         }
         else
@@ -105,7 +105,7 @@ static pDLITEM DL_ItemByDataRev(pDLIST DList, void *Data, int32_t *Index)
                     Result = i;
                     break;
                 }
-                tmpItem = DL_PrevItem(tmpItem);
+                tmpItem = tmpItem->Prev;
             }
         }
     }
@@ -121,7 +121,7 @@ static int32_t DL_IndexOfItem(pDLIST DList, pDLITEM Item)
 
     if ((DList != NULL) && (Item != NULL))
     {
-        tmpItem = DL_FirstItem(DList);
+        tmpItem = DList->First;
         for(i = 0; tmpItem != NULL; i++)
         {
             if (tmpItem == Item)
@@ -129,7 +129,7 @@ static int32_t DL_IndexOfItem(pDLIST DList, pDLITEM Item)
                 Result = i;
                 break;
             }
-            tmpItem = DL_NextItem(tmpItem);
+            tmpItem = tmpItem->Next;
         }
     }
     return Result;
@@ -178,14 +178,14 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
     {
         intflags = __disable_interrupts();
 
-        tmpItem = DL_FirstItem(DList);
+        tmpItem = DList->First;
         if (FreeData)
         {
             while(tmpItem != NULL)
             {
                 if (IsDynamicMemory(tmpItem->Data)) free(tmpItem->Data);
                 tmpItemToFree = tmpItem;
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
                 free(tmpItemToFree);
             }
         }
@@ -194,7 +194,7 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
             while(tmpItem != NULL)
             {
                 tmpItemToFree = tmpItem;
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
                 free(tmpItemToFree);
             }
         }
