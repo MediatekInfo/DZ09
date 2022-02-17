@@ -83,7 +83,7 @@ boolean LRT_Initialize(void)
 {
     GPT_InitializeTimers();
 
-    if (TimersList == NULL) TimersList = DL_Create(0);
+    if (TimersList == NULL) TimersList = DL_Create();
     if (TimersList != NULL)
     {
         if (GPT_SetupTimer(LRTMRHWTIMER, LRTMR_FREQUENCY, true, LRT_GPTHandler, true) &&

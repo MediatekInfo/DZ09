@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ typedef struct tag_DList
     uint32_t Count;
 } TDLIST, *pDLIST;
 
-extern pDLIST DL_Create(uint32_t ItemCount);
+extern pDLIST DL_Create(void);
 extern pDLIST DL_Delete(pDLIST List, boolean FreeData);
 extern uint32_t DL_GetItemsCount(pDLIST DList);
 extern pDLITEM DL_GetFirstItem(pDLIST DList);

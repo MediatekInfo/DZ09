@@ -37,7 +37,7 @@ static pEVENT EM_GetTopEvent(void)
 
 boolean EM_Initialize(void)
 {
-    if (EventsList == NULL) EventsList = DL_Create(0);
+    if (EventsList == NULL) EventsList = DL_Create();
     if (EventsList == NULL) return false;
 
     return true;

@@ -160,48 +160,11 @@ static pDLITEM DL_ItemByIndex(pDLIST DList, uint32_t Index)
     return tmpItem;
 }
 
-pDLIST DL_Create(uint32_t ItemCount)
+pDLIST DL_Create(void)
 {
-    pDLIST   tmpDList;
-    pDLITEM  tmpFirst = NULL, tmpLast = NULL;
-    pDLITEM  tmpPrev = NULL,  tmpNext = NULL;
-    uint32_t i;
+    pDLIST tmpDList = malloc(sizeof(TDLIST));
 
-    tmpDList = malloc(sizeof(TDLIST));
-    if (tmpDList != NULL)
-    {
-        for(i = 0; i < ItemCount; i++)
-        {
-            tmpNext = malloc(sizeof(TDLITEM));
-
-            if (i == 0) tmpFirst = tmpNext;
-            if (i == ItemCount - 1) tmpLast = tmpNext;
-
-            if (tmpNext != NULL)
-            {
-                tmpNext->Prev = tmpPrev;
-                tmpNext->Next = tmpNext->Data = NULL;
-                if (tmpPrev != NULL) tmpPrev->Next = tmpNext;
-                tmpPrev = tmpNext;
-            }
-            else
-            {
-                while (tmpFirst != NULL)
-                {
-                    tmpNext = tmpFirst->Next;
-                    free(tmpFirst);
-                    tmpFirst = tmpNext;
-                }
-                free(tmpDList);
-                return NULL;
-            }
-        }
-    }
-    else return NULL;
-
-    tmpDList->First = tmpFirst;
-    tmpDList->Last  = tmpLast;
-    tmpDList->Count = ItemCount;
+    if (tmpDList != NULL) memset(tmpDList, 0x00, sizeof(TDLIST));
 
     return tmpDList;
 }

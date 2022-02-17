@@ -271,7 +271,7 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
     if ((a == NULL) || (b == NULL)) return NULL;
     if (!IsRectsOverlaps(a, b))
     {
-        ResRects = DL_Create(0);
+        ResRects = DL_Create();
         if (ResRects != NULL)
         {
             tmpRectA = malloc(sizeof(TRECT));
@@ -296,7 +296,7 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
             tmpRectA = malloc(sizeof(TRECT));
             if (tmpRectA != NULL)
             {
-                ResRects = DL_Create(0);
+                ResRects = DL_Create();
                 *tmpRectA = *a;
                 if (ResRects != NULL) DL_AddItem(ResRects, tmpRectA);
                 else
@@ -313,7 +313,7 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
             if (tmpRList != NULL)
             {
                 if (tmpRList->Count &&
-                        ((ResRects = DL_Create(0)) != NULL))
+                        ((ResRects = DL_Create()) != NULL))
                 {
                     uint32_t i;
 

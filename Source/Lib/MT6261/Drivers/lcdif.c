@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -208,7 +208,7 @@ boolean LCDIF_Initialize(void)
     LCDIF_START = LCDIF_INT_RESET;                                                                  // Assert LCD controller internal Reset
     LCDIF_START = 0;                                                                                // Release LCD controller internal Reset
 
-    if (LCDIFQueue == NULL)  LCDIFQueue = DL_Create(0);
+    if (LCDIFQueue == NULL)  LCDIFQueue = DL_Create();
     if ((LCDIFQueue == NULL) || !LCDIF_RegisterISR())
     {
         if (LCDIFQueue == NULL)

@@ -289,7 +289,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
         if ((GUILayer[Layer] != NULL) &&
                 GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
         {
-            pDLIST UpdateRgn = DL_Create(0);
+            pDLIST UpdateRgn = DL_Create();
             pRECT  SeedRect = malloc(sizeof(TRECT));
 
             if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
