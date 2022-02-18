@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2022 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,20 +16,9 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef _SYSTEMLIB_H_
-#define _SYSTEMLIB_H_
+#ifndef _CRC_H_
+#define _CRC_H_
 
-#include "debug.h"
-#include "mt6261.h"
-#include "init.h"
-#include "memory.h"
-#include "utils.h"
-#include "dlist.h"
-#include "pmngr.h"
-#include "evmngr.h"
-#include "lrtimer.h"
-#include "sw_i2c.h"
-#include "ringbuf.h"
-#include "crc.h"
+extern uint16_t CalculateCRC16(void *Data, size_t Count);
 
-#endif /* _SYSTEMLIB_H_ */
+#endif /* _CRC_H_ */

@@ -328,6 +328,13 @@
 		<Unit filename="Source\System\asmutils.s">
 			<Option compilerVar="ASM" />
 		</Unit>
+		<Unit filename="Source\System\crc.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\crc.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\debug.c">
 			<Option compilerVar="CC" />
 		</Unit>
