@@ -70,14 +70,14 @@ void LCDIF_DeleteCommandFromQueue(void)
     if (tmpItem != NULL)
     {
         free(((pLCDCMD)tmpItem->Data)->Commands);
-        free(tmpItem->Data);
-        DL_DeleteFirstItem(LCDIFQueue);
+        DL_DeleteItem(LCDIFQueue, tmpItem);
     }
 }
 
 boolean LCDIF_GetCommandFromQueue(void)
 {
     pDLITEM tmpItem;
+    boolean Result = false;
 
     while((tmpItem = DL_GetFirstItem(LCDIFQueue)) != NULL)
     {
@@ -100,12 +100,11 @@ boolean LCDIF_GetCommandFromQueue(void)
             }
             else LCDIF_WROICON &= ~LCDIF_ENC;
 
-            LCDIF_DeleteCommandFromQueue();
-            return true;
+            Result = true;
         }
         LCDIF_DeleteCommandFromQueue();
     }
-    return false;
+    return Result;
 }
 
 void LCDIF_RestartQueue(void)
@@ -130,7 +129,7 @@ boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT Upd
             CMD->UpdateRect = (UpdateRect != NULL) ? *UpdateRect : Rect(0, 0, 0, 0);
             CMD->Commands = CmdArray;
 
-            if (DL_AddItem(LCDIFQueue, CMD) != NULL)
+            if (DL_AddItemPtr(LCDIFQueue, &CMD->ListHeader))
             {
                 LCDIF_RestartQueue();
                 while(DL_GetItemsCount(LCDIFQueue) >= MAX_LCDQUEUE_SIZE);

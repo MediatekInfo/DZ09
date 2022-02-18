@@ -51,6 +51,7 @@
 #elif defined(TARGET_BOOTLOADER)
 
 #define _DEBUG_             (1)
+#include "dlist.h"
 #include "mt6261.h"
 #include "debug.h"
 #include "utils.h"
