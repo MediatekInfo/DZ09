@@ -90,7 +90,7 @@ static void GUI_UpdateObjectByRegion(pDLIST Region, pGUIOBJECT Object, pRECT Cli
     {
         if (tmpItem->Data != NULL)
         {
-            TRECT UpdateRect = *(pRECT)tmpItem->Data;
+            TRECT UpdateRect = ((pRECTITEM)tmpItem->Data)->Rct;
 
             if (GDI_ANDRectangles(&UpdateRect, Clip))
             {
@@ -289,16 +289,16 @@ void GUI_OnPaintHandler(pPAINTEV Event)
         if ((GUILayer[Layer] != NULL) &&
                 GDI_ANDRectangles(&Event->UpdateRect, &LCDScreen.VLayer[Layer].LayerRgn))
         {
-            pDLIST UpdateRgn = DL_Create();
-            pRECT  SeedRect = malloc(sizeof(TRECT));
+            pDLIST    UpdateRgn = DL_Create();
+            pRECTITEM SeedRect = malloc(sizeof(TRECTITEM));
 
             if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
-                    (DL_AddItem(UpdateRgn, SeedRect) != NULL))
+                    DL_AddItemPtr(UpdateRgn, &SeedRect->ListHeader))
             {
                 pDLITEM    tmpDLItem;
                 pGUIOBJECT tmpObject;
 
-                *SeedRect = Event->UpdateRect;
+                SeedRect->Rct = Event->UpdateRect;
 
                 if (Event->Object->Parent != NULL)
                 {
@@ -345,7 +345,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
             }
             else free(SeedRect);
 
-            DL_Delete(UpdateRgn, true);
+            DL_Delete(UpdateRgn, false);
         }
     }
 }

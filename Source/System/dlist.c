@@ -179,12 +179,11 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
         intflags = __disable_interrupts();
 
         tmpItem = DList->First;
-        if (FreeData)
+        if (FreeData && ((uintptr_t)tmpItem->Data != (uintptr_t)tmpItem))
         {
             while(tmpItem != NULL)
             {
-                if (((uintptr_t)tmpItem->Data != (uintptr_t)tmpItem) &&
-                        IsDynamicMemory(tmpItem->Data)) free(tmpItem->Data);
+                if (IsDynamicMemory(tmpItem->Data)) free(tmpItem->Data);
                 tmpItemToFree = tmpItem;
                 tmpItem = tmpItem->Next;
                 free(tmpItemToFree);
@@ -347,7 +346,7 @@ boolean DL_AddItemPtr(pDLIST DList, pDLITEM Item)
     if ((DList == NULL) || (Item == NULL)) return false;
     else
     {
-        uint32_t intflags = __disable_interrupts();;
+        uint32_t intflags = __disable_interrupts();
 
         Item->Next = NULL;
 // NOTE (ajscorp#1#): Keep in mind that the Item->Data pointer is assigned here. For now, let it be so.
@@ -437,6 +436,31 @@ pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
     return tmpItem;
 }
 
+boolean DL_InsertItemBeforePtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
+{
+    pDLITEM  tmpItem;
+    uint32_t intflags;
+
+    if (DList == NULL) return false;
+    if (BaseItem == NULL) return DL_AddItemPtr(DList, ItemToInsert);
+
+    intflags = __disable_interrupts();
+
+// NOTE (ajscorp#1#): Keep in mind that the ItemToInsert->Data pointer is assigned here. For now, let it be so.
+    ItemToInsert->Data = ItemToInsert;
+    ItemToInsert->Next = BaseItem;
+    ItemToInsert->Prev = BaseItem->Prev;
+    BaseItem->Prev = ItemToInsert;
+
+    if (ItemToInsert->Prev == NULL) DList->First = ItemToInsert;
+    else ItemToInsert->Prev->Next = ItemToInsert;
+
+    DList->Count++;
+    __restore_interrupts(intflags);
+
+    return true;
+}
+
 pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
 {
     pDLITEM  tmpItem;
@@ -462,6 +486,31 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
         __restore_interrupts(intflags);
     }
     return tmpItem;
+}
+
+boolean DL_InsertItemAfterPtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
+{
+    pDLITEM  tmpItem;
+    uint32_t intflags;
+
+    if (DList == NULL) return false;
+    if (BaseItem == NULL) return DL_AddItemPtr(DList, ItemToInsert);
+
+    intflags = __disable_interrupts();
+
+// NOTE (ajscorp#1#): Keep in mind that the ItemToInsert->Data pointer is assigned here. For now, let it be so.
+    ItemToInsert->Data = ItemToInsert;
+    ItemToInsert->Prev = BaseItem;
+    ItemToInsert->Next = BaseItem->Next;
+    BaseItem->Next = ItemToInsert;
+
+    if (ItemToInsert->Next == NULL) DList->Last = ItemToInsert;
+    else ItemToInsert->Next->Prev = ItemToInsert;
+
+    DList->Count++;
+    __restore_interrupts(intflags);
+
+    return true;
 }
 
 boolean DL_ExcludeItem(pDLIST DList, pDLITEM Item)

@@ -84,6 +84,12 @@ typedef union tag_RECT
     };
 } TRECT, *pRECT;
 
+typedef struct tag_RECTITEM
+{
+    TDLITEM ListHeader;
+    TRECT   Rct;
+} TRECTITEM, *pRECTITEM;
+
 typedef struct tag_SIZEXY
 {
     uint16_t sx;
