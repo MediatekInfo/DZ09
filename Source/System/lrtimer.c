@@ -112,7 +112,7 @@ pTIMER LRT_Create(uint32_t Interval, void (*Handler)(pTIMER), TMRFLAGS Flags)
             tmpTimer->Interval = Interval;
             tmpTimer->StartTicks = USC_GetCurrentTicks();
             tmpTimer->Handler = Handler;
-            if (DL_AddItemPtr(TimersList, &tmpTimer->ListHeader))
+            if (!DL_AddItemPtr(TimersList, &tmpTimer->ListHeader))
             {
                 free(tmpTimer);
                 tmpTimer = NULL;
