@@ -41,6 +41,7 @@ typedef enum tag_GOFLAGS
 typedef struct tag_GUIOBJECT *pGUIOBJECT;
 typedef struct tag_GUIOBJECT
 {
+    TDLITEM    ListHeader;
     TRECT      Position;
     pGUIOBJECT Parent;
     TGOTYPE    Type;

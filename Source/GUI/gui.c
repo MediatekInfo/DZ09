@@ -159,7 +159,6 @@ static void *GUI_DestroySingleObject(pGUIOBJECT Object)
             intflags = __disable_interrupts();
             DL_DeleteItem(ChildList, tmpItem);
             __secure_memset(Object, 0x00, sizeof(TGUIOBJECT));
-            free(Object);
             Object = NULL;
 
             __restore_interrupts(intflags);
@@ -213,7 +212,6 @@ static void GUI_DestroyChildTree(pGUIOBJECT Object)
         intflags = __disable_interrupts();
         DL_DeleteLastItem(ChildList);
         __secure_memset(tmpObject, 0x00, sizeof(TGUIOBJECT));
-        free(tmpObject);
 
         __restore_interrupts(intflags);
     }

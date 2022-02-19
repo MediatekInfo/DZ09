@@ -143,7 +143,7 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
         Win->ForeColor = ForeColor;
         Win->EventHandler = Handler;
 
-        if (Win->Topmost) Result = DL_AddItem(ObjectsList, Win) != NULL;                            // Put the handle directly to the top of the list
+        if (Win->Topmost) Result = DL_AddItemPtr(ObjectsList, &Win->Head.ListHeader);               // Put the handle directly to the top of the list
         else                                                                                        // Looking for top window among non-topmost objects
         {
             pDLITEM tmpItem = DL_GetLastItem(ObjectsList);
@@ -155,12 +155,12 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
                 if ((tmpObject != NULL) &&
                         (!GUI_IsWindowObject(tmpObject) || !((pWIN)tmpObject)->Topmost))
                 {
-                    Result = DL_InsertItemAfter(ObjectsList, tmpItem, Win) != NULL;
+                    Result = DL_InsertItemAfterPtr(ObjectsList, tmpItem, &Win->Head.ListHeader);
                     break;
                 }
                 tmpItem = DL_GetPrevItem(tmpItem);
             }
-            if (tmpItem == NULL) Result = DL_AddItemAtIndex(ObjectsList, 0, Win) != NULL;
+            if (tmpItem == NULL) Result = DL_AddItemAtIndexPtr(ObjectsList, 0, &Win->Head.ListHeader);
         }
 
         if (Result)

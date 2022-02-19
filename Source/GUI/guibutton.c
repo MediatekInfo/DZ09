@@ -129,16 +129,16 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Button->Caption = Caption;
         Button->Caption.Color.BackColor = Button->ForeColor;
 
-        if (!ObjectsList->Count) Result = DL_AddItem(ObjectsList, Button) != NULL;
+        if (!ObjectsList->Count) Result = DL_AddItemPtr(ObjectsList, &Button->Head.ListHeader);
         else
         {
             pDLITEM tmpDLItem;
 
             GUI_GetTopNonWindowObject(Parent, &tmpDLItem);
 
-            Result = ((tmpDLItem == NULL) ?
-                      DL_AddItemAtIndex(ObjectsList, 0, Button) :
-                      DL_InsertItemAfter(ObjectsList, tmpDLItem, Button)) != NULL;
+            Result = (tmpDLItem == NULL) ?
+                     DL_AddItemAtIndexPtr(ObjectsList, 0, &Button->Head.ListHeader) :
+                     DL_InsertItemAfterPtr(ObjectsList, tmpDLItem, &Button->Head.ListHeader);
         }
 
         if (Result)
