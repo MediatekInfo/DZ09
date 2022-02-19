@@ -409,6 +409,43 @@ pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data)
     return tmpItem;
 }
 
+boolean DL_AddItemAtIndexPtr(pDLIST DList, uint32_t Index, pDLITEM ItemToInsert)
+{
+    uint32_t intflags;
+    boolean  Result = false;
+
+    if (DList == NULL) return false;
+
+    intflags = __disable_interrupts();
+    if (Index >= DList->Count)
+    {
+        Result = DL_AddItemPtr(DList, ItemToInsert);
+    }
+    else
+    {
+        pDLITEM  NewIndexItem = DL_ItemByIndex(DList, Index);
+
+        if (NewIndexItem != NULL)
+        {
+            ItemToInsert->Data = ItemToInsert;
+
+            if (NewIndexItem->Prev != NULL)
+                NewIndexItem->Prev->Next = ItemToInsert;
+            else DList->First = ItemToInsert;
+
+            ItemToInsert->Prev = NewIndexItem->Prev;
+            ItemToInsert->Next = NewIndexItem;
+            NewIndexItem->Prev = ItemToInsert;
+
+            DList->Count++;
+            Result = true;
+        }
+    }
+    __restore_interrupts(intflags);
+    return Result;
+}
+
+
 pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
 {
     pDLITEM  tmpItem;

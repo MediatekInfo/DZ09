@@ -49,6 +49,7 @@ extern pDLITEM DL_FindItemByIndex(pDLIST List, uint32_t Index);
 extern pDLITEM DL_AddItem(pDLIST List, void *Data);
 extern boolean DL_AddItemPtr(pDLIST DList, pDLITEM Item);
 extern pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data);
+extern boolean DL_AddItemAtIndexPtr(pDLIST DList, uint32_t Index, pDLITEM ItemToInsert);
 extern pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data);
 extern boolean DL_InsertItemBeforePtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert);
 extern pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data);
