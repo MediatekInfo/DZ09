@@ -77,7 +77,6 @@ void LCDIF_DeleteCommandFromQueue(void)
 boolean LCDIF_GetCommandFromQueue(void)
 {
     pDLITEM tmpItem;
-    boolean Result = false;
 
     while((tmpItem = DL_GetFirstItem(LCDIFQueue)) != NULL)
     {
@@ -100,11 +99,12 @@ boolean LCDIF_GetCommandFromQueue(void)
             }
             else LCDIF_WROICON &= ~LCDIF_ENC;
 
-            Result = true;
+            LCDIF_DeleteCommandFromQueue();
+            return true;
         }
         LCDIF_DeleteCommandFromQueue();
     }
-    return Result;
+    return false;
 }
 
 void LCDIF_RestartQueue(void)
