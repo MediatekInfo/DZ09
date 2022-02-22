@@ -264,8 +264,8 @@ boolean GDI_ANDRectangles(pRECT a, pRECT b)
 // a + b
 pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
 {
-    pDLIST ResRects = NULL;
-    pRECT  tmpRectA, tmpRectB;
+    pDLIST    ResRects = NULL;
+    pRECTITEM tmpRectA, tmpRectB;
 
     if ((a == NULL) || (b == NULL)) return NULL;
     if (!IsRectsOverlaps(a, b))
@@ -273,8 +273,8 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
         ResRects = DL_Create();
         if (ResRects != NULL)
         {
-            tmpRectA = malloc(sizeof(TRECT));
-            tmpRectB = malloc(sizeof(TRECT));
+            tmpRectA = malloc(sizeof(TRECTITEM));
+            tmpRectB = malloc(sizeof(TRECTITEM));
             if ((tmpRectA == NULL) || (tmpRectB == NULL))
             {
                 free(tmpRectA);
@@ -282,22 +282,22 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
                 free(ResRects);
                 return NULL;
             }
-            *tmpRectA = *a;
-            *tmpRectB = *b;
-            DL_AddItem(ResRects, tmpRectA);
-            DL_AddItem(ResRects, tmpRectB);
+            tmpRectA->Rct = *a;
+            tmpRectB->Rct = *b;
+            DL_AddItemPtr(ResRects, &tmpRectA->ListHeader);
+            DL_AddItemPtr(ResRects, &tmpRectB->ListHeader);
         }
     }
     else
     {
         if (IsRectInRect(a, b))
         {
-            tmpRectA = malloc(sizeof(TRECT));
+            tmpRectA = malloc(sizeof(TRECTITEM));
             if (tmpRectA != NULL)
             {
                 ResRects = DL_Create();
-                *tmpRectA = *a;
-                if (ResRects != NULL) DL_AddItem(ResRects, tmpRectA);
+                tmpRectA->Rct = *a;
+                if (ResRects != NULL) DL_AddItemPtr(ResRects, &tmpRectA->ListHeader);
                 else
                 {
                     free(tmpRectA);
@@ -318,18 +318,18 @@ pDLIST GDI_ADDRectangles(pRECT a, pRECT b)
 
                     for(i = 0; i < tmpRList->Count; i++)
                     {
-                        tmpRectB = malloc(sizeof(TRECT));
+                        tmpRectB = malloc(sizeof(TRECTITEM));
                         if (tmpRectB != NULL)
                         {
-                            *tmpRectB = tmpRList->Item[i];
-                            DL_AddItem(ResRects, tmpRectB);
+                            tmpRectB->Rct = tmpRList->Item[i];
+                            DL_AddItemPtr(ResRects, &tmpRectB->ListHeader);
                         }
                     }
-                    tmpRectB = malloc(sizeof(TRECT));
+                    tmpRectB = malloc(sizeof(TRECTITEM));
                     if (tmpRectB != NULL)
                     {
-                        *tmpRectB = *b;
-                        DL_AddItem(ResRects, tmpRectB);
+                        tmpRectB->Rct = *b;
+                        DL_AddItemPtr(ResRects, &tmpRectB->ListHeader);
                     }
                 }
                 free(tmpRList);
