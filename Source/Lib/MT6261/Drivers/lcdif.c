@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -70,8 +70,7 @@ void LCDIF_DeleteCommandFromQueue(void)
     if (tmpItem != NULL)
     {
         free(((pLCDCMD)tmpItem->Data)->Commands);
-        free(tmpItem->Data);
-        DL_DeleteFirstItem(LCDIFQueue);
+        DL_DeleteItem(LCDIFQueue, tmpItem);
     }
 }
 
@@ -130,7 +129,7 @@ boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT Upd
             CMD->UpdateRect = (UpdateRect != NULL) ? *UpdateRect : Rect(0, 0, 0, 0);
             CMD->Commands = CmdArray;
 
-            if (DL_AddItem(LCDIFQueue, CMD) != NULL)
+            if (DL_AddItemPtr(LCDIFQueue, &CMD->ListHeader))
             {
                 LCDIF_RestartQueue();
                 while(DL_GetItemsCount(LCDIFQueue) >= MAX_LCDQUEUE_SIZE);
@@ -208,7 +207,7 @@ boolean LCDIF_Initialize(void)
     LCDIF_START = LCDIF_INT_RESET;                                                                  // Assert LCD controller internal Reset
     LCDIF_START = 0;                                                                                // Release LCD controller internal Reset
 
-    if (LCDIFQueue == NULL)  LCDIFQueue = DL_Create(0);
+    if (LCDIFQueue == NULL)  LCDIFQueue = DL_Create();
     if ((LCDIFQueue == NULL) || !LCDIF_RegisterISR())
     {
         if (LCDIFQueue == NULL)

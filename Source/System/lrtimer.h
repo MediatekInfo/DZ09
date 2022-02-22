@@ -30,6 +30,7 @@ typedef enum tag_MRFLAGS
 typedef struct tag_TIMER *pTIMER;
 typedef struct tag_TIMER
 {
+    TDLITEM    ListHeader;
     TMRFLAGS   Flags;
     uint32_t   Interval;
     uint32_t   StartTicks;

@@ -315,6 +315,7 @@ typedef struct tag_TSCREEN
 
 typedef struct tag_TLCDCMD
 {
+    TDLITEM   ListHeader;
     TRECT     UpdateRect;
     uint32_t  CMDCount;
     uint32_t  *Commands;

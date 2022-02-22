@@ -23,11 +23,6 @@
 
 static pDLIST EventsList;
 
-static boolean EM_AddEvent(pEVENT Event)
-{
-    return ((Event == NULL) || (DL_AddItem(EventsList, Event) == NULL)) ? false : true;
-}
-
 static pEVENT EM_GetTopEvent(void)
 {
     pDLITEM tmpItem = DL_GetFirstItem(EventsList);
@@ -37,7 +32,7 @@ static pEVENT EM_GetTopEvent(void)
 
 boolean EM_Initialize(void)
 {
-    if (EventsList == NULL) EventsList = DL_Create(0);
+    if (EventsList == NULL) EventsList = DL_Create();
     if (EventsList == NULL) return false;
 
     return true;
@@ -56,7 +51,7 @@ boolean EM_PostEvent(TEVTYPE Type, void *Object, void *Param, uint32_t ParamSz)
         tmpEvent->Object = Object;
         tmpEvent->ParamSz = ParamSz;
         if (Param != NULL) memcpy(tmpEvent->Param, Param, ParamSz);
-        if (EM_AddEvent(tmpEvent)) return true;
+        if (DL_AddItemPtr(EventsList, &tmpEvent->ListHeader)) return true;
         else free(tmpEvent);
     }
     return false;
@@ -68,7 +63,7 @@ void EM_ProcessEvents(void)
 
     while((tmpEvent = EM_GetTopEvent()) != NULL)
     {
-        DL_DeleteFirstItem(EventsList);
+        DL_ExcludeItem(EventsList, &tmpEvent->ListHeader);
 
         switch(tmpEvent->Event)
         {

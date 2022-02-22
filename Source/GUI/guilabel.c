@@ -90,16 +90,16 @@ pGUIOBJECT GUI_CreateLabel(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         Label->Caption = Caption;
         Label->Caption.Color.BackColor = Label->ForeColor;
 
-        if (!ObjectsList->Count) Result = DL_AddItem(ObjectsList, Label) != NULL;
+        if (!ObjectsList->Count) Result = DL_AddItemPtr(ObjectsList, &Label->Head.ListHeader);
         else
         {
             pDLITEM tmpDLItem;
 
             GUI_GetTopNonWindowObject(Parent, &tmpDLItem);
 
-            Result = ((tmpDLItem == NULL) ?
-                      DL_AddItemAtIndex(ObjectsList, 0, Label) :
-                      DL_InsertItemAfter(ObjectsList, tmpDLItem, Label)) != NULL;
+            Result = (tmpDLItem == NULL) ?
+                     DL_AddItemAtIndexPtr(ObjectsList, 0, &Label->Head.ListHeader) :
+                     DL_InsertItemAfterPtr(ObjectsList, tmpDLItem, &Label->Head.ListHeader);
         }
 
         if (Result)

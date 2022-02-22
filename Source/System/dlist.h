@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -35,7 +35,7 @@ typedef struct tag_DList
     uint32_t Count;
 } TDLIST, *pDLIST;
 
-extern pDLIST DL_Create(uint32_t ItemCount);
+extern pDLIST DL_Create(void);
 extern pDLIST DL_Delete(pDLIST List, boolean FreeData);
 extern uint32_t DL_GetItemsCount(pDLIST DList);
 extern pDLITEM DL_GetFirstItem(pDLIST DList);
@@ -47,9 +47,14 @@ extern pDLITEM DL_FindItemByData(pDLIST DList, void *Data, int32_t *Index);
 extern pDLITEM DL_FindItemByDataReverse(pDLIST DList, void *Data, int32_t *Index);
 extern pDLITEM DL_FindItemByIndex(pDLIST List, uint32_t Index);
 extern pDLITEM DL_AddItem(pDLIST List, void *Data);
+extern boolean DL_AddItemPtr(pDLIST DList, pDLITEM Item);
 extern pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data);
+extern boolean DL_AddItemAtIndexPtr(pDLIST DList, uint32_t Index, pDLITEM ItemToInsert);
 extern pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data);
+extern boolean DL_InsertItemBeforePtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert);
 extern pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data);
+extern boolean DL_InsertItemAfterPtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert);
+extern boolean DL_ExcludeItem(pDLIST DList, pDLITEM Item);
 extern boolean DL_DeleteItem(pDLIST DList, pDLITEM Item);
 extern boolean DL_DeleteItemByData(pDLIST List, void *Data);
 extern boolean DL_DeleteItemByIndex(pDLIST List, uint32_t Index);

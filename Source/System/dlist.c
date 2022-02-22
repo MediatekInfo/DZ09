@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -49,13 +49,13 @@ static pDLITEM DL_ItemByData(pDLIST DList, void *Data, int32_t *Index)
 
     if ((DList != NULL) && (Data != NULL))
     {
-        tmpItem = DL_FirstItem(DList);
+        tmpItem = DList->First;
         if (Index == NULL)
         {
             while(tmpItem != NULL)
             {
                 if (tmpItem->Data == Data) break;
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
             }
         }
         else
@@ -69,7 +69,7 @@ static pDLITEM DL_ItemByData(pDLIST DList, void *Data, int32_t *Index)
                     Result = i;
                     break;
                 }
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
             }
         }
     }
@@ -85,13 +85,13 @@ static pDLITEM DL_ItemByDataRev(pDLIST DList, void *Data, int32_t *Index)
 
     if ((DList != NULL) && (Data != NULL))
     {
-        tmpItem = DL_LastItem(DList);
+        tmpItem = DList->Last;
         if (Index == NULL)
         {
             while(tmpItem != NULL)
             {
                 if (tmpItem->Data == Data) break;
-                tmpItem = DL_PrevItem(tmpItem);
+                tmpItem = tmpItem->Prev;
             }
         }
         else
@@ -105,7 +105,7 @@ static pDLITEM DL_ItemByDataRev(pDLIST DList, void *Data, int32_t *Index)
                     Result = i;
                     break;
                 }
-                tmpItem = DL_PrevItem(tmpItem);
+                tmpItem = tmpItem->Prev;
             }
         }
     }
@@ -121,7 +121,7 @@ static int32_t DL_IndexOfItem(pDLIST DList, pDLITEM Item)
 
     if ((DList != NULL) && (Item != NULL))
     {
-        tmpItem = DL_FirstItem(DList);
+        tmpItem = DList->First;
         for(i = 0; tmpItem != NULL; i++)
         {
             if (tmpItem == Item)
@@ -129,7 +129,7 @@ static int32_t DL_IndexOfItem(pDLIST DList, pDLITEM Item)
                 Result = i;
                 break;
             }
-            tmpItem = DL_NextItem(tmpItem);
+            tmpItem = tmpItem->Next;
         }
     }
     return Result;
@@ -160,48 +160,11 @@ static pDLITEM DL_ItemByIndex(pDLIST DList, uint32_t Index)
     return tmpItem;
 }
 
-pDLIST DL_Create(uint32_t ItemCount)
+pDLIST DL_Create(void)
 {
-    pDLIST   tmpDList;
-    pDLITEM  tmpFirst = NULL, tmpLast = NULL;
-    pDLITEM  tmpPrev = NULL,  tmpNext = NULL;
-    uint32_t i;
+    pDLIST tmpDList = malloc(sizeof(TDLIST));
 
-    tmpDList = malloc(sizeof(TDLIST));
-    if (tmpDList != NULL)
-    {
-        for(i = 0; i < ItemCount; i++)
-        {
-            tmpNext = malloc(sizeof(TDLITEM));
-
-            if (i == 0) tmpFirst = tmpNext;
-            if (i == ItemCount - 1) tmpLast = tmpNext;
-
-            if (tmpNext != NULL)
-            {
-                tmpNext->Prev = tmpPrev;
-                tmpNext->Next = tmpNext->Data = NULL;
-                if (tmpPrev != NULL) tmpPrev->Next = tmpNext;
-                tmpPrev = tmpNext;
-            }
-            else
-            {
-                while (tmpFirst != NULL)
-                {
-                    tmpNext = tmpFirst->Next;
-                    free(tmpFirst);
-                    tmpFirst = tmpNext;
-                }
-                free(tmpDList);
-                return NULL;
-            }
-        }
-    }
-    else return NULL;
-
-    tmpDList->First = tmpFirst;
-    tmpDList->Last  = tmpLast;
-    tmpDList->Count = ItemCount;
+    if (tmpDList != NULL) memset(tmpDList, 0x00, sizeof(TDLIST));
 
     return tmpDList;
 }
@@ -215,14 +178,14 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
     {
         intflags = __disable_interrupts();
 
-        tmpItem = DL_FirstItem(DList);
-        if (FreeData)
+        tmpItem = DList->First;
+        if (FreeData && ((uintptr_t)tmpItem->Data != (uintptr_t)tmpItem))
         {
             while(tmpItem != NULL)
             {
-                free(tmpItem->Data);
+                if (IsDynamicMemory(tmpItem->Data)) free(tmpItem->Data);
                 tmpItemToFree = tmpItem;
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
                 free(tmpItemToFree);
             }
         }
@@ -231,7 +194,7 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
             while(tmpItem != NULL)
             {
                 tmpItemToFree = tmpItem;
-                tmpItem = DL_NextItem(tmpItem);
+                tmpItem = tmpItem->Next;
                 free(tmpItemToFree);
             }
         }
@@ -378,6 +341,36 @@ pDLITEM DL_AddItem(pDLIST DList, void *Data)
     return tmpItem;
 }
 
+boolean DL_AddItemPtr(pDLIST DList, pDLITEM Item)
+{
+    if ((DList == NULL) || (Item == NULL)) return false;
+    else
+    {
+        uint32_t intflags = __disable_interrupts();
+
+        Item->Next = NULL;
+// NOTE (ajscorp#1#): Keep in mind that the Item->Data pointer is assigned here. For now, let it be so.
+        Item->Data = Item;
+
+        if (DList->Last != NULL)
+        {
+            Item->Prev = DList->Last;
+            DList->Last->Next = Item;
+            DList->Last = Item;
+        }
+        else
+        {
+            Item->Prev = NULL;
+            DList->First = Item;
+            DList->Last = Item;
+        }
+        DList->Count++;
+        __restore_interrupts(intflags);
+
+        return true;
+    }
+}
+
 pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data)
 {
     uint32_t intflags;
@@ -416,6 +409,43 @@ pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data)
     return tmpItem;
 }
 
+boolean DL_AddItemAtIndexPtr(pDLIST DList, uint32_t Index, pDLITEM ItemToInsert)
+{
+    uint32_t intflags;
+    boolean  Result = false;
+
+    if (DList == NULL) return false;
+
+    intflags = __disable_interrupts();
+    if (Index >= DList->Count)
+    {
+        Result = DL_AddItemPtr(DList, ItemToInsert);
+    }
+    else
+    {
+        pDLITEM  NewIndexItem = DL_ItemByIndex(DList, Index);
+
+        if (NewIndexItem != NULL)
+        {
+            ItemToInsert->Data = ItemToInsert;
+
+            if (NewIndexItem->Prev != NULL)
+                NewIndexItem->Prev->Next = ItemToInsert;
+            else DList->First = ItemToInsert;
+
+            ItemToInsert->Prev = NewIndexItem->Prev;
+            ItemToInsert->Next = NewIndexItem;
+            NewIndexItem->Prev = ItemToInsert;
+
+            DList->Count++;
+            Result = true;
+        }
+    }
+    __restore_interrupts(intflags);
+    return Result;
+}
+
+
 pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
 {
     pDLITEM  tmpItem;
@@ -441,6 +471,31 @@ pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
         __restore_interrupts(intflags);
     }
     return tmpItem;
+}
+
+boolean DL_InsertItemBeforePtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
+{
+    pDLITEM  tmpItem;
+    uint32_t intflags;
+
+    if (DList == NULL) return false;
+    if (BaseItem == NULL) return DL_AddItemPtr(DList, ItemToInsert);
+
+    intflags = __disable_interrupts();
+
+// NOTE (ajscorp#1#): Keep in mind that the ItemToInsert->Data pointer is assigned here. For now, let it be so.
+    ItemToInsert->Data = ItemToInsert;
+    ItemToInsert->Next = BaseItem;
+    ItemToInsert->Prev = BaseItem->Prev;
+    BaseItem->Prev = ItemToInsert;
+
+    if (ItemToInsert->Prev == NULL) DList->First = ItemToInsert;
+    else ItemToInsert->Prev->Next = ItemToInsert;
+
+    DList->Count++;
+    __restore_interrupts(intflags);
+
+    return true;
 }
 
 pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
@@ -470,7 +525,32 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
     return tmpItem;
 }
 
-boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
+boolean DL_InsertItemAfterPtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
+{
+    pDLITEM  tmpItem;
+    uint32_t intflags;
+
+    if (DList == NULL) return false;
+    if (BaseItem == NULL) return DL_AddItemPtr(DList, ItemToInsert);
+
+    intflags = __disable_interrupts();
+
+// NOTE (ajscorp#1#): Keep in mind that the ItemToInsert->Data pointer is assigned here. For now, let it be so.
+    ItemToInsert->Data = ItemToInsert;
+    ItemToInsert->Prev = BaseItem;
+    ItemToInsert->Next = BaseItem->Next;
+    BaseItem->Next = ItemToInsert;
+
+    if (ItemToInsert->Next == NULL) DList->Last = ItemToInsert;
+    else ItemToInsert->Next->Prev = ItemToInsert;
+
+    DList->Count++;
+    __restore_interrupts(intflags);
+
+    return true;
+}
+
+boolean DL_ExcludeItem(pDLIST DList, pDLITEM Item)
 {
     boolean  Result = false;
     uint32_t intflags = __disable_interrupts();
@@ -486,9 +566,20 @@ boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
         else DList->Last = Item->Prev;
 
         DList->Count--;
-        free(Item);
         Result = true;
     }
+    __restore_interrupts(intflags);
+
+    return Result;
+}
+
+boolean DL_DeleteItem(pDLIST DList, pDLITEM Item)
+{
+    boolean  Result;
+    uint32_t intflags = __disable_interrupts();
+
+    if ((Result = DL_ExcludeItem(DList, Item)) == true)
+        free(Item);
     __restore_interrupts(intflags);
 
     return Result;
