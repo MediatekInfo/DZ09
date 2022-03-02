@@ -29,6 +29,7 @@
 //#define BTIF_BASE                   0xA00B0000                                                      // BT interface
 #define GPT_BASE                    0xA00C0000                                                      // General Purpose Timers
 #define PWM1_BASE                   0xA00E0000                                                      // Pulse-Width Modulation Outputs
+#define SEJ_BASE                    0xA0110000                                                      // Security Engine for JTAG protection
 #define SFI_BASE                    0xA0140000                                                      // Serial flash interface
 #define MIXED_BASE                  0xA0170000                                                      // Analog Chip Interface Controller (PLL, CLKSQ, FH, CLKSW and SIMLS)
 #define PLL_BASE                    MIXED_BASE
@@ -80,5 +81,6 @@
 #include "drivers\afe.h"
 #include "drivers\pwm.h"
 #include "drivers\usb.h"
+#include "drivers\che.h"
 
 #endif /* _MT6261_H_ */

@@ -229,6 +229,9 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\auxadc.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\che.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\emi.c">
 			<Option compilerVar="CC" />
 		</Unit>
