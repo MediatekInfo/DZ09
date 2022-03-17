@@ -49,6 +49,7 @@ static void SFI_MACEnable(TSFI_CS CS)
     else if (SFI_IsQPIMode(CS))
         Value |= SFI_MAC_SIO_SEL;
 
+    if (CS == SFI_CS1) Value |= SFI_MAC_SEL;
     Value |= SFI_MAC_EN;
 
     while(!(RW_SFI_MISC_CTL3 & SFI_CH2_TRANS_IDLE)) {}
@@ -65,21 +66,27 @@ static uint32_t SFI_MACTrigger(TSFI_CS CS)
     if (CS == SFI_CS1) Value |= SFI_MAC_SEL;
     RW_SFI_MAC_CTL = Value;
 
-    while(!(RW_SFI_MAC_CTL & SFI_WIP_READY));
-    while(RW_SFI_MAC_CTL & SFI_WIP);
+    while(!(RW_SFI_MAC_CTL & SFI_WIP_READY)) {}
+    while(RW_SFI_MAC_CTL & SFI_WIP) {}
 
     return 0;
 }
 
-static void SFI_MACLeave(TSFI_CS CS)
+static void SFI_MACLeave(void)
 {
+    RW_SFI_MAC_CTL &= ~(SFI_TRIG | SFI_MAC_SIO_SEL | SFI_MAC_SEL);
+    while(RW_SFI_MAC_CTL & SFI_WIP_READY) {}
 
+    RW_SFI_MAC_CTL &= ~SFI_MAC_EN;
+    while(RW_SFI_MAC_CTL & SFI_MAC_EN) {}
+
+    SFI_MaskAHBChannel(false);
 }
 
 static void SFI_MACWaitReady(TSFI_CS CS)
 {
     SFI_MACTrigger(CS);
-    SFI_MACLeave(CS);
+    SFI_MACLeave();
 }
 
 void SFI_WriteCommand(TSFI_CS CS, uint8_t Command, uint8_t ReadLength)
