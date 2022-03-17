@@ -46,7 +46,7 @@ static boolean GUI_MoveWindowToTop(pGUIOBJECT Object)
         }
     }
     if (CurrentZIndex != NewZIndex)
-        DL_MoveItemToIndex(ChildList, CurrentZIndex, NewZIndex);
+        DL_MoveItemToIndex(ChildList, NewZIndex, ObjectItem);
 
     return (CurrentZIndex != NewZIndex);
 }
