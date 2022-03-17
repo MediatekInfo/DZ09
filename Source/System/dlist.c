@@ -198,7 +198,8 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
                 free(tmpItemToFree);
             }
         }
-        free(DList);
+        if (IsDynamicMemory(DList)) free(DList);
+        else __secure_memset(DList, 0x00, sizeof(TDLIST));
 
         __restore_interrupts(intflags);
     }
