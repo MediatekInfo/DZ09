@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -35,6 +35,7 @@ extern uint32_t __enable_interrupts(void);                                      
 extern uint32_t __disable_interrupts(void);                                                         // From asmutils.s
 extern void __restore_interrupts(uint32_t flags);                                                   // From asmutils.s
 extern uint32_t __ctz(uint32_t Value);                                                              // From asmutils.s
+extern uint32_t __clz(uint32_t Value);                                                              // From asmutils.s
 extern uint32_t __get_cpu_freq_ticks(void);                                                         // from asmutils.s
 extern void *__secure_memset(void *memptr, int val, size_t num);                                    // from asmutils.s
 extern boolean __is_in_isr_mode(void);                                                              // from asmutils.s
