@@ -368,6 +368,13 @@
 			<Option compilerVar="ASM" />
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\System\fscache.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\fscache.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\init.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
