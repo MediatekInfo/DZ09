@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -458,7 +458,7 @@
 
 #define GPIO03_MASK                 0x0F
 #define GPIO03_MODE_IO              0x00                                                            // IO
-#define GPIO03_MODE_G3MCINS         0x01                                                            // I
+#define GPIO03_MODE_MCINS           0x01                                                            // I
 #define GPIO03_MODE_YM              0x02                                                            // AIO
 #define GPIO03_MODE_PWM1            0x04                                                            // O
 #define GPIO03_MODE_CMCSD1          0x05                                                            // I
@@ -480,7 +480,7 @@
 #define GPIO06_MASK                 0x07
 #define GPIO06_MODE_IO              0x00                                                            // IO
 #define GPIO06_MODE_EINT5           0x01                                                            // I
-#define GPIO06_MODE_G6MCINS         0x02                                                            // I
+#define GPIO06_MODE_MCINS           0x02                                                            // I
 #define GPIO06_MODE_BPI_BUS4        0x03                                                            // O
 
 #define GPIO07_MASK                 0x07
@@ -510,7 +510,7 @@
 #define GPIO10_MODE_U1RXD           0x01                                                            // I
 #define GPIO10_MODE_CMRST           0x02                                                            // O
 #define GPIO10_MODE_EINT9           0x03                                                            // I
-#define GPIO10_MODE_G10MCINS        0x04                                                            // I
+#define GPIO10_MODE_MCINS           0x04                                                            // I
 
 #define GPIO11_MASK                 0x07
 #define GPIO11_MODE_IO              0x00                                                            // IO
