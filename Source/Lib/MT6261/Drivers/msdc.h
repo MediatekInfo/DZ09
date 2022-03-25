@@ -52,7 +52,10 @@ typedef struct tag_MSDCREGS
     uint32_t SDIO_STA;
     uint32_t RSVD1[9];
     uint32_t CLK_RED;
-    uint32_t RSVD2[5];
+    uint32_t CLK_STA;
+    uint32_t CLK_CRCSTA1;
+    uint32_t CLK_CRCSTA2;
+    uint32_t RSVD2[2];
     uint32_t DAT_CHECKSUM;
 } TMSDCREGS, *pMSDCREGS;
 
@@ -219,10 +222,30 @@ typedef struct tag_MSDCREGS
 // DIO_STA
 #define SDIO_IRQ                    (1 << 0)
 // CLK_RED
+#define MSDC_CLK_CLKTUN_ON          (1 << 0)
+#define MSDC_CLK_COARSE_EN          (1 << 1)
+#define MSDC_CLK FINE_EN            (3 << 1)
+#define MSDC_CLK_SCANMODE           (1 << 3)
+#define MSDC_CLK_SAMPLE_PERIOD(v)   (((v) & 0x03) << 4)
 #define MSDC_CLK_LATCH              (1 << 6)
 #define MSDC_CLKPAD_RED             (1 << 7)
-#define MSDC_DAT_RED                (1 << 13)
-#define MSDC_CMD_RED                (1 << 29)
+#define MSDC_CLK_DAT_PHASE(v)       (((v) & 0x1F) << 8)
+#define MSDC_DAT_PHASE_RED          (1 << 13)
+#define MSDC_CLK_TUN_BLOCK_NUM(v)   (((v) & 0xFF) << 16)
+#define MSDC_CLK_CMD_PHASE(v)       (((v) & 0x1F) << 24)
+#define MSDC_CMD_RED_PHASE          (1 << 29)
+#define MSDC_CLK_ACB_MODE           (1UL << 31)
+// CLK_STA
+#define MSDC_CLK_CLKTUN_DONE        (1 << 0)
+#define MSDC_CLK_DET_DONE           (1 << 1)
+#define MSDC_CLK_COARSE_DONE        (1 << 2)
+#define MSDC_CLK_FINE_DONE          (1 << 3)
+#define MSDC_CLK_ACB_TO             (1 << 4)
+#define MSDC_CLK_DET_CLK_PHASE(v)   (((v) & 0x0F) << 8)
+// CLK_CRCSTA1
+#define MSDC_CLK_CRC_STA_ENABLE     0xFFFF0000
+#define MSDC_CLK_CRC_STA_CRC        0x0000FFFF
+// CLK_CRCSTA2
 
 #define MSDC0                       ((volatile TMSDCREGS*)MSDC0_BASE)
 #define MSDC1                       ((volatile TMSDCREGS*)MSDC1_BASE)
