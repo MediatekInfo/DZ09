@@ -254,6 +254,9 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\msdc.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\nvic.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
