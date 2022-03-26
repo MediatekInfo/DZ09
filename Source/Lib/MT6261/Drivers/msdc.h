@@ -169,6 +169,14 @@ typedef struct tag_MSDCREGS
 #define SDC_CMD(v)                  (((v) & 0xFF) << 0)
 #define SDC_BREAK                   (1 << 6)
 #define SDC_RSPTYP(v)               (((v) & 0x07) << 7)
+#define SDC_NO_RSP                  0
+#define SDC_RSP_R1                  1
+#define SDC_RSP_R2                  2
+#define SDC_RSP_R3                  3
+#define SDC_RSP_R4                  4
+#define SDC_RSP_R5                  5
+#define SDC_RSP_R6                  6
+#define SDC_RSP_R1B                 7
 #define SDC_IDRT                    (1 << 10)
 #define SDC_DTYPE(v)                (((v) & 0x03) << 11)
 #define SDC_DTYPE_NODATA            0
@@ -247,7 +255,9 @@ typedef struct tag_MSDCREGS
 #define MSDC_CLK_CRC_STA_CRC        0x0000FFFF
 // CLK_CRCSTA2
 
+#include "sdcmd.h"
+
 #define MSDC0                       ((volatile TMSDCREGS*)MSDC0_BASE)
-#define MSDC1                       ((volatile TMSDCREGS*)MSDC1_BASE)
+#define MSDC1                       ((volatile TMSDCREGS*)MSDC1_BASE)                               // Note: Only the serial interface is available for MSDC1.
 
 #endif /* _MSDC_H_ */

@@ -297,6 +297,9 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\rtc.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\sdcmd.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\sfi.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
