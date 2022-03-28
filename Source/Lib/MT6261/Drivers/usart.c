@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -23,9 +23,9 @@
 
 TUSART_CONTEXT USARTINFO[USART_MODULES] =
 {
-    {(TUSARTREGS *)USART1, PD_UART1},
-    {(TUSARTREGS *)USART2, PD_UART2},
-    {(TUSARTREGS *)USART3, PD_UART3}
+    {USART1, PD_UART1},
+    {USART2, PD_UART2},
+    {USART3, PD_UART3}
 };
 
 int32_t USART_GetPDCode(TUSART Index)
@@ -42,8 +42,8 @@ pUSART_CONTEXT USART_GetContext(TUSART Index)
 
 boolean USART_Initialize(TUSART Index, uint32_t Speed, void (*Handler)(void), uint32_t Flags)
 {
-    uint32_t   IRQ_CODE;
-    pUSARTREGS USART;
+    uint32_t IRQ_CODE;
+    volatile TUSARTREGS *USART;
 
     if      (Index == USART_MODULE1) IRQ_CODE = IRQ_UART1_CODE;
     else if (Index == USART_MODULE2) IRQ_CODE = IRQ_UART2_CODE;
