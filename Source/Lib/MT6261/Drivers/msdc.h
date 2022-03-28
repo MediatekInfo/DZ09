@@ -21,8 +21,9 @@
 
 typedef enum tag_MSDC
 {
-    MSDC_MODULE0,
-    MSDC_MODULE1
+    MSDC_ITF0,
+    MSDC_ITF1,
+    MSDC_ITFNUM
 } TMSDC;
 
 typedef struct tag_MSDCREGS
@@ -58,6 +59,12 @@ typedef struct tag_MSDCREGS
     uint32_t RSVD2[2];
     uint32_t DAT_CHECKSUM;
 } TMSDCREGS, *pMSDCREGS;
+
+typedef struct tag_MSDC_CONTEXT
+{
+    volatile TMSDCREGS *MSDC;
+    uint8_t            PD_Code;
+} TMSDCCONTEXT,  *pMSDCCONTEXT;
 
 // MSDC_CFG
 #define MSDC_EN                     (1 << 0)
@@ -259,5 +266,7 @@ typedef struct tag_MSDCREGS
 
 #define MSDC0                       ((volatile TMSDCREGS*)MSDC0_BASE)
 #define MSDC1                       ((volatile TMSDCREGS*)MSDC1_BASE)                               // Note: Only the serial interface is available for MSDC1.
+
+extern boolean MSDC_IsMultiLineSupported(TMSDC Index);
 
 #endif /* _MSDC_H_ */

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -143,4 +143,38 @@ void PMU_TurnOnVUSB(boolean Enable)
 {
     if (Enable) VUSB_CON0 |= RG_VUSB_EN;
     else VUSB_CON0 &= ~RG_VUSB_EN;
+}
+
+void PMU_TurnOnVMC(boolean Enable)
+{
+    uint16_t En = (Enable) ? RG_VMC_EN : 0;
+
+    VMC_CON0 = (VMC_CON0 & ~RG_VMC_EN) | VMC_ON_SEL | En;
+    if (En)
+    {
+// NOTE (ajscorp#1#): Need to add a check for the QI_VMC_STATUS flag at least when turning voltage on.
+    }
+}
+
+boolean PMU_SetVoltageVMC(TVMC Voltage)
+{
+    switch (Voltage)
+    {
+    case VMC_VO18V:
+    case VMC_VO28V:
+    case VMC_VO30V:
+    case VMC_VO33V:
+        VMC_CON0 = (VMC_CON0 & ~RG_VMC_VOSEL(-1)) | RG_VMC_VOSEL(Voltage);
+// NOTE (ajscorp#1#): Need to add a check for the QI_VMC_STATUS flag.
+        return true;
+    default:
+        return false;
+    }
+}
+
+TVMC PMU_GetSelectedVoltageVMC(void)
+{
+    TVMC VMC = (VMC_CON0 & RG_VMC_VOSEL(-1)) >> RG_VMC_VOSEL_MASK_OFFSET;
+
+    return VMC;
 }

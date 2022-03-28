@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -176,11 +176,15 @@
 #define VMC_CON0                    (*(volatile uint16_t *)(PMU_BASE + 0x01C0))
 #define RG_VMC_EN                   (1 << 0)
 #define VMC_ON_SEL                  (1 << 1)
-#define RG_VMC_VOSEL(v)             (((v) & 0x07) << 4)
-#define VMC_VO18V                   0
-#define VMC_VO28V                   2
-#define VMC_VO30V                   3
-#define VMC_VO33V                   4
+#define RG_VMC_VOSEL_MASK_OFFSET    4
+#define RG_VMC_VOSEL(v)             (((v) & 0x07) << RG_VMC_VOSEL_MASK_OFFSET)
+typedef enum tag_VMC
+{
+    VMC_VO18V = 0,
+    VMC_VO28V = 2,
+    VMC_VO30V = 3,
+    VMC_VO33V = 4
+} TVMC;
 #define RG_VMC_NDIS_EN              (1 << 10)
 #define RG_VMC_SS_BYPASS            (1 << 11)
 #define QI_VMC_STATUS               (1 << 15)
@@ -771,5 +775,8 @@ extern void PMU_SetISINKMode(boolean UsePWM);
 extern void PMU_SetISINKOutput(ISINKCHNL Channel, boolean Enable);
 extern void PMU_SetISINKParameters(ISINKCHNL Channel, ICVAL Value, boolean Enable);
 extern void PMU_TurnOnVUSB(boolean Enable);
+extern void PMU_TurnOnVMC(boolean Enable);
+extern boolean PMU_SetVoltageVMC(TVMC Voltage);
+extern TVMC PMU_GetSelectedVoltageVMC(void);
 
 #endif /* _PMU_H_ */

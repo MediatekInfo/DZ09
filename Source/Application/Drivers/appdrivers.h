@@ -107,4 +107,25 @@
 #error USB interface driver not assigned!
 #endif
 
+/* SD card interface driver */
+#if defined(_SD_DRIVER_ASSIGNED_)
+#undefine _SD_DRIVER_ASSIGNED_
+#endif
+#if defined(_SD_CARD_DRIVER_)
+#include "sdcard.h"
+#define SD_CardInitialize(Interface)        SD_Initialize(Interface)
+#define _SD_DRIVER_ASSIGNED_
+#endif
+#if defined(_NO_SD_CARD_DRIVER_)
+#if defined(_SD_DRIVER_ASSIGNED_)
+#error Duplicate SD card driver definition!
+#else
+#define SD_CardInitialize(Interface)        false
+#define _SD_DRIVER_ASSIGNED_
+#endif
+#endif
+#if !defined(_SD_DRIVER_ASSIGNED_)
+#error SD card interface driver not assigned!
+#endif
+
 #endif /* _APPDRIVERS_H_ */

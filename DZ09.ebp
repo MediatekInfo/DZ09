@@ -118,6 +118,13 @@
 		<Unit filename="Source\Application\Drivers\ili9341.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Application\Drivers\sdcard.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\Drivers\sdcard.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Application\Drivers\usbdevice_cdc.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
@@ -252,6 +259,10 @@
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\msdc.c">
+			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\msdc.h">

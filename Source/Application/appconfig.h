@@ -48,6 +48,11 @@
 #define _USB_CDC_DRIVER_                                                                            // Prolific PL2303 emulation
 //#define _NO_USB_DRIVER_
 
+/* SD card driver */
+#define SD_ITF          MSDC0
+#define _SD_CARD_DRIVER_
+//#define _NO_SD_CARD_DRIVER_
+
 /* Application pins configuration */
 
 /* LCD interface */
@@ -74,6 +79,22 @@
 #define CPT_INT         GPIO52                                                                      // Touch panel interrupt
 #define CPT_INT_MODE    GPIO52_MODE_EINT23
 #define CPT_INT_NUM     EINT23
+
+/* SD/MMC card pins configuration */
+#define SD_INS          GPIO03                                                                      // SD card insert detection
+#define SD_INS_MODE     GPIO03_MODE_MCINS
+#define SD_CK           GPIO31                                                                      // SD card clock
+#define SD_CK_MODE      GPIO31_MODE_MCCK
+#define SD_CMD          GPIO32                                                                      // SD card CMD / RESPONSE
+#define SD_CMD_MODE     GPIO32_MODE_MCCMD
+#define SD_DA0          GPIO33                                                                      // SD card DATA0 line
+#define SD_DA0_MODE     GPIO33_MODE_MCDA0
+#define SD_DA1          GPIO34                                                                      // SD card DATA1 line
+#define SD_DA1_MODE     GPIO34_MODE_MCDA1
+#define SD_DA2          GPIO35                                                                      // SD card DATA2 line
+#define SD_DA2_MODE     GPIO35_MODE_MCDA2
+#define SD_DA3          GPIO36                                                                      // SD card DATA3 line
+#define SD_DA3_MODE     GPIO36_MODE_MCDA3
 
 #include "appdrivers.h"
 
