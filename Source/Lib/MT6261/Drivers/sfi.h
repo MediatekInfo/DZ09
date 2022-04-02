@@ -129,5 +129,8 @@ typedef enum tag_SFIMODE
 
 extern void SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, uint32_t InCount);
 extern void SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, uint32_t OutCount);
-
+extern void SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
+                                    uint8_t *OutData, uint32_t OutCount);
+extern void SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
+                                    uint8_t *OutData, uint32_t OutCount);
 #endif /* _SFI_H_ */
