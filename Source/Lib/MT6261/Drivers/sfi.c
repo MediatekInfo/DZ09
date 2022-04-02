@@ -21,35 +21,28 @@
 #include "systemconfig.h"
 #include "sfi.h"
 
-static void SFI_MaskAHBChannel(boolean Mask)
+static void __ramfunc SFI_MaskAHBChannel(boolean Mask)
 {
     if (Mask) RW_SFI_MISC_CTL3 = RW_SFI_MISC_CTL3 | SFI_CH2_TRANS_MASK;
     else      RW_SFI_MISC_CTL3 = RW_SFI_MISC_CTL3 & ~SFI_CH2_TRANS_MASK;
 }
 
-static boolean SFI_IsQPIMode(TSFI_CS CS)
+static TSFIMODE __ramfunc SFI_GetInterfaceMode(TSFI_CS CS)
 {
-    if      (CS == SFI_CS0) return !!(RW_SFI_DIRECT_CTL & SFI_QPI_EN);
-    else if (CS == SFI_CS1) return !!(RW_SFI_DIRECT_CTL2 & SFI_QPI_EN);
-    else return false;
+    if      (CS == SFI_CS0) return (RW_SFI_DIRECT_CTL & SFI_QPI_EN) ? SFM_QPI : SFM_SPI;
+    else return SFM_UNKNOWN;
 }
 
-static void SFI_MACEnable(TSFI_CS CS)
+static void __ramfunc SFI_MACEnable(TSFI_CS CS)
 {
     uint32_t Value;
 
     SFI_MaskAHBChannel(true);
 
     Value = RW_SFI_MAC_CTL;
-    if (Value >= SFI_CSMAX)
-    {
-        DebugPrint("SFI CS out of range (%d)\r\n", Value);
-        return;
-    }
-    else if (SFI_IsQPIMode(CS))
+    if (SFI_GetInterfaceMode(CS) == SFM_QPI)
         Value |= SFI_MAC_SIO_SEL;
 
-    if (CS == SFI_CS1) Value |= SFI_MAC_SEL;
     Value |= SFI_MAC_EN;
 
     while(!(RW_SFI_MISC_CTL3 & SFI_CH2_TRANS_IDLE)) {}
@@ -58,13 +51,9 @@ static void SFI_MACEnable(TSFI_CS CS)
     RW_SFI_MAC_CTL = Value;
 }
 
-static uint32_t SFI_MACTrigger(TSFI_CS CS)
+static uint32_t __ramfunc SFI_MACTrigger(TSFI_CS CS)
 {
-    uint32_t Value = RW_SFI_MAC_CTL;
-
-    Value |= SFI_TRIG | SFI_MAC_EN;
-    if (CS == SFI_CS1) Value |= SFI_MAC_SEL;
-    RW_SFI_MAC_CTL = Value;
+    RW_SFI_MAC_CTL = RW_SFI_MAC_CTL | SFI_TRIG | SFI_MAC_EN;
 
     while(!(RW_SFI_MAC_CTL & SFI_WIP_READY)) {}
     while(RW_SFI_MAC_CTL & SFI_WIP) {}
@@ -72,7 +61,7 @@ static uint32_t SFI_MACTrigger(TSFI_CS CS)
     return 0;
 }
 
-static void SFI_MACLeave(void)
+static void __ramfunc SFI_MACLeave(void)
 {
     RW_SFI_MAC_CTL &= ~(SFI_TRIG | SFI_MAC_SIO_SEL | SFI_MAC_SEL);
     while(RW_SFI_MAC_CTL & SFI_WIP_READY) {}
@@ -83,37 +72,84 @@ static void SFI_MACLeave(void)
     SFI_MaskAHBChannel(false);
 }
 
-static void SFI_MACWaitReady(TSFI_CS CS)
+static void __ramfunc SFI_MACWaitReady(TSFI_CS CS)
 {
     SFI_MACTrigger(CS);
     SFI_MACLeave();
 }
 
-void SFI_WriteCommand(TSFI_CS CS, uint8_t Command, uint8_t ReadLength)
+void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, uint32_t InCount)
 {
-    uint32_t intflags = __disable_interrupts();
+    if (CS < SFI_CSNUM)
+    {
+        uint32_t intflags = __disable_interrupts();
+        uint32_t TotalLength = (InData != NULL) ? InCount : 0;
 
-    SFI_MACEnable(CS);
-    RW_SFI_GPRAM_DATA = Command;
-    RW_SFI_MAC_OUTL = ReadLength;
-    RW_SFI_MAC_INL = 0;
-    SFI_MACWaitReady(CS);
-    __restore_interrupts(intflags);
+        if (TotalLength >= SFI_GPRAMSIZE)
+            TotalLength = SFI_GPRAMSIZE;
+
+        RW_SFI_GPRAM_DATA = Command;
+        RW_SFI_MAC_OUTL = 1;
+        RW_SFI_MAC_INL = TotalLength;
+        SFI_MACEnable(CS);
+        SFI_MACWaitReady(CS);
+
+        if ((InData != NULL) && InCount)
+        {
+            volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
+            uint32_t i = 1, tmpData = *pGPRAN++ >> 8;                                                   // Skip command byte
+
+            while(InCount)
+            {
+                for(; (i < 4) && InCount; i++, InCount--)
+                {
+                    *InData++ = tmpData;
+                    tmpData >>= 8;
+                }
+                i = 0;
+                tmpData = *pGPRAN++;
+            }
+        }
+        __restore_interrupts(intflags);
+    }
+    else DebugPrint("[%s] CS out of range (%u)\r\n", __FUNCTION__, CS);
 }
 
-void SFI_Initialize(void)
+void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, uint32_t OutCount)
 {
-    /* GPIO high-Z Enable*/
-    /* Normal MODE */
-    SFIO_CFG0 = SFIO_CFG0 & SF_NORMAL_HIGHZ;
-    SFIO_CFG1 = SFIO_CFG1 & SF_NORMAL_HIGHZ;
-    SFIO_CFG2 = SFIO_CFG2 & SF_NORMAL_HIGHZ;
+    if (CS < SFI_CSNUM)
+    {
+        uint32_t intflags = __disable_interrupts();
+        uint32_t TotalLength = 1;
 
-    /* SLT  MODE */
-//    if((SFI_ReadReg32(SEJ_BASE)&SF_SLT_MODE_MASK) ==SF_SLT_MODE)
-//    {
-//        SFI_WriteReg32(GPIO_RESEN0_1, (SFI_ReadReg32(GPIO_RESEN0_1)& (SF_SLT_HIGHZ)));
-//        SFI_WriteReg32(GPIO_RESEN1_1, (SFI_ReadReg32(GPIO_RESEN1_1)& (SF_SLT_HIGHZ)));
-//        SFI_WriteReg32(GPIO_DRV1, (SFI_ReadReg32(GPIO_DRV1)&(SF_SLT_DRIVING_CLR))|SF_SLT_DRIVING_12mA ); //SLT driving 12mA
-//    }
+        if ((OutData != NULL) && OutCount)
+        {
+            volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
+            uint32_t tmpData = Command;
+            uint32_t i = 8;
+
+            if (OutCount >= SFI_GPRAMSIZE - 1)
+                OutCount = SFI_GPRAMSIZE - 1;
+
+            while(OutCount)
+            {
+                for(; (i < 32) && OutCount; i += 8, OutCount--, TotalLength++)
+                {
+                    tmpData |= *OutData++ << i;
+                }
+                i = 0;
+                *pGPRAN++ = tmpData;
+                tmpData = 0;
+            }
+        }
+        else RW_SFI_GPRAM_DATA = Command;
+
+        SFI_MACEnable(CS);
+        RW_SFI_MAC_OUTL = TotalLength;
+        RW_SFI_MAC_INL = 0;
+        SFI_MACWaitReady(CS);
+
+        __restore_interrupts(intflags);
+    }
+    else DebugPrint("[%s] CS out of range (%u)\r\n", __FUNCTION__, CS);
 }

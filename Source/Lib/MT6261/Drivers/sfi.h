@@ -19,6 +19,8 @@
 #ifndef _SFI_H_
 #define _SFI_H_
 
+#define SFI_GPRAMSIZE               0x00A0
+
 #define RW_SFI_MAC_CTL              (*(volatile uint32_t *)(SFI_BASE + 0x0000))
 #define SFI_WIP                     (1 << 0)
 #define SFI_WIP_READY               (1 << 1)
@@ -108,15 +110,24 @@
 #define SF_SLT_DRIVING_12mA         0xFF8FFFFF
 
 /* SFC SLT registers */
-#define SF_NORMAL_MODE      (0x00000001)
-#define SF_SLT_MODE         (0x00000002)
-#define SF_SLT_MODE_MASK    (0x00000007)
+#define SF_NORMAL_MODE              (0x00000001)
+#define SF_SLT_MODE                 (0x00000002)
+#define SF_SLT_MODE_MASK            (0x00000007)
 
 typedef enum tag_SFI_CS
 {
     SFI_CS0,
-    SFI_CS1,
-    SFI_CSMAX
+    SFI_CSNUM
 } TSFI_CS;
+
+typedef enum tag_SFIMODE
+{
+    SFM_UNKNOWN,
+    SFM_SPI,
+    SFM_QPI
+} TSFIMODE;
+
+extern void SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, uint32_t InCount);
+extern void SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, uint32_t OutCount);
 
 #endif /* _SFI_H_ */
