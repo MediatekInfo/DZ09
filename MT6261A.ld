@@ -147,7 +147,8 @@ SECTIONS
 		PROVIDE_HIDDEN (__fini_array_end = .);
 
 		. = ALIGN(4);
-		/* All data end */
+		/* Place RAM functions here */
+        *(.ramfunc*)
 		__data_end__ = .;
 
 	} > RAM
