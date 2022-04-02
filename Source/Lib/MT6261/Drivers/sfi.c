@@ -29,7 +29,7 @@ static void __ramfunc SFI_MaskAHBChannel(boolean Mask)
 
 static TSFIMODE __ramfunc SFI_GetInterfaceMode(TSFI_CS CS)
 {
-    if      (CS == SFI_CS0) return (RW_SFI_DIRECT_CTL & SFI_QPI_EN) ? SFM_QPI : SFM_SPI;
+    if (CS == SFI_CS0) return (RW_SFI_DIRECT_CTL & SFI_QPI_EN) ? SFM_QPI : SFM_SPI;
     else return SFM_UNKNOWN;
 }
 
