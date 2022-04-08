@@ -27,12 +27,6 @@ static void __ramfunc SFI_MaskAHBChannel(boolean Mask)
     else      RW_SFI_MISC_CTL3 = RW_SFI_MISC_CTL3 & ~SFI_CH2_TRANS_MASK;
 }
 
-static TSFIMODE __ramfunc SFI_GetInterfaceMode(TSFI_CS CS)
-{
-    if (CS == SFI_CS0) return (RW_SFI_DIRECT_CTL & SFI_QPI_EN) ? SFM_QPI : SFM_SPI;
-    else return SFM_UNKNOWN;
-}
-
 static void __ramfunc SFI_MACEnable(TSFI_CS CS)
 {
     uint32_t Value;
@@ -78,23 +72,27 @@ static void __ramfunc SFI_MACWaitReady(TSFI_CS CS)
     SFI_MACLeave();
 }
 
+TSFIMODE __ramfunc SFI_GetInterfaceMode(TSFI_CS CS)
+{
+    if (CS == SFI_CS0) return (RW_SFI_DIRECT_CTL & SFI_QPI_EN) ? SFM_QPI : SFM_SPI;
+    else return SFM_UNKNOWN;
+}
+
 void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, uint32_t InCount)
 {
     if (CS < SFI_CSNUM)
     {
-        uint32_t intflags = __disable_interrupts();
-        uint32_t TotalLength = (InData != NULL) ? InCount : 0;
-
-        if (TotalLength >= SFI_GPRAMSIZE)
-            TotalLength = SFI_GPRAMSIZE;
+        if (InData == NULL) InCount = 0;
+        else if (InCount >= SFI_GPRAMSIZE - 1)
+            InCount = SFI_GPRAMSIZE - 1;
 
         RW_SFI_GPRAM_DATA = Command;
         RW_SFI_MAC_OUTL = 1;
-        RW_SFI_MAC_INL = TotalLength;
+        RW_SFI_MAC_INL = InCount;
         SFI_MACEnable(CS);
         SFI_MACWaitReady(CS);
 
-        if ((InData != NULL) && InCount)
+        if (InCount)
         {
             volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
             uint32_t i = 1, tmpData = *pGPRAN++ >> 8;                                                   // Skip command byte
@@ -110,16 +108,13 @@ void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InDat
                 tmpData = *pGPRAN++;
             }
         }
-        __restore_interrupts(intflags);
     }
-    else DebugPrint("[%s] CS out of range (%u)\r\n", __FUNCTION__, CS);
 }
 
 void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, uint32_t OutCount)
 {
     if (CS < SFI_CSNUM)
     {
-        uint32_t intflags = __disable_interrupts();
         uint32_t TotalLength = 1;
 
         if ((OutData != NULL) && OutCount)
@@ -131,9 +126,11 @@ void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutD
             if (OutCount >= SFI_GPRAMSIZE - TotalLength)
                 OutCount = SFI_GPRAMSIZE - TotalLength;
 
+            TotalLength += OutCount;
+
             while(OutCount)
             {
-                for(; (i < 32) && OutCount; i += 8, OutCount--, TotalLength++)
+                for(; (i < 32) && OutCount; i += 8, OutCount--)
                 {
                     tmpData |= *OutData++ << i;
                 }
@@ -148,10 +145,7 @@ void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutD
         RW_SFI_MAC_OUTL = TotalLength;
         RW_SFI_MAC_INL = 0;
         SFI_MACWaitReady(CS);
-
-        __restore_interrupts(intflags);
     }
-    else DebugPrint("[%s] CS out of range (%u)\r\n", __FUNCTION__, CS);
 }
 
 void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
@@ -159,7 +153,6 @@ void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Add
 {
     if (CS < SFI_CSNUM)
     {
-        uint32_t intflags = __disable_interrupts();
         volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
         uint32_t tmpData = swab32(Address) & ~0x000000FF | Command;
         uint32_t TotalLength = 4;
@@ -173,10 +166,12 @@ void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Add
             if (OutCount >= SFI_GPRAMSIZE - TotalLength)
                 OutCount = SFI_GPRAMSIZE - TotalLength;
 
+            TotalLength += OutCount;
+
             while(OutCount)
             {
                 tmpData = 0;
-                for(i = 0; (i < 32) && OutCount; i += 8, OutCount--, TotalLength++)
+                for(i = 0; (i < 32) && OutCount; i += 8, OutCount--)
                 {
                     tmpData |= *OutData++ << i;
                 }
@@ -188,10 +183,7 @@ void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Add
         RW_SFI_MAC_OUTL = TotalLength;
         RW_SFI_MAC_INL = 0;
         SFI_MACWaitReady(CS);
-
-        __restore_interrupts(intflags);
     }
-    else DebugPrint("[%s] CS out of range (%u)\r\n", __FUNCTION__, CS);
 }
 
 void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
@@ -199,7 +191,6 @@ void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Add
 {
     if (CS < SFI_CSNUM)
     {
-        uint32_t intflags = __disable_interrupts();
         volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
         uint32_t tmpData = Address & 0x000000FF;
         uint32_t TotalLength = 5;
@@ -214,9 +205,11 @@ void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Add
             if (OutCount >= SFI_GPRAMSIZE - TotalLength)
                 OutCount = SFI_GPRAMSIZE - TotalLength;
 
+            TotalLength += OutCount;
+
             while(OutCount)
             {
-                for(; (i < 32) && OutCount; i += 8, OutCount--, TotalLength++)
+                for(; (i < 32) && OutCount; i += 8, OutCount--)
                 {
                     tmpData |= *OutData++ << i;
                 }
@@ -231,9 +224,6 @@ void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Add
         RW_SFI_MAC_OUTL = TotalLength;
         RW_SFI_MAC_INL = 0;
         SFI_MACWaitReady(CS);
-
-        __restore_interrupts(intflags);
     }
-    else DebugPrint("[%s] CS out of range (%u)\r\n", __FUNCTION__, CS);
 }
 
