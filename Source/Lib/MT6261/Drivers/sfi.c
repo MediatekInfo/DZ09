@@ -45,14 +45,12 @@ static void __ramfunc SFI_MACEnable(TSFI_CS CS)
     RW_SFI_MAC_CTL = Value;
 }
 
-static uint32_t __ramfunc SFI_MACTrigger(TSFI_CS CS)
+static void __ramfunc SFI_MACTrigger(TSFI_CS CS)
 {
     RW_SFI_MAC_CTL = RW_SFI_MAC_CTL | SFI_TRIG | SFI_MAC_EN;
 
     while(!(RW_SFI_MAC_CTL & SFI_WIP_READY)) {}
     while(RW_SFI_MAC_CTL & SFI_WIP) {}
-
-    return 0;
 }
 
 static void __ramfunc SFI_MACLeave(void)
@@ -78,7 +76,7 @@ TSFIMODE __ramfunc SFI_GetInterfaceMode(TSFI_CS CS)
     else return SFM_UNKNOWN;
 }
 
-void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, uint32_t InCount)
+void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, size_t InCount)
 {
     if (CS < SFI_CSNUM)
     {
@@ -86,16 +84,16 @@ void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InDat
         else if (InCount >= SFI_GPRAMSIZE - 1)
             InCount = SFI_GPRAMSIZE - 1;
 
-        RW_SFI_GPRAM_DATA = Command;
+        RW_SFI_GPRAM_DATA(0) = Command;
         RW_SFI_MAC_OUTL = 1;
         RW_SFI_MAC_INL = InCount;
         SFI_MACEnable(CS);
         SFI_MACWaitReady(CS);
 
-        if (InCount)
+        if ((InData != NULL) && InCount)
         {
-            volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
-            uint32_t i = 1, tmpData = *pGPRAN++ >> 8;                                                   // Skip command byte
+            uint32_t GPRAMPtr = 0;
+            uint32_t i = 1, tmpData = RW_SFI_GPRAM_DATA(GPRAMPtr++) >> 8;                           // Skip command byte
 
             while(InCount)
             {
@@ -105,22 +103,21 @@ void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InDat
                     tmpData >>= 8;
                 }
                 i = 0;
-                tmpData = *pGPRAN++;
+                tmpData = RW_SFI_GPRAM_DATA(GPRAMPtr++);
             }
         }
     }
 }
 
-void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, uint32_t OutCount)
+void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, size_t OutCount)
 {
     if (CS < SFI_CSNUM)
     {
-        uint32_t TotalLength = 1;
+        size_t TotalLength = 1;
 
         if ((OutData != NULL) && OutCount)
         {
-            volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
-            uint32_t tmpData = Command;
+            uint32_t tmpData = Command, GPRAMPtr = 0;
             uint32_t i = 8;
 
             if (OutCount >= SFI_GPRAMSIZE - TotalLength)
@@ -135,11 +132,11 @@ void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutD
                     tmpData |= *OutData++ << i;
                 }
                 i = 0;
-                *pGPRAN++ = tmpData;
+                RW_SFI_GPRAM_DATA(GPRAMPtr++) = tmpData;
                 tmpData = 0;
             }
         }
-        else RW_SFI_GPRAM_DATA = Command;
+        else RW_SFI_GPRAM_DATA(0) = Command;
 
         SFI_MACEnable(CS);
         RW_SFI_MAC_OUTL = TotalLength;
@@ -149,15 +146,15 @@ void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutD
 }
 
 void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                       uint8_t *OutData, uint32_t OutCount)
+                                       uint8_t *OutData, size_t OutCount)
 {
     if (CS < SFI_CSNUM)
     {
-        volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
+        uint32_t GPRAMPtr = 0;
         uint32_t tmpData = swab32(Address) & ~0x000000FF | Command;
-        uint32_t TotalLength = 4;
+        size_t   TotalLength = 4;
 
-        *pGPRAN++ = tmpData;
+        RW_SFI_GPRAM_DATA(GPRAMPtr++) = tmpData;
 
         if ((OutData != NULL) && OutCount)
         {
@@ -175,7 +172,7 @@ void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Add
                 {
                     tmpData |= *OutData++ << i;
                 }
-                *pGPRAN++ = tmpData;
+                RW_SFI_GPRAM_DATA(GPRAMPtr++) = tmpData;
             }
         }
 
@@ -187,16 +184,16 @@ void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Add
 }
 
 void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                       uint8_t *OutData, uint32_t OutCount)
+                                       uint8_t *OutData, size_t OutCount)
 {
     if (CS < SFI_CSNUM)
     {
-        volatile uint32_t *pGPRAN = &RW_SFI_GPRAM_DATA;
+        uint32_t GPRAMPtr = 0;
         uint32_t tmpData = Address & 0x000000FF;
-        uint32_t TotalLength = 5;
+        size_t   TotalLength = 5;
 
         Address = swab32(Address);
-        *pGPRAN++ = (Address << 8) | Command;
+        RW_SFI_GPRAM_DATA(GPRAMPtr++) = (Address << 8) | Command;
 
         if ((OutData != NULL) && OutCount)
         {
@@ -214,11 +211,11 @@ void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Add
                     tmpData |= *OutData++ << i;
                 }
                 i = 0;
-                *pGPRAN++ = tmpData;
+                RW_SFI_GPRAM_DATA(GPRAMPtr++) = tmpData;
                 tmpData = 0;
             }
         }
-        else *pGPRAN = tmpData;
+        else RW_SFI_GPRAM_DATA(0) = tmpData;
 
         SFI_MACEnable(CS);
         RW_SFI_MAC_OUTL = TotalLength;
@@ -226,4 +223,3 @@ void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Add
         SFI_MACWaitReady(CS);
     }
 }
-

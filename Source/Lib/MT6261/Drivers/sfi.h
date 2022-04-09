@@ -81,7 +81,7 @@
 #define SFI_CH2_TRANS_IDLE          (1 << 13)
 #define SFI_CH3_TRANS_IDLE          (1 << 14)
 
-#define RW_SFI_GPRAM_DATA           (*(volatile uint32_t *)(SFI_BASE + 0x0800))
+#define RW_SFI_GPRAM_DATA(x)        (*(volatile uint32_t *)(SFI_BASE + 0x0800 + 4 * (x)))
 
 #define SF_PERF_MON1                (*(volatile uint32_t *)(SFI_BASE + 0x0080))
 #define SF_PERF_MON2                (*(volatile uint32_t *)(SFI_BASE + 0x0084))
@@ -128,10 +128,10 @@ typedef enum tag_SFIMODE
 } TSFIMODE;
 
 extern TSFIMODE SFI_GetInterfaceMode(TSFI_CS CS);
-extern void SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, uint32_t InCount);
-extern void SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, uint32_t OutCount);
+extern void SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, size_t InCount);
+extern void SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, size_t OutCount);
 extern void SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                    uint8_t *OutData, uint32_t OutCount);
+                                    uint8_t *OutData, size_t OutCount);
 extern void SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                    uint8_t *OutData, uint32_t OutCount);
+                                    uint8_t *OutData, size_t OutCount);
 #endif /* _SFI_H_ */
