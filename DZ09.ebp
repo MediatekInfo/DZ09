@@ -427,6 +427,13 @@
 		<Unit filename="Source\System\ringbuf.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\System\sf.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\sf.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\sw_i2c.h">
 			<Option target="SYSTEM" />
 		</Unit>

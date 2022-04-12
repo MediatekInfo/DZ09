@@ -200,6 +200,8 @@ SECTIONS
 
 	__ROMImageBase = ORIGIN(ROM);
 	__ROMImageLimit = __etext + __data_end__ - __data_start__;
+	__ROMBase = ORIGIN(ROM) & 0xF0000000;
+	__ROMLimit = ORIGIN(ROM) + LENGTH(ROM) - 1;
 
 	/* Set stack top to end of RAM, and stack limit move down by
 	 * size of stack_dummy section */
