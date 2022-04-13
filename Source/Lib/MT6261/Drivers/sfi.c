@@ -70,6 +70,15 @@ static void __ramfunc SFI_MACWaitReady(TSFI_CS CS)
     SFI_MACLeave();
 }
 
+static void __ramfunc SFI_SendCmdList(TSFI_CS CS, uint8_t *CmdList)
+{
+    while(*CmdList)
+    {
+        SFI_DeviceCommandWrite(CS, CmdList[1], &CmdList[2], *CmdList - 1);
+        CmdList += *CmdList + 1;
+    }
+}
+
 TSFIMODE __ramfunc SFI_GetInterfaceMode(TSFI_CS CS)
 {
     if (CS == SFI_CS0) return (RW_SFI_DIRECT_CTL & SFI_QPI_EN) ? SFM_QPI : SFM_SPI;
@@ -230,6 +239,40 @@ boolean __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t 
         RW_SFI_MAC_INL = 0;
         SFI_MACWaitReady(CS);
 
+        return true;
+    }
+    else return false;
+}
+
+boolean __ramfunc SFI_ConfigureInterface(TSFI_CS CS, pDFCONFIG Config)
+{
+    if ((CS < SFI_CSNUM) && (Config != NULL))
+    {
+        uint32_t intflags = __disable_interrupts();
+        uint32_t tmpValue;
+
+        /* Switch to QPI / SPI Quad mode */
+        SFI_SendCmdList(CS, (uint8_t *)Config->PreInitSequence);
+
+        /* Initialize SFI control registers */
+        RW_SFI_MAC_CTL = Config->SFI_MAC_CTL;
+        RW_SFI_DIRECT_CTL = Config->SFI_DIRECT_CTL;
+        RW_SFI_MISC_CTL = Config->SFI_MISC_CTL;
+        RW_SFI_MISC_CTL2 = Config->SFI_MISC_CTL2;
+        RW_SFI_DLY_CTL2 = Config->SFI_DLY_CTL_2;
+        RW_SFI_DLY_CTL3 = Config->SFI_DLY_CTL_3;
+
+        tmpValue = SFIO_CFG0 & 0xFFF8FFF8;
+        SFIO_CFG0 = tmpValue | Config->DRIVING;
+        tmpValue = SFIO_CFG1 & 0xFFF8FFF8;
+        SFIO_CFG1 = tmpValue | Config->DRIVING;
+        tmpValue = SFIO_CFG2 & 0xFFF8FFF8;
+        SFIO_CFG2 = tmpValue | Config->DRIVING;
+
+        /* Set Burst/Wrap parameters */
+        SFI_SendCmdList(CS, (uint8_t *)Config->PostInitSequence);
+
+        __restore_interrupts(intflags);
         return true;
     }
     else return false;

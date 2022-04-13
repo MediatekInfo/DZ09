@@ -103,3 +103,66 @@ size_t __ramfunc SF_Read(TSFI_CS CS, uint32_t Address, uint8_t *Data, size_t Cou
 
     return Count;
 }
+
+boolean SF_Initialize(void)
+{
+    boolean Result = false;
+
+    do
+    {
+        uint32_t  DeviceID = SF_DevReadID(SFI_CS0);
+        TSFIMODE  ItfMode = SFI_GetInterfaceMode(SFI_CS0);
+        pDFCONFIG pConfig = (pDFCONFIG)DFConfigList;
+        char      *s;
+
+        if      (ItfMode == SFM_SPI) s = "SPI";
+        else if (ItfMode == SFM_QPI) s = "QPI";
+        else
+        {
+            DebugPrint(" Interface mode: UNKNOWN!\r\n");
+            break;
+        }
+        DebugPrint(" Interface mode: %s\r\n", s);
+
+        if (DeviceID && (DeviceID != 0xFFFFFFFF))
+            DebugPrint(" Found device with ID: (0x%02X, 0x%02X, 0x%02X)\r\n",
+                       DeviceID & 0xFF, (DeviceID >> 8) & 0xFF, (DeviceID >> 16) & 0xFF);
+        else
+        {
+            DebugPrint(" Something went wrong, can not read device ID!\r\n");
+            break;
+        }
+
+        s = NULL;
+        while(pConfig->DeviceID != 0)
+            if (pConfig->DeviceID == DeviceID)
+            {
+                s = pConfig->DeviceName;
+                DebugPrint(" Found supported device \"%s\"\r\n", s);
+                break;
+            }
+            else pConfig++;
+
+        if (s != NULL)
+        {
+            DebugPrint(" Total capacity - %u KiB\r\n",
+                       (pConfig->PageSize * pConfig->TotalPages) >> 10);
+
+            DebugPrint(" Applying the configuration...");
+            SFI_ConfigureInterface(SFI_CS0, pConfig);
+            DebugPrint("Complete.\r\n");
+        }
+        else
+        {
+            DebugPrint(" No configuration found for device (0x%02X, 0x%02X, 0x%02X)\r\n",
+                       DeviceID & 0xFF, (DeviceID >> 8) & 0xFF, (DeviceID >> 16) & 0xFF);
+            break;
+        }
+        Result = true;
+    }
+    while(0);
+
+    if (!Result) DebugPrint(" SFI initialization failed.\r\n");
+
+    return Result;
+}

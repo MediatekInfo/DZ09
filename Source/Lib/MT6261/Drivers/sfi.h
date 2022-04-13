@@ -71,7 +71,6 @@
 #define RW_SFI_DIRECT_CTL2          (*(volatile uint32_t *)(SFI_BASE + 0x0040))
 
 #define RW_SFI_MISC_CTL3            (*(volatile uint32_t *)(SFI_BASE + 0x0044))
-#define SFI_DEL_LATCH_MASK2         (3 << 16)
 #define SFI_SF2_EN                  (1 << 0)
 #define SFI_SF1_SIZE_MASK           (7 << 4)
 #define SFI_CH1_TRANS_MASK          (1 << 8)
@@ -80,6 +79,7 @@
 #define SFI_CH1_TRANS_IDLE          (1 << 12)
 #define SFI_CH2_TRANS_IDLE          (1 << 13)
 #define SFI_CH3_TRANS_IDLE          (1 << 14)
+#define SFI_DEL_LATCH_MASK2         (3 << 16)
 
 #define RW_SFI_GPRAM_DATA(x)        (*(volatile uint32_t *)(SFI_BASE + 0x0800 + 4 * (x)))
 
@@ -162,4 +162,5 @@ extern boolean SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Add
                                        uint8_t *OutData, size_t OutCount);
 extern boolean SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
                                        uint8_t *OutData, size_t OutCount);
+extern boolean SFI_ConfigureInterface(TSFI_CS CS, pDFCONFIG Config);
 #endif /* _SFI_H_ */

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,10 @@ void Init(void)
     MPU_Initialize();                                                                               // Setup system cache
     PCTL_Initialize();                                                                              // Power down peripherals by default
     GPIO_Initialize();                                                                              // Set GPIO to default state
+
+    DebugPrint("Initialize serial flash interface:\r\n");
+    SF_Initialize();
+
     DebugPrint("Initialize real time clock...");
     RTC_Initialize();
 

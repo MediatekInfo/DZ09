@@ -19,18 +19,6 @@
 #ifndef _SF_H_
 #define _SF_H_
 
-typedef enum tag_BSRANGE
-{
-    BR_4K   = (1 << 0),
-    BR_32K  = (1 << 1),
-    BR_64K  = (1 << 2)
-} TBSRANGE;
-
-typedef struct tag_DFCONTEXT
-{
-    TSFI_CS CS;
-} TDFCONTEXT, *pDFCONTEXT;
-
 /* DF STATUS1 bits */
 #define DF_BUSY                     (1 << 0)
 #define DF_WEL                      (1 << 1)
@@ -58,5 +46,6 @@ typedef struct tag_DFCONTEXT
 extern uint32_t SF_DevReadID(TSFI_CS CS);
 extern boolean SF_WriteStatus(TSFI_CS CS, uint8_t *Data, uint32_t Count);
 extern size_t SF_Read(TSFI_CS CS, uint32_t Address, uint8_t *Data, size_t Count);
+extern boolean SF_Initialize(void);
 
 #endif /* _SF_H_ */
