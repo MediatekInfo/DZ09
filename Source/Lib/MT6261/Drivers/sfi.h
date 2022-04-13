@@ -127,6 +127,34 @@ typedef enum tag_SFIMODE
     SFM_QPI
 } TSFIMODE;
 
+typedef enum tag_BSRANGE
+{
+    BR_4K   = (1 << 0),
+    BR_32K  = (1 << 1),
+    BR_64K  = (1 << 2)
+} TBSRANGE;
+
+typedef struct tag_DFCONFIG TDFCONFIG, *pDFCONFIG;
+typedef struct tag_DFCONFIG
+{
+    uint32_t DeviceID;
+    char     *DeviceName;
+    boolean  QPISupport;
+    boolean  Address4Bytes;
+    uint16_t PageSize;
+    uint32_t TotalPages;
+    TBSRANGE EraseSupport;
+    const uint8_t *PreInitSequence;
+    const uint8_t *PostInitSequence;
+    uint32_t SFI_MAC_CTL;
+    uint32_t SFI_DIRECT_CTL;
+    uint32_t SFI_MISC_CTL;
+    uint32_t SFI_MISC_CTL2;
+    uint32_t SFI_DLY_CTL_2;
+    uint32_t SFI_DLY_CTL_3;
+    uint32_t DRIVING;
+} TDFCONFIG, *pDFCONFIG;
+
 extern TSFIMODE SFI_GetInterfaceMode(TSFI_CS CS);
 extern boolean SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, size_t InCount);
 extern boolean SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, size_t OutCount);

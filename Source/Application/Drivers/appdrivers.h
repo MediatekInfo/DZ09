@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -127,5 +127,7 @@
 #if !defined(_SD_DRIVER_ASSIGNED_)
 #error SD card interface driver not assigned!
 #endif
+
+#include "dflib.h"
 
 #endif /* _APPDRIVERS_H_ */
