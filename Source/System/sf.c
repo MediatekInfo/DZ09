@@ -23,75 +23,76 @@
 
 extern uintptr_t __ROMBase, __ROMLimit;
 
-static TDFCONTEXT DFContext[SFI_CSNUM];
-
-static uint8_t __ramfunc SF_DevReadStatus(pDFCONTEXT DF)
+static uint8_t __ramfunc SF_DevReadStatus(TSFI_CS CS)
 {
     uint8_t tmpSR;
 
-    SFI_DeviceCommandRead(DF->CS, DF_CMD_READ_SR, &tmpSR, 1);
+    SFI_DeviceCommandRead(CS, DF_CMD_READ_SR, &tmpSR, 1);
 
     return tmpSR;
 }
 
-static void __ramfunc SF_DevWaitReady(pDFCONTEXT DF)
+static void __ramfunc SF_DevWaitReady(TSFI_CS CS)
 {
-    while(SF_DevReadStatus(DF) & DF_BUSY) {}
+    while(SF_DevReadStatus(CS) & DF_BUSY) {}
 }
 
-static void __ramfunc SF_WriteEnable(pDFCONTEXT DF)
+static void __ramfunc SF_WriteEnable(TSFI_CS CS)
 {
-    SFI_DeviceCommandWrite(DF->CS, DF_CMD_WREN, NULL, 0);
+    SFI_DeviceCommandWrite(CS, DF_CMD_WREN, NULL, 0);
 }
 
-static void __ramfunc SF_WriteDisable(pDFCONTEXT DF)
+static void __ramfunc SF_WriteDisable(TSFI_CS CS)
 {
-    SFI_DeviceCommandWrite(DF->CS, DF_CMD_WRDIS, NULL, 0);
+    SFI_DeviceCommandWrite(CS, DF_CMD_WRDIS, NULL, 0);
 }
 
 static boolean __ramfunc SF_BlankCheck(uint32_t Address, size_t Count)
 {
     uint8_t *pData = (uint8_t *)Address, ns = -Address & 0x03;
 
-    for (; ns && (Count > 0); Count--, ns--)
+    for(; ns && (Count > 0); Count--, ns--)
         if (*pData++ != 0xFF)
             return false;
-    for (; Count >= 4; Count -= 4, pData += 4)
+    for(; Count >= 4; Count -= 4, pData += 4)
         if (*(uint32_t *)pData != 0xFFFFFFFF)
             return false;
-    for (; Count > 0; Count--)
+    for(; Count > 0; Count--)
         if (*pData++ != 0xFF)
             return false;
 
     return true;
 }
 
-uint32_t __ramfunc SF_DevReadID(pDFCONTEXT DF)
+uint32_t __ramfunc SF_DevReadID(TSFI_CS CS)
 {
-    uint32_t tmpDevixeID, intflags = __disable_interrupts();
+    uint32_t tmpDevixeID = 0, intflags = __disable_interrupts();
 
-    SFI_DeviceCommandRead(DF->CS, DF_CMD_READ_ID, (uint8_t *)&tmpDevixeID, 3);
+    SFI_DeviceCommandRead(CS, DF_CMD_READ_ID, (uint8_t *)&tmpDevixeID, 3);
     __restore_interrupts(intflags);
 
     return tmpDevixeID;
 }
 
-void __ramfunc SF_WriteStatus(pDFCONTEXT DF, uint8_t *Data, uint32_t Count)
+boolean __ramfunc SF_WriteStatus(TSFI_CS CS, uint8_t *Data, uint32_t Count)
 {
+    boolean Result = false;
+
     if ((Data != NULL) && Count)
     {
         uint32_t intflags = __disable_interrupts();
 
-        SFI_DeviceCommandWrite(DF->CS, DF_CMD_WRDIS, Data, Count);
+        Result = SFI_DeviceCommandWrite(CS, DF_CMD_WRDIS, Data, Count);
         __restore_interrupts(intflags);
     }
+    return Result;
 }
 
-size_t __ramfunc SF_Read(pDFCONTEXT DF, uint32_t Address, uint8_t *Data, size_t Count)
+size_t __ramfunc SF_Read(TSFI_CS CS, uint32_t Address, uint8_t *Data, size_t Count)
 {
     size_t AbsROMSize = (uintptr_t)&__ROMLimit - (uintptr_t)&__ROMBase + 1;
 
-    if ((Data != 0) && (Address < AbsROMSize))
+    if ((Data != 0) && (Address < AbsROMSize) && (CS < SFI_CSNUM))
     {
         uint8_t *pReadData = (uint8_t *)((uintptr_t)&__ROMBase + Address);
 

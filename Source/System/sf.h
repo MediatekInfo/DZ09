@@ -1,5 +1,30 @@
+/*
+* This file is part of the DZ09 project.
+*
+* Copyright (C) 2022 AJScorp
+*
+* This program is free software; you can redistribute it and/or modify
+* it under the terms of the GNU General Public License as published by
+* the Free Software Foundation; version 2 of the License.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+* General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+*/
 #ifndef _SF_H_
 #define _SF_H_
+
+typedef enum tag_BSRANGE
+{
+    BR_4K   = (1 << 0),
+    BR_32K  = (1 << 1),
+    BR_64K  = (1 << 2)
+} TBSRANGE;
 
 typedef struct tag_DFCONTEXT
 {
@@ -30,8 +55,8 @@ typedef struct tag_DFCONTEXT
 #define DF_CMD_ENTER_DPD            0XB9
 #define DF_CMD_LEAVE_DPD            0XAB
 
-extern uint32_t SF_DevReadID(pDFCONTEXT DF);
-extern void SF_WriteStatus(pDFCONTEXT DF, uint8_t *Data, uint32_t Count);
-extern size_t SF_Read(pDFCONTEXT DF, uint32_t Address, uint8_t *Data, size_t Count);
+extern uint32_t SF_DevReadID(TSFI_CS CS);
+extern boolean SF_WriteStatus(TSFI_CS CS, uint8_t *Data, uint32_t Count);
+extern size_t SF_Read(TSFI_CS CS, uint32_t Address, uint8_t *Data, size_t Count);
 
 #endif /* _SF_H_ */

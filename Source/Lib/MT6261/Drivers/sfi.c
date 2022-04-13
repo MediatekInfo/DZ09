@@ -76,7 +76,7 @@ TSFIMODE __ramfunc SFI_GetInterfaceMode(TSFI_CS CS)
     else return SFM_UNKNOWN;
 }
 
-void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, size_t InCount)
+boolean __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, size_t InCount)
 {
     if (CS < SFI_CSNUM)
     {
@@ -106,10 +106,12 @@ void __ramfunc SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InDat
                 tmpData = RW_SFI_GPRAM_DATA(GPRAMPtr++);
             }
         }
+        return true;
     }
+    else return false;
 }
 
-void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, size_t OutCount)
+boolean __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, size_t OutCount)
 {
     if (CS < SFI_CSNUM)
     {
@@ -142,11 +144,14 @@ void __ramfunc SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutD
         RW_SFI_MAC_OUTL = TotalLength;
         RW_SFI_MAC_INL = 0;
         SFI_MACWaitReady(CS);
+
+        return true;
     }
+    else return false;
 }
 
-void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                       uint8_t *OutData, size_t OutCount)
+boolean __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
+        uint8_t *OutData, size_t OutCount)
 {
     if (CS < SFI_CSNUM)
     {
@@ -180,11 +185,14 @@ void __ramfunc SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Add
         RW_SFI_MAC_OUTL = TotalLength;
         RW_SFI_MAC_INL = 0;
         SFI_MACWaitReady(CS);
+
+        return true;
     }
+    else return false;
 }
 
-void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                       uint8_t *OutData, size_t OutCount)
+boolean __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
+        uint8_t *OutData, size_t OutCount)
 {
     if (CS < SFI_CSNUM)
     {
@@ -221,5 +229,8 @@ void __ramfunc SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Add
         RW_SFI_MAC_OUTL = TotalLength;
         RW_SFI_MAC_INL = 0;
         SFI_MACWaitReady(CS);
+
+        return true;
     }
+    else return false;
 }

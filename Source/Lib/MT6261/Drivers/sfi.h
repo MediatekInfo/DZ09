@@ -128,10 +128,10 @@ typedef enum tag_SFIMODE
 } TSFIMODE;
 
 extern TSFIMODE SFI_GetInterfaceMode(TSFI_CS CS);
-extern void SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, size_t InCount);
-extern void SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, size_t OutCount);
-extern void SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                    uint8_t *OutData, size_t OutCount);
-extern void SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
-                                    uint8_t *OutData, size_t OutCount);
+extern boolean SFI_DeviceCommandRead(TSFI_CS CS, uint8_t Command, uint8_t *InData, size_t InCount);
+extern boolean SFI_DeviceCommandWrite(TSFI_CS CS, uint8_t Command, uint8_t *OutData, size_t OutCount);
+extern boolean SFI_DeviceCmdAddr3Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
+                                       uint8_t *OutData, size_t OutCount);
+extern boolean SFI_DeviceCmdAddr4Write(TSFI_CS CS, uint8_t Command, uint32_t Address,
+                                       uint8_t *OutData, size_t OutCount);
 #endif /* _SFI_H_ */
