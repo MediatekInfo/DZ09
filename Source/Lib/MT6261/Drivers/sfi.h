@@ -139,7 +139,6 @@ typedef struct tag_DFCONFIG
 {
     uint32_t DeviceID;
     char     *DeviceName;
-    boolean  QPISupport;
     boolean  Address4Bytes;
     uint16_t PageSize;
     uint32_t TotalPages;
