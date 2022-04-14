@@ -476,7 +476,6 @@ pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
 
 boolean DL_InsertItemBeforePtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
 {
-    pDLITEM  tmpItem;
     uint32_t intflags;
 
     if (DList == NULL) return false;
@@ -528,7 +527,6 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
 
 boolean DL_InsertItemAfterPtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
 {
-    pDLITEM  tmpItem;
     uint32_t intflags;
 
     if (DList == NULL) return false;
