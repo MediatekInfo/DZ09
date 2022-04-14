@@ -91,15 +91,13 @@ boolean __ramfunc SF_WriteStatus(TSFI_CS CS, uint8_t *Data, uint32_t Count)
     return Result;
 }
 
-size_t __ramfunc SF_Read(TSFI_CS CS, uint32_t Address, uint8_t *Data, size_t Count)
+size_t __ramfunc SF_Read(TSFI_CS CS, void *Address, uint8_t *Data, size_t Count)
 {
-    size_t AbsROMSize = (uintptr_t)&__ROMLimit - (uintptr_t)&__ROMBase + 1;
-
-    if ((Data != 0) && (Address < AbsROMSize) && (CS < SFI_CSNUM))
+    if ((Data != 0) && ((uintptr_t)Address < FlashCapacity) && (CS < SFI_CSNUM))
     {
         uint8_t *pReadData = (uint8_t *)((uintptr_t)&__ROMBase + Address);
 
-        Count = min(Count, AbsROMSize - Address);
+        Count = min(Count, FlashCapacity - (uintptr_t)Address);
         memcpy(Data, pReadData, Count);
     }
     else Count = 0;

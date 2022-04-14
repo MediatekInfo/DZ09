@@ -45,7 +45,7 @@
 
 extern uint32_t SF_DevReadID(TSFI_CS CS);
 extern boolean SF_WriteStatus(TSFI_CS CS, uint8_t *Data, uint32_t Count);
-extern size_t SF_Read(TSFI_CS CS, uint32_t Address, uint8_t *Data, size_t Count);
+extern size_t SF_Read(TSFI_CS CS, void *Address, uint8_t *Data, size_t Count);
 extern boolean SF_Initialize(void);
 
 #endif /* _SF_H_ */
