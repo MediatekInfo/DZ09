@@ -248,29 +248,30 @@ boolean __ramfunc SFI_ConfigureInterface(TSFI_CS CS, pDFCONFIG Config)
 {
     if ((CS < SFI_CSNUM) && (Config != NULL))
     {
-        uint32_t intflags = __disable_interrupts();
-        uint32_t tmpValue;
+        TDFCONFIG NewConfig = *Config;
+        uint32_t  intflags = __disable_interrupts();
+        uint32_t  tmpValue;
 
         /* Switch to QPI / SPI Quad mode */
-        SFI_SendCmdList(CS, (uint8_t *)Config->PreInitSequence);
+        SFI_SendCmdList(CS, NewConfig.PreInitSequence);
 
         /* Initialize SFI control registers */
-        RW_SFI_MAC_CTL = Config->SFI_MAC_CTL;
-        RW_SFI_DIRECT_CTL = Config->SFI_DIRECT_CTL;
-        RW_SFI_MISC_CTL = Config->SFI_MISC_CTL;
-        RW_SFI_MISC_CTL2 = Config->SFI_MISC_CTL2;
-        RW_SFI_DLY_CTL2 = Config->SFI_DLY_CTL_2;
-        RW_SFI_DLY_CTL3 = Config->SFI_DLY_CTL_3;
+        RW_SFI_MAC_CTL = NewConfig.SFI_MAC_CTL;
+        RW_SFI_DIRECT_CTL = NewConfig.SFI_DIRECT_CTL;
+        RW_SFI_MISC_CTL = NewConfig.SFI_MISC_CTL;
+        RW_SFI_MISC_CTL2 = NewConfig.SFI_MISC_CTL2;
+        RW_SFI_DLY_CTL2 = NewConfig.SFI_DLY_CTL_2;
+        RW_SFI_DLY_CTL3 = NewConfig.SFI_DLY_CTL_3;
 
         tmpValue = SFIO_CFG0 & 0xFFF8FFF8;
-        SFIO_CFG0 = tmpValue | Config->DRIVING;
+        SFIO_CFG0 = tmpValue | NewConfig.DRIVING;
         tmpValue = SFIO_CFG1 & 0xFFF8FFF8;
-        SFIO_CFG1 = tmpValue | Config->DRIVING;
+        SFIO_CFG1 = tmpValue | NewConfig.DRIVING;
         tmpValue = SFIO_CFG2 & 0xFFF8FFF8;
-        SFIO_CFG2 = tmpValue | Config->DRIVING;
+        SFIO_CFG2 = tmpValue | NewConfig.DRIVING;
 
         /* Set Burst/Wrap parameters */
-        SFI_SendCmdList(CS, (uint8_t *)Config->PostInitSequence);
+        SFI_SendCmdList(CS, NewConfig.PostInitSequence);
 
         __restore_interrupts(intflags);
         return true;

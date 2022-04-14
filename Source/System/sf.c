@@ -23,6 +23,9 @@
 
 extern uintptr_t __ROMBase, __ROMLimit;
 
+pDFCONFIG FlashConfig;
+size_t    FlashCapacity;
+
 static uint8_t __ramfunc SF_DevReadStatus(TSFI_CS CS)
 {
     uint8_t tmpSR;
@@ -133,20 +136,22 @@ boolean SF_Initialize(void)
             break;
         }
 
-        s = NULL;
+        FlashConfig = NULL;
+        FlashCapacity = 0;
         while(pConfig->DeviceID != 0)
             if (pConfig->DeviceID == DeviceID)
             {
-                s = pConfig->DeviceName;
-                DebugPrint(" Found supported device \"%s\"\r\n", s);
+                FlashConfig = pConfig;
+                DebugPrint(" Found supported device \"%s\"\r\n", FlashConfig->DeviceName);
                 break;
             }
             else pConfig++;
 
-        if (s != NULL)
+        if (FlashConfig != NULL)
         {
-            DebugPrint(" Total capacity - %u KiB\r\n",
-                       (pConfig->PageSize * pConfig->TotalPages) >> 10);
+            FlashCapacity = pConfig->PageSize * pConfig->TotalPages;
+
+            DebugPrint(" Total capacity - %u KiB\r\n", FlashCapacity >> 10);
 
             DebugPrint(" Applying the configuration...");
             SFI_ConfigureInterface(SFI_CS0, pConfig);

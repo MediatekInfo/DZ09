@@ -143,8 +143,8 @@ typedef struct tag_DFCONFIG
     uint16_t PageSize;
     uint32_t TotalPages;
     TBSRANGE EraseSupport;
-    const uint8_t *PreInitSequence;
-    const uint8_t *PostInitSequence;
+    uint8_t  *PreInitSequence;
+    uint8_t  *PostInitSequence;
     uint32_t SFI_MAC_CTL;
     uint32_t SFI_DIRECT_CTL;
     uint32_t SFI_MISC_CTL;
