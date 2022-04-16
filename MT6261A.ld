@@ -148,7 +148,7 @@ SECTIONS
 
 		. = ALIGN(4);
 		/* Place RAM functions here */
-        *(.ramfunc*)
+		KEEP(*(.ramfunc*))
 		__data_end__ = .;
 
 	} > RAM

@@ -20,6 +20,7 @@
 #define _SFI_H_
 
 #define SFI_GPRAMSIZE               0x00A0
+#define SFI_MAXDATALOAD             0x0080                                                          // To ensure multiplicity with the page size.
 
 #define RW_SFI_MAC_CTL              (*(volatile uint32_t *)(SFI_BASE + 0x0000))
 #define SFI_WIP                     (1 << 0)

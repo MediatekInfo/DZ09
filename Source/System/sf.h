@@ -19,6 +19,10 @@
 #ifndef _SF_H_
 #define _SF_H_
 
+#define BLOCK4K_MASK                0x0FFF
+#define BLOCK32K_MASK               0x7FFF
+#define BLOCK64K_MASK               0xFFFF
+
 /* DF STATUS1 bits */
 #define DF_BUSY                     (1 << 0)
 #define DF_WEL                      (1 << 1)
@@ -46,6 +50,8 @@
 extern uint32_t SF_DevReadID(TSFI_CS CS);
 extern boolean SF_WriteStatus(TSFI_CS CS, uint8_t *Data, uint32_t Count);
 extern size_t SF_Read(TSFI_CS CS, void *Address, uint8_t *Data, size_t Count);
+extern size_t SF_Write(TSFI_CS CS, void *Address, uint8_t *Data, size_t Count);
+extern boolean SF_Erase(TSFI_CS CS, void *Address, size_t Count);
 extern boolean SF_Initialize(void);
 
 #endif /* _SF_H_ */
