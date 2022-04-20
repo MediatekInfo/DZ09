@@ -457,7 +457,7 @@ typedef enum tag_VMC
 #define OV_VTH_425V_2               7
 #define RG_BATON_EN                 (1 << 8)
 #define RG_BATON_HT_EN              (1 << 9)
-#define RGS_BATON_UNDET             (1 << 10                                                        // ??????????
+#define RGS_BATON_UNDET             (1 << 10)                                                       // ??????????
 #define RG_BATON_TDET_EN            (1 << 12)                                                       // T-pin Li-ION maybe...
 #define CHR_CON6                    (*(volatile uint16_t *)(PMU_BASE + 0x0A18))                     // ?????????? dcl_mixedsys6260_reg.h
 #define RG_CSDAC_DATA(v)            (((v) & 0x03FF) << 0)                                           // RW????????
