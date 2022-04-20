@@ -81,7 +81,7 @@
 
 #define VRF_CON0                    (*(volatile uint16_t *)(PMU_BASE + 0x0100))
 #define RG_VRF_EN                   (1 << 0)
-#define VRF_ON_SE                   (1 << 1)
+#define VRF_ON_SEL                  (1 << 1)
 #define RG_VRF_NDIS_EN              (1 << 10)
 #define QI_VRF_STATAUS              (1 << 15)
 #define VRF_CON1                    (*(volatile uint16_t *)(PMU_BASE + 0x0104))
@@ -382,19 +382,26 @@ typedef enum tag_VMC
 #define CV_VTH_43250V               0x18
 #define CV_VTH_43750V               0x1A
 #define CV_VTH_44000V               0x1B
-#define CV_VTH_44250V               0x0C
+#define CV_VTH_44250V               0x1C
 #define CV_VTH_22000V               0x1F
 #define CHR_CON2                    (*(volatile uint16_t *)(PMU_BASE + 0x0A08))
-#define RG_CS_VTH(v)                (((v) & 0x07) << 0)
-#define CS_VTH_800mA                0x00
-#define CS_VTH_700mA                0x01
-#define CS_VTH_600mA                0x02
-#define CS_VTH_500mA                0x03
-#define CS_VTH_400mA                0x04
-#define CS_VTH_300mA                0x05
-#define CS_VTH_200mA                0x06
-#define CS_VTH_70mA                 0x07
-#define CS_6323_SYNC                (1 << 3)
+#define RG_CS_VTH(v)                (((v) & 0x0F) << 0)
+#define CS_VTH_1600mA               0x00
+#define CS_VTH_1500mA               0x01
+#define CS_VTH_1400mA               0x02
+#define CS_VTH_1300mA               0x03
+#define CS_VTH_1200mA               0x04
+#define CS_VTH_1100mA               0x05
+#define CS_VTH_1000mA               0x06
+#define CS_VTH_900mA                0x07
+#define CS_VTH_800mA                0x08
+#define CS_VTH_700mA                0x09
+#define CS_VTH_650mA                0x0A
+#define CS_VTH_550mA                0x0B
+#define CS_VTH_450mA                0x0C
+#define CS_VTH_300mA                0x0D
+#define CS_VTH_200mA                0x0E
+#define CS_VTH_70mA                 0x0F
 #define RG_CS_EN                    (1 << 8)
 #define RGS_CS_DET                  (1 << 15)
 //#define CHR_CON3                    (*(volatile uint16_t *)(PMU_base + 0x0A0C))
