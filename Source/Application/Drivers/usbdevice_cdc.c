@@ -370,7 +370,7 @@ void *USB_CDC_Initialize(void)
     USB_CDC_ConnectHandler(false);
     memset(&USB_CDC_Interface, 0x00, sizeof(TUSBDRIVERINTERFACE));
 
-    if (USBDeviceState == USB_DEVICE_OFF)
+    if (USB_GetDeviceState() == USB_DEVICE_OFF)
     {
         LRT_Destroy(CDC_TimeoutTimer);
         return NULL;
