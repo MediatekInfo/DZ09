@@ -242,7 +242,8 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
         EINT_CON(SourceIdx) = Debounce & ~EINT_DEBEN;                                               // 2. Disable debounce
         USC_Pause_us(50);                                                                           // 3. Delay at least 5 32K cycles
         EINT_CON(SourceIdx) = Debounce;                                                             // 4. Enable the debounce (EN = 1) and change the debounce setting
-        if (!Masked) NVIC_UnmaskEINT2(SourceIdx);                                                   // 5. Unmask EINT
+        NVIC_SetEINT_EOI(SourceIdx);                                                                // 5. Ack spurious interrupt
+        if (!Masked) NVIC_UnmaskEINT2(SourceIdx);                                                   // 6. Unmask EINT
     }
     else if (SourceIdx < GLB_EINT_SOURCES)
     {
