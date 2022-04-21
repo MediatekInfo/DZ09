@@ -19,17 +19,17 @@
 #ifndef _AUXADC_H_
 #define _AUXADC_H_
 
-#define ADC_VBAT                    0                                                               // 3.2 ~ 4.2V
-#define ADC_ISENSE                  1                                                               // 3.2 ~ 4.2V
-#define ADC_CHRIN                   2
-#define ADC_BATON                   3                                                               // BATTemp 0 ~ AVDD28
-#define ADC_AUXIN4                  4                                                               // 0 ~ AVDD28
-#define ADC_ACCDET                  5
-#define ADC_ClassAB                 9
-#define ADC_XP_Ext                  12
-#define ADC_YP_Ext                  13
-#define ADC_YM_Ext                  14
-#define ADC_XM_Ext                  15
+#define ADC_VBAT                    (1 << 0)                                                        // 3.2 ~ 4.2V
+#define ADC_ISENSE                  (1 << 1)                                                        // 3.2 ~ 4.2V
+#define ADC_CHRIN                   (1 << 2)
+#define ADC_BATON                   (1 << 3)                                                        // BATTemp 0 ~ AVDD28
+#define ADC_AUXIN4                  (1 << 4)                                                        // 0 ~ AVDD28
+#define ADC_ACCDET                  (1 << 5)
+#define ADC_ClassAB                 (1 << 9)
+#define ADC_XP_Ext                  (1 << 12)
+#define ADC_YP_Ext                  (1 << 13)
+#define ADC_YM_Ext                  (1 << 14)
+#define ADC_XM_Ext                  (1 << 15)
 
 #define AUXADCCHNLMASK              0xF23F
 
