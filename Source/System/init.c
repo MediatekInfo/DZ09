@@ -26,7 +26,6 @@ void Init(void)
 {
     DBG_Initialize();                                                                               // Setup debug interface
     DebugPrint("\r\n--System initialization--\r\n");
-    PMU_DisableUSBDownloaderWDT();
     MPU_Initialize();                                                                               // Setup system cache
     PCTL_Initialize();                                                                              // Power down peripherals by default
     GPIO_Initialize();                                                                              // Set GPIO to default state
@@ -56,6 +55,9 @@ void Init(void)
 
     DebugPrint("Initialize low resolution timers pool...");
     DebugPrint((LRT_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
+
+    PMU_Initialize();
+
 //
 //
 ////////////////////////////////////////////////////////////
@@ -65,6 +67,8 @@ void Init(void)
 //    PMU_SetISINKParameters(ISINK_CH0, IC_8mA, true);
 ////////////////////////////////////////////////////////////
 //
+//    PMU_SetChargingEnable(true);
+
     __enable_interrupts();
     APP_Initialize();
 

@@ -35,7 +35,6 @@
 #if defined(TARGET_SYSTEM)
 
 #define _DEBUG_             (1)
-#define _USEBATTERY_        (1)
 #define USEINTERRUPTS
 #define VIBRVOLTAGE         VIBR_VO18V
 

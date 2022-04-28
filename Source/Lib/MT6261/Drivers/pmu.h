@@ -782,11 +782,12 @@ typedef enum tag_ICVAL
 #define FQMTR_CON2                  (*(volatile uint16_t *)(PMU_BASE + 0x0FF8))                     // FQMTR_DATA mask 0xFFFF
 #define FQMTR_CON3                  (*(volatile uint16_t *)(PMU_BASE + 0x0FFC))                     // FQMTR_WINSET mask 0xFFFF
 
-extern void PMU_DisablePCHR_WDT(void);
-extern void PMU_EnablePCHR_WDT(uint8_t Interval);
-extern void PMU_EnableUSBDownloaderWDT(void);
-extern void PMU_DisableUSBDownloaderWDT(void);
+extern void PMU_SetChargerWDTEnabled(boolean Enabled);
+extern void PMU_SetChargerWDTInterval(uint8_t Interval);
 extern boolean PMU_IsChargerDetected(void);
+extern void PMU_SetChargingEnable(boolean Enabled);
+extern void PMU_EnterUSBDLMode(void);
+extern void PMU_LeaveUSBDLMode(void);
 extern boolean PMU_IsPowerKeyPressed(void);
 extern void PMU_SetVibrationOutput(boolean Enable);
 extern void PMU_DisableISINKs(void);
@@ -797,5 +798,6 @@ extern void PMU_TurnOnVUSB(boolean Enable);
 extern void PMU_TurnOnVMC(boolean Enable);
 extern boolean PMU_SetVoltageVMC(TVMC Voltage);
 extern TVMC PMU_GetSelectedVoltageVMC(void);
+extern void PMU_Initialize(void);
 
 #endif /* _PMU_H_ */

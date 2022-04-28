@@ -21,33 +21,173 @@
 #include "systemconfig.h"
 #include "pmu.h"
 
-void PMU_DisablePCHR_WDT(void)
+static boolean  PrevChargerState;
+static pTIMER   ChargerTimer;
+static uint16_t VBat, ISense;
+
+static uint16_t *pDataArrayPrev, *pDataArrayNew;
+
+static void PMU_PrintDebugInfo(void)
 {
-    CHR_CON9 = CHRWDT_FLAG_WR | RG_CHRWDT_WR | RG_CHRWDT_DIS;
+    uint16_t ChCON1 = CHR_CON1, i, j;
+    TDATETIME DTime;
+
+    DTime = RTC_GetDateTime();
+    CHR_CON8 = RG_PCHR_FLAG_SEL(0x1F) | RG_PCHR_FLAG_EN;
+
+    DebugPrint("VBAT (%u), ISEN (%umA), CHR_CON8 %04X CHR_CON0 %04X CHR_CON1 %04X CHR_CON9 %04X CHR_CON5 %04X ",
+               VBat,
+               ISense,
+               CHR_CON8,
+               CHR_CON0,
+               CHR_CON1,
+               CHR_CON9,
+               CHR_CON5);
+    DebugPrint("%s %s ", (ChCON1 & RGS_VBAT_CC_DET) ? "CC" : "", (ChCON1 & RGS_VBAT_CV_DET) ? "CV" : "");
+    DebugPrint("%02d:%02d:%02d\r\n", DTime.Time.Hour, DTime.Time.Min, DTime.Time.Sec);
+
+    if ((pDataArrayPrev == NULL) || (pDataArrayNew == NULL))
+    {
+        if (pDataArrayPrev == NULL) pDataArrayPrev = malloc(4096);
+        if (pDataArrayNew == NULL) pDataArrayNew = malloc(4096);
+
+        memcpy(pDataArrayNew, (void *)(PMU_BASE), 4096);
+    }
+    else
+    {
+        uint16_t *tmpPtr = pDataArrayPrev, i;
+
+        pDataArrayPrev = pDataArrayNew;
+        pDataArrayNew = tmpPtr;
+
+        tmpPtr = (void *)(PMU_BASE);
+        for(i = 0; i < 2048; i++)
+            pDataArrayNew[i] = tmpPtr[i];
+
+        for(i = 0; i < 2048; i++)
+        {
+            if (pDataArrayPrev[i] != pDataArrayNew[i])
+                DebugPrint("0x%04X: %04X->%04X\r\n", 2 * i, pDataArrayPrev[i], pDataArrayNew[i]);
+        }
+    }
 }
 
-void PMU_EnablePCHR_WDT(uint8_t Interval)
+static void PMU_ChargerEnable(boolean Enable)
 {
-    CHR_CON9 = RG_CHRWDT_WR | RG_CHRWDT_EN | RG_CHRWDT_TD(Interval);
+    CHR_CON15 = 0x18;
+    CHR_CON0 = RG_VCDT_HV_VTH(HV_VTH_600V) | RG_VCDT_LV_VTH(LV_VTH_450V);
+    CHR_CON1 = RG_VBAT_CV_VTH(CV_VTH_41875V) | RG_VBAT_CC_VTH(CC_VTH_3450V);
+    CHR_CON5 = (CHR_CON5 & ~RG_VBAT_OV_VTH(-1)) | RG_VBAT_OV_VTH(OV_VTH_425V) | RG_VBAT_OV_DEG | RG_VBAT_OV_EN;
+    CHR_CON10 = RG_ADCIN_VBAT_EN;
+    CHR_CON12 = RG_LOW_ICH_DB(4) | RG_ULC_DET_EN | RG_HWCV_EN | RG_CSDAC_MODE;
+
+    CHR_CON11 = RG_BC11_RST;
+
+    PMU_SetChargerWDTEnabled(false);
+
+    if (Enable && PMU_IsChargerDetected())
+    {
+        CHR_CON1 |= RG_VBAT_CC_EN | RG_VBAT_CV_EN;
+        CHR_CON2 = RG_CS_EN | RG_CS_VTH(CS_VTH_200mA);
+        CHR_CON4 = RG_CSDAC_DLY(STP_DLY128us) | RG_CSDAC_STP(CSDAC_STP_1_0cpS) |
+                   RG_CSDAC_STP_DEC(STP_DEC_1_0cpS) | RG_CSDAC_STP_INC(STP_INC_1_0cpS);
+        CHR_CON10 |= RG_ADCIN_CHR_EN | RG_ADCIN_VSEN_EN;
+        CHR_CON0 |= CHR_EN | RG_CSDAC_EN;
+    }
+    else
+    {
+        CHR_CON0 &= ~RG_CSDAC_EN;
+        CHR_CON1 &= ~(RG_VBAT_CC_EN | RG_VBAT_CV_EN);
+        CHR_CON2 &= RG_CS_EN;
+        CHR_CON10 &= ~(RG_ADCIN_CHR_EN | RG_ADCIN_VSEN_EN);
+    }
 }
 
-void PMU_EnableUSBDownloaderWDT(void)                                                               // ~30 sec WDT after power on
+static void PMU_MeasureChargeParams(void)
 {
-    CHR_CON10 &= ~(RG_USBDL_RST | RG_USBDL_SET);
+    uint16_t tmpADCValues[2], i, j;
+    uint32_t MathChargerADC[2] = {0}, tmpIValue;
+
+    for(i = 0; i < 64; i++)
+    {
+        AUXADC_MeasureMultiple(tmpADCValues, ADC_ISENSE | ADC_VBAT);
+        for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
+            MathChargerADC[j] += tmpADCValues[j];
+    }
+    for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
+        tmpADCValues[j] = MathChargerADC[j] / 64;
+
+    VBat = (5600 * tmpADCValues[0]) / 0x03FF;
+    tmpIValue = (5600 * tmpADCValues[1]) / 0x03FF;
+    ISense = (tmpIValue >= VBat) ? 5 * (tmpIValue - VBat) : 0;
 }
 
-void PMU_DisableUSBDownloaderWDT(void)
+static void ChargerTimerHandler(pTIMER Timer)
 {
-#if (_USEBATTERY_ != 0)
-    CHR_CON10 = (CHR_CON10 & ~RG_USBDL_SET) | RG_USBDL_RST;
-#else
-    CHR_CON10 = (CHR_CON10 | RG_USBDL_SET) | RG_USBDL_RST;
-#endif
+    boolean ChargerState = PMU_IsChargerDetected();
+
+    if (PrevChargerState != ChargerState)
+    {
+        DebugPrint("---------Charger %s!\r\n", (ChargerState) ? "connected" : "disconnected");
+        PrevChargerState = ChargerState;
+        PMU_ChargerEnable(ChargerState);
+    }
+    if (ChargerState && (CHR_CON1 & RGS_VBAT_CV_DET))
+    {
+        if (CHR_CON1 & RG_VBAT_CC_EN)
+            CHR_CON1 &= ~RG_VBAT_CC_EN;
+    }
+    PMU_MeasureChargeParams();
+    if (ChargerState && ISense && (ISense <= BATCHARGETHR))
+    {
+        PMU_ChargerEnable(false);
+        DebugPrint("---------Charging complete!\r\n");
+    }
+
+    PMU_PrintDebugInfo();
+}
+
+static void PMU_InterruptHandler(void)
+{
+    DebugPrint("USB_OnCableDisconnect\r\n");
+    USB_OnCableDisconnect();
+}
+
+void PMU_SetChargerWDTEnabled(boolean Enabled)
+{
+    CHR_CON9 |= RG_CHRWDT_WR;
+    if (Enabled) CHR_CON9 |= RG_CHRWDT_EN;
+    else CHR_CON9 &= ~RG_CHRWDT_EN;
+
+    while(CHR_CON9 & RGS_CHRWDT_OUT) {}
+
+    CHR_CON9 |= CHRWDT_FLAG_WR;
+}
+
+void PMU_SetChargerWDTInterval(uint8_t Interval)
+{
+    CHR_CON9 = (CHR_CON9 & ~RG_CHRWDT_TD(-1)) | RG_CHRWDT_TD(Interval) | RG_CHRWDT_WR;
+
+    while(CHR_CON9 & RGS_CHRWDT_OUT) {}
+
+    CHR_CON9 |= CHRWDT_FLAG_WR;
 }
 
 boolean PMU_IsChargerDetected(void)
 {
     return (CHR_CON0 & RGS_CHRDET) ? true : false;
+}
+
+void PMU_EnableUSBDLMode(void)
+{
+    CHR_CON10 &= ~(RG_USBDL_SET | RG_USBDL_RST);
+    STRUP_CON0 |= RG_USBDL_EN;
+}
+
+void PMU_DisableUSBDLMode(void)
+{
+    STRUP_CON0 &= ~RG_USBDL_EN;
+    CHR_CON10 = (CHR_CON10 & ~RG_USBDL_SET) | RG_USBDL_RST;
 }
 
 boolean PMU_IsPowerKeyPressed(void)
@@ -177,4 +317,16 @@ TVMC PMU_GetSelectedVoltageVMC(void)
     TVMC VMC = (VMC_CON0 & RG_VMC_VOSEL(-1)) >> RG_VMC_VOSEL_MASK_OFFSET;
 
     return VMC;
+}
+
+void PMU_Initialize(void)
+{
+    PMU_DisableUSBDLMode();
+
+#if (APPUSEBATTERY != 0)
+    AUXADC_Enable();
+    if (ChargerTimer == NULL)
+        ChargerTimer = LRT_Create(1000, ChargerTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
+    NVIC_RegisterEINT(ADIE_EINT_CHRDET, PMU_InterruptHandler, ADIE_EINT_SENS_EDGE, ADIE_EINT_POLHIGH, 0, true);
+#endif
 }
