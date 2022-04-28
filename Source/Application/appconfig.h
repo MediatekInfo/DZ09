@@ -46,7 +46,8 @@
 
 /* Battery charger */
 #define APPUSEBATTERY   1
-#define BATCHARGETHR    50                                                                          // Cut-off current in mA
+#define BATMAXCURRENT   200                                                                         // Max charging current in mA
+#define BATMINCURRENT   50                                                                          // Cut-off charging current in mA
 
 /* USB driver */
 #define _USB_CDC_DRIVER_                                                                            // Prolific PL2303 emulation

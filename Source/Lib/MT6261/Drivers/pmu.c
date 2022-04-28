@@ -21,6 +21,33 @@
 #include "systemconfig.h"
 #include "pmu.h"
 
+typedef struct
+{
+    uint16_t Limit;
+    uint8_t  BitValue;
+    uint8_t  USBDLMaxCurrent;
+} TCURRLIMIT;
+
+const TCURRLIMIT BatCurrentLimits[] =
+{
+    {  70,   CS_VTH_70mA, 0x08},                                                                    // Need correction
+    { 200,  CS_VTH_200mA, 0x18},
+    { 300,  CS_VTH_300mA, 0x28},                                                                    // Need correction
+    { 450,  CS_VTH_450mA, 0x59},
+    { 550,  CS_VTH_550mA, 0x59},
+    { 650,  CS_VTH_650mA, 0x59},
+    { 700,  CS_VTH_700mA, 0x59},
+    { 800,  CS_VTH_800mA, 0x59},
+    { 900,  CS_VTH_900mA, 0x59},
+    {1000, CS_VTH_1000mA, 0x59},
+    {1100, CS_VTH_1100mA, 0x59},
+    {1200, CS_VTH_1200mA, 0x59},
+    {1300, CS_VTH_1300mA, 0x59},
+    {1400, CS_VTH_1400mA, 0x59},
+    {1500, CS_VTH_1500mA, 0x59},
+    {1600, CS_VTH_1600mA, 0x59}
+};
+
 static boolean  PrevChargerState;
 static pTIMER   ChargerTimer;
 static uint16_t VBat, ISense;
@@ -72,9 +99,22 @@ static void PMU_PrintDebugInfo(void)
     }
 }
 
+static int8_t PMU_GetChargingParams(uint16_t TestValue)
+{
+    int8_t i = sizeof(BatCurrentLimits) / sizeof(BatCurrentLimits[0]) - 1;
+
+    for(; i >= 0; i--)
+        if (TestValue >= BatCurrentLimits[i].Limit)
+            return i;
+
+    return -1;
+}
+
 static void PMU_ChargerEnable(boolean Enable)
 {
-    CHR_CON15 = 0x18;
+    int8_t ParamIndex = PMU_GetChargingParams(BATMAXCURRENT);
+
+    CHR_CON15 = (ParamIndex != -1) ? BatCurrentLimits[ParamIndex].USBDLMaxCurrent : 0;
     CHR_CON0 = RG_VCDT_HV_VTH(HV_VTH_600V) | RG_VCDT_LV_VTH(LV_VTH_450V);
     CHR_CON1 = RG_VBAT_CV_VTH(CV_VTH_41875V) | RG_VBAT_CC_VTH(CC_VTH_3450V);
     CHR_CON5 = (CHR_CON5 & ~RG_VBAT_OV_VTH(-1)) | RG_VBAT_OV_VTH(OV_VTH_425V) | RG_VBAT_OV_DEG | RG_VBAT_OV_EN;
@@ -85,10 +125,10 @@ static void PMU_ChargerEnable(boolean Enable)
 
     PMU_SetChargerWDTEnabled(false);
 
-    if (Enable && PMU_IsChargerDetected())
+    if (Enable && (ParamIndex != -1) && PMU_IsChargerDetected())
     {
         CHR_CON1 |= RG_VBAT_CC_EN | RG_VBAT_CV_EN;
-        CHR_CON2 = RG_CS_EN | RG_CS_VTH(CS_VTH_200mA);
+        CHR_CON2 = RG_CS_EN | RG_CS_VTH(BatCurrentLimits[ParamIndex].BitValue);
         CHR_CON4 = RG_CSDAC_DLY(STP_DLY128us) | RG_CSDAC_STP(CSDAC_STP_1_0cpS) |
                    RG_CSDAC_STP_DEC(STP_DEC_1_0cpS) | RG_CSDAC_STP_INC(STP_INC_1_0cpS);
         CHR_CON10 |= RG_ADCIN_CHR_EN | RG_ADCIN_VSEN_EN;
@@ -138,7 +178,7 @@ static void ChargerTimerHandler(pTIMER Timer)
             CHR_CON1 &= ~RG_VBAT_CC_EN;
     }
     PMU_MeasureChargeParams();
-    if (ChargerState && ISense && (ISense <= BATCHARGETHR))
+    if (ChargerState && ISense && (ISense <= BATMINCURRENT))
     {
         PMU_ChargerEnable(false);
         DebugPrint("---------Charging complete!\r\n");
