@@ -115,8 +115,8 @@ static void PMU_ChargerEnable(boolean Enable)
     int8_t ParamIndex = PMU_GetChargingParams(BATMAXCURRENT);
 
     CHR_CON15 = (ParamIndex != -1) ? BatCurrentLimits[ParamIndex].USBDLMaxCurrent : 0;
-    CHR_CON0 = RG_VCDT_HV_VTH(HV_VTH_600V) | RG_VCDT_LV_VTH(LV_VTH_450V);
-    CHR_CON1 = RG_VBAT_CV_VTH(CV_VTH_41875V) | RG_VBAT_CC_VTH(CC_VTH_3450V);
+    CHR_CON0 = RG_VCDT_HV_VTH(HV_VTH_600V) | RG_VCDT_LV_VTH(LV_VTH_430V);
+    CHR_CON1 = RG_VBAT_CV_VTH(CV_VTH_41875V) | RG_VBAT_CC_VTH(CC_VTH_3300V);
     CHR_CON5 = (CHR_CON5 & ~RG_VBAT_OV_VTH(-1)) | RG_VBAT_OV_VTH(OV_VTH_425V) | RG_VBAT_OV_DEG | RG_VBAT_OV_EN;
     CHR_CON10 = RG_ADCIN_VBAT_EN;
     CHR_CON12 = RG_LOW_ICH_DB(4) | RG_ULC_DET_EN | RG_HWCV_EN | RG_CSDAC_MODE;
@@ -136,7 +136,7 @@ static void PMU_ChargerEnable(boolean Enable)
     }
     else
     {
-        CHR_CON0 &= ~RG_CSDAC_EN;
+        CHR_CON0 &= ~(RG_CSDAC_EN | CHR_EN);
         CHR_CON1 &= ~(RG_VBAT_CC_EN | RG_VBAT_CV_EN);
         CHR_CON2 &= RG_CS_EN;
         CHR_CON10 &= ~(RG_ADCIN_CHR_EN | RG_ADCIN_VSEN_EN);
