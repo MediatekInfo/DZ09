@@ -21,6 +21,9 @@
 #include "systemconfig.h"
 #include "pmu.h"
 
+#define BATAVERAGESIZE              128
+#define CHARGERONDEBOUNCE           (2 * 2)                                                         // 2 sec
+
 typedef struct
 {
     uint16_t Limit;
@@ -48,9 +51,10 @@ const TCURRLIMIT BatCurrentLimits[] =
     {1600, CS_VTH_1600mA, 0x59}
 };
 
-static boolean  PrevChargerState;
+static boolean  PrevChargerState, BatteryCharging;
 static pTIMER   ChargerTimer;
 static uint16_t VBat, ISense;
+static uint32_t ChargeOnDebounce;
 
 static uint16_t *pDataArrayPrev, *pDataArrayNew;
 
@@ -116,7 +120,7 @@ static void PMU_ChargerEnable(boolean Enable)
 
     CHR_CON15 = (ParamIndex != -1) ? BatCurrentLimits[ParamIndex].USBDLMaxCurrent : 0;
     CHR_CON0 = RG_VCDT_HV_VTH(HV_VTH_600V) | RG_VCDT_LV_VTH(LV_VTH_430V);
-    CHR_CON1 = RG_VBAT_CV_VTH(CV_VTH_41875V) | RG_VBAT_CC_VTH(CC_VTH_3300V);
+    CHR_CON1 = RG_VBAT_CV_VTH(CV_VTH_42000V) | RG_VBAT_CC_VTH(CC_VTH_3300V);
     CHR_CON5 = (CHR_CON5 & ~RG_VBAT_OV_VTH(-1)) | RG_VBAT_OV_VTH(OV_VTH_425V) | RG_VBAT_OV_DEG | RG_VBAT_OV_EN;
     CHR_CON10 = RG_ADCIN_VBAT_EN;
     CHR_CON12 = RG_LOW_ICH_DB(4) | RG_ULC_DET_EN | RG_HWCV_EN | RG_CSDAC_MODE;
@@ -125,7 +129,7 @@ static void PMU_ChargerEnable(boolean Enable)
 
     PMU_SetChargerWDTEnabled(false);
 
-    if (Enable && (ParamIndex != -1) && PMU_IsChargerDetected())
+    if (Enable && (ParamIndex != -1) && PMU_IsChargerConnected())
     {
         CHR_CON1 |= RG_VBAT_CC_EN | RG_VBAT_CV_EN;
         CHR_CON2 = RG_CS_EN | RG_CS_VTH(BatCurrentLimits[ParamIndex].BitValue);
@@ -148,14 +152,14 @@ static void PMU_MeasureChargeParams(void)
     uint16_t tmpADCValues[2], i, j;
     uint32_t MathChargerADC[2] = {0}, tmpIValue;
 
-    for(i = 0; i < 64; i++)
+    for(i = 0; i < BATAVERAGESIZE; i++)
     {
         AUXADC_MeasureMultiple(tmpADCValues, ADC_ISENSE | ADC_VBAT);
         for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
             MathChargerADC[j] += tmpADCValues[j];
     }
     for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
-        tmpADCValues[j] = MathChargerADC[j] / 64;
+        tmpADCValues[j] = (MathChargerADC[j] + BATAVERAGESIZE / 2) / BATAVERAGESIZE;
 
     VBat = (5600 * tmpADCValues[0]) / 0x03FF;
     tmpIValue = (5600 * tmpADCValues[1]) / 0x03FF;
@@ -164,24 +168,44 @@ static void PMU_MeasureChargeParams(void)
 
 static void ChargerTimerHandler(pTIMER Timer)
 {
-    boolean ChargerState = PMU_IsChargerDetected();
+    boolean ChargerState = PMU_IsChargerConnected();
 
     if (PrevChargerState != ChargerState)
     {
-        DebugPrint("---------Charger %s!\r\n", (ChargerState) ? "connected" : "disconnected");
+        DebugPrint("PMU charger %s!\r\n", (ChargerState) ? "connected" : "disconnected");
         PrevChargerState = ChargerState;
         PMU_ChargerEnable(ChargerState);
     }
-    if (ChargerState && (CHR_CON1 & RGS_VBAT_CV_DET))
-    {
-        if (CHR_CON1 & RG_VBAT_CC_EN)
-            CHR_CON1 &= ~RG_VBAT_CC_EN;
-    }
     PMU_MeasureChargeParams();
-    if (ChargerState && ISense && (ISense <= BATMINCURRENT))
+
+    if (ChargerState)
     {
-        PMU_ChargerEnable(false);
-        DebugPrint("---------Charging complete!\r\n");
+        /* Disable CC mode when CV detected */
+        if (CHR_CON1 & RGS_VBAT_CV_DET)
+        {
+            if (CHR_CON1 & RG_VBAT_CC_EN)
+                CHR_CON1 &= ~RG_VBAT_CC_EN;
+        }
+        /* Charge complete trap */
+        if (ISense && (ISense <= BATMINCURRENT))
+        {
+            PMU_ChargerEnable(false);
+            if (BatteryCharging)
+                DebugPrint("PMU charging complete!\r\n");
+        }
+        /* Charge on debounce */
+        if (ISense > BATMINCURRENT)
+        {
+            if (ChargeOnDebounce < CHARGERONDEBOUNCE) ChargeOnDebounce++;
+        }
+        else ChargeOnDebounce = 0;
+    }
+    else ChargeOnDebounce = 0;
+
+    if (BatteryCharging != (ChargeOnDebounce == CHARGERONDEBOUNCE))
+    {
+        BatteryCharging = (ChargeOnDebounce == CHARGERONDEBOUNCE);
+        if (BatteryCharging) DebugPrint("PMU charging started!\r\n");
     }
 
     PMU_PrintDebugInfo();
@@ -189,7 +213,8 @@ static void ChargerTimerHandler(pTIMER Timer)
 
 static void PMU_InterruptHandler(void)
 {
-    DebugPrint("USB_OnCableDisconnect\r\n");
+    ChargeOnDebounce = 0;
+    BatteryCharging = false;
     USB_OnCableDisconnect();
 }
 
@@ -213,9 +238,18 @@ void PMU_SetChargerWDTInterval(uint8_t Interval)
     CHR_CON9 |= CHRWDT_FLAG_WR;
 }
 
-boolean PMU_IsChargerDetected(void)
+boolean PMU_IsChargerConnected(void)
 {
     return (CHR_CON0 & RGS_CHRDET) ? true : false;
+}
+
+boolean PMU_IsBatteryCharging(void)
+{
+#if (APPUSEBATTERY != 0)
+    return BatteryCharging;
+#else
+    return false;
+#endif
 }
 
 void PMU_EnableUSBDLMode(void)
@@ -361,12 +395,51 @@ TVMC PMU_GetSelectedVoltageVMC(void)
 
 void PMU_Initialize(void)
 {
+    boolean Result = false;
+
     PMU_DisableUSBDLMode();
 
+    do
+    {
 #if (APPUSEBATTERY != 0)
-    AUXADC_Enable();
-    if (ChargerTimer == NULL)
-        ChargerTimer = LRT_Create(1000, ChargerTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
-    NVIC_RegisterEINT(ADIE_EINT_CHRDET, PMU_InterruptHandler, ADIE_EINT_SENS_EDGE, ADIE_EINT_POLHIGH, 0, true);
+        DebugPrint(":\r\n Battery charger...");
+
+        if (!AUXADC_Enable())
+        {
+            DebugPrint("Failed! Can not enable AUXADC.\r\n");
+            break;
+        }
+        if (ChargerTimer == NULL)
+        {
+            ChargerTimer = LRT_Create(500, ChargerTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
+            if (ChargerTimer == NULL)
+            {
+                DebugPrint("Failed! Can not create timer.\r\n");
+                break;
+            }
+        }
+        if (!NVIC_RegisterEINT(ADIE_EINT_CHRDET, PMU_InterruptHandler,
+                               ADIE_EINT_SENS_EDGE, ADIE_EINT_POLHIGH, 0, false) ||
+                !NVIC_EnableEINT(ADIE_EINT_CHRDET))
+        {
+            DebugPrint("Failed! Can not register interrupt.\r\n");
+            break;
+        }
 #endif
+        Result = true;
+    }
+    while(0);
+
+    if (Result) DebugPrint("...Complete.\r\n");
+    else
+    {
+        NVIC_UnregisterEINT(ADIE_EINT_CHRDET);
+        AUXADC_Disable();
+        if (ChargerTimer != NULL)
+        {
+            LRT_Destroy(ChargerTimer);
+            ChargerTimer = NULL;
+        }
+        DebugPrint("PMU initialization failed!\r\n");
+    }
 }

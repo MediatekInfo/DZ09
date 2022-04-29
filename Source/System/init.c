@@ -56,6 +56,7 @@ void Init(void)
     DebugPrint("Initialize low resolution timers pool...");
     DebugPrint((LRT_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
 
+    DebugPrint("Power management initialization");
     PMU_Initialize();
 
 //
