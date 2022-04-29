@@ -21,8 +21,10 @@
 #include "systemconfig.h"
 #include "pmu.h"
 
-#define BATAVERAGESIZE              128
+#define BATPARAMAVERAGESIZE         128
 #define CHARGERONDEBOUNCE           (2 * 2)                                                         // 2 sec
+#define RECHARGEVOLTAGE             3600                                                            // mV
+#define RECHARGETIMEOUT             (10 * 2)                                                        // 10 sec
 
 typedef struct
 {
@@ -55,7 +57,7 @@ static boolean  PrevChargerState, BatteryCharging;
 static pTIMER   ChargerTimer;
 static uint16_t VBat, ISense;
 static uint32_t ChargeOnDebounce;
-
+static uint32_t RechargeTimeout;
 static uint16_t *pDataArrayPrev, *pDataArrayNew;
 
 static void PMU_PrintDebugInfo(void)
@@ -114,6 +116,11 @@ static int8_t PMU_GetChargingParams(uint16_t TestValue)
     return -1;
 }
 
+static boolean PMU_IsChargerEnabled(void)
+{
+    return !!(CHR_CON0 & CHR_EN);
+}
+
 static void PMU_ChargerEnable(boolean Enable)
 {
     int8_t ParamIndex = PMU_GetChargingParams(BATMAXCURRENT);
@@ -152,14 +159,14 @@ static void PMU_MeasureChargeParams(void)
     uint16_t tmpADCValues[2], i, j;
     uint32_t MathChargerADC[2] = {0}, tmpIValue;
 
-    for(i = 0; i < BATAVERAGESIZE; i++)
+    for(i = 0; i < BATPARAMAVERAGESIZE; i++)
     {
         AUXADC_MeasureMultiple(tmpADCValues, ADC_ISENSE | ADC_VBAT);
         for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
             MathChargerADC[j] += tmpADCValues[j];
     }
     for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
-        tmpADCValues[j] = (MathChargerADC[j] + BATAVERAGESIZE / 2) / BATAVERAGESIZE;
+        tmpADCValues[j] = (MathChargerADC[j] + BATPARAMAVERAGESIZE / 2) / BATPARAMAVERAGESIZE;
 
     VBat = (5600 * tmpADCValues[0]) / 0x03FF;
     tmpIValue = (5600 * tmpADCValues[1]) / 0x03FF;
@@ -199,8 +206,21 @@ static void ChargerTimerHandler(pTIMER Timer)
             if (ChargeOnDebounce < CHARGERONDEBOUNCE) ChargeOnDebounce++;
         }
         else ChargeOnDebounce = 0;
+
+        if ((VBat < RECHARGEVOLTAGE) && (ISense == 0))
+        {
+            if (RechargeTimeout) RechargeTimeout--;
+            else
+            {
+                DebugPrint("PMU restart charging!\r\n");
+                if (PMU_IsChargerEnabled()) PMU_ChargerEnable(false);
+                PMU_ChargerEnable(true);
+                RechargeTimeout = RECHARGETIMEOUT;
+            }
+        }
+        else RechargeTimeout = 0;
     }
-    else ChargeOnDebounce = 0;
+    else ChargeOnDebounce = RechargeTimeout = 0;
 
     if (BatteryCharging != (ChargeOnDebounce == CHARGERONDEBOUNCE))
     {
