@@ -104,6 +104,13 @@
 		<Unit filename="Source\Application\Drivers\backlight.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Application\Drivers\dflib.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\Drivers\dflib.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Application\Drivers\ft6236.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
@@ -116,6 +123,13 @@
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\Application\Drivers\ili9341.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\Drivers\sdcard.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Application\Drivers\sdcard.h">
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\Application\Drivers\usbdevice_cdc.c">
@@ -254,6 +268,13 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\msdc.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\msdc.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\nvic.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
@@ -292,6 +313,13 @@
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\rtc.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\sdcmd.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\sfi.c">
+			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\sfi.h">
@@ -364,6 +392,13 @@
 			<Option compilerVar="ASM" />
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\System\fscache.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\fscache.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\System\init.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />
@@ -397,6 +432,13 @@
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\System\ringbuf.h">
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\sf.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\System\sf.h">
 			<Option target="SYSTEM" />
 		</Unit>
 		<Unit filename="Source\System\sw_i2c.h">

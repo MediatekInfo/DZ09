@@ -361,7 +361,7 @@ boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScr
                 {
                     uint32_t i;
 
-                    for (i = 0; i < UpdateRects->Count; i++)
+                    for(i = 0; i < UpdateRects->Count; i++)
                         LCDIF_UpdateRectangle(GDI_GlobalToLocalRct(&UpdateRects->Item[i], &LCDScreen.ScreenOffset));
 
                     GDI_DeleteRList(UpdateRects);

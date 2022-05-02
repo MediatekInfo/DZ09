@@ -60,7 +60,7 @@ extern boolean DL_DeleteItemByData(pDLIST List, void *Data);
 extern boolean DL_DeleteItemByIndex(pDLIST List, uint32_t Index);
 extern boolean DL_DeleteFirstItem(pDLIST DList);
 extern boolean DL_DeleteLastItem(pDLIST DList);
-extern boolean DL_MoveItemToIndex(pDLIST List, uint32_t OldIndex, uint32_t NewIndex);
+extern boolean DL_MoveItemToIndex(pDLIST DList, uint32_t Index, pDLITEM Item);
 extern boolean DL_ReplaceItemData(pDLIST DList, void *OldData, void *NewData);
 
 #endif /* _DLIST_H_ */

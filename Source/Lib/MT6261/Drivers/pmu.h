@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -81,7 +81,7 @@
 
 #define VRF_CON0                    (*(volatile uint16_t *)(PMU_BASE + 0x0100))
 #define RG_VRF_EN                   (1 << 0)
-#define VRF_ON_SE                   (1 << 1)
+#define VRF_ON_SEL                  (1 << 1)
 #define RG_VRF_NDIS_EN              (1 << 10)
 #define QI_VRF_STATAUS              (1 << 15)
 #define VRF_CON1                    (*(volatile uint16_t *)(PMU_BASE + 0x0104))
@@ -176,11 +176,15 @@
 #define VMC_CON0                    (*(volatile uint16_t *)(PMU_BASE + 0x01C0))
 #define RG_VMC_EN                   (1 << 0)
 #define VMC_ON_SEL                  (1 << 1)
-#define RG_VMC_VOSEL(v)             (((v) & 0x07) << 4)
-#define VMC_VO18V                   0
-#define VMC_VO28V                   2
-#define VMC_VO30V                   3
-#define VMC_VO33V                   4
+#define RG_VMC_VOSEL_MASK_OFFSET    4
+#define RG_VMC_VOSEL(v)             (((v) & 0x07) << RG_VMC_VOSEL_MASK_OFFSET)
+typedef enum tag_VMC
+{
+    VMC_VO18V = 0,
+    VMC_VO28V = 2,
+    VMC_VO30V = 3,
+    VMC_VO33V = 4
+} TVMC;
 #define RG_VMC_NDIS_EN              (1 << 10)
 #define RG_VMC_SS_BYPASS            (1 << 11)
 #define QI_VMC_STATUS               (1 << 15)
@@ -351,7 +355,11 @@
 #define RG_VBAT_CC_EN               (1 << 1)
 #define RGS_VBAT_CV_DET             (1 << 2)
 #define RGS_VBAT_CC_DET             (1 << 3)
-#define RG_VBAT_CC_VTH(v)           (((v) & 0x03) << 4)                                             // Not defined in datasheet
+#define RG_VBAT_CC_VTH(v)           (((v) & 0x03) << 4)
+#define CC_VTH_3300V                0x00
+#define CC_VTH_3350V                0x01
+#define CC_VTH_3400V                0x02
+#define CC_VTH_3450V                0x03
 #define RG_VBAT_CV_VTH(v)           (((v) & 0x1F) << 8)
 #define CV_VTH_4200V                0x00
 #define CV_VTH_37750V               0x03
@@ -378,19 +386,26 @@
 #define CV_VTH_43250V               0x18
 #define CV_VTH_43750V               0x1A
 #define CV_VTH_44000V               0x1B
-#define CV_VTH_44250V               0x0C
+#define CV_VTH_44250V               0x1C
 #define CV_VTH_22000V               0x1F
 #define CHR_CON2                    (*(volatile uint16_t *)(PMU_BASE + 0x0A08))
-#define RG_CS_VTH(v)                (((v) & 0x07) << 0)
-#define CS_VTH_800mA                0x00
-#define CS_VTH_700mA                0x01
-#define CS_VTH_600mA                0x02
-#define CS_VTH_500mA                0x03
-#define CS_VTH_400mA                0x04
-#define CS_VTH_300mA                0x05
-#define CS_VTH_200mA                0x06
-#define CS_VTH_70mA                 0x07
-#define CS_6323_SYNC                (1 << 3)
+#define RG_CS_VTH(v)                (((v) & 0x0F) << 0)
+#define CS_VTH_1600mA               0x00
+#define CS_VTH_1500mA               0x01
+#define CS_VTH_1400mA               0x02
+#define CS_VTH_1300mA               0x03
+#define CS_VTH_1200mA               0x04
+#define CS_VTH_1100mA               0x05
+#define CS_VTH_1000mA               0x06
+#define CS_VTH_900mA                0x07
+#define CS_VTH_800mA                0x08
+#define CS_VTH_700mA                0x09
+#define CS_VTH_650mA                0x0A
+#define CS_VTH_550mA                0x0B
+#define CS_VTH_450mA                0x0C
+#define CS_VTH_300mA                0x0D
+#define CS_VTH_200mA                0x0E
+#define CS_VTH_70mA                 0x0F
 #define RG_CS_EN                    (1 << 8)
 #define RGS_CS_DET                  (1 << 15)
 //#define CHR_CON3                    (*(volatile uint16_t *)(PMU_base + 0x0A0C))
@@ -432,22 +447,22 @@
 #define STP_DLY1024us               6
 //#define STP_DLY256us                7                                                             // !!!!!!!!!!!!!!!!!
 #define CHR_CON5                    (*(volatile uint16_t *)(PMU_BASE + 0x0A14))
-#define RG_VBAT_OV_EN               (1 << 0)
-#define RG_VBAT_OV_DEG              (1 << 1)
+#define RG_VBAT_OV_EN               (1 << 0)                                                        // Battery over-voltage for driving protection
+#define RG_VBAT_OV_DEG              (1 << 1)                                                        // OV voltage detection deglitch enable
 #define RGS_VBAT_OV_DET             (1 << 3)
 #define RG_VBAT_OV_VTH(v)           (((v) & 0x07) << 4)
-#define OV_VTH_415V                 0
-#define OV_VTH_425V                 1
-#define OV_VTH_435V                 2
-#define OV_VTH_440V                 3
-#define OV_VTH_3825V                4
-#define OV_VTH_425V_0               5
+#define OV_VTH_415V                 0                                                               // 4.15...4.2
+#define OV_VTH_425V                 1                                                               // 4.25...4.3
+#define OV_VTH_435V                 2                                                               // 4.35...4.4
+#define OV_VTH_440V                 3                                                               // 4.4 ...4.45
+#define OV_VTH_3825V                4                                                               // 3.825...3.825
+#define OV_VTH_425V_0               5                                                               // 4.25...4.3
 #define OV_VTH_425V_1               6
 #define OV_VTH_425V_2               7
 #define RG_BATON_EN                 (1 << 8)
 #define RG_BATON_HT_EN              (1 << 9)
-#define RGS_BATON_UNDET             (1 << 10                                                        // ??????????
-#define RG_BATON_TDET_EN            (1 << 12)                                                       // T-pin Li-ION maybe...
+#define RGS_BATON_UNDET             (1 << 10)                                                       // 1 - Not detected
+#define RG_BATON_TDET_EN            (1 << 12)                                                       // Enable BATON Temperature detection
 #define CHR_CON6                    (*(volatile uint16_t *)(PMU_BASE + 0x0A18))                     // ?????????? dcl_mixedsys6260_reg.h
 #define RG_CSDAC_DATA(v)            (((v) & 0x03FF) << 0)                                           // RW????????
 #define CHR_CON7                    (*(volatile uint16_t *)(PMU_BASE + 0x0A1C))                     // ?????????? dcl_mixedsys6260_reg.h
@@ -461,6 +476,15 @@
 #define RG_PCHR_FLAG_SEL(v)         (((v) & 0x3F) << 8)
 #define CHR_CON9                    (*(volatile uint16_t *)(PMU_BASE + 0x0A24))
 #define RG_CHRWDT_TD(v)             (((v) & 0x0F) << 0)
+#define CHRWDT_4SEC                 0x00
+#define CHRWDT_8SEC                 0x01
+#define CHRWDT_16SEC                0x02
+#define CHRWDT_32SEC                0x03
+#define CHRWDT_128SEC               0x04
+#define CHRWDT_256SEC               0x05
+#define CHRWDT_512SEC               0x06
+#define CHRWDT_1024SEC              0x07
+#define CHRWDT_3000SEC              0x08
 #define RG_CHRWDT_DIS               (0 << 4)
 #define RG_CHRWDT_EN                (1 << 4)
 #define RG_CHRWDT_WR                (1 << 5)
@@ -475,8 +499,8 @@
 #define RG_BGR_RSEL(v)              (((v) & 0x07) << 8)                                             // ??????????
 #define RG_BGR_UNCHOP_PH            (1 << 12)                                                       // ??????????
 #define RG_BGR_UNCHOP               (1 << 13)                                                       // ??????????
-#define RG_USBDL_RST                (1 << 14)
-#define RG_USBDL_SET                (1 << 15)
+#define RG_USBDL_RST                (1 << 14)                                                       // Force leave USBDL_MODE
+#define RG_USBDL_SET                (1 << 15)                                                       // Force enter USBDL_MODE
 #define CHR_CON11                   (*(volatile uint16_t *)(PMU_BASE + 0x0A2C))                     // ?????????? dcl_mixedsys6260_reg.h
 //#define RG_BC11_CMP_EN(v)           (((v) & 0x03) << 0)
 #define COMP_EN_ON_DM               (1 << 0)
@@ -501,8 +525,8 @@
 #define RG_CSDAC_MODE               (1 << 2)
 #define RG_TRACKING_EN              (1 << 4)
 #define RG_HWCV_EN                  (1 << 6)
-#define RG_ULC_DET_EN               (1 << 7)
-#define RG_LOW_ICH_DB(v)            (((v) & 0x3F) << 8)                                             // RW????????
+#define RG_ULC_DET_EN               (1 << 7)                                                        // Enables charger plug-out auto detection
+#define RG_LOW_ICH_DB(v)            (((v) & 0x3F) << 8)                                             // Plug out HW detection de-bounce time (base = 16ms)
 #define CHR_CON13                   (*(volatile uint16_t *)(PMU_BASE + 0x0A34))                     // ?????????? dcl_mixedsys6260_reg.h
 #define RG_OVP_TRIM(v)              (((v) & 0x0F) << 0)
 #define CHR_CON14                   (*(volatile uint16_t *)(PMU_BASE + 0x0A38))
@@ -510,7 +534,6 @@
 #define RG_PCHR_RV1(v)              (((v) & 0xFF) << 8)
 #define CHR_CON15                   (*(volatile uint16_t *)(PMU_BASE + 0x0A3C))                     // ?????????? dcl_mixedsys6260_reg.h
 #define RG_DAC_USBDL_MAX(v)         (((v) & 0x3FF) << 0)
-#define RG_AUTO_POWER_ON            (1 << 15)
 
 #define STRUP_CON0                  (*(volatile uint16_t *)(PMU_BASE + 0x0A80))
 #define RG_THR_SEL(v)               (((v) & 0x03) << 0)
@@ -519,7 +542,7 @@
 #define RG_USBDL_EN                 (1 << 4)
 #define QI_PMU_THR_STATUS           (1 << 8)
 #define PMU_THR_PWROFF              (1 << 11)
-#define QI_USB_DL_MODE              (1 << 12)
+#define QI_USBDL_MODE               (1 << 12)
 #define QI_TEST_MODE_POR            (1 << 13)
 #define QI_PWRKEY_VCORE             (1 << 14)
 #define QI_PWRKEY_DEB               (1 << 15)
@@ -759,11 +782,13 @@ typedef enum tag_ICVAL
 #define FQMTR_CON2                  (*(volatile uint16_t *)(PMU_BASE + 0x0FF8))                     // FQMTR_DATA mask 0xFFFF
 #define FQMTR_CON3                  (*(volatile uint16_t *)(PMU_BASE + 0x0FFC))                     // FQMTR_WINSET mask 0xFFFF
 
-extern void PMU_DisablePCHR_WDT(void);
-extern void PMU_EnablePCHR_WDT(uint8_t Interval);
-extern void PMU_EnableUSBDownloaderWDT(void);
-extern void PMU_DisableUSBDownloaderWDT(void);
-extern boolean PMU_IsChargerDetected(void);
+extern void PMU_SetChargerWDTEnabled(boolean Enabled);
+extern void PMU_SetChargerWDTInterval(uint8_t Interval);
+extern boolean PMU_IsChargerConnected(void);
+extern boolean PMU_IsBatteryCharging(void);
+extern void PMU_SetChargingEnable(boolean Enabled);
+extern void PMU_EnterUSBDLMode(void);
+extern void PMU_LeaveUSBDLMode(void);
 extern boolean PMU_IsPowerKeyPressed(void);
 extern void PMU_SetVibrationOutput(boolean Enable);
 extern void PMU_DisableISINKs(void);
@@ -771,5 +796,9 @@ extern void PMU_SetISINKMode(boolean UsePWM);
 extern void PMU_SetISINKOutput(ISINKCHNL Channel, boolean Enable);
 extern void PMU_SetISINKParameters(ISINKCHNL Channel, ICVAL Value, boolean Enable);
 extern void PMU_TurnOnVUSB(boolean Enable);
+extern void PMU_TurnOnVMC(boolean Enable);
+extern boolean PMU_SetVoltageVMC(TVMC Voltage);
+extern TVMC PMU_GetSelectedVoltageVMC(void);
+extern void PMU_Initialize(void);
 
 #endif /* _PMU_H_ */

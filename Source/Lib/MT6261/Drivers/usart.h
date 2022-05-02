@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -89,14 +89,14 @@ typedef enum tag_USART_FLAGS
 
 typedef struct tag_USART_CONTEXT
 {
-    TUSARTREGS        *USART;
-    uint8_t           PD_Code;
-    TUSART_FLAGS      Flags;
-    uint8_t           *USART_RX_Buffer;
-    uint8_t           *USART_TX_Buffer;
-    volatile uint32_t USART_RX_Index;
-    volatile uint32_t USART_TX_Count;
-    volatile uint32_t USART_TX_Index;
+    volatile TUSARTREGS *USART;
+    uint8_t             PD_Code;
+    TUSART_FLAGS        Flags;
+    uint8_t             *USART_RX_Buffer;
+    uint8_t             *USART_TX_Buffer;
+    volatile uint32_t   USART_RX_Index;
+    volatile uint32_t   USART_TX_Count;
+    volatile uint32_t   USART_TX_Index;
 } TUSART_CONTEXT, *pUSART_CONTEXT;
 
 // IER
@@ -228,9 +228,9 @@ typedef struct tag_USART_CONTEXT
 // RXTRI_AD
 #define RXTRIG(v)                   (((v) & 0x0F) << 0)
 
-#define USART1  ((volatile TUSART *) USART1_BASE)
-#define USART2  ((volatile TUSART *) USART2_BASE)
-#define USART3  ((volatile TUSART *) USART3_BASE)
+#define USART1                      ((volatile TUSARTREGS*) USART1_BASE)
+#define USART2                      ((volatile TUSARTREGS*) USART2_BASE)
+#define USART3                      ((volatile TUSARTREGS*) USART3_BASE)
 
 extern int32_t USART_GetPDCode(TUSART Index);
 extern pUSART_CONTEXT USART_GetContext(TUSART Index);

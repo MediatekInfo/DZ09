@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -34,6 +34,8 @@
 #define MIXED_BASE                  0xA0170000                                                      // Analog Chip Interface Controller (PLL, CLKSQ, FH, CLKSW and SIMLS)
 #define PLL_BASE                    MIXED_BASE
 #define TOPSM_BASE                  0xA0180000                                                      // TOPSM0
+#define MSDC0_BASE                  0xA0130000                                                      // MSDC0
+#define MSDC1_BASE                  0xA0270000                                                      // MSDC1
 #define PWM4_BASE                   0xA0280000                                                      // Pulse-Width Modulation Outputs
 #define LCDIF_BASE                  0xA0450000                                                      // LCD controller
 //#define ARM_CONFG_BASE              0xA0500000
@@ -82,5 +84,6 @@
 #include "drivers\pwm.h"
 #include "drivers\usb.h"
 #include "drivers\che.h"
+#include "drivers\msdc.h"
 
 #endif /* _MT6261_H_ */

@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -16,18 +16,9 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-#ifndef _SYSTYPES_H_
-#define _SYSTYPES_H_
+#ifndef _SDCARD_H_
+#define _SDCARD_H_
 
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
+extern boolean SD_Initialize(TMSDC Index);
 
-#define __ramfunc                   __attribute__((section(".ramfunc")))
-
-typedef enum {false = 0, true = !false}     boolean;
-typedef volatile uint8_t __attribute__((aligned(4))) uint8x32_t;
-typedef volatile uint16_t __attribute__((aligned(4))) uint16x32_t;
-typedef void* pHANDLE;
-
-#endif /* _SYSTYPES_H_ */
+#endif /* _SDCARD_H_ */

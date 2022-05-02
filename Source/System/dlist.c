@@ -198,7 +198,8 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
                 free(tmpItemToFree);
             }
         }
-        free(DList);
+        if (IsDynamicMemory(DList)) free(DList);
+        else __secure_memset(DList, 0x00, sizeof(TDLIST));
 
         __restore_interrupts(intflags);
     }
@@ -475,7 +476,6 @@ pDLITEM DL_InsertItemBefore(pDLIST DList, pDLITEM Item, void *Data)
 
 boolean DL_InsertItemBeforePtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
 {
-    pDLITEM  tmpItem;
     uint32_t intflags;
 
     if (DList == NULL) return false;
@@ -527,7 +527,6 @@ pDLITEM DL_InsertItemAfter(pDLIST DList, pDLITEM Item, void *Data)
 
 boolean DL_InsertItemAfterPtr(pDLIST DList, pDLITEM BaseItem, pDLITEM ItemToInsert)
 {
-    pDLITEM  tmpItem;
     uint32_t intflags;
 
     if (DList == NULL) return false;
@@ -685,56 +684,55 @@ boolean DL_DeleteLastItem(pDLIST DList)
     return Result;
 }
 
-boolean DL_MoveItemToIndex(pDLIST DList, uint32_t OldIndex, uint32_t NewIndex)
+boolean DL_MoveItemToIndex(pDLIST DList, uint32_t Index, pDLITEM Item)
 {
     boolean  Result = false;
-    uint32_t intflags;
-    pDLITEM  OldIndexItem, NewIndexItem;
+    uint32_t intflags = __disable_interrupts();
+    int32_t  OldIndex = DL_IndexOfItem(DList, Item);
 
-    if (OldIndex != NewIndex)
+    if (OldIndex != -1)
     {
-        intflags = __disable_interrupts();
-        OldIndexItem = DL_ItemByIndex(DList, OldIndex);
-        if (OldIndexItem != NULL)
+        if (OldIndex != Index)
         {
-            NewIndexItem = DL_ItemByIndex(DList, NewIndex);
+            pDLITEM NewIndexItem = DL_ItemByIndex(DList, Index);
+
             if (NewIndexItem != NULL)
             {
                 /* Remove item from old place */
-                if (OldIndexItem->Prev != NULL)
-                    OldIndexItem->Prev->Next = OldIndexItem->Next;
-                else DList->First = OldIndexItem->Next;
+                if (Item->Prev != NULL)
+                    Item->Prev->Next = Item->Next;
+                else DList->First = Item->Next;
 
-                if (OldIndexItem->Next != NULL)
-                    OldIndexItem->Next->Prev = OldIndexItem->Prev;
-                else DList->Last = OldIndexItem->Prev;
+                if (Item->Next != NULL)
+                    Item->Next->Prev = Item->Prev;
+                else DList->Last = Item->Prev;
 
                 /* Insert item to new place */
-                if (NewIndex < OldIndex)
+                if (Index < OldIndex)
                 {
                     if (NewIndexItem->Prev != NULL)
-                        NewIndexItem->Prev->Next = OldIndexItem;
-                    else DList->First = OldIndexItem;
+                        NewIndexItem->Prev->Next = Item;
+                    else DList->First = Item;
 
-                    OldIndexItem->Prev = NewIndexItem->Prev;
-                    OldIndexItem->Next = NewIndexItem;
-                    NewIndexItem->Prev = OldIndexItem;
+                    Item->Prev = NewIndexItem->Prev;
+                    Item->Next = NewIndexItem;
+                    NewIndexItem->Prev = Item;
                 }
                 else
                 {
                     if (NewIndexItem->Next != NULL)
-                        NewIndexItem->Next->Prev = OldIndexItem;
-                    else DList->Last = OldIndexItem;
+                        NewIndexItem->Next->Prev = Item;
+                    else DList->Last = Item;
 
-                    OldIndexItem->Prev = NewIndexItem;
-                    OldIndexItem->Next = NewIndexItem->Next;
-                    NewIndexItem->Next = OldIndexItem;
+                    Item->Prev = NewIndexItem;
+                    Item->Next = NewIndexItem->Next;
+                    NewIndexItem->Next = Item;
                 }
             }
         }
-        __restore_interrupts(intflags);
+        Result = true;
     }
-    else return true;
+    __restore_interrupts(intflags);
 
     return Result;
 }

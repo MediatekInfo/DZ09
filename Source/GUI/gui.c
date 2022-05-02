@@ -224,7 +224,6 @@ void GUI_SetLockState(boolean Locked)
 
 boolean GUI_Initialize(void)
 {
-    uint32_t i;
     boolean  Result;
 
     DebugPrint("GUI subsystem initialization:\r\n");
@@ -293,7 +292,6 @@ void GUI_OnPaintHandler(pPAINTEV Event)
             if ((UpdateRgn != NULL) && (SeedRect != NULL) &&
                     DL_AddItemPtr(UpdateRgn, &SeedRect->ListHeader))
             {
-                pDLITEM    tmpDLItem;
                 pGUIOBJECT tmpObject;
 
                 SeedRect->Rct = Event->UpdateRect;

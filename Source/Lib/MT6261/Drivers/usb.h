@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2022 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -187,13 +187,16 @@ typedef enum tag_USBSTATE
 #define USB_U1PHYCR2                (*(volatile uint32_t *)(USB_SIFSLV_BASE + 0x08C8))               // USB1.1 PHY Control Registers
 
 extern TEPSTATE  EPState[USB_EPNUM];
-extern TUSBSTATE USBDeviceState;
 
 extern void USB_Initialize(void);
 extern void USB_EnableDevice(void);
 extern void USB_DisableDevice(void);
+extern void USB_OnCableDisconnect(void);
 extern void USB_SetDeviceAddress(uint8_t Address);
+extern void USB_SetDeviceState(TUSBSTATE State);
+extern TUSBSTATE USB_GetDeviceState(void);
 extern boolean USB_IsDeviceActive(void);
+extern void USB_SetOnStateChangeHandler(void (*Handler)(boolean Active));
 extern boolean USB_SetupEndpoint(TEP Endpoint, void (*Handler)(uint8_t), uint8_t MaxPacketSize);
 extern boolean USB_SetEndpointEnabled(TEP Endpoint, boolean Enabled);
 extern uint32_t USB_GetOUTDataLength(TEP Endpoint);

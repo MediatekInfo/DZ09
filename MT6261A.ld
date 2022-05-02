@@ -147,7 +147,8 @@ SECTIONS
 		PROVIDE_HIDDEN (__fini_array_end = .);
 
 		. = ALIGN(4);
-		/* All data end */
+		/* Place RAM functions here */
+		KEEP(*(.ramfunc*))
 		__data_end__ = .;
 
 	} > RAM
@@ -199,6 +200,8 @@ SECTIONS
 
 	__ROMImageBase = ORIGIN(ROM);
 	__ROMImageLimit = __etext + __data_end__ - __data_start__;
+	__ROMBase = ORIGIN(ROM) & 0xF0000000;
+	__ROMLimit = ORIGIN(ROM) + LENGTH(ROM) - 1;
 
 	/* Set stack top to end of RAM, and stack limit move down by
 	 * size of stack_dummy section */

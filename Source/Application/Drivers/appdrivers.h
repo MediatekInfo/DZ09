@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -106,5 +106,28 @@
 #if !defined(_USB_DRIVER_ASSIGNED_)
 #error USB interface driver not assigned!
 #endif
+
+/* SD card interface driver */
+#if defined(_SD_DRIVER_ASSIGNED_)
+#undefine _SD_DRIVER_ASSIGNED_
+#endif
+#if defined(_SD_CARD_DRIVER_)
+#include "sdcard.h"
+#define SD_CardInitialize(Interface)        SD_Initialize(Interface)
+#define _SD_DRIVER_ASSIGNED_
+#endif
+#if defined(_NO_SD_CARD_DRIVER_)
+#if defined(_SD_DRIVER_ASSIGNED_)
+#error Duplicate SD card driver definition!
+#else
+#define SD_CardInitialize(Interface)        false
+#define _SD_DRIVER_ASSIGNED_
+#endif
+#endif
+#if !defined(_SD_DRIVER_ASSIGNED_)
+#error SD card interface driver not assigned!
+#endif
+
+#include "dflib.h"
 
 #endif /* _APPDRIVERS_H_ */

@@ -31,5 +31,7 @@
 #include "sw_i2c.h"
 #include "ringbuf.h"
 #include "crc.h"
+#include "fscache.h"
+#include "sf.h"
 
 #endif /* _SYSTEMLIB_H_ */

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -189,6 +189,28 @@ static void NVIC_SetEINTSenseLevel(uint32_t SourceIdx)
     }
 }
 
+static void NVIC_SetEINTPolarity(uint32_t SourceIdx, uint8_t Polarity)
+{
+    if (Polarity)
+    {
+        if      (SourceIdx < NUM_EINT_SOURCES) EINT_CON(SourceIdx) |= EINT_POLH;
+        else if (SourceIdx < GLB_EINT_SOURCES)
+        {
+            SourceIdx -= NUM_EINT_SOURCES;
+            ADIE_EINT_CON(SourceIdx) |= ADIE_EINT_POLH;
+        }
+    }
+    else
+    {
+        if      (SourceIdx < NUM_EINT_SOURCES) EINT_CON(SourceIdx) &= ~EINT_POLH;
+        else if (SourceIdx < GLB_EINT_SOURCES)
+        {
+            SourceIdx -= NUM_EINT_SOURCES;
+            ADIE_EINT_CON(SourceIdx) &= ~ADIE_EINT_POLH;
+        }
+    }
+}
+
 static void NVIC_EnableEINT_D0Event2(uint32_t SourceIdx)
 {
     if      (SourceIdx < NUM_EINT_SOURCES) EINT_D0EN |= (1 << SourceIdx);
@@ -220,7 +242,8 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
         EINT_CON(SourceIdx) = Debounce & ~EINT_DEBEN;                                               // 2. Disable debounce
         USC_Pause_us(50);                                                                           // 3. Delay at least 5 32K cycles
         EINT_CON(SourceIdx) = Debounce;                                                             // 4. Enable the debounce (EN = 1) and change the debounce setting
-        if (!Masked) NVIC_UnmaskEINT2(SourceIdx);                                                   // 5. Unmask EINT
+        NVIC_SetEINT_EOI(SourceIdx);                                                                // 5. Ack spurious interrupt
+        if (!Masked) NVIC_UnmaskEINT2(SourceIdx);                                                   // 6. Unmask EINT
     }
     else if (SourceIdx < GLB_EINT_SOURCES)
     {
@@ -399,7 +422,8 @@ boolean NVIC_UnregisterIRQ(uint32_t SourceIdx)
     return false;
 }
 
-boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense, uint16_t Debounce, boolean Enable)
+boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense,
+                          uint8_t Polarity,uint16_t Debounce, boolean Enable)
 {
     uint32_t intflags;
 
@@ -417,6 +441,7 @@ boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sen
         EINTHandlers[SourceIdx].Handler = Handler;
         if (Sense == EINT_SENS_EDGE) NVIC_SetEINTSenseEdge(SourceIdx);
         else NVIC_SetEINTSenseLevel(SourceIdx);
+        NVIC_SetEINTPolarity(SourceIdx, !!Polarity);
         NVIC_SetEINTDebounce(SourceIdx, Debounce);
 
         (Enable) ? NVIC_EnableEINT_D0Event2(SourceIdx) : NVIC_DisableEINT_D0Event2(SourceIdx);
@@ -438,9 +463,10 @@ boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sen
         intflags = __disable_interrupts();
         AEINTHandlers[SourceIdx - NUM_EINT_SOURCES].Handler = Handler;
 
-        if (Sense == EINT_SENS_EDGE) NVIC_SetEINTSenseEdge(SourceIdx);
+        if (Sense == ADIE_EINT_SENS_EDGE) NVIC_SetEINTSenseEdge(SourceIdx);
         else NVIC_SetEINTSenseLevel(SourceIdx);
         NVIC_SetEINTDebounce(SourceIdx, Debounce);
+        NVIC_SetEINTPolarity(SourceIdx, !!Polarity);
         ADIE_EINT_DBCRST = (1 << (SourceIdx - NUM_EINT_SOURCES));
 
         (Enable) ? NVIC_EnableEINT_D0Event2(SourceIdx) : NVIC_DisableEINT_D0Event2(SourceIdx);

@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -205,6 +205,9 @@
 #define EINT_PS256                  7                                                               // 8s
 #define EINT_DEBEN                  (1 << 15)
 
+#define EINT_POLLOW                 0
+#define EINT_POLHIGH                1
+
 // EINT Interrupt Sources
 #define EINT00                      0x00
 #define EINT01                      0x01
@@ -246,7 +249,8 @@ typedef struct tag_EINTHHANDLER
 extern void    NVIC_Initialize(void);
 extern boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense, boolean Enable);
 extern boolean NVIC_UnregisterIRQ(uint32_t SourceIdx);
-extern boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense, uint16_t Debounce, boolean Enable);
+boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense,
+                          uint8_t Polarity,uint16_t Debounce, boolean Enable);
 extern boolean NVIC_UnregisterEINT(uint32_t SourceIdx);
 extern boolean NVIC_EnableEINT(uint32_t SourceIdx);
 extern boolean NVIC_DisableEINT(uint32_t SourceIdx);

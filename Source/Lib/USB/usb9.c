@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -177,7 +177,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         Error = USB9_SetFeature(Setup);
         break;
     case USB_SET_CONFIGURATION:
-        if (USBDeviceState < USB_DEVICE_ADDRESSED) Error = true;
+        if (USB_GetDeviceState() < USB_DEVICE_ADDRESSED) Error = true;
         else
         {
             uint8_t ConfigIndex = Setup->wValue;
@@ -186,12 +186,12 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
             else
             {
                 DevInterface->SetConfiguration(ConfigIndex);
-                USBDeviceState = (ConfigIndex) ? USB_DEVICE_CONFIGURED : USB_DEVICE_ADDRESSED;
+                USB_SetDeviceState((ConfigIndex) ? USB_DEVICE_CONFIGURED : USB_DEVICE_ADDRESSED);
             }
         }
         break;
     case USB_GET_INTERFACE:
-        if ((USBDeviceState < USB_DEVICE_CONFIGURED) ||
+        if ((USB_GetDeviceState() < USB_DEVICE_CONFIGURED) ||
                 (DevInterface->GetAltInterface == NULL)) Error = true;
         else
         {
@@ -202,7 +202,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
         }
         break;
     case USB_SET_INTERFACE:
-        if ((USBDeviceState < USB_DEVICE_CONFIGURED) ||
+        if ((USB_GetDeviceState() < USB_DEVICE_CONFIGURED) ||
                 (DevInterface->SetAltInterface == NULL)) Error = true;
         else Error = !DevInterface->SetAltInterface(Setup->wIndex, Setup->wValue);
         break;

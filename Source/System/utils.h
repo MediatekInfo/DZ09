@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -31,10 +31,17 @@
                         (_a < _b) ? _a : _b;\
                     })
 
+#define swab32(x)   ((uint32_t)(\
+                    (((uint32_t)(x) & (uint32_t)0x000000ffUL) << 24) |\
+                    (((uint32_t)(x) & (uint32_t)0x0000ff00UL) <<  8) |\
+                    (((uint32_t)(x) & (uint32_t)0x00ff0000UL) >>  8) |\
+                    (((uint32_t)(x) & (uint32_t)0xff000000UL) >> 24)))
+
 extern uint32_t __enable_interrupts(void);                                                          // From asmutils.s
 extern uint32_t __disable_interrupts(void);                                                         // From asmutils.s
 extern void __restore_interrupts(uint32_t flags);                                                   // From asmutils.s
 extern uint32_t __ctz(uint32_t Value);                                                              // From asmutils.s
+extern uint32_t __clz(uint32_t Value);                                                              // From asmutils.s
 extern uint32_t __get_cpu_freq_ticks(void);                                                         // from asmutils.s
 extern void *__secure_memset(void *memptr, int val, size_t num);                                    // from asmutils.s
 extern boolean __is_in_isr_mode(void);                                                              // from asmutils.s

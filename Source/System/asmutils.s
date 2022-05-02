@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -95,14 +95,42 @@ __ctz:
     .endfunc
 
 __ctz_hash_table:
-    .byte   0x20, 0x00, 0x01, 0x0c, 0x02, 0x06, 0xff, 0x0d
-    .byte   0x03, 0xff, 0x07, 0xff, 0xff, 0xff, 0xff, 0x0e
-    .byte   0x0a, 0x04, 0xff, 0xff, 0x08, 0xff, 0xff, 0x19
-    .byte   0xff, 0xff, 0xff, 0xff, 0xff, 0x15, 0x1b, 0x0f
-    .byte   0x1f, 0x0b, 0x05, 0xff, 0xff, 0xff, 0xff, 0xff
-    .byte   0x09, 0xff, 0xff, 0x18, 0xff, 0xff, 0x14, 0x1a
-    .byte   0x1e, 0xff, 0xff, 0xff, 0xff, 0x17, 0xff, 0x13
-    .byte   0x1d, 0xff, 0x16, 0x12, 0x1c, 0x11, 0x10
+    .byte   0X20, 0X00, 0X01, 0X0C, 0X02, 0X06, 0XFF, 0X0D
+    .byte   0X03, 0XFF, 0X07, 0XFF, 0XFF, 0XFF, 0XFF, 0X0E
+    .byte   0X0A, 0X04, 0XFF, 0XFF, 0X08, 0XFF, 0XFF, 0X19
+    .byte   0XFF, 0XFF, 0XFF, 0XFF, 0XFF, 0X15, 0X1B, 0X0F
+    .byte   0X1F, 0X0B, 0X05, 0XFF, 0XFF, 0XFF, 0XFF, 0XFF
+    .byte   0X09, 0XFF, 0XFF, 0X18, 0XFF, 0XFF, 0X14, 0X1A
+    .byte   0X1E, 0XFF, 0XFF, 0XFF, 0XFF, 0X17, 0XFF, 0X13
+    .byte   0X1D, 0XFF, 0X16, 0X12, 0X1C, 0X11, 0X10
+///////////////////////////////////////////////////////////////////////////////////////////////////
+    .globl  __clz
+    .type   __clz, %function
+    .func   __clz
+__clz:
+    stmfd   sp!,{r1, r2, lr}                                                                        // uint32_t __clz(uint32_t Value);
+    orr     r1, r0, r0, LSR#1
+    orr     r1, r1, r1, LSR#2
+    orr     r1, r1, r1, LSR#4
+    orr     r1, r1, r1, LSR#8
+    bic     r1, r1, r1, LSR#16
+    rsb     r1, r1, r1, LSL#9
+    rsb     r1, r1, r1, LSL#11
+    rsb     r1, r1, r1, LSL#14
+    adr     r2, __clz_hash_table
+    ldrb    r0, [r2, r1, LSR#26]
+    ldmfd   sp!,{r1, r2, pc}
+    .endfunc
+
+__clz_hash_table:
+    .byte   0X20, 0X14, 0X13, 0XFF, 0XFF, 0X12, 0XFF, 0X07
+    .byte   0X0A, 0X11, 0XFF, 0XFF, 0X0E, 0XFF, 0X06, 0XFF
+    .byte   0XFF, 0X09, 0XFF, 0X10, 0XFF, 0XFF, 0X01, 0X1A
+    .byte   0XFF, 0X0D, 0XFF, 0XFF, 0X18, 0X05, 0XFF, 0XFF
+    .byte   0XFF, 0X15, 0XFF, 0X08, 0X0B, 0XFF, 0X0F, 0XFF
+    .byte   0XFF, 0XFF, 0XFF, 0X02, 0X1B, 0X00, 0X19, 0XFF
+    .byte   0X16, 0XFF, 0X0C, 0XFF, 0XFF, 0X03, 0X1C, 0XFF
+    .byte   0X17, 0XFF, 0X04, 0X1D, 0XFF, 0XFF, 0X1E, 0X1F
 ///////////////////////////////////////////////////////////////////////////////////////////////////
     .align  2
     .globl  __get_cpu_freq_ticks
@@ -112,7 +140,7 @@ __get_cpu_freq_ticks:
     stmfd   sp!,{r1, lr}                                                                            // uint32_t __get_cpu_freq_ticks(void);
 
     ldr     r1, __freq_loops
-    bl      __cpu_freq_loop                                                                             // Fake call for cache filling
+    bl      __cpu_freq_loop                                                                         // Fake call for cache filling
 
     ldr     r1, __freq_loops
     bl      USC_GetCurrentTicks                                                                     // r0 = Ticks
@@ -145,10 +173,10 @@ __secure_memset:
 	mov	    r3, r0
 	add	    r2, r0, r2
 	bl      __disable_interrupts
-__loop_secmem_set:
+__loop_sec_memset:
 	cmp	    r3, r2
 	strbne	r1, [r3], #1
-	bne	    __loop_secmem_set
+	bne	    __loop_sec_memset
 	bl      __restore_interrupts
 	ldmfd   sp!, {r0, r3, pc}
     .endfunc

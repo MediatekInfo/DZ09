@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,8 +18,6 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 */
-// TODO (scorp#1#): 1. Currently, the driver cannot detect the USB cable disconnection. It will be fixed when handling events from the charger.
-
 #include "systemconfig.h"
 #include "usb9.h"
 #include "usb.h"
@@ -35,8 +33,9 @@ const uint8_t EPFIFOSize[USB_EPNUM] =
     USB_EP2_FIFOSIZE
 };
 
+void             (*USB_OnDeviceActive)(boolean Active);
 TEPSTATE         EPState[USB_EPNUM];
-TUSBSTATE        USBDeviceState;
+static TUSBSTATE USBDeviceState;
 static TUSBSETUP SetupBuffer;
 
 static void USB_EPFIFORead(TEP Endpoint, uint32_t Count, void *Data)
@@ -101,7 +100,7 @@ static void USB_ResetDevice(void)
     USB_INTROUTE = 0;
     USB_INTRUSBE = UISUSP | UIRESUME | UIRESET;
 
-    USBDeviceState = USB_DEVICE_IDLE;
+    USB_SetDeviceState(USB_DEVICE_IDLE);
 
     memset(EPState, 0x00, sizeof(EPState));
 
@@ -230,7 +229,7 @@ void USB_EnableDevice(void)
         USC_Pause_us(10);
         /* Set up D+ pull up resistor */
         USB_PHY_CONTROL = UPHY_CONTROL_PUDP;
-        USBDeviceState = USB_DEVICE_IDLE;
+        USB_SetDeviceState(USB_DEVICE_IDLE);
         /* Enable USB interrupts */
         NVIC_EnableIRQ(IRQ_USB_CODE);
         DebugPrint("USB device enabled.\r\n");
@@ -246,7 +245,7 @@ void USB_DisableDevice(void)
         NVIC_DisableIRQ(IRQ_USB_CODE);
 
         /* Disable interface */
-        USBDeviceState = USB_DEVICE_OFF;
+        USB_SetDeviceState(USB_DEVICE_OFF);
         USB9_InterfaceInitialize();
 
         /* Release D+ pull up resistor */
@@ -264,15 +263,48 @@ void USB_DisableDevice(void)
     }
 }
 
+void USB_OnCableDisconnect(void)
+{
+#if !defined(_NO_USB_DRIVER_)
+    if (USB_IsDeviceActive()) USB_ResetDevice();
+#endif
+}
+
 void USB_SetDeviceAddress(uint8_t Address)
 {
     USB_FADDR = Address;
-    USBDeviceState = USB_DEVICE_ADDRESSED;
+    USB_SetDeviceState(USB_DEVICE_ADDRESSED);
+}
+
+void USB_SetDeviceState(TUSBSTATE State)
+{
+    if (USBDeviceState != State)
+    {
+        boolean PrevActive = USB_IsDeviceActive();
+        boolean NowActive;
+
+        USBDeviceState = State;
+        NowActive = USB_IsDeviceActive();
+        if ((USB_OnDeviceActive != NULL) && (PrevActive != NowActive))
+            USB_OnDeviceActive(NowActive);
+    }
+}
+
+TUSBSTATE USB_GetDeviceState(void)
+{
+    return USBDeviceState;
 }
 
 boolean USB_IsDeviceActive(void)
 {
     return (USBDeviceState == USB_DEVICE_CONFIGURED);
+}
+
+void USB_SetOnStateChangeHandler(void (*Handler)(boolean Active))
+{
+#if !defined(_NO_USB_DRIVER_)
+    USB_OnDeviceActive = Handler;
+#endif
 }
 
 boolean USB_SetupEndpoint(TEP Endpoint, void (*Handler)(uint8_t), uint8_t MaxPacketSize)

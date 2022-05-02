@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -26,10 +26,13 @@ void Init(void)
 {
     DBG_Initialize();                                                                               // Setup debug interface
     DebugPrint("\r\n--System initialization--\r\n");
-    PMU_DisableUSBDownloaderWDT();
     MPU_Initialize();                                                                               // Setup system cache
     PCTL_Initialize();                                                                              // Power down peripherals by default
     GPIO_Initialize();                                                                              // Set GPIO to default state
+
+    DebugPrint("Initialize serial flash interface:\r\n");
+    SF_Initialize();
+
     DebugPrint("Initialize real time clock...");
     RTC_Initialize();
 
@@ -52,6 +55,10 @@ void Init(void)
 
     DebugPrint("Initialize low resolution timers pool...");
     DebugPrint((LRT_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
+
+    DebugPrint("Power management initialization");
+    PMU_Initialize();
+
 //
 //
 ////////////////////////////////////////////////////////////
@@ -61,6 +68,8 @@ void Init(void)
 //    PMU_SetISINKParameters(ISINK_CH0, IC_8mA, true);
 ////////////////////////////////////////////////////////////
 //
+//    PMU_SetChargingEnable(true);
+
     __enable_interrupts();
     APP_Initialize();
 

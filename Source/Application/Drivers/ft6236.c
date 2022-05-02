@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -115,7 +115,7 @@ void FT6236_ISR(void)
 
 boolean FT6236_RegisterISR(void)
 {
-    return NVIC_RegisterEINT(CPT_INT_NUM, FT6236_ISR, EINT_SENS_EDGE, EINT_POLL, false);
+    return NVIC_RegisterEINT(CPT_INT_NUM, FT6236_ISR, EINT_SENS_EDGE, EINT_POLL, 0, false);
 }
 
 boolean FT6236_UnregisterISR(void)

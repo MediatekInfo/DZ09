@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2020 AJScorp
+* Copyright (C) 2022 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -65,75 +65,76 @@ _USB_STRING_(sd02_cdc, u"USB-Serial Controller D");
 
 static const pUSB_STR_DESCR STR_DATA_CDC[] =
 {
-    (const pUSB_STR_DESCR)&sd00_cdc,
-    (const pUSB_STR_DESCR)&sd01_cdc,
-    (const pUSB_STR_DESCR)&sd02_cdc
+    (void *)&sd00_cdc,
+    (void *)&sd01_cdc,
+    (void *)&sd02_cdc
 };
 
-static const uint8_t DEV_DESC_CDC[] =
+static const TUSB_DEV_DESCR DEV_DESC_CDC =
 {
     DEV_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_DEVICE,                                                                                     // DEVICE Descriptor
-    0x10, 0x01,                                                                                     // USB version 1.1
+    0x0110,                                                                                         // USB version 1.1
     0x00,                                                                                           // Device Class Code
     0x00,                                                                                           // Device Subclass Code
     0x00,                                                                                           // Protocol Code
     USB_EP0_FIFOSIZE,                                                                               // EP0 packet max size
-    0x7B, 0x06,                                                                                     // Vendor ID
-    0x03, 0x23,                                                                                     // Product ID
-    0x00, 0x04,                                                                                     // Revision ID in BCD
+    0x067B,                                                                                         // Vendor ID
+    0x2303,                                                                                         // Product ID
+    0x0400,                                                                                         // Revision ID in BCD
     0x01,                                                                                           // Index of string descriptor describing manufacturer
     0x02,                                                                                           // Index of Product description string in String Descriptor
     0x00,                                                                                           // Index of string descriptor describing the device's serial number
     0x01                                                                                            // Number of possible configurations
 };
 
-static const uint8_t CFG_DESC_CDC[] =
+static const TUSB_CFG_DESCR CFG_DESC_CDC =
 {
     CFG_LENGTH,                                                                                     // Size of this descriptor in bytes
     USB_CONFIG,                                                                                     // CONFIGURATION Descriptor
-    0x27, 0x00,                                                                                     // Total size of descriptor, including Interface and Endpoint descriptors
+    0x0027,                                                                                         // Total size of descriptor, including Interface and Endpoint descriptors
     0x01,                                                                                           // Number of interfaces supported by this configuration
     0x01,                                                                                           // Index of configuration
     0x00,                                                                                           // Index of string descriptor describing this configuration
     0x80,                                                                                           // Powered from USB
     0x64,                                                                                           // Max power consumption 200 mA
-
+    {
 // CDC control interface
-    /*Interface Descriptor */
-    INT_LENGTH,                                                                                     // Size of this descriptor in bytes
-    USB_INTERFACE,                                                                                  // INTERFACE Descriptor
-    CDC_CTL_INTERFACE_INDEX,                                                                        // Index of interface in this Configuration
-    0x00,                                                                                           // Alternative interface ('0' - None)
-    0x03,                                                                                           // Number of endpoints, used by this interface
-    0xFF,                                                                                           // Class Code: Vendor specific (?)
-    0x00,                                                                                           // Subclass Code: Reserved (?)
-    0x00,                                                                                           // Protocol Code: No class specific protocol required
-    0x00,                                                                                           // Index of string descriptor describing this interface
+        /*Interface Descriptor */
+        INT_LENGTH,                                                                                 // Size of this descriptor in bytes
+        USB_INTERFACE,                                                                              // INTERFACE Descriptor
+        CDC_CTL_INTERFACE_INDEX,                                                                    // Index of interface in this Configuration
+        0x00,                                                                                       // Alternative interface ('0' - None)
+        0x03,                                                                                       // Number of endpoints, used by this interface
+        0xFF,                                                                                       // Class Code: Vendor specific (?)
+        0x00,                                                                                       // Subclass Code: Reserved (?)
+        0x00,                                                                                       // Protocol Code: No class specific protocol required
+        0x00,                                                                                       // Index of string descriptor describing this interface
 
-    // Pipe 1 (endpoint 1)
-    END_LENGTH,                                                                                     // Size of this descriptor in bytes
-    USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    USB_EPENUM2INDEX(USB_CDC_CONTROL_EP) | USB_DIR_IN,                                              // IN Endpoint with address 0x03
-    USB_EPTYPE_INTR,                                                                                // Data transfer type - Interrupt
-    USB_CDC_EPCTL_MAXP, 0x00,                                                                       // Max packet size = 16
-    0x01,                                                                                           // Endpoint polling interval - 1 ms
+        // Pipe 1 (endpoint 1)
+        END_LENGTH,                                                                                 // Size of this descriptor in bytes
+        USB_ENDPOINT,                                                                               // ENDPOINT Descriptor
+        USB_EPENUM2INDEX(USB_CDC_CONTROL_EP) | USB_DIR_IN,                                          // IN Endpoint with address 0x03
+        USB_EPTYPE_INTR,                                                                            // Data transfer type - Interrupt
+        USB_CDC_EPCTL_MAXP, 0x00,                                                                   // Max packet size = 16
+        0x01,                                                                                       // Endpoint polling interval - 1 ms
 
-    // Pipe 2 (endpoint 2)
-    END_LENGTH,                                                                                     // Size of this descriptor in bytes
-    USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    USB_EPENUM2INDEX(USB_CDC_DATAIN_EP) | USB_DIR_IN,                                               // IN Endpoint with address 0x01
-    USB_EPTYPE_BULK,                                                                                // Data transfer Type - Bulk
-    USB_CDC_EPDEV_MAXP, 0x00,                                                                       // Max packet size = 64
-    0x00,                                                                                           // '0' - endpoint never NAKs
+        // Pipe 2 (endpoint 2)
+        END_LENGTH,                                                                                 // Size of this descriptor in bytes
+        USB_ENDPOINT,                                                                               // ENDPOINT Descriptor
+        USB_EPENUM2INDEX(USB_CDC_DATAIN_EP) | USB_DIR_IN,                                           // IN Endpoint with address 0x01
+        USB_EPTYPE_BULK,                                                                            // Data transfer Type - Bulk
+        USB_CDC_EPDEV_MAXP, 0x00,                                                                   // Max packet size = 64
+        0x00,                                                                                       // '0' - endpoint never NAKs
 
-    // Pipe 2 (endpoint 3)
-    END_LENGTH,                                                                                     // Size of this descriptor in bytes
-    USB_ENDPOINT,                                                                                   // ENDPOINT Descriptor
-    USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT,                                             // OUT Endpoint with address 0x02 //-V501
-    USB_EPTYPE_BULK,                                                                                // Data transfer Type - Bulk
-    USB_CDC_EPDEV_MAXP, 0x00,                                                                       // Max packet size = 64
-    0x00                                                                                            // '0' - endpoint never NAKs
+        // Pipe 2 (endpoint 3)
+        END_LENGTH,                                                                                 // Size of this descriptor in bytes
+        USB_ENDPOINT,                                                                               // ENDPOINT Descriptor
+        USB_EPENUM2INDEX(USB_CDC_DATAOUT_EP) | USB_DIR_OUT,                                         // OUT Endpoint with address 0x02 //-V501
+        USB_EPTYPE_BULK,                                                                            // Data transfer Type - Bulk
+        USB_CDC_EPDEV_MAXP, 0x00,                                                                   // Max packet size = 64
+        0x00                                                                                        // '0' - endpoint never NAKs
+    }
 };
 
 static const CDC_VENDOR_REQ VReq[] =
@@ -350,10 +351,10 @@ static void USB_CDC_DataHandler(uint8_t EPAddress)
         USB_DataReceive(USB_CDC_DATAOUT_EP);
         if (USB_CDC_Connected)
         {
-            if (ReceivedCount = USB_GetDataAmount(USB_CDC_DATAOUT_EP))
+            if ((ReceivedCount = USB_GetDataAmount(USB_CDC_DATAOUT_EP)) != 0)
                 RB_WriteData(CDC_OUTRingBuffer, CDC_OUTBuffer, ReceivedCount);
 
-            if ((ReceivedCount = RB_GetCurrentDataCount(CDC_OUTRingBuffer)) &&
+            if (((ReceivedCount = RB_GetCurrentDataCount(CDC_OUTRingBuffer)) != 0) &&
                     (IntEventerInfo->OnDataReceived != NULL))
                 IntEventerInfo->OnDataReceived(ReceivedCount);
         }
@@ -369,7 +370,7 @@ void *USB_CDC_Initialize(void)
     USB_CDC_ConnectHandler(false);
     memset(&USB_CDC_Interface, 0x00, sizeof(TUSBDRIVERINTERFACE));
 
-    if (USBDeviceState == USB_DEVICE_OFF)
+    if (USB_GetDeviceState() == USB_DEVICE_OFF)
     {
         LRT_Destroy(CDC_TimeoutTimer);
         return NULL;
@@ -379,8 +380,8 @@ void *USB_CDC_Initialize(void)
         CDC_TimeoutTimer = LRT_Create(CDC_TRANSMITTIMEOUT, USB_CDC_TXTimeoutHandler, TF_DIRECT);
     if (CDC_TimeoutTimer == NULL) return NULL;
 
-    USB_CDC_Interface.DeviceDescriptor = (pUSB_DEV_DESCR)DEV_DESC_CDC;
-    USB_CDC_Interface.ConfigDescriptor = (pUSB_CFG_DESCR)CFG_DESC_CDC;
+    USB_CDC_Interface.DeviceDescriptor = (pUSB_DEV_DESCR)&DEV_DESC_CDC;
+    USB_CDC_Interface.ConfigDescriptor = (pUSB_CFG_DESCR)&CFG_DESC_CDC;
     USB_CDC_Interface.GetStringDescriptor = USB_CDC_GetStringDescriptor;
     USB_CDC_Interface.ConfigIndex = &CDC_DeviceConfig;
     USB_CDC_Interface.SetConfiguration = USB_CDC_SetConfiguration;
