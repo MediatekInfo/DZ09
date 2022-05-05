@@ -62,9 +62,18 @@ void LRT_GPTHandler(void)
                             else EM_PostEvent(ET_ONTIMER, NULL, &tmpLRT, sizeof(pTIMER));
                         }
                         if (tmpLRT->Flags & TF_AUTOREPEAT) tmpLRT->StartTicks = CurrTicks;
-                        else tmpLRT->Flags &= ~TF_ENABLED;
+                        else
+                        {
+                            pDLITEM tmpItem = DL_GetNextItem(tmrItem);
+
+                            tmpLRT->Flags &= ~TF_ENABLED;
+                            DL_MoveItemToIndex(TimersList, TimersList->Count, tmrItem);
+                            tmrItem = tmpItem;
+                            continue;
+                        }
                     }
                 }
+                else break;
             }
             else
             {
@@ -112,7 +121,8 @@ pTIMER LRT_Create(uint32_t Interval, void (*Handler)(pTIMER), TMRFLAGS Flags)
             tmpTimer->Interval = Interval;
             tmpTimer->StartTicks = USC_GetCurrentTicks();
             tmpTimer->Handler = Handler;
-            if (!DL_AddItemPtr(TimersList, &tmpTimer->ListHeader))
+            if (!DL_AddItemAtIndexPtr(TimersList, (Flags & TF_ENABLED) ? 0 : TimersList->Count,
+                                      &tmpTimer->ListHeader))
             {
                 free(tmpTimer);
                 tmpTimer = NULL;
@@ -130,7 +140,11 @@ boolean LRT_Destroy(pTIMER Timer)
 
         __secure_memset(&Timer->Flags, 0x00, sizeof(TTIMER) - offsetof(TTIMER, Flags));
 
-        if (__is_in_isr_mode()) Timer->ListHeader.Data = NULL;                                      // This node will be removed when returning to LRT_GPTHandler()
+        if (__is_in_isr_mode())
+        {
+            Timer->ListHeader.Data = NULL;                                                          // This node will be removed when returning to LRT_GPTHandler()
+            DL_MoveItemToIndex(TimersList, 0, &Timer->ListHeader);
+        }
         else DL_DeleteItem(TimersList, &Timer->ListHeader);                                         // Direct node deletion
 
         __restore_interrupts(intflags);
@@ -143,15 +157,15 @@ boolean LRT_Start(pTIMER Timer)
 {
     if (Timer != NULL)
     {
-        if (Timer->Flags & TF_ENABLED)
-        {
-            uint32_t iflags = __disable_interrupts();
+        uint32_t iflags = __disable_interrupts();
 
+        if (Timer->Flags & TF_ENABLED)
             Timer->Flags &= ~TF_ENABLED;
-            __restore_interrupts(iflags);
-        }
+
         Timer->StartTicks = USC_GetCurrentTicks();
         Timer->Flags |= TF_ENABLED;
+        DL_MoveItemToIndex(TimersList, 0, &Timer->ListHeader);
+        __restore_interrupts(iflags);
         return true;
     }
     return false;
@@ -166,6 +180,7 @@ boolean LRT_Stop(pTIMER Timer)
             uint32_t iflags = __disable_interrupts();
 
             Timer->Flags &= ~TF_ENABLED;
+            DL_MoveItemToIndex(TimersList, TimersList->Count, &Timer->ListHeader);
             __restore_interrupts(iflags);
         }
         return true;
@@ -179,6 +194,9 @@ boolean LRT_SetMode(pTIMER Timer, TMRFLAGS Flags)
     {
         uint32_t iflags = __disable_interrupts();
 
+        if ((Timer->Flags ^ Flags) & TF_ENABLED)
+            DL_MoveItemToIndex(TimersList, (Flags & TF_ENABLED) ? 0 : TimersList->Count,
+                               &Timer->ListHeader);
         Timer->Flags = Flags;
         if (Flags & TF_ENABLED) Timer->StartTicks = USC_GetCurrentTicks();
         __restore_interrupts(iflags);
