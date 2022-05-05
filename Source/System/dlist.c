@@ -692,6 +692,7 @@ boolean DL_MoveItemToIndex(pDLIST DList, uint32_t Index, pDLITEM Item)
 
     if (OldIndex != -1)
     {
+        if (Index >= DList->Count) Index = DList->Count - 1;
         if (OldIndex != Index)
         {
             pDLITEM NewIndexItem = DL_ItemByIndex(DList, Index);
