@@ -23,7 +23,7 @@
 
 #define BATPARAMAVERAGESIZE         128
 #define CHARGERONDEBOUNCE           (2 * 2)                                                         // 2 sec
-#define RECHARGEVOLTAGE             3600                                                            // mV
+#define RECHARGEVOLTAGE             3800                                                            // mV
 #define RECHARGETIMEOUT             (10 * 2)                                                        // 10 sec
 
 typedef struct
