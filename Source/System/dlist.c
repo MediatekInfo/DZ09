@@ -22,26 +22,6 @@
 #include "memory.h"
 #include "dlist.h"
 
-static pDLITEM DL_FirstItem(pDLIST DList)
-{
-    return (DList == NULL) ? NULL : DList->First;
-}
-
-static pDLITEM DL_LastItem(pDLIST DList)
-{
-    return (DList == NULL) ? NULL : DList->Last;
-}
-
-static pDLITEM DL_PrevItem(pDLITEM LItem)
-{
-    return (LItem == NULL) ? NULL : LItem->Prev;
-}
-
-static pDLITEM DL_NextItem(pDLITEM LItem)
-{
-    return (LItem == NULL) ? NULL : LItem->Next;
-}
-
 static pDLITEM DL_ItemByData(pDLIST DList, void *Data, int32_t *Index)
 {
     pDLITEM tmpItem = NULL;
@@ -224,45 +204,57 @@ uint32_t DL_GetItemsCount(pDLIST DList)
 
 pDLITEM DL_GetFirstItem(pDLIST DList)
 {
-    pDLITEM  Item;
-    uint32_t intflags = __disable_interrupts();
+    pDLITEM Item = NULL;
 
-    Item = DL_FirstItem(DList);
-    __restore_interrupts(intflags);
+    if (DList != NULL)
+    {
+        uint32_t intflags = __disable_interrupts();
 
+        Item = DList->First;
+        __restore_interrupts(intflags);
+    }
     return Item;
 }
 
 pDLITEM DL_GetLastItem(pDLIST DList)
 {
-    pDLITEM  Item;
-    uint32_t intflags = __disable_interrupts();
+    pDLITEM Item = NULL;
 
-    Item = DL_LastItem(DList);
-    __restore_interrupts(intflags);
+    if (DList != NULL)
+    {
+        uint32_t intflags = __disable_interrupts();
 
+        Item = DList->Last;
+        __restore_interrupts(intflags);
+    }
     return Item;
 }
 
 pDLITEM DL_GetPrevItem(pDLITEM LItem)
 {
-    pDLITEM  Item;
-    uint32_t intflags = __disable_interrupts();
+    pDLITEM Item = NULL;
 
-    Item = DL_PrevItem(LItem);
-    __restore_interrupts(intflags);
+    if (LItem != NULL)
+    {
+        uint32_t intflags = __disable_interrupts();
 
+        Item = LItem->Prev;
+        __restore_interrupts(intflags);
+    }
     return Item;
 }
 
 pDLITEM DL_GetNextItem(pDLITEM LItem)
 {
-    pDLITEM  Item;
-    uint32_t intflags = __disable_interrupts();
+    pDLITEM Item = NULL;
 
-    Item = DL_NextItem(LItem);
-    __restore_interrupts(intflags);
+    if (LItem != NULL)
+    {
+        uint32_t intflags = __disable_interrupts();
 
+        Item = LItem->Next;
+        __restore_interrupts(intflags);
+    }
     return Item;
 }
 
@@ -407,6 +399,7 @@ pDLITEM DL_AddItemAtIndex(pDLIST DList, uint32_t Index, void *Data)
         }
     }
     __restore_interrupts(intflags);
+
     return tmpItem;
 }
 
@@ -443,6 +436,7 @@ boolean DL_AddItemAtIndexPtr(pDLIST DList, uint32_t Index, pDLITEM ItemToInsert)
         }
     }
     __restore_interrupts(intflags);
+
     return Result;
 }
 
@@ -638,49 +632,55 @@ boolean DL_DeleteItemByIndex(pDLIST DList, uint32_t Index)
 
 boolean DL_DeleteFirstItem(pDLIST DList)
 {
-    boolean  Result = false;
-    uint32_t intflags = __disable_interrupts();
-    pDLITEM  tmpItem;
+    boolean Result = false;
 
-    tmpItem = DL_FirstItem(DList);
-    if (tmpItem != NULL)
+    if (DList != NULL)
     {
-        DList->First = tmpItem->Next;
+        uint32_t intflags = __disable_interrupts();
+        pDLITEM  tmpItem;
 
-        if (tmpItem->Next != NULL)
-            tmpItem->Next->Prev = NULL;
-        else DList->Last = NULL;
+        tmpItem = DList->First;
+        if (tmpItem != NULL)
+        {
+            DList->First = tmpItem->Next;
 
-        DList->Count--;
-        free(tmpItem);
-        Result = true;
+            if (tmpItem->Next != NULL)
+                tmpItem->Next->Prev = NULL;
+            else DList->Last = NULL;
+
+            DList->Count--;
+            free(tmpItem);
+            Result = true;
+        }
+        __restore_interrupts(intflags);
     }
-    __restore_interrupts(intflags);
-
     return Result;
 }
 
 boolean DL_DeleteLastItem(pDLIST DList)
 {
-    boolean  Result = false;
-    uint32_t intflags = __disable_interrupts();
-    pDLITEM  tmpItem;
+    boolean Result = false;
 
-    tmpItem = DL_LastItem(DList);
-    if (tmpItem != NULL)
+    if (DList != NULL)
     {
-        DList->Last = tmpItem->Prev;
+        uint32_t intflags = __disable_interrupts();
+        pDLITEM  tmpItem;
 
-        if (tmpItem->Prev != NULL)
-            tmpItem->Prev->Next = NULL;
-        else DList->First = NULL;
+        tmpItem = DList->Last;
+        if (tmpItem != NULL)
+        {
+            DList->Last = tmpItem->Prev;
 
-        DList->Count--;
-        free(tmpItem);
-        Result = true;
+            if (tmpItem->Prev != NULL)
+                tmpItem->Prev->Next = NULL;
+            else DList->First = NULL;
+
+            DList->Count--;
+            free(tmpItem);
+            Result = true;
+        }
+        __restore_interrupts(intflags);
     }
-    __restore_interrupts(intflags);
-
     return Result;
 }
 
