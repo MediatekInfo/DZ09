@@ -35,7 +35,7 @@ typedef struct
 
 const TCURRLIMIT BatCurrentLimits[] =
 {
-    {  70,   CS_VTH_70mA, 0x08},                                                                    // Need correction
+    {  70,   CS_VTH_70mA, 0x12},
     { 200,  CS_VTH_200mA, 0x18},
     { 300,  CS_VTH_300mA, 0x28},                                                                    // Need correction
     { 450,  CS_VTH_450mA, 0x59},
