@@ -22,7 +22,7 @@
 #include "pmu.h"
 
 #define BATPARAMAVERAGESIZE         128
-#define CHARGERONDEBOUNCE           (2 * 2)                                                         // 2 sec
+#define CHARGERONDEBOUNCE           (3 * 2)                                                         // 3 sec
 #define RECHARGEVOLTAGE             3800                                                            // mV
 #define RECHARGETIMEOUT             (10 * 2)                                                        // 10 sec
 
@@ -187,45 +187,49 @@ static void ChargerTimerHandler(pTIMER Timer)
 
     if (ChargerState)
     {
-        /* Disable CC mode when CV detected */
         if (CHR_CON1 & RGS_VBAT_CV_DET)
         {
             if (CHR_CON1 & RG_VBAT_CC_EN)
                 CHR_CON1 &= ~RG_VBAT_CC_EN;
         }
-        /* Charge complete trap */
-        if (ISense && (ISense <= BATMINCURRENT))
+        if (ISense)
         {
-            PMU_ChargerEnable(false);
-            if (BatteryCharging)
-                DebugPrint("PMU charging complete!\r\n");
-        }
-        /* Charge on debounce */
-        if (ISense > BATMINCURRENT)
-        {
-            if (ChargeOnDebounce < CHARGERONDEBOUNCE) ChargeOnDebounce++;
-        }
-        else ChargeOnDebounce = 0;
-
-        if ((VBat < RECHARGEVOLTAGE) && (ISense == 0))
-        {
-            if (RechargeTimeout) RechargeTimeout--;
-            else
+            if (ISense <= BATMINCURRENT)
             {
-                DebugPrint("PMU restart charging!\r\n");
-                if (PMU_IsChargerEnabled()) PMU_ChargerEnable(false);
-                PMU_ChargerEnable(true);
-                RechargeTimeout = RECHARGETIMEOUT;
+                ChargeOnDebounce = 0;
+                PMU_ChargerEnable(false);
+                if (BatteryCharging)
+                    DebugPrint("PMU charging complete!\r\n");
             }
+            else if (ChargeOnDebounce < CHARGERONDEBOUNCE) ChargeOnDebounce++;
         }
-        else RechargeTimeout = 0;
+        else
+        {
+            if (ChargeOnDebounce) ChargeOnDebounce--;
+            if (VBat < RECHARGEVOLTAGE)
+            {
+                if (RechargeTimeout) RechargeTimeout--;
+                else
+                {
+                    DebugPrint("PMU restart charging!\r\n");
+                    if (PMU_IsChargerEnabled()) PMU_ChargerEnable(false);
+                    PMU_ChargerEnable(true);
+                    RechargeTimeout = RECHARGETIMEOUT;
+                }
+            }
+            else RechargeTimeout = 0;
+        }
     }
     else ChargeOnDebounce = RechargeTimeout = 0;
 
     if (BatteryCharging != (ChargeOnDebounce == CHARGERONDEBOUNCE))
     {
-        BatteryCharging = (ChargeOnDebounce == CHARGERONDEBOUNCE);
-        if (BatteryCharging) DebugPrint("PMU charging started!\r\n");
+        if (!BatteryCharging && (ChargeOnDebounce == CHARGERONDEBOUNCE))
+        {
+            BatteryCharging = true;
+            DebugPrint("PMU charging started!\r\n");
+        }
+        else if (ChargeOnDebounce == 0) BatteryCharging = false;
     }
 
     PMU_PrintDebugInfo();
