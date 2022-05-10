@@ -25,6 +25,12 @@
 #define CHARGERONDEBOUNCE           (3 * 2)                                                         // 3 sec
 #define RECHARGEVOLTAGE             3800                                                            // mV
 #define RECHARGETIMEOUT             (10 * 2)                                                        // 10 sec
+#ifndef BATMAXCURRENT
+#define BATMAXCURRENT               0
+#endif
+#ifndef BATMINCURRENT
+#define BATMINCURRENT               0
+#endif
 
 typedef struct
 {
@@ -285,7 +291,11 @@ void PMU_EnableUSBDLMode(void)
 void PMU_DisableUSBDLMode(void)
 {
     STRUP_CON0 &= ~RG_USBDL_EN;
+#if (APPUSEBATTERY != 0)
     CHR_CON10 = (CHR_CON10 & ~RG_USBDL_SET) | RG_USBDL_RST;
+#else
+    CHR_CON10 = (CHR_CON10 | RG_USBDL_SET) | RG_USBDL_RST;
+#endif
 }
 
 boolean PMU_IsPowerKeyPressed(void)
@@ -449,6 +459,9 @@ void PMU_Initialize(void)
             DebugPrint("Failed! Can not register interrupt.\r\n");
             break;
         }
+#else
+        PMU_SetChargerWDTEnabled(false);
+        CHR_CON11 = RG_BC11_RST;                                                                    // Disable BC11 T2 timer
 #endif
         Result = true;
     }
