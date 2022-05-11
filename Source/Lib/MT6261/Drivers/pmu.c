@@ -467,7 +467,7 @@ void PMU_Initialize(void)
     }
     while(0);
 
-    if (Result) DebugPrint("...Complete.\r\n");
+    if (Result) DebugPrint("Complete.\r\n");
     else
     {
         NVIC_UnregisterEINT(ADIE_EINT_CHRDET);
