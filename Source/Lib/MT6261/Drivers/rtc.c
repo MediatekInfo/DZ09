@@ -106,8 +106,7 @@ boolean RTC_Initialize(void)
         DateTime.Date.Month = 1;
         DateTime.Date.Year = RTC_INITIAL_YEAR;
         DateTime.Date.DoW = RTC_DayOfWeek(&DateTime.Date);
-        RTC_SetTime(&DateTime.Time);
-        RTC_SetDate(&DateTime.Date);
+        RTC_SetDateTime(&DateTime);
         RTC_SetAlarmDateTime(&DateTime, false);
 
         DebugPrint("reconfigured!\r\n");
@@ -179,42 +178,29 @@ TDATETIME RTC_GetDateTime(void)
     return DateTime;
 }
 
-boolean RTC_SetTime(pTIME Time)
-{
-    if (Time == NULL) return false;
-
-    if ((Time->Hour < 24) &&
-            (Time->Min  < 60) &&
-            (Time->Sec  < 60))
-    {
-        RTC_TC_HOU = Time->Hour;
-        RTC_TC_MIN = Time->Min;
-        RTC_TC_SEC = Time->Sec;
-
-        RTC_UpdateContext();
-        return true;
-    }
-    return false;
-}
-
-boolean RTC_SetDate(pDATE Date)
+boolean RTC_SetDateTime(pDATETIME DateTime)
 {
     uint8_t leap;
 
-    if (Date == NULL) return false;
-    if (Date->Year > (RTC_INITIAL_YEAR + 127)) return false;
-    if (!Date->Month || (Date->Month > 12)) return false;
+    if (DateTime == NULL) return false;
+    if (DateTime->Date.Year > (RTC_INITIAL_YEAR + 127)) return false;
+    if (!DateTime->Date.Month || (DateTime->Date.Month > 12)) return false;
+    if ((DateTime->Time.Hour > 23) ||
+            (DateTime->Time.Min > 59) || (DateTime->Time.Sec > 59)) return false;
 
-    leap = (!(Date->Year % 4) &&
-            ((Date->Year % 100) || !(Date->Year % 400)) &&
-            (Date->Month == 2)) ? 1 : 0;
+    leap = (!(DateTime->Date.Year % 4) &&
+            ((DateTime->Date.Year % 100) || !(DateTime->Date.Year % 400)) &&
+            (DateTime->Date.Month == 2)) ? 1 : 0;
 
-    if (Date->Day && (Date->Day <= DayInMonth[Date->Month] + leap))
+    if (DateTime->Date.Day && (DateTime->Date.Day <= DayInMonth[DateTime->Date.Month] + leap))
     {
-        RTC_TC_YEA = Date->Year - RTC_INITIAL_YEAR;
-        RTC_TC_MTH = Date->Month;
-        RTC_TC_DOW = RTC_DayOfWeek(Date);
-        RTC_TC_DOM = Date->Day;
+        RTC_TC_SEC = DateTime->Time.Sec;
+        RTC_TC_MIN = DateTime->Time.Min;
+        RTC_TC_HOU = DateTime->Time.Hour;
+        RTC_TC_YEA = DateTime->Date.Year - RTC_INITIAL_YEAR;
+        RTC_TC_MTH = DateTime->Date.Month;
+        RTC_TC_DOW = RTC_DayOfWeek(&DateTime->Date);
+        RTC_TC_DOM = DateTime->Date.Day;
 
         RTC_UpdateContext();
         return true;
@@ -259,6 +245,8 @@ boolean RTC_SetAlarmDateTime(pDATETIME DateTime, boolean UseInterrupt)
 
         if (DateTime->Date.Day && (DateTime->Date.Day <= DayInMonth[DateTime->Date.Month] + leap))
         {
+            uint32_t intflags;
+
             RTC_AL_HOU = DateTime->Time.Hour;
             RTC_AL_MIN = DateTime->Time.Min;
             RTC_AL_SEC = DateTime->Time.Sec;
@@ -268,10 +256,14 @@ boolean RTC_SetAlarmDateTime(pDATETIME DateTime, boolean UseInterrupt)
             RTC_AL_DOW = RTC_DayOfWeek(&DateTime->Date);
             RTC_AL_DOM = DateTime->Date.Day;
 
+            intflags = __disable_interrupts();
+
             RTC_IRQ_EN = (UseInterrupt) ? RTC_IRQ_EN | AL_EN : RTC_IRQ_EN & ~AL_EN;
-            RTC_AL_MASK = ~(YEA_MSK | MTH_MSK | DOM_MSK | HOU_MSK | MIN_MSK | SEC_MSK) & 0xFF;
+            RTC_AL_MASK = ~(YEA_MSK | MTH_MSK | DOM_MSK | HOU_MSK | MIN_MSK | SEC_MSK) & 0x7F;
 
             RTC_UpdateContext();
+            __restore_interrupts(intflags);
+
             return true;
         }
     }
