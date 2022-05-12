@@ -41,7 +41,7 @@
 #define RTC_CII_EN                  (*(volatile uint16_t *)(RTC_BASE + 0x000C))
 #define SECCII                      (1 << 0)
 #define MINCII                      (1 << 1)
-#define MOUCII                      (1 << 2)
+#define HOUCII                      (1 << 2)
 #define DOMCII                      (1 << 3)
 #define DOWCII                      (1 << 4)
 #define MTHCII                      (1 << 5)

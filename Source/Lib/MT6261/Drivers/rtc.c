@@ -275,7 +275,7 @@ void RTC_SetCIIEnable(uint16_t Intervals, boolean Enable)
     uint32_t intflags;
 
     Intervals &= (SECCII1_8 | SECCII1_4 | SECCII1_2 | YEACII |
-                  MTHCII | DOWCII | DOMCII | MOUCII | MINCII | SECCII);
+                  MTHCII | DOWCII | DOMCII | HOUCII | MINCII | SECCII);
 
     intflags = __disable_interrupts();
     RTC_CII_EN = Intervals;
