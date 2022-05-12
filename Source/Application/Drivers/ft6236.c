@@ -115,7 +115,7 @@ void FT6236_ISR(void)
 
 boolean FT6236_RegisterISR(void)
 {
-    return NVIC_RegisterEINT(CPT_INT_NUM, FT6236_ISR, EINT_SENS_EDGE, EINT_POLL, 0, false);
+    return NVIC_RegisterEINT(CPT_INT_NUM, FT6236_ISR, EINT_SENS_EDGE, EINT_POLLOW, 0, false);
 }
 
 boolean FT6236_UnregisterISR(void)
