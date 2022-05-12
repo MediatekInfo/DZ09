@@ -270,6 +270,20 @@ boolean RTC_SetAlarmDateTime(pDATETIME DateTime, boolean UseInterrupt)
     return false;
 }
 
+void RTC_SetCIIEnable(uint16_t Intervals, boolean Enable)
+{
+    uint32_t intflags;
+
+    Intervals &= (SECCII1_8 | SECCII1_4 | SECCII1_2 | YEACII |
+                  MTHCII | DOWCII | DOMCII | MOUCII | MINCII | SECCII);
+
+    intflags = __disable_interrupts();
+    RTC_CII_EN = Intervals;
+    RTC_IRQ_EN = (Enable) ? RTC_IRQ_EN | TC_EN : RTC_IRQ_EN & ~TC_EN;
+    RTC_UpdateContext();
+    __restore_interrupts(intflags);
+}
+
 void RTC_Sleep(void)
 {
 }

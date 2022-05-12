@@ -133,6 +133,7 @@ extern TDATETIME RTC_GetDateTime(void);
 extern boolean RTC_SetDateTime(pDATETIME DateTime);
 extern TDATETIME RTC_GetAlarmDateTime(void);
 extern boolean RTC_SetAlarmDateTime(pDATETIME DateTime, boolean UseInterrupt);
+extern void RTC_SetCIIEnable(uint16_t Intervals, boolean Enable);
 extern void RTC_Sleep(void);
 extern void RTC_Resume(void);
 
