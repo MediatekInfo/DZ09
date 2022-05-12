@@ -30,13 +30,10 @@ void Init(void)
     PCTL_Initialize();                                                                              // Power down peripherals by default
     GPIO_Initialize();                                                                              // Set GPIO to default state
 
+    USC_StartCounter();
+
     DebugPrint("Initialize serial flash interface:\r\n");
     SF_Initialize();
-
-    DebugPrint("Initialize real time clock...");
-    RTC_Initialize();
-
-    USC_StartCounter();
 
     DebugPrint("Initialize system memory pool - ");
     {
@@ -46,18 +43,23 @@ void Init(void)
         else DebugPrint("failed!\r\n");
     }
 
-    DebugPrint("Initialize event manager...");
-    DebugPrint((EM_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
-
     DebugPrint("Initialize NVICs...");
     NVIC_Initialize();
     DebugPrint("Complete.\r\n");
+
+    DebugPrint("Initialize real time clock...");
+    RTC_Initialize();
+
+    DebugPrint("Initialize event manager...");
+    DebugPrint((EM_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
 
     DebugPrint("Initialize low resolution timers pool...");
     DebugPrint((LRT_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
 
     DebugPrint("Power management initialization");
     PMU_Initialize();
+
+    RTC_SetCIIEnable(MINCII, true);
 
 //
 //
