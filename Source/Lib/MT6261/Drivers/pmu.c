@@ -68,6 +68,7 @@ static pTIMER   ChargerTimer;
 static uint16_t VBat, ISense;
 static uint32_t ChargeOnDebounce;
 static uint32_t RechargeTimeout;
+static void (*PWRKEYAppHandler)(boolean Pressed);
 
 static int8_t PMU_GetChargingParams(uint16_t TestValue)
 {
@@ -204,6 +205,29 @@ static void PMU_InterruptHandler(void)
     USB_OnCableDisconnect();
 }
 
+static void PMU_PWRKeyInterruptHandler(void)
+{
+#if (APPUSEPWKEY != 0)
+    if (PWRKEYAppHandler != NULL)
+        PWRKEYAppHandler(PMU_IsPowerKeyPressed());
+#endif
+}
+
+boolean PMU_IsPowerKeyPressed(void)
+{
+    return (STRUP_CON0 & QI_PWRKEY_DEB) ? false : true;
+}
+
+void PMU_SetPWKEYHandler(void (*Handler)(boolean Pressed))
+{
+#if (APPUSEPWKEY != 0)
+    uint32_t intflags = __disable_interrupts();
+
+    PWRKEYAppHandler = Handler;
+    __restore_interrupts(intflags);
+#endif
+}
+
 void PMU_SetChargerWDTEnabled(boolean Enabled)
 {
     CHR_CON9 |= RG_CHRWDT_WR;
@@ -252,11 +276,6 @@ void PMU_DisableUSBDLMode(void)
 #else
     CHR_CON10 = (CHR_CON10 | RG_USBDL_SET) | RG_USBDL_RST;
 #endif
-}
-
-boolean PMU_IsPowerKeyPressed(void)
-{
-    return (STRUP_CON0 & QI_PWRKEY_DEB) ? false : true;
 }
 
 void PMU_SetVibrationOutput(boolean Enable)
@@ -445,7 +464,7 @@ boolean PMU_Initialize(void)
 
 #if (APPUSEPWKEY != 0)
     DebugPrint(" Registering powerkey handler...");
-    if (NVIC_RegisterEINT(ADIE_EINT_PWRKEY, PMU_PWKeyInterruptHandler,
+    if (NVIC_RegisterEINT(ADIE_EINT_PWRKEY, PMU_PWRKeyInterruptHandler,
                           EINT_SENS_EDGE, ADIE_EINT_POLLOW, 0, true))
         DebugPrint("Complete.\r\n");
     else
