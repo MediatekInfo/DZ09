@@ -64,52 +64,6 @@ static pTIMER   ChargerTimer;
 static uint16_t VBat, ISense;
 static uint32_t ChargeOnDebounce;
 static uint32_t RechargeTimeout;
-static uint16_t *pDataArrayPrev, *pDataArrayNew;
-
-static void PMU_PrintDebugInfo(void)
-{
-    uint16_t ChCON1 = CHR_CON1, i, j;
-    TDATETIME DTime;
-
-    DTime = RTC_GetDateTime();
-    CHR_CON8 = RG_PCHR_FLAG_SEL(0x1F) | RG_PCHR_FLAG_EN;
-
-    DebugPrint("VBAT (%u), ISEN (%umA), CHR_CON8 %04X CHR_CON0 %04X CHR_CON1 %04X CHR_CON9 %04X CHR_CON5 %04X ",
-               VBat,
-               ISense,
-               CHR_CON8,
-               CHR_CON0,
-               CHR_CON1,
-               CHR_CON9,
-               CHR_CON5);
-    DebugPrint("%s %s ", (ChCON1 & RGS_VBAT_CC_DET) ? "CC" : "", (ChCON1 & RGS_VBAT_CV_DET) ? "CV" : "");
-    DebugPrint("%02d:%02d:%02d\r\n", DTime.Time.Hour, DTime.Time.Min, DTime.Time.Sec);
-
-    if ((pDataArrayPrev == NULL) || (pDataArrayNew == NULL))
-    {
-        if (pDataArrayPrev == NULL) pDataArrayPrev = malloc(4096);
-        if (pDataArrayNew == NULL) pDataArrayNew = malloc(4096);
-
-        memcpy(pDataArrayNew, (void *)(PMU_BASE), 4096);
-    }
-    else
-    {
-        uint16_t *tmpPtr = pDataArrayPrev, i;
-
-        pDataArrayPrev = pDataArrayNew;
-        pDataArrayNew = tmpPtr;
-
-        tmpPtr = (void *)(PMU_BASE);
-        for(i = 0; i < 2048; i++)
-            pDataArrayNew[i] = tmpPtr[i];
-
-        for(i = 0; i < 2048; i++)
-        {
-            if (pDataArrayPrev[i] != pDataArrayNew[i])
-                DebugPrint("0x%04X: %04X->%04X\r\n", 2 * i, pDataArrayPrev[i], pDataArrayNew[i]);
-        }
-    }
-}
 
 static int8_t PMU_GetChargingParams(uint16_t TestValue)
 {
@@ -237,8 +191,6 @@ static void ChargerTimerHandler(pTIMER Timer)
         }
         else if (ChargeOnDebounce == 0) BatteryCharging = false;
     }
-
-    PMU_PrintDebugInfo();
 }
 
 static void PMU_InterruptHandler(void)

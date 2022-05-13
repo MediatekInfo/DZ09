@@ -59,20 +59,6 @@ void Init(void)
     DebugPrint("Power management initialization");
     PMU_Initialize();
 
-    RTC_SetCIIEnable(MINCII, true);
-
-//
-//
-////////////////////////////////////////////////////////////
-//    PMU_DisableUSBDownloaderWDT();
-////    PMU_SetVibrationOutput(true);
-//    PMU_SetISINKMode(false);
-//    PMU_SetISINKParameters(ISINK_CH0, IC_8mA, true);
-////////////////////////////////////////////////////////////
-//
-//    PMU_SetChargingEnable(true);
-
     __enable_interrupts();
     APP_Initialize();
-
 }
