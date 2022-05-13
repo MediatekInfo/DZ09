@@ -49,6 +49,9 @@
 #define BATMAXCURRENT   200                                                                         // Max charging current in mA
 #define BATMINCURRENT   25                                                                          // Cut-off charging current in mA
 
+/* Power key */
+#define APPUSEPWKEY     1
+
 /* USB driver */
 #define _USB_CDC_DRIVER_                                                                            // Prolific PL2303 emulation
 //#define _NO_USB_DRIVER_

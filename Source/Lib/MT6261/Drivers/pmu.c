@@ -32,6 +32,10 @@
 #define BATMINCURRENT               0
 #endif
 
+#if (APPUSEBATTERY == 0) && (APPUSEPWKEY == 0)
+#define PMUINITEMPTY
+#endif
+
 typedef struct
 {
     uint16_t Limit;
@@ -379,20 +383,27 @@ TVMC PMU_GetSelectedVoltageVMC(void)
     return VMC;
 }
 
-void PMU_Initialize(void)
+boolean PMU_Initialize(void)
 {
-    boolean Result = false;
+    boolean Result = true;
 
     PMU_DisableUSBDLMode();
 
+#ifdef PMUINITEMPTY
+    DebugPrint("...Complete.\r\n");
+#else
+    DebugPrint(":\r\n");
+#endif
+
+#if (APPUSEBATTERY != 0)
     do
     {
-#if (APPUSEBATTERY != 0)
-        DebugPrint(":\r\n Battery charger...");
+        DebugPrint(" Battery charger...");
 
         if (!AUXADC_Enable())
         {
             DebugPrint("Failed! Can not enable AUXADC.\r\n");
+            Result = false;
             break;
         }
         if (ChargerTimer == NULL)
@@ -401,6 +412,7 @@ void PMU_Initialize(void)
             if (ChargerTimer == NULL)
             {
                 DebugPrint("Failed! Can not create timer.\r\n");
+                Result = false;
                 break;
             }
         }
@@ -409,13 +421,9 @@ void PMU_Initialize(void)
                 !NVIC_EnableEINT(ADIE_EINT_CHRDET))
         {
             DebugPrint("Failed! Can not register interrupt.\r\n");
+            Result = false;
             break;
         }
-#else
-        PMU_SetChargerWDTEnabled(false);
-        CHR_CON11 = RG_BC11_RST;                                                                    // Disable BC11 T2 timer
-#endif
-        Result = true;
     }
     while(0);
 
@@ -429,6 +437,25 @@ void PMU_Initialize(void)
             LRT_Destroy(ChargerTimer);
             ChargerTimer = NULL;
         }
-        DebugPrint("PMU initialization failed!\r\n");
     }
+#else
+    PMU_SetChargerWDTEnabled(false);
+    CHR_CON11 = RG_BC11_RST;                                                                    // Disable BC11 T2 timer
+#endif
+
+#if (APPUSEPWKEY != 0)
+    DebugPrint(" Registering powerkey handler...");
+    if (NVIC_RegisterEINT(ADIE_EINT_PWRKEY, PMU_PWKeyInterruptHandler,
+                          EINT_SENS_EDGE, ADIE_EINT_POLLOW, 0, true))
+        DebugPrint("Complete.\r\n");
+    else
+    {
+        DebugPrint("Failed!\r\n");
+        Result = false;
+    }
+#endif
+
+    if (!Result) DebugPrint("PMU initialization Failed!\r\n");
+
+    return Result;
 }

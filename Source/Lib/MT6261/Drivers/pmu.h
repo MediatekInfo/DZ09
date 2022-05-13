@@ -799,6 +799,6 @@ extern void PMU_TurnOnVUSB(boolean Enable);
 extern void PMU_TurnOnVMC(boolean Enable);
 extern boolean PMU_SetVoltageVMC(TVMC Voltage);
 extern TVMC PMU_GetSelectedVoltageVMC(void);
-extern void PMU_Initialize(void);
+extern boolean PMU_Initialize(void);
 
 #endif /* _PMU_H_ */
