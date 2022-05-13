@@ -262,6 +262,16 @@ boolean PMU_IsBatteryCharging(void)
 #endif
 }
 
+uint16_t PMU_GetBatteryVoltageMV(void)
+{
+#if (APPUSEBATTERY != 0)
+    PMU_MeasureChargeParams();
+    return VBat;
+#else
+    return 0;
+#endif
+}
+
 void PMU_EnableUSBDLMode(void)
 {
     CHR_CON10 &= ~(RG_USBDL_SET | RG_USBDL_RST);
