@@ -348,10 +348,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
 void GUI_OnPenPressHandler(pEVENT Event)
 {
-    BL_RestartBacklightTimer();
-
-    if (GUILocked) return;
-    else
+    if (!GUILocked)
     {
         pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
         pGUIOBJECT RootParent;
@@ -378,58 +375,52 @@ void GUI_OnPenPressHandler(pEVENT Event)
         }
         else GUI_SetObjectActive(NULL, true);
     }
+    BL_RestartBacklightTimer(false);
 }
 
 void GUI_OnPenReleaseHandler(pEVENT Event)
 {
-    BL_RestartBacklightTimer();
-
-    if (GUILocked)
-    {
-        GUILocked = false;
-        return;
-    }
-    else
-    {
-        pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
-        pGUIOBJECT Object = GUI_GetObjectActive();
-
-        if (Object != NULL)
+    if (!GUILocked)
+        do
         {
-            TVLINDEX Layer;
-            TPOINT   OnReleaseXY;
+            pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
+            pGUIOBJECT Object = GUI_GetObjectActive();
 
-            if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
-            else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
-            else
+            if (Object != NULL)
             {
+                TVLINDEX Layer;
+                TPOINT   OnReleaseXY;
+
+                if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
+                else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
+                else
+                {
+                    GUI_SetObjectActive(NULL, true);
+                    break;
+                }
+
                 GUI_SetObjectActive(NULL, true);
-                return;
-            }
 
-            GUI_SetObjectActive(NULL, true);
+                if ((Object->Enabled) && (Object->InheritedEnabled))
+                {
+                    PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                    /* Store object local coordinates */
+                    OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
-            if ((Object->Enabled) && (Object->InheritedEnabled))
-            {
-                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
-                /* Store object local coordinates */
-                OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
-
-                if ((Object->OnClick != NULL) &&
-                        (IsPointInRect(&PenEvent->PXY, &Object->Position)))
-                    Object->OnClick(Object, &OnReleaseXY);
-                if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
+                    if ((Object->OnClick != NULL) &&
+                            (IsPointInRect(&PenEvent->PXY, &Object->Position)))
+                        Object->OnClick(Object, &OnReleaseXY);
+                    if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
+                }
             }
         }
-    }
+        while(0);
+    BL_RestartBacklightTimer(true);
 }
 
 void GUI_OnPenMoveHandler(pEVENT Event)
 {
-    BL_RestartBacklightTimer();
-
-    if (GUILocked) return;
-    else
+    if (!GUILocked)
     {
         pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
         pGUIOBJECT Object = GUI_GetObjectActive();
@@ -458,6 +449,7 @@ void GUI_OnPenMoveHandler(pEVENT Event)
             }
         }
     }
+    BL_RestartBacklightTimer(false);
 }
 
 void GUI_OnDestroyHandler(pGODESTROYEV Event)
