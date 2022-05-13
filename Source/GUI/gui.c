@@ -348,7 +348,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
 void GUI_OnPenPressHandler(pEVENT Event)
 {
-    BL_RestartReduceTimer();
+    BL_RestartBacklightTimer();
 
     if (GUILocked) return;
     else
@@ -382,7 +382,7 @@ void GUI_OnPenPressHandler(pEVENT Event)
 
 void GUI_OnPenReleaseHandler(pEVENT Event)
 {
-    BL_RestartReduceTimer();
+    BL_RestartBacklightTimer();
 
     if (GUILocked)
     {
@@ -426,7 +426,7 @@ void GUI_OnPenReleaseHandler(pEVENT Event)
 
 void GUI_OnPenMoveHandler(pEVENT Event)
 {
-    BL_RestartReduceTimer();
+    BL_RestartBacklightTimer();
 
     if (GUILocked) return;
     else

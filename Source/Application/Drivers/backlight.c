@@ -119,10 +119,10 @@ void PMUBL_TurnOn(boolean TurnOn)
         BLState.Reduced = false;
         __restore_interrupts(iflags);
     }
-    else PMUBL_RestartReduceTimer();
+    else PMUBL_RestartBacklightTimer();
 }
 
-void PMUBL_RestartReduceTimer(void)
+void PMUBL_RestartBacklightTimer(void)
 {
     uint32_t iflags = __disable_interrupts();
 

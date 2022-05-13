@@ -38,6 +38,6 @@ extern void PMUBL_Initialize(void);
 extern void PMUBL_SetBacklightMode(TBLMODE Mode);
 extern void PMUBL_SetupValue(uint32_t Value);
 extern void PMUBL_TurnOn(boolean TurnOn);
-extern void PMUBL_RestartReduceTimer(void);
+extern void PMUBL_RestartBacklightTimer(void);
 
 #endif /* _BACKLIGHT_H_ */
