@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2022 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
 */
 #ifndef _AFE_H_
 #define _AFE_H_
+
+#define MINIMUM_AGAIN_SETTING       0x000E
+#define MINIMUM_VGAIN_SETTING       0x001E
 
 #define AFE_VMCU_CON0               (*(volatile uint16_t *)(AFE_BASE + 0x0000))
 #define VIRQON                      (1 << 0)
@@ -55,7 +58,6 @@
 #define SDMLP_DLTOUL                (1 << 4)
 #define VSDN_DATA_MONO              (1 << 5)
 #define VSDMLP_ULTODL               (1 << 8)
-
 #define AFE_AMCU_CON0               (*(volatile uint16_t *)(AFE_BASE + 0x0020))
 #define AIRQON                      (1 << 0)
 #define AFE_AMCU_CON1               (*(volatile uint16_t *)(AFE_BASE + 0x0024))
@@ -123,7 +125,7 @@
 #define AFE_DBG_APB_STATUS          (*(volatile uint16_t *)(AFE_BASE + 0x019C))
 #define AFE_VMCU_CON4               (*(volatile uint16_t *)(AFE_BASE + 0x01A0))
 #define DC_OFFSET_VALUE(v)          (v)
-#define AFE_VMCU_CON6               (*(volatile uint16_t *)(AFE_BASE + 0x01A8)) // (?)
+#define AFE_VMCU_CON6               (*(volatile uint16_t *)(AFE_BASE + 0x01A8)) //(?)
 #define AFE_VMCU_CON5               (*(volatile uint16_t *)(AFE_BASE + 0x01AC))
 #define D3P25M_SEL                  (1 << 0)
 #define DIG_MIC_EN                  (1 << 4)
@@ -147,23 +149,25 @@
 #define UDSP_UL_ON                  (1 << 1)
 #define A_IF_DL_ON                  (1 << 2)
 #define UDSP_DL_ON                  (1 << 3)
+#define AFE_PATH_MASK               (UDSP_DL_ON | A_IF_DL_ON | UDSP_UL_ON | A_IF_UL_ON)
 #define AFE_SLV_I2S_CON             (*(volatile uint32_t *)(AFE_BASE + 0x0300))
 
 #define ABBA_WR_PATH0               (*(volatile uint16_t *)(ABBSYS_BASE + 0x0000))
 #define ABBA_VBITX_CON0             (*(volatile uint16_t *)(ABBSYS_BASE + 0x0050))
-#define RG_VCFG_1                   (1 << 10)
 #define RG_VPWDB_PGA                (1 << 5)
+#define RG_ULPGA_GAIN(v)            (((v) & 0x1F) << 6) // Need to check
+#define RG_VCFG_1                   (1 << 10)
 #define ABBA_VBITX_CON1             (*(volatile uint16_t *)(ABBSYS_BASE + 0x0054))
-#define RG_VPWDB_ADC                (1 << 6)
-#define RG_VREF24_EN                (1 << 2)
 #define RG_VCM14_EN                 (1 << 1)
+#define RG_VREF24_EN                (1 << 2)
+#define RG_VPWDB_ADC                (1 << 6)
 #define ABBA_VBITX_CON2             (*(volatile uint16_t *)(ABBSYS_BASE + 0x0058))
 #define ABBA_VBITX_CON3             (*(volatile uint16_t *)(ABBSYS_BASE + 0x005C))
 #define ABBA_VBITX_CON4             (*(volatile uint16_t *)(ABBSYS_BASE + 0x0060))
 #define RG_VPWDB_MBIAS              (1 << 1)
 #define ABBA_VBITX_CON5             (*(volatile uint16_t *)(ABBSYS_BASE + 0x0064))
 #define ABBA_AUDIODL_CON0           (*(volatile uint16_t *)(ABBSYS_BASE + 0x0080))
-#define RG_AUDIBIASPWRUP            (1)
+#define RG_AUDIBIASPWRUP            (1 << 0)
 #define RG_AUDHPRPWRUP              (1 << 2)
 #define RG_AUDHPLPWRUP              (1 << 3)
 #define RG_AUDHSPWRUP               (1 << 4)
@@ -173,7 +177,7 @@
 #define ABBA_AUDIODL_CON2           (*(volatile uint16_t *)(ABBSYS_BASE + 0x0088))
 #define ABBA_AUDIODL_CON3           (*(volatile uint16_t *)(ABBSYS_BASE + 0x008C))
 #define ABBA_AUDIODL_CON4           (*(volatile uint16_t *)(ABBSYS_BASE + 0x0090))
-#define RG_DEPOP_VCM_EN             (1)
+#define RG_DEPOP_VCM_EN             (1 << 0)
 #define RG_DEPOP_CHARGEOPTION       (1 << 5)
 #define RG_ADEPOP_EN                (1 << 6)
 #define ABBA_AUDIODL_CON5           (*(volatile uint16_t *)(ABBSYS_BASE + 0x0094))
@@ -186,13 +190,16 @@
 #define RG_AUDHSBIAS                (1 << 12)
 #define ABBA_AUDIODL_CON11          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00AC))
 #define ABBA_AUDIODL_CON12          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00B0))
-#define AUD_ZCD_ENABLE              (1)
+#define AUD_ZCD_ENABLE              (1 << 0)
 #define ABBA_AUDIODL_CON13          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00B4))
+#define RG_GAINR(v)                 (((v) & 0x1F) << 0)
+#define RG_GAINL(v)                 (((v) & 0x1F) << 5)
+#define RG_GAINS(v)                 (((v) & 0x1F) << 10)                                            // Volume for speaker
 #define ABBA_AUDIODL_CON14          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00B8))
 #define ABBA_AUDIODL_CON15          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00BC))
 #define ABBA_AUDIODL_CON16          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00C0))
+#define RG_AMUTEL                   (1 << 0)
 #define RG_AMUTER                   (1 << 1)
-#define RG_AMUTEL                   (1)
 #define ABBA_AUDIODL_CON17          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00C4))
 #define ABBA_AUDIODL_CON18          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00C8))
 
@@ -202,35 +209,55 @@
 #define AFE_VAC_CON0                (*(volatile uint16_t *)(MIXED_BASE + 0x0104))                    // AFE Voice Analog-Circuit Control Register 0
 #define AFE_VAC_CON1                (*(volatile uint16_t *)(MIXED_BASE + 0x0108))                    // AFE Voice Analog-Circuit Control Register 1
 #define AFE_VAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x010C))                    // AFE Voice Analog Power Down Control Register
-#define VAPDN_BIAS_DAC_ON           0x024
-#define VAPDN_BIAS_LNA_ON           0x030
-#define VAPDN_BIAS_LNA_ADC_ON       0x038
+#define VAPDN_BIAS_DAC_ON           0x0024
+#define VAPDN_BIAS_LNA_ON           0x0030
+#define VAPDN_BIAS_LNA_ADC_ON       0x0038
 #define AFE_AAG_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0200))                    // AFE Audio Analog Gain Control Register
 #define AFE_AAC_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0204))                    // AFE Audio Analog-Circuit Control Register
 #define AFE_AAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x0208))                    // AFE Audio Analog Power Down Control Register
-#define AAPDN_POWER_DOWN            0x000
-#define AAPDN_BIAS_DAC_ON           0x01C
-#define AAPDN_BIAS_BUF_ON           0x013
-#define AAPDN_ALL_ON                0x0FF
-#define AAPDN_MASK                  0x0FF
+#define AAPDN_POWER_DOWN            0x0000
+#define AAPDN_BIAS_DAC_ON           0x001C
+#define AAPDN_BIAS_BUF_ON           0x0013
+#define AAPDN_ALL_ON                0x00FF
+#define AAPDN_MASK                  0x00FF
 #define APC_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0600))                      // APC DAC Analog-Circuit Control Register
 #define AUX_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0700))                      // Auxiliary ADC Analog-Circuit Control Register
 
-#define MD2GSYS_CG_CON0             (*(volatile uint16_t *)(MD2GCONFG_base + 0x000))                 // Power Down Control 0 Register
-#define MD2GSYS_CG_CON2             (*(volatile uint16_t *)(MD2GCONFG_base + 0x008))                 // Power Down Control 2 Register
+#define MD2GSYS_CG_CON0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x000))                 // Power Down Control 0 Register
+#define MD2GSYS_CG_CON2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x008))                 // Power Down Control 2 Register
 #define PDN_CON2_VAFE               (1 << 8)
-#define PDN_CON2_AAFE               (1 << 12)
-#define MD2GSYS_CG_CON4             (*(volatile uint16_t *)(MD2GCONFG_base + 0x030))                 // Power Down Control 4 Register
-#define MD2GSYS_CG_SET0             (*(volatile uint16_t *)(MD2GCONFG_base + 0x010))                 // Power Down Disable 0 Register
-#define MD2GSYS_CG_SET2             (*(volatile uint16_t *)(MD2GCONFG_base + 0x018))                 // Power Down Disable 2 Register
-#define MD2GSYS_CG_SET4             (*(volatile uint16_t *)(MD2GCONFG_base + 0x034))                 // Power Down Disable 4 Register
-#define MD2GSYS_CG_CLR0             (*(volatile uint16_t *)(MD2GCONFG_base + 0x020))                 // Power Down Enable 0 Register
-#define MD2GSYS_CG_CLR2             (*(volatile uint16_t *)(MD2GCONFG_base + 0x028))                 // Power Down Enable 2 Register
-#define MD2GSYS_CG_CLR4             (*(volatile uint16_t *)(MD2GCONFG_base + 0x038))                 // Power Down Enable 4 Register
+#define PDN_CON2_AAFE               (1 << 12)                                                        // or == PDN_CON2_VAFE
+#define MD2GSYS_CG_CON4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x030))                 // Power Down Control 4 Register
+#define MD2GSYS_CG_SET0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x010))                 // Power Down Disable 0 Register
+#define MD2GSYS_CG_SET2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x018))                 // Power Down Disable 2 Register
+#define MD2GSYS_CG_SET4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x034))                 // Power Down Disable 4 Register
+#define MD2GSYS_CG_CLR0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x020))                 // Power Down Enable 0 Register
+#define MD2GSYS_CG_CLR2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x028))                 // Power Down Enable 2 Register
+#define MD2GSYS_CG_CLR4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x038))                 // Power Down Enable 4 Register
 
-extern void AFE_Chip_Init(void);
-extern void AFE_TurnOnAudioClock(uint8_t clock);
-extern void AFE_SwitchHPon(void);
-extern void AFE_SwitchHSon(void);
+typedef enum tag_AV_PATH
+{
+    DL_PATH,
+    UL_PATH,
+    DL_UL_BOTH_PATH
+} TAV_PATH;
+
+typedef enum tag_ASR
+{
+    ASR_8KHZ    = 0,
+    ASR_11KHZ   = 1,
+    ASR_12KHZ   = 2,
+    ASR_16KHZ   = 4,
+    ASR_22KHZ   = 5,
+    ASR_24KHZ   = 6,
+    ASR_32KHZ   = 8,
+    ASR_44KHZ   = 9,
+    ASR_48KHZ   = 10
+} TASR;
+
+extern void AFE_SetSpeakerVolume(uint8_t Volume);
+extern void AFE_TurnOnSpeaker(boolean On);
+extern boolean AFE_SetAudioSampleRate(TASR Rate);
+extern void Test_sound(void);
 
 #endif /* _AFE_H_ */
