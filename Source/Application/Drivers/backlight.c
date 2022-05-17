@@ -38,10 +38,12 @@ static void PMUBL_UpdateValues(uint32_t Value, boolean TurnOn)
     }
     else if (BLState.Mode == BM_PWM)
     {
-#if (BLMINVALUE >= 100)
+#ifndef BLMINVALUE
+#define BLMINVALUE      0
+#elif (BLMINVALUE >= 100)
 #warning the BLMINVALUE value is set to >100%, redefined to 100%
 #undef  BLMINVALUE
-#define BLMINVALUE    100
+#define BLMINVALUE      100
 #endif
         PMU_SetISINKParameters(BACKLIGHTCHNL, IC_20mA, TurnOn);
         if (!TurnOn)
