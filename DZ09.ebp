@@ -233,6 +233,10 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\adienvic.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\afe.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\afe.h">
 			<Option target="SYSTEM" />
 		</Unit>
