@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -73,18 +73,18 @@
 #define CNFG_PDN_CON1               (*(volatile uint16_t *)(CONFIG_BASE + 0x0304))
 #define CNFG_PDN_CON2               (*(volatile uint16_t *)(CONFIG_BASE + 0x0308))
 #define CNFG_PDN0_MASK              0xFFFF
+#define CNFG_PDN1_MASK              0xFFFF
+#define CNFG_PDN2_MASK              0xF7FF                                                          // Disable all peripherals, except serial flash controller
 
 #define CNFG_PDN_CON_SET(x)         (*(volatile uint16_t *)(CONFIG_BASE + 0x0310 + 0x04 * (x)))
 #define CNFG_PDN_CON0_SET           (*(volatile uint16_t *)(CONFIG_BASE + 0x0310))
 #define CNFG_PDN_CON1_SET           (*(volatile uint16_t *)(CONFIG_BASE + 0x0314))
 #define CNFG_PDN_CON2_SET           (*(volatile uint16_t *)(CONFIG_BASE + 0x0318))
-#define CNFG_PDN1_MASK              0xFFFF
 
 #define CNFG_PDN_CON_CLR(x)         (*(volatile uint16_t *)(CONFIG_BASE + 0x0320 + 0x04 * (x)))
 #define CNFG_PDN_CON0_CLR           (*(volatile uint16_t *)(CONFIG_BASE + 0x0320))
 #define CNFG_PDN_CON1_CLR           (*(volatile uint16_t *)(CONFIG_BASE + 0x0324))
 #define CNFG_PDN_CON2_CLR           (*(volatile uint16_t *)(CONFIG_BASE + 0x0328))
-#define CNFG_PDN2_MASK              0xF7FF                                                          // Disable all peripherals, except serial flash controller
 
 // Analog power control
 #define PD_PWM3                     (0x30)
