@@ -203,37 +203,48 @@
 #define ABBA_AUDIODL_CON17          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00C4))
 #define ABBA_AUDIODL_CON18          (*(volatile uint16_t *)(ABBSYS_BASE + 0x00C8))
 
-#define AC_ODS_CON                  (*(volatile uint16_t *)(MIXED_BASE + 0x0000))                    // Analog Chip Output Driving Strength Control Register
-#define ACIF_AC_HW_VER              (*(volatile uint16_t *)(MIXED_BASE + 0x0004))                    // Mix-signal Chip Version Control
-#define AFE_VAG_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0100))                    // AFE Voice Analog Gain Control Register
-#define AFE_VAC_CON0                (*(volatile uint16_t *)(MIXED_BASE + 0x0104))                    // AFE Voice Analog-Circuit Control Register 0
-#define AFE_VAC_CON1                (*(volatile uint16_t *)(MIXED_BASE + 0x0108))                    // AFE Voice Analog-Circuit Control Register 1
-#define AFE_VAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x010C))                    // AFE Voice Analog Power Down Control Register
+#define AC_ODS_CON                  (*(volatile uint16_t *)(MIXED_BASE + 0x0000))                   // Analog Chip Output Driving Strength Control Register
+#define ACIF_AC_HW_VER              (*(volatile uint16_t *)(MIXED_BASE + 0x0004))                   // Mix-signal Chip Version Control
+#define AFE_VAG_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0100))                   // AFE Voice Analog Gain Control Register
+#define AFE_VAC_CON0                (*(volatile uint16_t *)(MIXED_BASE + 0x0104))                   // AFE Voice Analog-Circuit Control Register 0
+#define AFE_VAC_CON1                (*(volatile uint16_t *)(MIXED_BASE + 0x0108))                   // AFE Voice Analog-Circuit Control Register 1
+#define AFE_VAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x010C))                   // AFE Voice Analog Power Down Control Register
 #define VAPDN_BIAS_DAC_ON           0x0024
 #define VAPDN_BIAS_LNA_ON           0x0030
-#define VAPDN_BIAS_LNA_ADC_ON       0x0038
-#define AFE_AAG_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0200))                    // AFE Audio Analog Gain Control Register
-#define AFE_AAC_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0204))                    // AFE Audio Analog-Circuit Control Register
-#define AFE_AAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x0208))                    // AFE Audio Analog Power Down Control Register
+#define VAPDN_BIAS_LNA_ADC_ON       0x0038q
+#define AFE_AAG_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0200))                   // AFE Audio Analog Gain Control Register
+#define AFE_AAC_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0204))                   // AFE Audio Analog-Circuit Control Register
+#define AFE_AAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x0208))                   // AFE Audio Analog Power Down Control Register
 #define AAPDN_POWER_DOWN            0x0000
 #define AAPDN_BIAS_DAC_ON           0x001C
 #define AAPDN_BIAS_BUF_ON           0x0013
 #define AAPDN_ALL_ON                0x00FF
 #define AAPDN_MASK                  0x00FF
-#define APC_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0600))                      // APC DAC Analog-Circuit Control Register
-#define AUX_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0700))                      // Auxiliary ADC Analog-Circuit Control Register
+#define APC_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0600))                     // APC DAC Analog-Circuit Control Register
+#define AUX_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0700))                     // Auxiliary ADC Analog-Circuit Control Register
 
-#define MD2GSYS_CG_CON0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x000))                 // Power Down Control 0 Register
-#define MD2GSYS_CG_CON2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x008))                 // Power Down Control 2 Register
-#define PDN_CON2_VAFE               (1 << 8)
-#define PDN_CON2_AAFE               (1 << 12)                                                        // or == PDN_CON2_VAFE
-#define MD2GSYS_CG_CON4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x030))                 // Power Down Control 4 Register
-#define MD2GSYS_CG_SET0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x010))                 // Power Down Disable 0 Register
-#define MD2GSYS_CG_SET2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x018))                 // Power Down Disable 2 Register
-#define MD2GSYS_CG_SET4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x034))                 // Power Down Disable 4 Register
-#define MD2GSYS_CG_CLR0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x020))                 // Power Down Enable 0 Register
-#define MD2GSYS_CG_CLR2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x028))                 // Power Down Enable 2 Register
-#define MD2GSYS_CG_CLR4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x038))                 // Power Down Enable 4 Register
+#define MD2GSYS_CG_CON0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x000))                // Power Down Control 0 Register
+#define PDN_IRDMA                   (1 << 6)
+#define PDN_RX_BUF                  (1 << 8)
+#define PDN_TX_BUF                  (1 << 9)
+#define MD2GSYS_CG_CON2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x008))                // Power Down Control 2 Register
+#define PDN_TDMA                    (1 << 0)
+#define PDN_BSI                     (1 << 2)
+#define PDN_BPI                     (1 << 3)
+#define PDN_AFC                     (1 << 4)
+#define PDN_VAFE                    (1 << 8)
+#define PDN_DIVIDER                 (1 << 11)
+#define PDN_FCS                     (1 << 12)
+#define PDN_AAFE                    PDN_VAFE                                                        // Audio / Voice single clock source (afe_def.h)
+#define MD2GSYS_CG_CON4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x030))                // Power Down Control 4 Register
+#define MD2GSYS_CG_SET0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x010))                // Power Down Disable 0 Register
+#define MD2GSYS_CG_SET2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x018))                // Power Down Disable 2 Register
+#define MD2GSYS_CG_SET4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x034))                // Power Down Disable 4 Register
+#define MD2GSYS_CG_CLR0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x020))                // Power Down Enable 0 Register
+#define MD2GSYS_CG_CLR2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x028))                // Power Down Enable 2 Register
+#define MD2GSYS_CG_CLR4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x038))                // Power Down Enable 4 Register
+
+#define DSPCLK_CON                  (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x040))                // mask 0x7100
 
 typedef enum tag_AV_PATH
 {

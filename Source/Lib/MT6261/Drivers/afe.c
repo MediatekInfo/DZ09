@@ -115,7 +115,7 @@ static void AFE_DCLKCtrlSeq(boolean TurnOn, boolean Audio, TAV_PATH Path) // +
         ABBA_AUDIODL_CON15 = 0x11A1;
         ABBA_AUDIODL_CON14 |= 0x0001;
 
-        MD2GSYS_CG_CLR2 = PDN_CON2_VAFE;
+        MD2GSYS_CG_CLR2 = PDN_VAFE;
 
         if (Audio)
         {
@@ -146,7 +146,7 @@ static void AFE_DCLKCtrlSeq(boolean TurnOn, boolean Audio, TAV_PATH Path) // +
 
         AFE_MCU_CON1 &= ~AFE_PATH_MASK;
 
-        MD2GSYS_CG_SET2 = PDN_CON2_VAFE;
+        MD2GSYS_CG_SET2 = PDN_VAFE;
 
         ABBA_AUDIODL_CON14 &= ~0x0001;
         ABBA_AUDIODL_CON15 = 0x1021;
