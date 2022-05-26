@@ -223,11 +223,11 @@
 #define APC_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0600))                     // APC DAC Analog-Circuit Control Register
 #define AUX_AC_CON                  (*(volatile uint16_t *)(PLL_BASE + 0x0700))                     // Auxiliary ADC Analog-Circuit Control Register
 
-#define MD2GSYS_CG_CON0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x000))                // Power Down Control 0 Register
+#define MD2GSYS_CG_CON0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0000))               // Power Down Control 0 Register
 #define PDN_IRDMA                   (1 << 6)
 #define PDN_RX_BUF                  (1 << 8)
 #define PDN_TX_BUF                  (1 << 9)
-#define MD2GSYS_CG_CON2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x008))                // Power Down Control 2 Register
+#define MD2GSYS_CG_CON2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0008))               // Power Down Control 2 Register
 #define PDN_TDMA                    (1 << 0)
 #define PDN_BSI                     (1 << 2)
 #define PDN_BPI                     (1 << 3)
@@ -236,15 +236,15 @@
 #define PDN_DIVIDER                 (1 << 11)
 #define PDN_FCS                     (1 << 12)
 #define PDN_AAFE                    PDN_VAFE                                                        // Audio / Voice single clock source (afe_def.h)
-#define MD2GSYS_CG_CON4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x030))                // Power Down Control 4 Register
-#define MD2GSYS_CG_SET0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x010))                // Power Down Disable 0 Register
-#define MD2GSYS_CG_SET2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x018))                // Power Down Disable 2 Register
-#define MD2GSYS_CG_SET4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x034))                // Power Down Disable 4 Register
-#define MD2GSYS_CG_CLR0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x020))                // Power Down Enable 0 Register
-#define MD2GSYS_CG_CLR2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x028))                // Power Down Enable 2 Register
-#define MD2GSYS_CG_CLR4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x038))                // Power Down Enable 4 Register
+#define MD2GSYS_CG_CON4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0030))               // Power Down Control 4 Register
+#define MD2GSYS_CG_SET0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0010))               // Power Down Disable 0 Register
+#define MD2GSYS_CG_SET2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0018))               // Power Down Disable 2 Register
+#define MD2GSYS_CG_SET4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0034))               // Power Down Disable 4 Register
+#define MD2GSYS_CG_CLR0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0020))               // Power Down Enable 0 Register
+#define MD2GSYS_CG_CLR2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0028))               // Power Down Enable 2 Register
+#define MD2GSYS_CG_CLR4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0038))               // Power Down Enable 4 Register
 
-#define DSPCLK_CON                  (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x040))                // mask 0x7100
+#define DSPCLK_CON                  (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0040))               // mask 0x7100
 
 typedef enum tag_AV_PATH
 {
