@@ -99,6 +99,43 @@
 #define ACFG_CLK_CON_CLR            (*(volatile uint16_t *)(ANA_CFGSYS_BASE + 0x0010))
 #define ACFG_CLK_MASK               0xFFFF
 
+// Modem peripherals power control
+#define MD2GSYS_CG_CON0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0000))               // Power Down Control 0 Register
+#define PDN_IRDMA                   (1 << 6)
+#define PDN_RX_BUF                  (1 << 8)
+#define PDN_TX_BUF                  (1 << 9)
+#define MD2GSYS_CG_CON2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0008))               // Power Down Control 2 Register
+#define PDN_TDMA                    (1 << 0)
+#define PDN_BSI                     (1 << 2)
+#define PDN_BPI                     (1 << 3)
+#define PDN_AFC                     (1 << 4)
+#define PDN_VAFE                    (1 << 8)
+#define PDN_DIVIDER                 (1 << 11)
+#define PDN_FCS                     (1 << 12)
+#define PDN_GCU                     (1 << 13)
+#define PDN_AAFE                    PDN_VAFE                                                        // Audio / Voice single clock source (afe_def.h)
+#define MD2GSYS_CG_CON4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0030))               // Power Down Control 4 Register
+#define MD2GSYS_CG_SET0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0010))               // Power Down Disable 0 Register
+#define MD2GSYS_CG_SET2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0018))               // Power Down Disable 2 Register
+#define MD2GSYS_CG_SET4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0034))               // Power Down Disable 4 Register
+#define MD2GSYS_CG_CLR0             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0020))               // Power Down Enable 0 Register
+#define MD2GSYS_CG_CLR2             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0028))               // Power Down Enable 2 Register
+#define MD2GSYS_CG_CLR4             (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0038))               // Power Down Enable 4 Register
+
+#define MODEMSYS_CG_CON2            (*(volatile uint32_t *)(MDCONFIG_BASE + 0x0008))
+#define MODEMSYS_CG_CON4            (*(volatile uint32_t *)(MDCONFIG_BASE + 0x0088))
+#define MODEMSYS_CG_SET2            (*(volatile uint32_t *)(MDCONFIG_BASE + 0x0028))
+#define MODEMSYS_CG_SET4            (*(volatile uint32_t *)(MDCONFIG_BASE + 0x00A8))
+#define MODEMSYS_CG_CLR2            (*(volatile uint32_t *)(MDCONFIG_BASE + 0x0018))
+#define MODEMSYS_CG_CLR4            (*(volatile uint32_t *)(MDCONFIG_BASE + 0x0098))
+
+// Other power control
+#define DSPCLK_CON                  (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0040))               // mask 0x7100
+#define HWCG_BYPASS                 (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0058))
+#define HWCG_BPBIT                  (1 << 5)
+#define MD2GSYS_CG_CON              (*(volatile uint16_t *)(MD2GCONFG_BASE + 0x0214))               // mask 0x0380
+#define MPERI_PWR_AWARE             (*(volatile uint32_t *)(MDCONFIG_BASE + 0x0400))                // Modemsys bus active aware
+
 #define PCTL_PowerDown(x)           do\
                                     {\
                                         typeof(x) _x = x;\
@@ -129,6 +166,5 @@
 
 extern void PCTL_Initialize(void);
 extern boolean PCTL_GetPeripheralPowerStatus(uint32_t Periph);
-
 
 #endif /* _PCTL_H_ */

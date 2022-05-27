@@ -48,7 +48,6 @@
 #define ANA_CFGSYS_BASE             0xA0730000                                                      // Analog die (MT6100) Configuration Registers (Clock, Reset, etc.)
 #define PWM23_BASE                  0xA0740000                                                      // Pulse-Width Modulation (2 channel)
 #define ADIE_CIRQ_BASE              0xA0760000                                                      // Interrupt Controller (16-bit)
-
 #define AUXADC_BASE                 0xA0790000                                                      // Auxiliary ADC Unit
 #define USB_BASE                    0xA0900000                                                      // USB Controller
 #define USB_SIFSLV_BASE             0xA0910000                                                      // USB SIFSLV
@@ -56,12 +55,13 @@
 //#define KP_BASE                     0xA00D0000                                                      // Keypad controller
 //#define MDCONFIG_BASE               0x83000000
 #define MD2GCONFG_BASE              0x82C00000
+#define AFE_BASE                    0x82CD0000                                                      // Analog front-end
 //#define MODEM_MBIST_CONFIG_BASE     0x83008000
+#define MDCONFIG_BASE               0x83000000
 //#define ARM_CONFG_BASE              0xA0500000
 //#define BT_CONFG_BASE               0xA3300000
 //#define AHB2DSPIO_BASE              0x82800000
 //#define PATCH_BASE                  0x82CC0000
-#define AFE_BASE                    0x82CD0000                                                      // Analog front-end
 //#define BT_BTIF_base                0xA3330000
 
 // Drivers
