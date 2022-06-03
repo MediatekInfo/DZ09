@@ -65,7 +65,7 @@ void EM_ProcessEvents(void)
     {
         DL_ExcludeItem(EventsList, &tmpEvent->ListHeader);
 
-        switch(tmpEvent->Event)
+        switch (tmpEvent->Event)
         {
         case ET_PENPRESS:
             if (tmpEvent->ParamSz == sizeof(TPENEVENT))

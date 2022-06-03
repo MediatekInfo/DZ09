@@ -33,7 +33,7 @@ static boolean USB9_GetDescriptor(pUSBSETUP Setup)
         Error = true;
     else
     {
-        switch(Setup->wValue & USB_CMD_DESCMASK)
+        switch (Setup->wValue & USB_CMD_DESCMASK)
         {
         case USB_CMD_DEVICE:
             USB_PrepareDataTransmit(USB_EP0, DevInterface->DeviceDescriptor,
@@ -156,7 +156,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
 {
     boolean Error = false;
 
-    switch(Setup->bRequest)
+    switch (Setup->bRequest)
     {
     case USB_SET_ADDRESS:
         USB_SetDeviceAddress(Setup->wValue);
@@ -217,7 +217,7 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
 
 void USB9_HandleSetupRequest(pUSBSETUP Setup)
 {
-    switch(Setup->bmRequestType & USB_CMD_TYPEMASK)
+    switch (Setup->bmRequestType & USB_CMD_TYPEMASK)
     {
     case USB_CMD_STDREQ:
         USB9_HandleStdRequest(Setup);
