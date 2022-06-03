@@ -260,10 +260,10 @@ boolean SF_Initialize(void)
         else if (ItfMode == SFM_QPI) s = "QPI";
         else
         {
-            DebugPrint(" Interface mode: UNKNOWN!\r\n");
+            DebugPrint(" Current interface mode: UNKNOWN!\r\n");
             break;
         }
-        DebugPrint(" Interface mode: %s\r\n", s);
+        DebugPrint(" Current interface mode: %s\r\n", s);
 
         if (DeviceID && (DeviceID != 0xFFFFFFFF))
             DebugPrint(" Found device with ID: (0x%02X, 0x%02X, 0x%02X)\r\n",

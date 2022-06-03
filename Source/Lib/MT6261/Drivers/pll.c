@@ -43,7 +43,8 @@ void PLL_Initialize(void)                                                       
 
     //select MPLL frequency
     PLL_MPLL_CON0  = 0x1400;    // 0xA0170100, set MPLL = 520M
-    PLL_MPLL_CON1  = 0x0000;    // 0xA0170104, set post divider = /1
+//    PLL_MPLL_CON0  = 0x0640;    // 0xA0170100, set MPLL = 6 * 13 / 2 = 39MHz, b[6] - div2
+    PLL_MPLL_CON1  = 0x0000;    // 0xA0170104, set post divider = 0x0000 - /1, 0x4000 - /2, 0x8000 - /4
 
     //enable MDDS
     PLL_MDDS_CON0 = 0x0001;     //0x A0170640, bit 0 set to 1 to enable MDDS

@@ -38,10 +38,12 @@ static void PMUBL_UpdateValues(uint32_t Value, boolean TurnOn)
     }
     else if (BLState.Mode == BM_PWM)
     {
-#if (BLMINVALUE >= 100)
+#ifndef BLMINVALUE
+#define BLMINVALUE      0
+#elif (BLMINVALUE >= 100)
 #warning the BLMINVALUE value is set to >100%, redefined to 100%
 #undef  BLMINVALUE
-#define BLMINVALUE    100
+#define BLMINVALUE      100
 #endif
         PMU_SetISINKParameters(BACKLIGHTCHNL, IC_20mA, TurnOn);
         if (!TurnOn)
@@ -60,15 +62,15 @@ static void PMUBL_UpdateValues(uint32_t Value, boolean TurnOn)
 
 static void PMUBL_HideTimerHandler(pTIMER Timer)
 {
-    if (BLState.Reduced)
+    if (BLState.Stage == BS_REDUCED)
     {
         PMUBL_UpdateValues(BLState.Value, false);
         LRT_Stop(BLReduceTimer);
     }
     else
     {
-        BLState.Reduced = true;
-        PMUBL_UpdateValues(BLState.Value / 3, BLState.Enabled);
+        BLState.Stage = BS_REDUCED;
+        PMUBL_UpdateValues(BLState.Value / 3, true);
         LRT_SetInterval(BLReduceTimer, BACKLIGHTOFF);
     }
 }
@@ -97,38 +99,44 @@ void PMUBL_SetBacklightMode(TBLMODE Mode)
 
 void PMUBL_SetupValue(uint32_t Value)
 {
-    uint32_t iflags = __disable_interrupts();
+    uint32_t intflags = __disable_interrupts();
 
     BLState.Value = Value;
-    if (!BLState.Reduced) PMUBL_UpdateValues(BLState.Value, BLState.Enabled);
-    else PMUBL_UpdateValues(BLState.Value / 3, BLState.Enabled);
 
-    __restore_interrupts(iflags);
+    if (BLState.Stage == BS_FULL) PMUBL_UpdateValues(BLState.Value, true);
+    else if (BLState.Stage == BS_REDUCED) PMUBL_UpdateValues(BLState.Value / 3, true);
+    else PMUBL_UpdateValues(BLState.Value, false);
+
+    __restore_interrupts(intflags);
 }
 
 void PMUBL_TurnOn(boolean TurnOn)
 {
-    BLState.Enabled = TurnOn;
-
     if (!TurnOn)
     {
-        uint32_t iflags = __disable_interrupts();
+        uint32_t intflags = __disable_interrupts();
 
         LRT_Stop(BLReduceTimer);
-        PMUBL_UpdateValues(BLState.Value, BLState.Enabled);
-        BLState.Reduced = false;
-        __restore_interrupts(iflags);
+        PMUBL_UpdateValues(BLState.Value, false);
+        BLState.Stage = BS_OFF;
+        __restore_interrupts(intflags);
     }
-    else PMUBL_RestartReduceTimer();
+    else PMUBL_RestartBacklightTimer(true);
 }
 
-void PMUBL_RestartReduceTimer(void)
+void PMUBL_RestartBacklightTimer(boolean UnlockGUI)
 {
-    uint32_t iflags = __disable_interrupts();
+    uint32_t intflags = __disable_interrupts();
 
-    BLState.Reduced = false;
+    BLState.Stage = BS_FULL;
     LRT_SetInterval(BLReduceTimer, BACKLIGHTREDUCE);
     LRT_Start(BLReduceTimer);
-    PMUBL_UpdateValues(BLState.Value, BLState.Enabled);
-    __restore_interrupts(iflags);
+    PMUBL_UpdateValues(BLState.Value, true);
+    if (UnlockGUI) GUI_SetLockState(false);
+    __restore_interrupts(intflags);
+}
+
+TBLSTAGE PMUBL_GetBacklightStage(void)
+{
+    return BLState.Stage;
 }

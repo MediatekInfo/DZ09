@@ -68,11 +68,14 @@
 #define PLL_CLK_CONDG               (*(volatile uint32_t *)(CONFIG_BASE + 0x0118))
 #define PLL_CLK_CONDH               (*(volatile uint32_t *)(CONFIG_BASE + 0x011C))
 
-#define PLL_FH_CON0                 (*(volatile uint32_t *)(MIXED_BASE + 0x0500))
-#define PLL_FH_CON1                 (*(volatile uint32_t *)(MIXED_BASE + 0x0504))
-#define PLL_FH_CON2                 (*(volatile uint32_t *)(MIXED_BASE + 0x0508))
-#define PLL_FH_CON3                 (*(volatile uint32_t *)(MIXED_BASE + 0x050C))
-#define PLL_FH_CON4                 (*(volatile uint32_t *)(MIXED_BASE + 0x0510))
+#define PLL_FH_CON0                 (*(volatile uint16_t *)(MIXED_BASE + 0x0500))
+#define PLL_FH_CON1                 (*(volatile uint16_t *)(MIXED_BASE + 0x0504))
+#define PLL_FH_CON2                 (*(volatile uint16_t *)(MIXED_BASE + 0x0508))
+#define PLL_FH_CON3                 (*(volatile uint16_t *)(MIXED_BASE + 0x050C))
+#define PLL_FH_CON4                 (*(volatile uint16_t *)(MIXED_BASE + 0x0510))
+#define PLL_FH_CON5                 (*(volatile uint16_t *)(MIXED_BASE + 0x0514))
+
+#define MNPLL_FHSET(m, n)           (*(volatile uint16_t *)(MIXED_BASE + 0x0520 + (m) * 16  + (n) * 4)) // m:0~5, n:0~3, TDMA_FHCON8~31
 
 extern void PLL_Initialize(void);
 extern void PLL_SetUPLLEnabled(boolean Enable);

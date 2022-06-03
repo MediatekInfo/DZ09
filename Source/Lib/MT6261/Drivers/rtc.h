@@ -41,7 +41,7 @@
 #define RTC_CII_EN                  (*(volatile uint16_t *)(RTC_BASE + 0x000C))
 #define SECCII                      (1 << 0)
 #define MINCII                      (1 << 1)
-#define MOUCII                      (1 << 2)
+#define HOUCII                      (1 << 2)
 #define DOMCII                      (1 << 3)
 #define DOWCII                      (1 << 4)
 #define MTHCII                      (1 << 5)
@@ -130,10 +130,10 @@ extern boolean RTC_IsValidState(void);
 extern boolean RTC_IsAlarmActive(void);
 extern boolean RTC_Initialize(void);
 extern TDATETIME RTC_GetDateTime(void);
-extern boolean RTC_SetTime(pTIME Time);
-extern boolean RTC_SetDate(pDATE Date);
+extern boolean RTC_SetDateTime(pDATETIME DateTime);
 extern TDATETIME RTC_GetAlarmDateTime(void);
 extern boolean RTC_SetAlarmDateTime(pDATETIME DateTime, boolean UseInterrupt);
+extern void RTC_SetCIIEnable(uint16_t Intervals, boolean Enable);
 extern void RTC_Sleep(void);
 extern void RTC_Resume(void);
 

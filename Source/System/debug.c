@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -57,6 +57,21 @@ void DBG_DumpMem32(uint32_t *Address, uint32_t Count)
         DebugPrint("%08X  ", (uint32_t)Address);
         for(x = 0; x < 16; x += 4)
             DebugPrint("%08X ", *Address++);
+        DebugPrint("\r\n");
+    }
+}
+
+void DBG_DumpMem16(uint16_t *Address, uint32_t Count)
+{
+    uint32_t x, y;
+
+    Address = (uint16_t *)((uint32_t)Address & ~(sizeof(uint32_t) - 1));
+
+    for(y = 0; y < Count; y += 16)
+    {
+        DebugPrint("%08X  ", (uint32_t)Address);
+        for(x = 0; x < 16; x += 2)
+            DebugPrint("%04X ", *Address++);
         DebugPrint("\r\n");
     }
 }

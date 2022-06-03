@@ -26,11 +26,17 @@ typedef enum tag_BLMODE
     BM_MODES
 } TBLMODE;
 
+typedef enum tag_BLSTAGE
+{
+    BS_OFF,
+    BS_REDUCED,
+    BS_FULL
+} TBLSTAGE;
+
 typedef struct tag_BLSTATE
 {
     uint32_t Value;
-    boolean  Enabled;
-    boolean  Reduced;
+    TBLSTAGE Stage;
     TBLMODE  Mode;
 } TBLSTATE;
 
@@ -38,6 +44,7 @@ extern void PMUBL_Initialize(void);
 extern void PMUBL_SetBacklightMode(TBLMODE Mode);
 extern void PMUBL_SetupValue(uint32_t Value);
 extern void PMUBL_TurnOn(boolean TurnOn);
-extern void PMUBL_RestartReduceTimer(void);
+extern void PMUBL_RestartBacklightTimer(boolean UnlockGUI);
+extern TBLSTAGE PMUBL_GetBacklightStage(void);
 
 #endif /* _BACKLIGHT_H_ */
