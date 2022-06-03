@@ -246,6 +246,7 @@ typedef enum tag_ASR
 extern void AFE_SetSpeakerVolume(uint8_t Volume);
 extern void AFE_TurnOnSpeaker(boolean On);
 extern boolean AFE_SetAudioSampleRate(TASR Rate);
-extern void Test_sound(void);
+extern void AFE_initialize(void);
+extern void Beep(void);
 
 #endif /* _AFE_H_ */

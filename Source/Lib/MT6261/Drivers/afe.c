@@ -136,7 +136,7 @@ static void AFE_DCLKCtrlSeq(boolean TurnOn, boolean Audio, TAV_PATH Path) // +
     }
     else
     {
-        ABBA_AUDIODL_CON0 &= ~(RG_AUDDACRPWRUP | RG_AUDDACLPWRUP);
+        ABBA_AUDIODL_CON0 &= ~(RG_AUDDACRPWRUP | RG_AUDDACLPWRUP); //-V525
         ABBA_AUDIODL_CON7 &= ~0x0003;
         ABBA_AUDIODL_CON11 &= ~0x0003;
         AFE_MCU_CON0 &= ~AFE_ON;                                                                    // Turns off the audio front end
@@ -269,7 +269,7 @@ void AFE_TurnOnSpeaker(boolean On)
 
 boolean AFE_SetAudioSampleRate(TASR Rate)
 {
-    switch(Rate)
+    switch (Rate)
     {
     case ASR_8KHZ:
     case ASR_11KHZ:
@@ -287,7 +287,7 @@ boolean AFE_SetAudioSampleRate(TASR Rate)
     }
 }
 
-void Test_sound(void)
+void AFE_initialize(void)
 {
     AFE_ChipInitialization();
     AFE_DCLKCtrlSeq(true, true, DL_PATH);
@@ -301,11 +301,12 @@ void Test_sound(void)
     SPK_CON0 = SPK_GAIN(3) | RG_SPK_EN;
 
     ABBA_AUDIODL_CON13 = RG_GAINS(0x10) | RG_GAINL(0x1F) | RG_GAINR(0x1F);
-
     USC_Pause_us(5000);
+}
+
+void Beep(void)
+{
     AFE_DAC_TEST = VDAC_SINUS | ADAC_SINUS | AMP_DIV(7) | FREQ_DIV(22);
     USC_Pause_us(50000);
     AFE_DAC_TEST &= ~(VDAC_SINUS | ADAC_SINUS);
-
-    DebugPrint("Test sound %04X %04X %04X %04X\r\n", AFE_DAC_TEST, ABBA_AUDIODL_CON13, ABBA_AUDIODL_CON0, AFE_AMCU_CON1);
 }
