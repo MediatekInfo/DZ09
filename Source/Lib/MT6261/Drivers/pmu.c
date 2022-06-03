@@ -228,6 +228,23 @@ void PMU_SetPWKEYHandler(void (*Handler)(boolean Pressed))
 #endif
 }
 
+void PMU_SetPWRKEYLongPressFunction(TLPFUNC Function, boolean Enabled)
+{
+    uint32_t intflags = __disable_interrupts();
+
+    if      (Function == LPF_REBOOT)   TEST_CON0 &= ~RG_LNGP_SHUTDOWN_SEL;
+    else if (Function == LPF_SHUTDOWN) TEST_CON0 |= RG_LNGP_SHUTDOWN_SEL;
+    else return;
+
+    TEST_CON0 = (TEST_CON0 & ~RG_PWRKEY_RST_EN) | (Enabled) ? RG_PWRKEY_RST_EN : 0;
+
+    TEST_CON0 &= ~RG_PWRKEY_RST_FUNC_SET;
+    TEST_CON0 |= RG_PWRKEY_RST_FUNC_SET;
+    TEST_CON0 &= ~RG_PWRKEY_RST_FUNC_SET;
+
+    __restore_interrupts(intflags);
+}
+
 void PMU_SetChargerWDTEnabled(boolean Enabled)
 {
     CHR_CON9 |= RG_CHRWDT_WR;

@@ -786,8 +786,15 @@ typedef enum tag_ICVAL
 #define FQMTR_CON2                  (*(volatile uint16_t *)(PMU_BASE + 0x0FF8))                     // FQMTR_DATA mask 0xFFFF
 #define FQMTR_CON3                  (*(volatile uint16_t *)(PMU_BASE + 0x0FFC))                     // FQMTR_WINSET mask 0xFFFF
 
+typedef enum tag_LPFUNC
+{
+    LPF_REBOOT,
+    LPF_SHUTDOWN
+} TLPFUNC;
+
 extern boolean PMU_IsPowerKeyPressed(void);
 extern void PMU_SetPWKEYHandler(void (*Handler)(boolean Pressed));
+extern void PMU_SetPWRKEYLongPressFunction(TLPFUNC Function, boolean Enabled);
 extern void PMU_SetChargerWDTEnabled(boolean Enabled);
 extern void PMU_SetChargerWDTInterval(uint8_t Interval);
 extern boolean PMU_IsChargerConnected(void);
