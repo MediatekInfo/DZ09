@@ -54,6 +54,7 @@
 
 //#define KP_BASE                     0xA00D0000                                                      // Keypad controller
 //#define MDCONFIG_BASE               0x83000000
+#define DPRAM_CPU_BASE              0x82200000
 #define MD2GCONFG_BASE              0x82C00000
 #define AFE_BASE                    0x82CD0000                                                      // Analog front-end
 //#define MODEM_MBIST_CONFIG_BASE     0x83008000
