@@ -232,6 +232,8 @@ void PMU_SetPWRKEYLongPressFunction(TLPFUNC Function, boolean Enabled)
 {
     uint32_t intflags = __disable_interrupts();
 
+    DebugPrint("PWRKEY long press function set to ");
+
     if      (Function == LPF_REBOOT)   TEST_CON0 &= ~RG_LNGP_SHUTDOWN_SEL;
     else if (Function == LPF_SHUTDOWN) TEST_CON0 |= RG_LNGP_SHUTDOWN_SEL;
     else return;
@@ -241,6 +243,8 @@ void PMU_SetPWRKEYLongPressFunction(TLPFUNC Function, boolean Enabled)
     TEST_CON0 &= ~RG_PWRKEY_RST_FUNC_SET;
     TEST_CON0 |= RG_PWRKEY_RST_FUNC_SET;
     TEST_CON0 &= ~RG_PWRKEY_RST_FUNC_SET;
+
+    DebugPrint("%s\r\n", (Function == LPF_REBOOT) ? "LPF_REBOOT" : "LPF_SHUTDOWN");
 
     __restore_interrupts(intflags);
 }
