@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021 - 2019 AJScorp
+* Copyright (C) 2022 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -22,19 +22,6 @@
 #include "gditypes.h"
 
 #define MAX_LCDQUEUE_SIZE           128
-
-#define LCD_SERIAL_CLOCK_REG        (*(volatile uint32_t *)(CONFIG_BASE + 0x11C))
-#define LCD_SERIAL_CLOCK_MASK       0x70
-#define LCD_SERIAL_CLOCK(v)         (((v) & 0x07) << 4)
-typedef enum tag_TLCDSCLOCK
-{
-    LCD_CLOCK_MPLL_DIV4 = 0,
-    LCD_CLOCK_MPLL_DIV5,
-    LCD_CLOCK_MPLL_DIV6,
-    LCD_CLOCK_MPLL_DIV7,
-    LCD_CLOCK_MPLL_DIV8,
-    LCD_CLOCK_13M
-} TLCDSCLOCK;
 
 #define LCDIF_STA                   (*(volatile uint16_t *)(LCDIF_BASE + 0x0000))
 #define LCDIF_RUNNING               (1 << 0)
