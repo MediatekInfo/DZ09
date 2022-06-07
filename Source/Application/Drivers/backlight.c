@@ -64,6 +64,7 @@ static void PMUBL_HideTimerHandler(pTIMER Timer)
 {
     if (BLState.Stage == BS_REDUCED)
     {
+        BLState.Stage = BS_OFF;
         PMUBL_UpdateValues(BLState.Value, false);
         LRT_Stop(BLReduceTimer);
     }
