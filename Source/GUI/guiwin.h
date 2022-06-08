@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2021, 2020 AJScorp
+* Copyright (C) 2022 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -35,8 +35,8 @@ typedef struct tag_WIN
 extern pGUIOBJECT GUILayer[LCDIF_NUMLAYERS];
 
 extern void GUI_DrawDefaultWindow(pGUIOBJECT Object, pRECT Clip);
-extern boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
-                               uint8_t GlobalAlpha, TCOLOR ForeColor);
+extern pGUIOBJECT GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
+                                  uint8_t GlobalAlpha, TCOLOR ForeColor);
 extern pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
                                    boolean (*Handler)(pEVENT, pGUIOBJECT),
                                    TCOLOR ForeColor, TGOFLAGS Flags);
