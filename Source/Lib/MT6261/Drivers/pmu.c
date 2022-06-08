@@ -138,7 +138,7 @@ static void PMU_MeasureChargeParams(void)
     ISense = (tmpIValue >= VBat) ? 5 * (tmpIValue - VBat) : 0;
 }
 
-static void ChargerTimerHandler(pTIMER Timer)
+static void PMU_ChargerTimerHandler(pTIMER Timer)
 {
     boolean ChargerState = PMU_IsChargerConnected();
 
@@ -218,7 +218,7 @@ boolean PMU_IsPowerKeyPressed(void)
     return (STRUP_CON0 & QI_PWRKEY_DEB) ? false : true;
 }
 
-void PMU_SetPWKEYHandler(void (*Handler)(boolean Pressed))
+void PMU_SetPWRKEYHandler(void (*Handler)(boolean Pressed))
 {
 #if (APPUSEPWKEY != 0)
     uint32_t intflags = __disable_interrupts();
@@ -458,7 +458,7 @@ boolean PMU_Initialize(void)
         }
         if (ChargerTimer == NULL)
         {
-            ChargerTimer = LRT_Create(500, ChargerTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
+            ChargerTimer = LRT_Create(500, PMU_ChargerTimerHandler, TF_AUTOREPEAT | TF_ENABLED);
             if (ChargerTimer == NULL)
             {
                 DebugPrint("Failed! Can not create timer.\r\n");

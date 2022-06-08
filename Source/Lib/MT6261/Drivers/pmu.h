@@ -793,7 +793,7 @@ typedef enum tag_LPFUNC
 } TLPFUNC;
 
 extern boolean PMU_IsPowerKeyPressed(void);
-extern void PMU_SetPWKEYHandler(void (*Handler)(boolean Pressed));
+extern void PMU_SetPWRKEYHandler(void (*Handler)(boolean Pressed));
 extern void PMU_SetPWRKEYLongPressFunction(TLPFUNC Function, boolean Enabled);
 extern void PMU_SetChargerWDTEnabled(boolean Enabled);
 extern void PMU_SetChargerWDTInterval(uint8_t Interval);
