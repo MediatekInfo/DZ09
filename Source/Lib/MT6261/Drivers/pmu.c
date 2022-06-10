@@ -21,8 +21,11 @@
 #include "systemconfig.h"
 #include "pmu.h"
 
-#define BATPARAMAVERAGESIZE         128
+#define BATPARAMFILTERSIZE          128
+#define BATPARAMAVERAGESIZE         4
 #define CHARGERONDEBOUNCE           (3 * 2)                                                         // 3 sec
+#define BATHIVOLTAGE                4000
+#define BATLOVOLTAGE                3100
 #define RECHARGEVOLTAGE             3800                                                            // mV
 #define RECHARGETIMEOUT             (10 * 2)                                                        // 10 sec
 #ifndef BATMAXCURRENT
@@ -69,6 +72,10 @@ static uint16_t VBat, ISense;
 static uint32_t ChargeOnDebounce;
 static uint32_t RechargeTimeout;
 static void (*PWRKEYAppHandler)(boolean Pressed);
+static uint16_t ChargeLevel;
+static boolean  FirstMeasurememnt;
+static uint16_t MathVBatArray[BATPARAMFILTERSIZE];
+static uint16_t MathISenseArray[BATPARAMFILTERSIZE];
 
 static int8_t PMU_GetChargingParams(uint16_t TestValue)
 {
@@ -119,23 +126,71 @@ static void PMU_ChargerEnable(boolean Enable)
     }
 }
 
+static int16_t PMU_FilterADCMeasures(int16_t *Data, uint16_t Size, uint16_t AverageSize)
+{
+    int16_t  Delta = 1;
+    uint16_t i, j = Size, Index = 0;
+    int32_t  Sum;
+
+    while(j > AverageSize)
+    {
+        i = --j;
+        while(i--)
+        {
+            if (Data[Index] > Data[Index + 1])
+            {
+                int16_t tmpData = Data[Index];
+
+                Data[Index] = Data[Index + 1];
+                Data[Index + 1] = tmpData;
+            }
+            if (!i) Delta = -Delta;
+            Index += Delta;
+        }
+    }
+
+    Sum = 0;
+    while(j--) Sum += Data[Index++];
+    Sum = (Sum + AverageSize / 2) / AverageSize;
+
+    return Sum;
+}
+
 static void PMU_MeasureChargeParams(void)
 {
-    uint16_t tmpADCValues[2], i, j;
-    uint32_t MathChargerADC[2] = {0}, tmpIValue;
+    uint16_t tmpADCValues[2], i;
+    int16_t  tmpValue;
 
-    for(i = 0; i < BATPARAMAVERAGESIZE; i++)
+    for(i = 0; i < BATPARAMFILTERSIZE; i++)
     {
         AUXADC_MeasureMultiple(tmpADCValues, ADC_ISENSE | ADC_VBAT);
-        for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
-            MathChargerADC[j] += tmpADCValues[j];
+        MathVBatArray[i] = tmpADCValues[0];
+        MathISenseArray[i] = tmpADCValues[1];
     }
-    for(j = 0; j < sizeof(tmpADCValues) / sizeof(tmpADCValues[0]); j++)
-        tmpADCValues[j] = (MathChargerADC[j] + BATPARAMAVERAGESIZE / 2) / BATPARAMAVERAGESIZE;
+
+    tmpADCValues[0] = PMU_FilterADCMeasures(MathVBatArray, BATPARAMFILTERSIZE, BATPARAMAVERAGESIZE);
+    tmpADCValues[1] = PMU_FilterADCMeasures(MathISenseArray, BATPARAMFILTERSIZE, BATPARAMAVERAGESIZE);
 
     VBat = (5600 * tmpADCValues[0]) / 0x03FF;
-    tmpIValue = (5600 * tmpADCValues[1]) / 0x03FF;
-    ISense = (tmpIValue >= VBat) ? 5 * (tmpIValue - VBat) : 0;
+    tmpValue = (5600 * tmpADCValues[1]) / 0x03FF;
+    ISense = (tmpValue >= VBat) ? 5 * (tmpValue - VBat) : 0;
+
+    tmpValue = (VBat < BATLOVOLTAGE) ? 0 : VBat - BATLOVOLTAGE;
+    tmpValue = min((1000 * tmpValue) / (BATHIVOLTAGE - BATLOVOLTAGE), 1000);
+
+    if (tmpValue != ChargeLevel)
+    {
+        if (FirstMeasurememnt)
+        {
+            ChargeLevel = tmpValue;
+            FirstMeasurememnt = false;
+        }
+        else
+        {
+            tmpValue -= ChargeLevel;
+            ChargeLevel += ((tmpValue < 0) ? tmpValue - 7 : tmpValue + 7) / 8;
+        }
+    }
 }
 
 static void PMU_ChargerTimerHandler(pTIMER Timer)
@@ -289,7 +344,16 @@ uint16_t PMU_GetBatteryVoltageMV(void)
     PMU_MeasureChargeParams();
     return VBat;
 #else
-    return 0;
+    return 4200;
+#endif
+}
+
+uint16_t PMU_GetBatteryChargeLevel(void)
+{
+#if (APPUSEBATTERY != 0)
+    return ChargeLevel;
+#else
+    return 1000;
 #endif
 }
 
@@ -446,6 +510,9 @@ boolean PMU_Initialize(void)
 #endif
 
 #if (APPUSEBATTERY != 0)
+    ChargeLevel = 1000;
+    FirstMeasurememnt = true;
+
     do
     {
         DebugPrint(" Battery charger...");

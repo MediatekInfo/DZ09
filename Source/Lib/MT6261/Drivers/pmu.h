@@ -800,6 +800,7 @@ extern void PMU_SetChargerWDTInterval(uint8_t Interval);
 extern boolean PMU_IsChargerConnected(void);
 extern boolean PMU_IsBatteryCharging(void);
 extern uint16_t PMU_GetBatteryVoltageMV(void);
+extern uint16_t PMU_GetBatteryChargeLevel(void);
 extern void PMU_SetChargingEnable(boolean Enabled);
 extern void PMU_EnterUSBDLMode(void);
 extern void PMU_LeaveUSBDLMode(void);
