@@ -83,7 +83,7 @@
 #define RG_VRF_EN                   (1 << 0)
 #define VRF_ON_SEL                  (1 << 1)
 #define RG_VRF_NDIS_EN              (1 << 10)
-#define QI_VRF_STATAUS              (1 << 15)
+#define QI_VRF_STATUS               (1 << 15)
 #define VRF_CON1                    (*(volatile uint16_t *)(PMU_BASE + 0x0104))
 #define QI_VRF_LP_EN                (1 << 0)
 #define VRF_MODE_SEL                (1 << 4)

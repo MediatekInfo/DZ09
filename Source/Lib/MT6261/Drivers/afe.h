@@ -211,7 +211,7 @@
 #define AFE_VAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x010C))                   // AFE Voice Analog Power Down Control Register
 #define VAPDN_BIAS_DAC_ON           0x0024
 #define VAPDN_BIAS_LNA_ON           0x0030
-#define VAPDN_BIAS_LNA_ADC_ON       0x0038q
+#define VAPDN_BIAS_LNA_ADC_ON       0x0038
 #define AFE_AAG_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0200))                   // AFE Audio Analog Gain Control Register
 #define AFE_AAC_CON                 (*(volatile uint16_t *)(MIXED_BASE + 0x0204))                   // AFE Audio Analog-Circuit Control Register
 #define AFE_AAPDN_CON               (*(volatile uint16_t *)(MIXED_BASE + 0x0208))                   // AFE Audio Analog Power Down Control Register
