@@ -841,7 +841,7 @@
                                             else if (p < 40) Mask = GPIO_MODE4MASK;\
                                             else if (p < 48) Mask = GPIO_MODE5MASK;\
                                             else if (p < 56) Mask = GPIO_MODE6MASK;\
-                                            GPIO_MODE(RegIdx) = (GPIO_MODE(RegIdx) & Mask) |\
+                                            GPIO_MODE(RegIdx) = (GPIO_MODE(RegIdx) & ~(0x0FUL << ModePos)) |\
                                                                 (((Mode) & Mask) << ModePos);\
                                         }\
                                     }\
