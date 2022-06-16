@@ -71,44 +71,46 @@ void GUI_DrawDefaultWindow(pGUIOBJECT Object, pRECT Clip)
     }
 }
 
-boolean GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
-                        uint8_t GlobalAlpha, TCOLOR ForeColor)
+pGUIOBJECT GUI_CreateLayer(TVLINDEX Layer, TRECT Position, TCFORMAT CFormat,
+                           uint8_t GlobalAlpha, TCOLOR ForeColor)
 {
-    pWIN    LObject;
-    boolean Result = false;
+    if (Layer >= LCDIF_NUMLAYERS) return NULL;
 
-    if ((Layer >= LCDIF_NUMLAYERS) || (GUILayer[Layer] != NULL)) return false;
-
-    LObject = malloc(sizeof(TWIN));
-    if (LObject != NULL)
+    if (GUILayer[Layer] == NULL)
     {
-        memset(LObject, 0x00, sizeof(TWIN));
+        boolean Result = false;
+        pWIN    LObject = malloc(sizeof(TWIN));
 
-        NORMALIZEVAL(Position.l, Position.r);
-        NORMALIZEVAL(Position.t, Position.b);
-
-        LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                      // Left/Top of Layer object must be zero
-        LObject->Head.Enabled = true;
-        LObject->Head.Visible = false;
-        LObject->Head.InheritedEnabled = true;
-        LObject->Head.InheritedVisible = true;
-        LObject->Layer = Layer;
-        LObject->ForeColor = ForeColor;
-
-        Result = LCDIF_SetupLayer(Layer, Position.lt, Position.r - Position.l + 1,
-                                  Position.b - Position.t + 1, CFormat, GlobalAlpha, ForeColor);
-
-        if (!Result) free(LObject);
-        else
+        if (LObject != NULL)
         {
-            uint32_t intflags = __disable_interrupts();
+            memset(LObject, 0x00, sizeof(TWIN));
 
-            LObject->Head.Type = GO_WINDOW;
-            GUILayer[Layer] = (pGUIOBJECT)LObject;
-            __restore_interrupts(intflags);
+            NORMALIZEVAL(Position.l, Position.r);
+            NORMALIZEVAL(Position.t, Position.b);
+
+            LObject->Head.Position = GDI_GlobalToLocalRct(&Position, &Position.lt);                 // Left/Top of Layer object must be zero
+            LObject->Head.Enabled = true;
+            LObject->Head.Visible = false;
+            LObject->Head.InheritedEnabled = true;
+            LObject->Head.InheritedVisible = true;
+            LObject->Layer = Layer;
+            LObject->ForeColor = ForeColor;
+
+            Result = LCDIF_SetupLayer(Layer, Position.lt, Position.r - Position.l + 1,
+                                      Position.b - Position.t + 1, CFormat, GlobalAlpha, ForeColor);
+
+            if (!Result) free(LObject);
+            else
+            {
+                uint32_t intflags = __disable_interrupts();
+
+                LObject->Head.Type = GO_WINDOW;
+                GUILayer[Layer] = (pGUIOBJECT)LObject;
+                __restore_interrupts(intflags);
+            }
         }
     }
-    return Result;
+    return GUILayer[Layer];
 }
 
 pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,

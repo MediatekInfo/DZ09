@@ -83,7 +83,7 @@
 #define RG_VRF_EN                   (1 << 0)
 #define VRF_ON_SEL                  (1 << 1)
 #define RG_VRF_NDIS_EN              (1 << 10)
-#define QI_VRF_STATAUS              (1 << 15)
+#define QI_VRF_STATUS               (1 << 15)
 #define VRF_CON1                    (*(volatile uint16_t *)(PMU_BASE + 0x0104))
 #define QI_VRF_LP_EN                (1 << 0)
 #define VRF_MODE_SEL                (1 << 4)
@@ -793,13 +793,14 @@ typedef enum tag_LPFUNC
 } TLPFUNC;
 
 extern boolean PMU_IsPowerKeyPressed(void);
-extern void PMU_SetPWKEYHandler(void (*Handler)(boolean Pressed));
+extern void PMU_SetPWRKEYHandler(void (*Handler)(boolean Pressed));
 extern void PMU_SetPWRKEYLongPressFunction(TLPFUNC Function, boolean Enabled);
 extern void PMU_SetChargerWDTEnabled(boolean Enabled);
 extern void PMU_SetChargerWDTInterval(uint8_t Interval);
 extern boolean PMU_IsChargerConnected(void);
 extern boolean PMU_IsBatteryCharging(void);
 extern uint16_t PMU_GetBatteryVoltageMV(void);
+extern uint16_t PMU_GetBatteryChargeLevel(void);
 extern void PMU_SetChargingEnable(boolean Enabled);
 extern void PMU_EnterUSBDLMode(void);
 extern void PMU_LeaveUSBDLMode(void);

@@ -67,6 +67,18 @@
 #define PLL_CLK_CONDF               (*(volatile uint32_t *)(CONFIG_BASE + 0x0114))
 #define PLL_CLK_CONDG               (*(volatile uint32_t *)(CONFIG_BASE + 0x0118))
 #define PLL_CLK_CONDH               (*(volatile uint32_t *)(CONFIG_BASE + 0x011C))
+#define SFC_MUX_SEL(v)              (((v) & 0x07) << 0)
+#define LCD_MUX_SEL(v)              (((v) & 0x07) << 4)
+#define DSP_MUX_SEL(v)              (((v) & 0x03) << 9)
+typedef enum tag_TLCDSCLOCK
+{
+    LCD_MUX_MPLL_DIV4 = 0,
+    LCD_MUX_MPLL_DIV5,
+    LCD_MUX_MPLL_DIV6,
+    LCD_MUX_MPLL_DIV7,
+    LCD_MUX_MPLL_DIV8,
+    LCD_MUX_13M
+} TLCDSCLOCK;
 
 #define PLL_FH_CON0                 (*(volatile uint16_t *)(MIXED_BASE + 0x0500))
 #define PLL_FH_CON1                 (*(volatile uint16_t *)(MIXED_BASE + 0x0504))

@@ -26,6 +26,9 @@ void Init(void)
 {
     DBG_Initialize();                                                                               // Setup debug interface
     DebugPrint("\r\n--System initialization--\r\n");
+
+    PMU_SetPWRKEYLongPressFunction(LPF_REBOOT, true);
+
     MPU_Initialize();                                                                               // Setup system cache
     PCTL_Initialize();                                                                              // Power down peripherals by default
     GPIO_Initialize();                                                                              // Set GPIO to default state

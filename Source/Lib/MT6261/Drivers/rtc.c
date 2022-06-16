@@ -99,7 +99,7 @@ boolean RTC_Initialize(void)
         RTC_IRQ_EN = 0;                                                                             // Disable RTC interrupts
         RTC_AL_MASK = YEA_MSK | MTH_MSK | DOM_MSK | DOW_MSK | HOU_MSK | MIN_MSK | SEC_MSK;          // Disable Alarms
         RTC_UpdateContext();
-        if (RTC_IRQ_STA) {};                                                                        // Clear interrupts
+        if (RTC_IRQ_STA) {}                                                                         // Clear interrupts
 
         memset(&DateTime, 0x00, sizeof(DateTime));                                                  // Set default Date/Time values
         DateTime.Date.Day = 1;
