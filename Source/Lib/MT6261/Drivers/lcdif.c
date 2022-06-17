@@ -49,7 +49,7 @@ uint8_t LCDIF_ReadData(void)
 
 void LCDIF_SetClock(TLCDSCLOCK Clock)
 {
-   PLL_CLK_CONDH = (PLL_CLK_CONDH & ~LCD_MUX_SEL(-1)) | LCD_MUX_SEL(Clock);
+    PLL_CLK_CONDH = (PLL_CLK_CONDH & ~LCD_MUX_SEL(-1)) | LCD_MUX_SEL(Clock);
 }
 
 void LCDIF_StartLCDTransfer(void)
