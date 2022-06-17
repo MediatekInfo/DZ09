@@ -333,36 +333,63 @@ boolean LCDIF_GetLayerPosition(TVLINDEX Layer, pRECT Position)
 
 boolean LCDIF_SetLayerPosition(TVLINDEX Layer, TRECT Position, boolean UpdateScreen)
 {
-    if ((Layer < LCDIF_NUMLAYERS) && LCDScreen.VLayer[Layer].Initialized)
+    if (((Layer < LCDIF_NUMLAYERS) && LCDScreen.VLayer[Layer].Initialized) &&
+            (Position.l >= 0) && (Position.t >= 0) &&
+            (Position.r >= 0) && (Position.b >= 0))
     {
-        TRECT PrevLayerPosition = GDI_LocalToGlobalRct(&LCDScreen.VLayer[Layer].LayerRgn,
-                                  &LCDScreen.VLayer[Layer].LayerOffset);
+        pLCONTEXT ModLayer = &LCDScreen.VLayer[Layer];
+        TRECT     PrevLayerPosition = GDI_LocalToGlobalRct(&ModLayer->LayerRgn, &ModLayer->LayerOffset);
 
         if (memcmp(&PrevLayerPosition, &Position, sizeof(TRECT)) != 0)
         {
-            uint32_t intflags = __disable_interrupts();
+            uint32_t intflags;
+            boolean  ChangedPitch = (ModLayer->LayerRgn.r - ModLayer->LayerRgn.l) != (Position.r - Position.l);
+            boolean  ChangedHeight = (ModLayer->LayerRgn.b - ModLayer->LayerRgn.t) != (Position.b - Position.t);
+            TRECT    NewLayerRgn = GDI_GlobalToLocalRct(&Position, &Position.lt);
+            uint32_t CurrentFrameSize = (ModLayer->LayerRgn.r + 1) * (ModLayer->LayerRgn.b + 1) * ModLayer->BPP;
+            uint32_t NewFrameSize = (NewLayerRgn.r + 1) * (NewLayerRgn.b + 1) * ModLayer->BPP;
 
-            LCDScreen.VLayer[Layer].LayerOffset = Position.lt;
-            LCDScreen.VLayer[Layer].LayerRgn = GDI_GlobalToLocalRct(&Position, &LCDScreen.VLayer[Layer].LayerOffset);
+            while(DL_GetItemsCount(LCDIFQueue) || LCDIF_IsQueueRunning()) {}                        // Waiting for the LCDIF engine to stop
 
-            LCDIF_LAYER[Layer]->LCDIF_LWINOFFS = LCDIF_LWINOF_X(LCDScreen.VLayer[Layer].LayerOffset.x) |
-                                                 LCDIF_LWINOF_Y(LCDScreen.VLayer[Layer].LayerOffset.y);
-            LCDIF_LAYER[Layer]->LCDIF_LWINSIZE  = LCDIF_LCOLS(LCDScreen.VLayer[Layer].LayerRgn.r - 1) |
-                                                  LCDIF_LROWS(LCDScreen.VLayer[Layer].LayerRgn.b - 1);
+            intflags = __disable_interrupts();
+
+            if (CurrentFrameSize != NewFrameSize)
+            {
+                void *p;
+
+                if (ChangedPitch) p = malloc(NewFrameSize);
+                else p = realloc(ModLayer->FrameBuffer, NewFrameSize);
+
+                if (p == NULL) return false;
+                if (ChangedPitch) free(ModLayer->FrameBuffer);
+                ModLayer->FrameBuffer = p;
+            }
+
+            ModLayer->LayerOffset = Position.lt;
+            ModLayer->LayerRgn = NewLayerRgn;
+
+            LCDIF_LAYER[Layer]->LCDIF_LWINOFFS = LCDIF_LWINOF_X(ModLayer->LayerOffset.x) |
+                                                 LCDIF_LWINOF_Y(ModLayer->LayerOffset.y);
+            LCDIF_LAYER[Layer]->LCDIF_LWINADD  = (uint32_t)ModLayer->FrameBuffer;
+            LCDIF_LAYER[Layer]->LCDIF_LWINSIZE  = LCDIF_LCOLS(ModLayer->LayerRgn.r + 1) |
+                                                  LCDIF_LROWS(ModLayer->LayerRgn.b + 1);
+            LCDIF_LAYER[Layer]->LCDIF_LWINPITCH = ModLayer->BPP * (ModLayer->LayerRgn.r + 1);
+
             __restore_interrupts(intflags);
 
-            if (UpdateScreen)
+            if (UpdateScreen && ModLayer->Enabled)
             {
-                pRLIST   UpdateRects = GDI_SUBRectangles(&PrevLayerPosition, &Position);
+                pRLIST UpdateRects = GDI_SUBRectangles(&PrevLayerPosition, &Position);
 
-                Position = GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset);
-                LCDIF_UpdateRectangle(Position);
+                if (!ChangedPitch && !ChangedHeight)
+                    LCDIF_UpdateRectangle(GDI_GlobalToLocalRct(&Position, &LCDScreen.ScreenOffset));
                 if (UpdateRects != NULL)
                 {
                     uint32_t i;
 
                     for(i = 0; i < UpdateRects->Count; i++)
-                        LCDIF_UpdateRectangle(GDI_GlobalToLocalRct(&UpdateRects->Item[i], &LCDScreen.ScreenOffset));
+                        LCDIF_UpdateRectangle(GDI_GlobalToLocalRct(&UpdateRects->Item[i],
+                                              &LCDScreen.ScreenOffset));
 
                     GDI_DeleteRList(UpdateRects);
                 }
