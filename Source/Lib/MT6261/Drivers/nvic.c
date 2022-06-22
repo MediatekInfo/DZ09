@@ -32,6 +32,11 @@ static uint32_t NVIC_GetIRQStatus2(void)
     return IRQ_STA2;
 }
 
+static uint32_t NVIC_GetFIQStatus2(void)
+{
+    return FIQ_STA2;
+}
+
 static uint32_t NVIC_GetEINTStatus2(void)
 {
     return __ctz(EINT_STATUS);
@@ -262,6 +267,37 @@ static void NVIC_SetEINTDebounce(uint32_t SourceIdx, uint16_t Debounce)
     }
 }
 
+void NVIC_ChangeInterruptMode(uint32_t SourceIdx, boolean ModeIRQ)
+{
+    uint32_t intflags = __disable_interrupts();
+
+    do
+    {
+        if (SourceIdx < NUM_IRQ_SOURCES)
+        {
+            if (SourceIdx < 32)
+            {
+                if (ModeIRQ) IRQ_FSEL0 &= ~(1 << SourceIdx);
+                else IRQ_FSEL0 |= (1 << SourceIdx);
+                break;
+            }
+            SourceIdx -= 32;
+            if (ModeIRQ) IRQ_FSEL1 &= ~(1 << SourceIdx);
+            else IRQ_FSEL1 |= (1 << SourceIdx);
+            break;
+        }
+        if ((SourceIdx >= TOTAL_IRQ_SOURCES) && (SourceIdx < GLB_IRQ_SOURCES))
+        {
+            SourceIdx -= TOTAL_IRQ_SOURCES;
+            if (ModeIRQ) ADIE_IRQ_FSEL &= ~(1 << SourceIdx);
+            else ADIE_IRQ_FSEL |= (1 << SourceIdx);
+        }
+    }
+    while(0);
+
+    __restore_interrupts(intflags);
+}
+
 void NVIC_C_IRQ_Handler(void)
 {
     uint32_t IRQSrcIdx;
@@ -276,6 +312,23 @@ void NVIC_C_IRQ_Handler(void)
             DebugPrint("\r\nUnhandled IRQ 0x%02X", IRQSrcIdx);
         }
         NVIC_SetIRQ_EOI(IRQSrcIdx);
+    }
+}
+
+void NVIC_C_FIQ_Handler(void)
+{
+    uint32_t FIQSrcIdx;
+
+    while((FIQSrcIdx = NVIC_GetFIQStatus2()) != NOFIQ)
+    {
+        FIQSrcIdx &= IRQMASK;
+        if (IRQHandlers[FIQSrcIdx].Handler != NULL)
+            IRQHandlers[FIQSrcIdx].Handler();
+        else
+        {
+            DebugPrint("\r\nUnhandled FIQ 0x%02X", FIQSrcIdx);
+        }
+        NVIC_SetIRQ_EOI(FIQSrcIdx);
     }
 }
 
@@ -352,14 +405,15 @@ void NVIC_Initialize(void)
 
     EINT_INTACK = EINT_MASK_ALL;                                                                    // Release EINT interrupts
     ADIE_EINT_INTACK = ADIE_EINT_MASK_ALL;                                                          // Release AEINT interrupts
-    NVIC_RegisterIRQ(IRQ_EINT_CODE, NVIC_EINTCHandler, IRQ_SENS_EDGE, true);                        // Register EINT interrupt
-    NVIC_RegisterIRQ(IRQ_ADIE_EINT_CODE, NVIC_AEINTCHandler, IRQ_SENS_EDGE, true);                  // Register ADIE EINT interrupt
-    NVIC_RegisterIRQ(IRQ_DIE2DIE_CODE, NVIC_ADIE_C_IRQ_Handler, IRQ_SENS_LEVEL, true);              // Register ADIE NVIC interrupt
+    NVIC_RegisterIRQ(IRQ_EINT_CODE, NVIC_EINTCHandler, IRQ_SENS_EDGE, true, true);                  // Register EINT interrupt
+    NVIC_RegisterIRQ(IRQ_ADIE_EINT_CODE, NVIC_AEINTCHandler, IRQ_SENS_EDGE, true, true);            // Register ADIE EINT interrupt
+    NVIC_RegisterIRQ(IRQ_DIE2DIE_CODE, NVIC_ADIE_C_IRQ_Handler, IRQ_SENS_LEVEL, true, true);        // Register ADIE NVIC interrupt
 
     __restore_interrupts(intflags);
 }
 
-boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense, boolean Enable)
+boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void),
+                         uint8_t Sense, boolean ModeIRQ, boolean Enable)
 {
     if (SourceIdx < NUM_IRQ_SOURCES)
     {
@@ -372,6 +426,8 @@ boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sens
             if (Sense == IRQ_SENS_EDGE) NVIC_SetIRQSenseEdge(SourceIdx);
             else NVIC_SetIRQSenseLevel(SourceIdx);
             (Enable) ? NVIC_UnmaskIRQ2(SourceIdx) : NVIC_MaskIRQ2(SourceIdx);
+
+            NVIC_ChangeInterruptMode(SourceIdx, ModeIRQ);
 
             __restore_interrupts(intflags);
         }

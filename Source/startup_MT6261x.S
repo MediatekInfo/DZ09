@@ -20,7 +20,7 @@
     .arch armv5te
 
 // --- System stack locations
-    .equ    FIQ_StackSz, 0
+    .equ    FIQ_StackSz, 4096
     .equ    IRQ_StackSz, 4096
     .equ    ABT_StackSz, 0
     .equ    UND_StackSz, 0

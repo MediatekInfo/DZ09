@@ -287,12 +287,49 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
 
     if (Object->Parent == NULL)
     {
-        TRECT LayerPosition = *Position;
+        TRECT   NewPosition = *Position;
+        TRECT   OldPosition;
+        boolean ChangedPitch, ChangedHeight;
+        boolean Result;
 
-        NORMALIZEVAL(LayerPosition.l, LayerPosition.r);
-        NORMALIZEVAL(LayerPosition.t, LayerPosition.b);
+        NORMALIZEVAL(NewPosition.l, NewPosition.r);
+        NORMALIZEVAL(NewPosition.t, NewPosition.b);
 
-        return LCDIF_SetLayerPosition(((pWIN)Object)->Layer, LayerPosition, true);
+        ChangedPitch = (Object->Position.r - Object->Position.l) != (NewPosition.r - NewPosition.l);
+        ChangedHeight = (Object->Position.b - Object->Position.t) != (NewPosition.b - NewPosition.t);
+
+        GUI_GetObjectPosition(Object, &OldPosition);
+        OldPosition = GDI_GlobalToLocalRct(&OldPosition, &OldPosition.lt);
+
+        Result = LCDIF_SetLayerPosition(((pWIN)Object)->Layer, NewPosition, true);
+        if (Result)
+        {
+            Object->Position = GDI_GlobalToLocalRct(&NewPosition, &NewPosition.lt);
+
+            if (Object->Visible)
+            {
+                if (ChangedPitch) GUI_Invalidate(Object, NULL);
+                else if (ChangedHeight)
+                {
+                    TRECT  ScreenRect = GDI_LocalToGlobalRct(&OldPosition, &NewPosition.lt);
+                    pRLIST UpdateRects = GDI_SUBRectangles(&Object->Position, &OldPosition);
+
+                    ScreenRect = GDI_GlobalToLocalRct(&ScreenRect, &LCDScreen.ScreenOffset);
+                    LCDIF_UpdateRectangle(ScreenRect);
+
+                    if (UpdateRects != NULL)
+                    {
+                        uint32_t i;
+
+                        for(i = 0; i < UpdateRects->Count; i++)
+                            GUI_Invalidate(Object, &UpdateRects->Item[i]);
+
+                        GDI_DeleteRList(UpdateRects);
+                    }
+                }
+            }
+        }
+        return Result;
     }
     else
     {

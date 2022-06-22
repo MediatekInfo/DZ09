@@ -42,9 +42,8 @@ __enable_interrupts:
     stmfd   sp!,{lr}                                                                                // uint32_t __enable_interrupts(void); (Privileged modes)
     mrs     r0, cpsr
 
-    orr     lr, r0, _F_                                                                             // lr - mode with FIQ disabled
+    bic     lr, r0, _F_ | _I_                                                                       // Enable IRQ and FIQ interrupts
     and     r0, r0, _F_ | _I_
-    bic     lr, lr, _I_                                                                             // Enable IRQ
 
     msr     cpsr_c, lr                                                                              // Apply mode
     ldmfd   sp!,{pc}                                                                                // r0 - previous state of IntEN flags
