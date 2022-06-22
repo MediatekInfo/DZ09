@@ -157,7 +157,7 @@ void LCDIF_ISR(void)
 
 boolean LCDIF_RegisterISR(void)
 {
-    return NVIC_RegisterIRQ(IRQ_LCD_CODE, LCDIF_ISR, IRQ_SENS_LEVEL, true);
+    return NVIC_RegisterIRQ(IRQ_LCD_CODE, LCDIF_ISR, IRQ_SENS_LEVEL, true, true);
 }
 
 boolean LCDIF_UnregisterISR(void)

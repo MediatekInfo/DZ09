@@ -204,7 +204,7 @@ void USB_Initialize(void)
 
     USB_DisableDevice();
 
-    NVIC_RegisterIRQ(IRQ_USB_CODE, USB_InterruptHandler, IRQ_SENS_LEVEL, true);
+    NVIC_RegisterIRQ(IRQ_USB_CODE, USB_InterruptHandler, IRQ_SENS_LEVEL, true, true);
 #else
     USB_DisableDevice();
 #endif

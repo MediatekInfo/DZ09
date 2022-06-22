@@ -95,7 +95,7 @@ boolean USART_Initialize(TUSART Index, uint32_t Speed, void (*Handler)(void), ui
     {
         if  (Handler != NULL)
         {
-            NVIC_RegisterIRQ(IRQ_CODE, Handler, IRQ_SENS_EDGE, true);
+            NVIC_RegisterIRQ(IRQ_CODE, Handler, IRQ_SENS_EDGE, true, true);
         }
     }
 #endif
