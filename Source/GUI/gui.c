@@ -348,7 +348,7 @@ void GUI_OnPaintHandler(pPAINTEV Event)
 
 void GUI_OnPenPressHandler(pEVENT Event)
 {
-    if (!GUILocked)
+    if (!GUILocked && (GUI_GetObjectActive() == NULL))
     {
         pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
         pGUIOBJECT RootParent;
@@ -380,7 +380,7 @@ void GUI_OnPenPressHandler(pEVENT Event)
 
 void GUI_OnPenReleaseHandler(pEVENT Event)
 {
-    if (!GUILocked)
+    if (!GUILocked && (GUI_GetObjectActive() != NULL))
         do
         {
             pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
@@ -420,7 +420,7 @@ void GUI_OnPenReleaseHandler(pEVENT Event)
 
 void GUI_OnPenMoveHandler(pEVENT Event)
 {
-    if (!GUILocked)
+    if (!GUILocked && (GUI_GetObjectActive() != NULL))
     {
         pPENEVENT  PenEvent = (pPENEVENT)Event->Param;
         pGUIOBJECT Object = GUI_GetObjectActive();

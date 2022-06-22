@@ -298,9 +298,6 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
         ChangedPitch = (Object->Position.r - Object->Position.l) != (NewPosition.r - NewPosition.l);
         ChangedHeight = (Object->Position.b - Object->Position.t) != (NewPosition.b - NewPosition.t);
 
-        if (ChangedPitch || ChangedHeight)
-            EM_ProcessEvents();                                                                     // If the geometry of the layer has changed, we processing all invalidate requests.
-
         GUI_GetObjectPosition(Object, &OldPosition);
         OldPosition = GDI_GlobalToLocalRct(&OldPosition, &OldPosition.lt);
 
