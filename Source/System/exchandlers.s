@@ -37,11 +37,11 @@ __nvic_irq_handler:
     subnes  pc, lr, #4
 
     sub     lr, lr, #4
-    stmfd   sp!, {r0-r12, lr}
+    stmfd   sp!, {r0-r3, r12, lr}
 
     bl      NVIC_C_IRQ_Handler                                                                      // Calling 'C' handler
 
-    ldmfd   sp!, {r0-r12, pc}^
+    ldmfd   sp!, {r0-r3, r12, pc}^
     .endfunc
 
     .globl  __nvic_fiq_handler
@@ -49,18 +49,17 @@ __nvic_irq_handler:
     .func   __nvic_fiq_handler
 __nvic_fiq_handler:
     stmfd   sp!, {r0}                                                                               // NoteXXX: SW workaround for ARM7 family common bug
-    mrs     r0, SPSR                                                                                // An interrupt may trigger when an MSR is executed to set I-bit.
+    mrs     r0, SPSR                                                                                // An interrupt may trigger when an MSR is executed to set F-bit.
     tst     r0, #_F_
     ldmfd   sp!, {r0}
     subnes  pc, lr, #4
 
     sub     lr, lr, #4
-    stmfd   sp!, {r0-r7, lr}
+    stmfd   sp!, {r0-r3, lr}
 
     bl      NVIC_C_FIQ_Handler                                                                      // Calling 'C' handler
 
-    ldmfd   sp!, {r0-r7, pc}^
+    ldmfd   sp!, {r0-r3, pc}^
     .endfunc
-
 
     .end
