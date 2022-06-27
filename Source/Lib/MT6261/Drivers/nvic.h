@@ -230,8 +230,8 @@
 #define EINT18                      0x12
 #define EINT19                      0x13
 #define EINT20                      0x14
-#define PMU_CHR_EINT_PIN            0x15                                                            // Charger external interrupt is fixed (!!!)
-#define PMU_OC_EINT_PIN             0x16                                                            // Charger external interrupt is fixed (!!!)
+#define EINT21                      0x15
+#define EINT22                      0x16
 #define EINT23                      0x17
 #define EINT24                      0x18
 #define NUM_EINT_SOURCES            0x19
