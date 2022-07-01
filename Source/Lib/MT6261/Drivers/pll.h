@@ -54,8 +54,9 @@
 #define PLL_PLLTD_CON7              (*(volatile uint16_t *)(MIXED_BASE + 0x071C))
 
 #define PLL_CLK_CONDA               (*(volatile uint32_t *)(CONFIG_BASE + 0x0100))
-#define BT_APP_DIV_EN               (1 << 15)
+#define POWERFUL_DIV_EN2            (1 << 9)
 #define POWERFUL_DIV_EN1            (1 << 10)
+#define BT_APP_DIV_EN               (1 << 15)
 
 #define PLL_CLK_CONDB               (*(volatile uint32_t *)(CONFIG_BASE + 0x0104))
 #define PLL_CLK_CONDC               (*(volatile uint32_t *)(CONFIG_BASE + 0x0108))

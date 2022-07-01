@@ -201,7 +201,7 @@ typedef struct tag_MSDC_CONTEXT
 #define SDC_BEDATBUSY               (1 << 2)
 #define SDC_FECMDBUSY               (1 << 3)
 #define SDC_FEDATBUSY               (1 << 4)
-#define SDC_WP                      (1 << 5)
+#define SDC_WP                      (1 << 15)
 // SDC_CMDSTA
 #define SDC_CMDRDY                  (1 << 0)
 #define SDC_CMDTO                   (1 << 1)

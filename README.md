@@ -1,6 +1,6 @@
 ## Chinese smartwatch DZ09. Custom project.
 
-* Platform:   MT6261D
+* Platform:   MT6261
 * RAM:        4MiB
 * ROM:        8MiB (GD25LQ64)
 * PCB:        K91-V1.1
