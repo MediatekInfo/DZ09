@@ -386,33 +386,29 @@ void GUI_OnPenReleaseHandler(pEVENT Event)
         do
         {
             pPENEVENT PenEvent = (pPENEVENT)Event->Param;
+            TVLINDEX Layer;
+            TPOINT   OnReleaseXY;
 
-            if (Object != NULL)
+            if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
+            else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
+            else
             {
-                TVLINDEX Layer;
-                TPOINT   OnReleaseXY;
-
-                if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
-                else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
-                else
-                {
-                    GUI_SetObjectActive(NULL, true);
-                    break;
-                }
-
                 GUI_SetObjectActive(NULL, true);
+                break;
+            }
 
-                if ((Object->Enabled) && (Object->InheritedEnabled))
-                {
-                    PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
-                    /* Store object local coordinates */
-                    OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+            GUI_SetObjectActive(NULL, true);
 
-                    if ((Object->OnClick != NULL) &&
-                            (IsPointInRect(&PenEvent->PXY, &Object->Position)))
-                        Object->OnClick(Object, &OnReleaseXY);
-                    if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
-                }
+            if ((Object->Enabled) && (Object->InheritedEnabled))
+            {
+                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+                /* Store object local coordinates */
+                OnReleaseXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
+
+                if ((Object->OnClick != NULL) &&
+                        (IsPointInRect(&PenEvent->PXY, &Object->Position)))
+                    Object->OnClick(Object, &OnReleaseXY);
+                if (Object->OnRelease != NULL) Object->OnRelease(Object, &OnReleaseXY);
             }
         }
         while(0);
@@ -426,29 +422,25 @@ void GUI_OnPenMoveHandler(pEVENT Event)
     if (!GUILocked && ((Object = GUI_GetObjectActive()) != NULL))
     {
         pPENEVENT PenEvent = (pPENEVENT)Event->Param;
+        TVLINDEX Layer;
+        TPOINT   OnMoveXY;
 
-        if (Object != NULL)
+        if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
+        else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
+        else
         {
-            TVLINDEX Layer;
-            TPOINT   OnMoveXY;
+            GUI_SetObjectActive(NULL, true);
+            return;
+        }
 
-            if (GUI_IsWindowObject(Object))  Layer = ((pWIN)Object)->Layer;
-            else if (Object->Parent != NULL) Layer = ((pWIN)Object->Parent)->Layer;
-            else
-            {
-                GUI_SetObjectActive(NULL, true);
-                return;
-            }
+        if ((Object->Enabled) && (Object->InheritedEnabled))
+        {
+            PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
+            /* Store object local coordinates */
+            OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
 
-            if ((Object->Enabled) && (Object->InheritedEnabled))
-            {
-                PenEvent->PXY = GDI_ScreenToLayerPt(Layer, &PenEvent->PXY);
-                /* Store object local coordinates */
-                OnMoveXY = GDI_GlobalToLocalPt(&PenEvent->PXY, &Object->Position.lt);
-
-                if (Object->OnMove != NULL) Object->OnMove(Object, &OnMoveXY);
-                GUI_UpdateActiveState(Object, IsPointInRect(&PenEvent->PXY, &Object->Position));
-            }
+            if (Object->OnMove != NULL) Object->OnMove(Object, &OnMoveXY);
+            GUI_UpdateActiveState(Object, IsPointInRect(&PenEvent->PXY, &Object->Position));
         }
     }
     BL_RestartBacklightTimer(false);

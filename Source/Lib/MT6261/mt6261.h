@@ -35,6 +35,7 @@
 #define PLL_BASE                    MIXED_BASE
 #define TOPSM_BASE                  0xA0180000                                                      // TOPSM0
 #define MSDC0_BASE                  0xA0130000                                                      // MSDC0
+#define SPI_BASE                    0xA01E0000                                                      // SPI
 #define MSDC1_BASE                  0xA0270000                                                      // MSDC1
 #define PWM4_BASE                   0xA0280000                                                      // Pulse-Width Modulation Outputs
 #define LCDIF_BASE                  0xA0450000                                                      // LCD controller
@@ -86,5 +87,6 @@
 #include "drivers\usb.h"
 #include "drivers\che.h"
 #include "drivers\msdc.h"
+#include "drivers\spi.h"
 
 #endif /* _MT6261_H_ */

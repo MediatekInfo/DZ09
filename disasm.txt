@@ -1,0 +1,189 @@
+10007014 <L1D_HWCG_Init>:
+10007014:	4908      	ldr	r1, [pc, #32]	; (10007038 <L1D_HWCG_Init+0x24>) r1 = 82c00040
+10007016:	8b08      	ldrh	r0, [r1, #24]                                     r0 = [82c00040 + 0x18] (16b)
+10007018:	2220      	movs	r2, #32
+1000701a:	4390      	bics	r0, r2                                            r0 &= ~(1 << 5)
+1000701c:	8308      	strh	r0, [r1, #24]                                     [82c00040 + 0x18] = r0
+1000701e:	4907      	ldr	r1, [pc, #28]	; (1000703c <L1D_HWCG_Init+0x28>) r1 = 83000400
+10007020:	6808      	ldr	r0, [r1, #0]                                      r0 = [83000400] (32b)
+10007022:	2204      	movs	r2, #4
+10007024:	0400      	lsls	r0, r0, #16                                       r0 <<= 16
+10007026:	0c00      	lsrs	r0, r0, #16                                       r0 >>= 16
+10007028:	4310      	orrs	r0, r2                                            r0 |= 0x04
+1000702a:	6008      	str	r0, [r1, #0]                                      [83000400] = r0
+1000702c:	4904      	ldr	r1, [pc, #16]	; (10007040 <L1D_HWCG_Init+0x2c>) r1 = 82c00200
+1000702e:	8a88      	ldrh	r0, [r1, #20]                                     r0 = [82c00200 + 0x14] (16b)
+10007030:	01d2      	lsls	r2, r2, #7                                        r2 <<= 7 = 0x0200
+10007032:	4310      	orrs	r0, r2                                            r0 |= (1 << 9)
+10007034:	8288      	strh	r0, [r1, #20]                                     [82c00200 + 0x14] = r0
+10007036:	4770      	bx	lr
+10007038:	82c00040 	sbchi	r0, r0, #64	; 0x40
+1000703c:	83000400 	movwhi	r0, #1024	; 0x400
+10007040:	82c00200 	sbchi	r0, r0, #0, 4
+
+1000690c <L1D_PowerManager>:
+1000690c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}                         /r0 = 0/
+1000690e:	4b2f      	ldr	r3, [pc, #188]	; (100069cc <L1D_PauseDSP+0x20>) r3 = 1000dfb0 = <L1D_PDNCON2_TABLE>
+10006910:	0082      	lsls	r2, r0, #2                                       r2 = 0
+10006912:	5a99      	ldrh	r1, [r3, r2]                                     r1 = [1000dfb0 + 0] = 022d
+10006914:	18d2      	adds	r2, r2, r3                                       r2 = 1000dfb0
+10006916:	8852      	ldrh	r2, [r2, #2]                                     r2 = [1000dfb0 + 2] = 0002
+10006918:	4c2d      	ldr	r4, [pc, #180]	; (100069d0 <L1D_PauseDSP+0x24>) r4 = 0000100d
+1000691a:	2383      	movs	r3, #131	; 0x83                           r3 = 0x0083
+1000691c:	0015      	movs	r5, r2                                           r5 = 0002
+1000691e:	4025      	ands	r5, r4                                           r5 = 0
+10006920:	061b      	lsls	r3, r3, #24                                      r3 = 83000000
+10006922:	629d      	str	r5, [r3, #40]	; 0x28                           [83000000 + 0x28] = r5 = 0
+10006924:	2502      	movs	r5, #2                                           r5 = 2
+10006926:	0016      	movs	r6, r2                                           r6 = 2
+10006928:	402e      	ands	r6, r5                                           r6 = 2
+1000692a:	4d2a      	ldr	r5, [pc, #168]	; (100069d4 <L1D_PauseDSP+0x28>) r5 = 82c00000
+1000692c:	822e      	strh	r6, [r5, #16]                                    [82c00000 + 0x10] = r6 = 2
+1000692e:	2611      	movs	r6, #17                                          r6 = 0x11
+10006930:	0176      	lsls	r6, r6, #5                                       r6 = 0x0220
+10006932:	0017      	movs	r7, r2                                           r7 = 2
+10006934:	4037      	ands	r7, r6                                           r7 = 0
+10006936:	832f      	strh	r7, [r5, #24]                                    [82c00000 + 0x18] = 0
+10006938:	400c      	ands	r4, r1                                           r4 = 000d
+1000693a:	619c      	str	r4, [r3, #24]                                    [83000000 + 0x18] = 0x000d
+1000693c:	4d25      	ldr	r5, [pc, #148]	; (100069d4 <L1D_PauseDSP+0x28>) r5 = 82c00000
+1000693e:	2302      	movs	r3, #2                                           r3 = 2
+10006940:	400b      	ands	r3, r1                                           r3 = 0
+10006942:	3520      	adds	r5, #32                                          r5 = 82c00020
+10006944:	802b      	strh	r3, [r5, #0]                                     [82c00020] = r3 = 0
+10006946:	000b      	movs	r3, r1                                           r3 = 022d
+10006948:	4033      	ands	r3, r6                                           r3 = 0220
+1000694a:	812b      	strh	r3, [r5, #8]                                     [82c00020 + 08] = r3 = 220
+1000694c:	2803      	cmp	r0, #3
+1000694e:	d102      	bne.n	10006956 <L1D_PowerManager+0x4a>
+10006950:	4821      	ldr	r0, [pc, #132]	; (100069d8 <L1D_PauseDSP+0x2c>)
+10006952:	6184      	str	r4, [r0, #24]
+10006954:	812b      	strh	r3, [r5, #8]
+10006956:	4c21      	ldr	r4, [pc, #132]	; (100069dc <L1D_PauseDSP+0x30>) r4 = 82ce0000
+10006958:	0a48      	lsrs	r0, r1, #9                                       r0 = 022d >> 9 = 1
+1000695a:	07c0      	lsls	r0, r0, #31                                      r0 = 80000000
+1000695c:	d004      	beq.n	10006968 <L1D_PowerManager+0x5c>
+1000695e:	2002      	movs	r0, #2                                           r0 = 2
+10006960:	f7ff fbe2 	bl	10006128 <WAIT_TIME_QB>
+10006964:	2001      	movs	r0, #1                                           r0 = 1
+10006966:	e003      	b.n	10006970 <L1D_PowerManager+0x64>
+10006968:	0a50      	lsrs	r0, r2, #9
+1000696a:	07c0      	lsls	r0, r0, #31
+1000696c:	d001      	beq.n	10006972 <L1D_PowerManager+0x66>
+1000696e:	2000      	movs	r0, #0                                           r0 = 0
+10006970:	8020      	strh	r0, [r4, #0]                                     [82ce0000] = r0 = 0
+10006972:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+
+1000d73c <L1D_Init_MPLLFH>:
+1000d73c:	b5f8      	push	{r3, r4, r5, r6, r7, lr}
+1000d73e:	481e      	ldr	r0, [pc, #120]	; (1000d7b8 <L1D_Init_MPLLFH+0x7c>)     r0 = f0003df8 = <l1dfh> (40 bytes)
+1000d740:	2500      	movs	r5, #0                                                  r5 = 0
+1000d742:	7145      	strb	r5, [r0, #5]                                            [f0003df8 + 0x05] = 0 (8b)
+1000d744:	7405      	strb	r5, [r0, #16]                                           [f0003df8 + 0x16] = 0 (8b)
+1000d746:	70c5      	strb	r5, [r0, #3]                                            [f0003df8 + 0x03] = 0 (8b)
+1000d748:	7105      	strb	r5, [r0, #4]                                            [f0003df8 + 0x05] = 0 (8b)
+1000d74a:	2101      	movs	r1, #1                                                  r1 = 1
+1000d74c:	7445      	strb	r5, [r0, #17]                                           [f0003df8 + 0x11] = 0
+1000d74e:	4e1b      	ldr	r6, [pc, #108]	; (1000d7bc <L1D_Init_MPLLFH+0x80>)     r6 = f000008c
+1000d750:	0389      	lsls	r1, r1, #14                                             r1 = 4000
+1000d752:	8245      	strh	r5, [r0, #18]                                           [f0003df8 + 0x12] = 0 (16b)
+1000d754:	8281      	strh	r1, [r0, #20]                                           [f0003df8 + 0x14] = 4000 (16b)
+1000d756:	7830      	ldrb	r0, [r6, #0]                                            r0 = 1
+1000d758:	2800      	cmp	r0, #0
+1000d75a:	d02b      	beq.n	1000d7b4 <L1D_Init_MPLLFH+0x78>
+1000d75c:	4f18      	ldr	r7, [pc, #96]	; (1000d7c0 <L1D_Init_MPLLFH+0x84>)     r7 = a0170500
+1000d75e:	82b9      	strh	r1, [r7, #20]                                           [a0170500 + 0x14] = 0x4000 (16b)
+1000d760:	8838      	ldrh	r0, [r7, #0]                                            r0 = [a0170500] (16b)
+1000d762:	4918      	ldr	r1, [pc, #96]	; (1000d7c4 <L1D_Init_MPLLFH+0x88>)     r1 = 0000fcff
+1000d764:	4008      	ands	r0, r1                                                  r0 &= r1 = 0002
+1000d766:	8038      	strh	r0, [r7, #0]                                            [a0170500] = r0
+1000d768:	0d78      	lsrs	r0, r7, #21                                             r0 = 0x0500
+1000d76a:	8138      	strh	r0, [r7, #8]                                            [a0170500 + 0x08] = r0 = 0x0500
+1000d76c:	2400      	movs	r4, #0                                                  r4 = 0
+1000d76e:	4916      	ldr	r1, [pc, #88]	; (1000d7c8 <L1D_Init_MPLLFH+0x8c>)     r1 = 1000f1e4 = <FH_table>
+1000d770:	00a0      	lsls	r0, r4, #2                                              r0 = 4 * r1
+1000d772:	5808      	ldr	r0, [r1, r0]                                            r0 = r1[r0]
+1000d774:	2101      	movs	r1, #1                                                  r1 = 1
+1000d776:	02c9      	lsls	r1, r1, #11                                             r0 = 0x0800
+1000d778:	4308      	orrs	r0, r1                                                  r0 |= 0x0800
+1000d77a:	81b8      	strh	r0, [r7, #12]                                           [a0170500 + 0x0C] = r0
+1000d77c:	2001      	movs	r0, #1                                                  r0 = 1
+1000d77e:	f7f8 fcd3 	bl	10006128 <WAIT_TIME_QB>
+1000d782:	1c64      	adds	r4, r4, #1                                              r4++
+1000d784:	2c40      	cmp	r4, #64	; 0x40
+1000d786:	dbf2      	blt.n	1000d76e <L1D_Init_MPLLFH+0x32>
+1000d788:	8a38      	ldrh	r0, [r7, #16]                                           r0 = [a0170500 + 0x10]
+1000d78a:	4910      	ldr	r1, [pc, #64]	; (1000d7cc <L1D_Init_MPLLFH+0x90>)     r1 = 0000b19d
+1000d78c:	2202      	movs	r2, #2                                                  r2 = 2
+1000d78e:	4010      	ands	r0, r2                                                  r0 &= 2
+1000d790:	4308      	orrs	r0, r1                                                  r0 |= 0000b19d
+1000d792:	2108      	movs	r1, #8                                                  r1 = 0008
+1000d794:	4388      	bics	r0, r1                                                  r0 = 0000b195
+1000d796:	8238      	strh	r0, [r7, #16]                                           [a0170500 + 0x10] = r0
+1000d798:	490d      	ldr	r1, [pc, #52]	; (1000d7d0 <L1D_Init_MPLLFH+0x94>)     r1 = 00003fff
+1000d79a:	4a0e      	ldr	r2, [pc, #56]	; (1000d7d4 <L1D_Init_MPLLFH+0x98>)     r2 = 83020320
+1000d79c:	2000      	movs	r0, #0                                                  r0 = 0
+1000d79e:	0083      	lsls	r3, r0, #2                                              r3 = 4 * r0
+1000d7a0:	189b      	adds	r3, r3, r2                                              r3 += r2
+1000d7a2:	8019      	strh	r1, [r3, #0]                                            [83020320 + 4 * r0] = 0x3FFF
+1000d7a4:	1c40      	adds	r0, r0, #1                                              r0++
+1000d7a6:	2806      	cmp	r0, #6
+1000d7a8:	dbf9      	blt.n	1000d79e <L1D_Init_MPLLFH+0x62>
+1000d7aa:	f7f8 fd57 	bl	1000625c <L1D_FH_Is_MPLL_Free_Run_On>                   r0 = 1
+1000d7ae:	2800      	cmp	r0, #0
+1000d7b0:	d000      	beq.n	1000d7b4 <L1D_Init_MPLLFH+0x78>
+1000d7b2:	7035      	strb	r5, [r6, #0]                                            [f000008c] = 0
+1000d7b4:	bdf8      	pop	{r3, r4, r5, r6, r7, pc}
+1000d7b6:	3df80000 	ldclcc	0, cr0, [r8]
+1000d7ba:	008cf000 	addeq	pc, ip, r0
+1000d7be:	0500f000 	streq	pc, [r0, #-0]
+1000d7c2:	fcffa017 	ldc2l	0, cr10, [pc], #92	; 1000d824 <L1D_PMMachine_PMResultProcess+0x10>
+1000d7c6:	f1e40000 			; <UNDEFINED> instruction: 0xf1e40000
+1000d7ca:	b19d1000 	orrslt	r1, sp, r0
+1000d7ce:	3fff0000 	svccc	0x00ff0000
+1000d7d2:	03200000 	nopeq	{0}	; <UNPREDICTABLE>
+1000d7d6:	    8302
+
+1000759c <L1D_DSP_WakeUp>:
+1000759c:	4910      	ldr	r1, [pc, #64]	; (100075e0 <L1D_DSP_WakeUp+0x44>) r1 = 82c00040
+1000759e:	b510      	push	{r4, lr}
+100075a0:	8808      	ldrh	r0, [r1, #0]                                       r0 = [82c00040] (16b)
+100075a2:	8008      	strh	r0, [r1, #0]                                       [82c00040] = r0 (16b)
+100075a4:	2001      	movs	r0, #1                                             r0 = 1
+100075a6:	f7ff ff33 	bl	10007410 <L1D_DSP_WritePatchConfig>
+100075aa:	4c0e      	ldr	r4, [pc, #56]	; (100075e4 <L1D_DSP_WakeUp+0x48>) r4 = 83030000
+100075ac:	2006      	movs	r0, #6                                             r0 = 6
+100075ae:	8020      	strh	r0, [r4, #0]                                       [83030000] = r0 = 6 (16b)
+100075b0:	490b      	ldr	r1, [pc, #44]	; (100075e0 <L1D_DSP_WakeUp+0x44>) r1 = 82c00040
+100075b2:	2040      	movs	r0, #64	; 0x40                                     r0 = 0x0040
+100075b4:	3920      	subs	r1, #32                                            r1 = 82c00020
+100075b6:	8008      	strh	r0, [r1, #0]                                       [82c00020] = r0 = 0x0040 (PDN_IRDMA)
+100075b8:	2064      	movs	r0, #100	; 0x64
+100075ba:	f7fe fdb5 	bl	10006128 <WAIT_TIME_QB>
+100075be:	2007      	movs	r0, #7                                             r0 = 7
+100075c0:	8020      	strh	r0, [r4, #0]                                       [83030000] = 0x0007 (16b)
+100075c2:	f7ff ff85 	bl	100074d0 <L1D_DSP_Dummy_WriteRead_DM>
+100075c6:	4808      	ldr	r0, [pc, #32]	; (100075e8 <L1D_DSP_WakeUp+0x4c>) r0 = 8200f000
+100075c8:	6800      	ldr	r0, [r0, #0]                                       r0 = [8200f000] (32b)
+100075ca:	4908      	ldr	r1, [pc, #32]	; (100075ec <L1D_DSP_WakeUp+0x50>) r1 = 82207400
+100075cc:	2000      	movs	r0, #0                                             r0 = 0
+100075ce:	8008      	strh	r0, [r1, #0]                                       [82207400] = r0 = 0 (16b)
+100075d0:	80c8      	strh	r0, [r1, #6]                                       [82207406] = r0 = 0 (16b)
+100075d2:	4907      	ldr	r1, [pc, #28]	; (100075f0 <L1D_DSP_WakeUp+0x54>) r1 = 82CA0060
+100075d4:	2002      	movs	r0, #2                                             r0 = 2
+100075d6:	8288      	strh	r0, [r1, #20]                                      [82CA0060 + 0x14] = r0
+100075d8:	f7ff f8f9 	bl	100067ce <fd216_dsp_init>
+100075dc:	bd10      	pop	{r4, pc}
+100075de:	00400000 	subeq	r0, r0, r0
+100075e2:	000082c0 	andeq	r8, r0, r0, asr #5
+100075e6:	f0008303 			; <UNDEFINED> instruction: 0xf0008303
+100075ea:	74008200 	strvc	r8, [r0], #-512	; 0xfffffe00
+100075ee:	00608220 	rsbeq	r8, r0, r0, lsr #4
+100075f2:	Address 0x100075f2 is out of bounds.
+
+/* fd216_dsp_init
+100067c4:	2000      	movs	r0, #0                                             r0 = 0
+100067c6:	2141      	movs	r1, #65	; 0x41                                     r1 = 0x41
+100067c8:	0649      	lsls	r1, r1, #25                                        r1 = 82000000
+100067ca:	6008      	str	r0, [r1, #0]                                       [82000000] = r0 = 0
+*/
