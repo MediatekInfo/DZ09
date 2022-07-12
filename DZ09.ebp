@@ -332,6 +332,13 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\sfi.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\spi.c">
+			<Option compilerVar="CC" />
+			<Option target="SYSTEM" />
+		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\spi.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\tcmcache.c">
 			<Option compilerVar="CC" />
 		</Unit>
