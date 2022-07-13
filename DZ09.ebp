@@ -268,6 +268,9 @@
 		<Unit filename="Source\Lib\MT6261\Drivers\gpt.h">
 			<Option target="SYSTEM" />
 		</Unit>
+		<Unit filename="Source\Lib\MT6261\Drivers\kp.h">
+			<Option target="SYSTEM" />
+		</Unit>
 		<Unit filename="Source\Lib\MT6261\Drivers\lcdif.c">
 			<Option compilerVar="CC" />
 			<Option target="SYSTEM" />

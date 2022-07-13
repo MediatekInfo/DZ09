@@ -28,6 +28,7 @@
 #define USART3_BASE                 0xA00A0000                                                      // USART 3 add for MT6261
 //#define BTIF_BASE                   0xA00B0000                                                      // BT interface
 #define GPT_BASE                    0xA00C0000                                                      // General Purpose Timers
+#define KP_BASE                     0xA00D0000                                                      // Keypad Scanner
 #define PWM1_BASE                   0xA00E0000                                                      // Pulse-Width Modulation Outputs
 #define SEJ_BASE                    0xA0110000                                                      // Security Engine for JTAG protection
 #define SFI_BASE                    0xA0140000                                                      // Serial flash interface
@@ -88,5 +89,6 @@
 #include "drivers\che.h"
 #include "drivers\msdc.h"
 #include "drivers\spi.h"
+#include "drivers\kp.h"
 
 #endif /* _MT6261_H_ */
