@@ -89,7 +89,7 @@ void SPI_SetupSpeed(uint32_t Speed)
         uint32_t nTicks;
 
         Speed = min(Speed, SPIMAXSPEED);
-        nTicks = min(255, ((2 * SPIMAXSPEED + Speed / 2) / Speed) - 2);                             // 125kHz min frequency
+        nTicks = min(510, ((2 * SPIMAXSPEED + Speed / 2) / Speed) - 2);                             // 125kHz min frequency
         SPI_CON0 = (SPI_CON0 & ~(SPI_CON0_HIGHTIME(-1) | SPI_CON0_LOWTIME(-1))) |
                    SPI_CON0_HIGHTIME(nTicks / 2) | SPI_CON0_LOWTIME(nTicks / 2 + (nTicks & 1));
     }
