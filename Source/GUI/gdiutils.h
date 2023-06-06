@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2023 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #ifndef _GDIUTILS_H_
 #define _GDIUTILS_H_
 
-#define RGB_565(v)                  ((((v) & 0xF80000) >> 8) | (((v) & 0xFC00) >> 5) | ((v) & 0x1F))
+#define RGB_565(v)                  ((((v) & 0xF80000) >> 8) | (((v) & 0xFC00) >> 5) | (((v) & 0xF8)) >> 3)
 #define NORMALIZEVAL(c0, c1)        do\
                                     {\
                                         typeof(c0) tval;\
