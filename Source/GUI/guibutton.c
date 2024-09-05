@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2021 AJScorp
+* Copyright (C) 2024 - 2021 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -145,7 +145,7 @@ pGUIOBJECT GUI_CreateButton(pGUIOBJECT Parent, TRECT Position, TTEXT Caption,
         {
             Button->Head.Type = GO_BUTTON;
             if (Button->Head.Visible && Button->Head.InheritedVisible)
-                GUI_Invalidate((pGUIOBJECT)Button, NULL);
+                GUI_Invalidate((pGUIOBJECT)Button);
         }
         else
         {
