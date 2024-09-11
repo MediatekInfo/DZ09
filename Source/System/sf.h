@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 AJScorp
+* Copyright (C) 2024 - 2022 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@
 #define DF_CMD_LEAVE_DPD            0XAB
 
 extern uint32_t SF_DevReadID(TSFI_CS CS);
-extern boolean SF_WriteStatus(TSFI_CS CS, uint8_t *Data, uint32_t Count);
+extern boolean SF_WriteStatus(TSFI_CS CS, uint8_t *Data, size_t Count);
 extern size_t SF_Read(TSFI_CS CS, void *Address, uint8_t *Data, size_t Count);
 extern size_t SF_Write(TSFI_CS CS, void *Address, uint8_t *Data, size_t Count);
 extern boolean SF_Erase(TSFI_CS CS, void *Address, size_t Count);
