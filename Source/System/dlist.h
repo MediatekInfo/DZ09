@@ -37,6 +37,7 @@ typedef struct tag_DList
 
 extern pDLIST DL_Create(void);
 extern pDLIST DL_Delete(pDLIST DList, boolean FreeData);
+extern boolean DL_Clear(pDLIST DList, boolean FreeData);
 extern uint32_t DL_GetItemsCount(pDLIST DList);
 extern pDLITEM DL_GetFirstItem(pDLIST DList);
 extern pDLITEM DL_GetLastItem(pDLIST DList);
