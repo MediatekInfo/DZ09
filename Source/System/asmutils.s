@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2024 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -169,15 +169,15 @@ __freq_loops:
     .func   __secure_memset
 __secure_memset:
     stmfd   sp!, {r0, r3, lr}                                                                       // void *__secure_memset(void *memptr, int val, size_t num);
-	mov	    r3, r0
-	add	    r2, r0, r2
-	bl      __disable_interrupts
+    mov     r3, r0
+    add     r2, r0, r2
+    bl      __disable_interrupts
 __loop_sec_memset:
-	cmp	    r3, r2
-	strbne	r1, [r3], #1
-	bne	    __loop_sec_memset
-	bl      __restore_interrupts
-	ldmfd   sp!, {r0, r3, pc}
+    cmp     r3, r2
+    strbne  r1, [r3], #1
+    bne     __loop_sec_memset
+    bl      __restore_interrupts
+    ldmfd   sp!, {r0, r3, pc}
     .endfunc
 ///////////////////////////////////////////////////////////////////////////////////////////////////
     .globl  __is_in_isr_mode
