@@ -82,54 +82,21 @@ __restore_interrupts:
     .type   __ctz, %function
     .func   __ctz
 __ctz:
-    stmfd   sp!,{r1, r2, lr}                                                                        // uint32_t __ctz(uint32_t Value);
-    rsb     r1, r0, #0
-    and     r1, r1, r0                                                                              // isolate lowest bit
-    add     r1, r1, r1, LSL#4                                                                       // *(2^4 + 1)
-    add     r1, r1, r1, LSL#6                                                                       // *(2^6 + 1)
-    rsb     r1, r1, r1, LSL#16                                                                      // *(2^16 - 1)
-    adr     r2, __ctz_hash_table
-    ldrb    r0, [r2, r1, LSR#26]
-    ldmfd   sp!,{r1, r2, pc}
+    stmfd   sp!, {lr}                                                                               // uint32_t __ctz(uint32_t Value);
+    rsbs    lr, r0, #0
+    and     lr, lr, r0
+    clzcc   lr, lr
+    rsc     r0, lr, #32
+    ldmfd   sp!, {pc}
     .endfunc
-
-__ctz_hash_table:
-    .byte   0X20, 0X00, 0X01, 0X0C, 0X02, 0X06, 0XFF, 0X0D
-    .byte   0X03, 0XFF, 0X07, 0XFF, 0XFF, 0XFF, 0XFF, 0X0E
-    .byte   0X0A, 0X04, 0XFF, 0XFF, 0X08, 0XFF, 0XFF, 0X19
-    .byte   0XFF, 0XFF, 0XFF, 0XFF, 0XFF, 0X15, 0X1B, 0X0F
-    .byte   0X1F, 0X0B, 0X05, 0XFF, 0XFF, 0XFF, 0XFF, 0XFF
-    .byte   0X09, 0XFF, 0XFF, 0X18, 0XFF, 0XFF, 0X14, 0X1A
-    .byte   0X1E, 0XFF, 0XFF, 0XFF, 0XFF, 0X17, 0XFF, 0X13
-    .byte   0X1D, 0XFF, 0X16, 0X12, 0X1C, 0X11, 0X10
 ///////////////////////////////////////////////////////////////////////////////////////////////////
     .globl  __clz
     .type   __clz, %function
     .func   __clz
-__clz:
-    stmfd   sp!,{r1, r2, lr}                                                                        // uint32_t __clz(uint32_t Value);
-    orr     r1, r0, r0, LSR#1
-    orr     r1, r1, r1, LSR#2
-    orr     r1, r1, r1, LSR#4
-    orr     r1, r1, r1, LSR#8
-    bic     r1, r1, r1, LSR#16
-    rsb     r1, r1, r1, LSL#9
-    rsb     r1, r1, r1, LSL#11
-    rsb     r1, r1, r1, LSL#14
-    adr     r2, __clz_hash_table
-    ldrb    r0, [r2, r1, LSR#26]
-    ldmfd   sp!,{r1, r2, pc}
+__clz:                                                                                              // uint32_t __clz(uint32_t Value);
+    clz     r0, r0
+    mov     pc, lr
     .endfunc
-
-__clz_hash_table:
-    .byte   0X20, 0X14, 0X13, 0XFF, 0XFF, 0X12, 0XFF, 0X07
-    .byte   0X0A, 0X11, 0XFF, 0XFF, 0X0E, 0XFF, 0X06, 0XFF
-    .byte   0XFF, 0X09, 0XFF, 0X10, 0XFF, 0XFF, 0X01, 0X1A
-    .byte   0XFF, 0X0D, 0XFF, 0XFF, 0X18, 0X05, 0XFF, 0XFF
-    .byte   0XFF, 0X15, 0XFF, 0X08, 0X0B, 0XFF, 0X0F, 0XFF
-    .byte   0XFF, 0XFF, 0XFF, 0X02, 0X1B, 0X00, 0X19, 0XFF
-    .byte   0X16, 0XFF, 0X0C, 0XFF, 0XFF, 0X03, 0X1C, 0XFF
-    .byte   0X17, 0XFF, 0X04, 0X1D, 0XFF, 0XFF, 0X1E, 0X1F
 ///////////////////////////////////////////////////////////////////////////////////////////////////
     .align  2
     .globl  __get_cpu_freq_ticks
