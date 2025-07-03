@@ -65,7 +65,7 @@ static boolean GPT_RegisterInterrupt(void)
 {
 #ifdef USEINTERRUPTS
     GPTStatus.GPT.GPTIntsRegistered = NVIC_RegisterIRQ(IRQ_GPT_CODE, GPT_InterruptHandler,
-                                                       IRQ_SENS_EDGE, true, true);
+                                      IRQ_SENS_EDGE, true, true);
 #else
     GPTStatus.GPT.GPTIntsRegistered = false;
 #endif

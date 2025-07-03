@@ -251,7 +251,7 @@ extern boolean NVIC_RegisterIRQ(uint32_t SourceIdx, void (*Handler)(void),
                                 uint8_t Sense, boolean ModeIRQ, boolean Enable);
 extern boolean NVIC_UnregisterIRQ(uint32_t SourceIdx);
 boolean NVIC_RegisterEINT(uint32_t SourceIdx, void (*Handler)(void), uint8_t Sense,
-                          uint8_t Polarity,uint16_t Debounce, boolean Enable);
+                          uint8_t Polarity, uint16_t Debounce, boolean Enable);
 extern void NVIC_ChangeInterruptMode(uint32_t SourceIdx, boolean ModeIRQ);
 extern boolean NVIC_UnregisterEINT(uint32_t SourceIdx);
 extern boolean NVIC_EnableEINT(uint32_t SourceIdx);

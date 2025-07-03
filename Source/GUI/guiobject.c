@@ -336,7 +336,7 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
         TRECT NewPosition = GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
 
         NORMALIZEVAL(NewPosition.l, NewPosition.r);
-        NORMALIZEVAL(NewPosition.t,NewPosition.b);
+        NORMALIZEVAL(NewPosition.t, NewPosition.b);
 
         if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
         {
