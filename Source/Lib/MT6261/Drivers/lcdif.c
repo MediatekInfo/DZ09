@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2025 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -68,10 +68,7 @@ void LCDIF_DeleteCommandFromQueue(void)
     pDLITEM tmpItem = DL_GetFirstItem(LCDIFQueue);
 
     if (tmpItem != NULL)
-    {
-        free(((pLCDCMD)tmpItem->Data)->Commands);
         DL_DeleteItem(LCDIFQueue, tmpItem);
-    }
 }
 
 boolean LCDIF_GetCommandFromQueue(void)
@@ -93,7 +90,7 @@ boolean LCDIF_GetCommandFromQueue(void)
             {
                 uint32_t i;
 
-                for(i = 0; i < CMD->CMDCount; i++) LCDIF_COMD(i) = CMD->Commands[i];
+                for(i = 0; i < CMD->CMDCount; i++) LCDIF_COMD(i) = CMD->CmdArray[i];
                 LCDIF_WROICON &= ~LCDIF_COMMAND_MASK;
                 LCDIF_WROICON |= LCDIF_COMMAND(CMD->CMDCount - 1) | LCDIF_ENC;
             }
@@ -116,29 +113,15 @@ void LCDIF_RestartQueue(void)
     __restore_interrupts(flags);
 }
 
-boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect)
+boolean LCDIF_AddCommandToQueue(pLCDCMD CMD)
 {
-    pLCDCMD CMD;
-
-    if (CmdCount && (CmdArray != NULL))
+    if ((CMD != NULL) && DL_AddItemPtr(LCDIFQueue, &CMD->ListHeader))
     {
-        CMD = malloc(sizeof(TLCDCMD));
-        if (CMD != NULL)
-        {
-            CMD->CMDCount = CmdCount;
-            CMD->UpdateRect = (UpdateRect != NULL) ? *UpdateRect : Rect(0, 0, 0, 0);
-            CMD->Commands = CmdArray;
-
-            if (DL_AddItemPtr(LCDIFQueue, &CMD->ListHeader))
-            {
-                LCDIF_RestartQueue();
-                while(DL_GetItemsCount(LCDIFQueue) >= MAX_LCDQUEUE_SIZE);
-                return true;
-            }
-            free(CMD);
-        }
+        LCDIF_RestartQueue();
+        while(DL_GetItemsCount(LCDIFQueue) >= MAX_LCDQUEUE_SIZE);
+        return true;
     }
-    free(CmdArray);
+    free(CMD);
 
     return false;
 }
@@ -437,13 +420,12 @@ boolean LCDIF_IsLayerInitialized(TVLINDEX Layer)
 
 void LCDIF_UpdateRectangle(TRECT Rct)
 {
-    uint32_t *Commands, CmdCount;
-
     if (GDI_ANDRectangles(&Rct, &LCDScreen.ScreenRgn))
     {
-        Commands = LCDDRV_SetOutputWindow(&Rct, &CmdCount, LCDIF_DATA, LCDIF_CMD);
-        if (Commands != NULL)
-            LCDIF_AddCommandToQueue(Commands, CmdCount, &Rct);
+        pLCDCMD Command = LCDDRV_SetOutputWindow(&Rct);
+
+        if (Command != NULL)
+            LCDIF_AddCommandToQueue(Command);
     }
 }
 

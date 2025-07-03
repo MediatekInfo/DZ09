@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2025 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -305,7 +305,7 @@ typedef struct tag_TLCDCMD
     TDLITEM   ListHeader;
     TRECT     UpdateRect;
     uint32_t  CMDCount;
-    uint32_t  *Commands;
+    uint32_t  CmdArray[];
 } TLCDCMD, *pLCDCMD;
 
 extern TSCREEN LCDScreen;
@@ -315,7 +315,7 @@ extern boolean LCDIF_Initialize(void);
 extern void LCDIF_WriteCommand(uint8_t Cmd);
 extern void LCDIF_WriteData(uint8_t Data);
 extern uint8_t LCDIF_ReadData(void);
-extern boolean LCDIF_AddCommandToQueue(uint32_t *CmdArray, uint32_t CmdCount, pRECT UpdateRect);
+extern boolean LCDIF_AddCommandToQueue(pLCDCMD CMD);
 extern boolean LCDIF_SetupLayer(TVLINDEX Layer, TPOINT Offset, uint32_t SizeX, uint32_t SizeY,
                                 TCFORMAT CFormat, uint8_t GlobalAlpha, uint32_t ForeColor);
 extern boolean LCDIF_SetLayerEnabled(TVLINDEX Layer, boolean Enabled, boolean UpdateScreen);
