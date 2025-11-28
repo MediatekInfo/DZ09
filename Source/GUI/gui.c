@@ -32,15 +32,13 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
     {
         TRECT ObjectPosition;
 
-        if (Object->Parent != NULL)
+        if (Object->Parent == NULL)
         {
-            ObjectPosition = GUI_CalculateClientArea(Object->Parent);
-            GDI_ANDRectangles(&ObjectPosition, &Object->Position);
+            /* In case of layer */
+            IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &Object->Position) &&
+                             ((Object->Parent != NULL) || GUI_IsWindowObject(Object));              // The topmost object in the hierarchy must be a TWIN object.
         }
-        else ObjectPosition = Object->Position;
-
-        IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
-                         ((Object->Parent != NULL) || GUI_IsWindowObject(Object));                  // The topmost object in the hierarchy must be a TWIN object.
+        else IsStillVisible = true;
 
         while(IsStillVisible && (Object->Parent != NULL))
         {
