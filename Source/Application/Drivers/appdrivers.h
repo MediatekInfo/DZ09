@@ -28,7 +28,7 @@
 #define LCDDRV_Initialize()                 ILI9341_Initialize()
 #define LCDDRV_Sleep()                      ILI9341_SleepLCD()
 #define LCDDRV_Resume()                     ILI9341_ResumeLCD()
-#define LCDDRV_SetOutputWindow(a, b, c, d)  ILI9341_SetOutputWindow(a, b, c, d)
+#define LCDDRV_SetOutputWindow(a)           ILI9341_SetOutputWindow(a)
 #define _LCD_DRIVER_ASSIGNED_
 #define _BACKLIGHT_DRIVER_
 #endif
@@ -39,7 +39,7 @@
 #define LCDDRV_Initialize()                 false
 #define LCDDRV_Sleep()
 #define LCDDRV_Resume()
-#define LCDDRV_SetOutputWindow(a, b, c, d)  NULL
+#define LCDDRV_SetOutputWindow(a)           NULL
 #define _LCD_DRIVER_ASSIGNED_
 #endif
 #endif
