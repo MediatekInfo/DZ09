@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2024 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -308,7 +308,7 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
 
             if (Object->Visible)
             {
-                if (ChangedPitch) GUI_Invalidate(Object, NULL);
+                if (ChangedPitch) GUI_Invalidate(Object);
                 else if (ChangedHeight)
                 {
                     TRECT  ScreenRect = GDI_LocalToGlobalRct(&OldPosition, &NewPosition.lt);
@@ -322,7 +322,7 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
                         uint32_t i;
 
                         for(i = 0; i < UpdateRects->Count; i++)
-                            GUI_Invalidate(Object, &UpdateRects->Item[i]);
+                            GUI_InvalidateArea(Object, &UpdateRects->Item[i]);
 
                         GDI_DeleteRList(UpdateRects);
                     }
@@ -336,7 +336,7 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
         TRECT NewPosition = GDI_LocalToGlobalRct(Position, &Object->Parent->Position.lt);
 
         NORMALIZEVAL(NewPosition.l, NewPosition.r);
-        NORMALIZEVAL(NewPosition.t,NewPosition.b);
+        NORMALIZEVAL(NewPosition.t, NewPosition.b);
 
         if (memcmp(&Object->Position, &NewPosition, sizeof(TRECT)) != 0)
         {
@@ -347,14 +347,14 @@ boolean GUI_SetObjectPosition(pGUIOBJECT Object, pRECT Position)
 
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildPositions(Object, &dXY);
-            GUI_Invalidate(Object, NULL);
+            GUI_Invalidate(Object);
 
             if (UpdateRects != NULL)
             {
                 uint32_t i;
 
                 for(i = 0; i < UpdateRects->Count; i++)
-                    GUI_Invalidate(Object->Parent, &UpdateRects->Item[i]);
+                    GUI_InvalidateArea(Object->Parent, &UpdateRects->Item[i]);
 
                 GDI_DeleteRList(UpdateRects);
             }
@@ -382,7 +382,7 @@ boolean GUI_SetObjectEnabled(pGUIOBJECT Object, boolean Enabled)
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
-            GUI_Invalidate(Object, NULL);
+            GUI_Invalidate(Object);
         }
     }
     return true;
@@ -411,7 +411,7 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
                 if (Visible)
                 {
                     LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, false);
-                    GUI_Invalidate(Object, NULL);
+                    GUI_Invalidate(Object);
                 }
                 else LCDIF_SetLayerEnabled(((pWIN)Object)->Layer, Visible, true);
             }
@@ -421,7 +421,7 @@ boolean GUI_SetObjectVisibility(pGUIOBJECT Object, boolean Visible)
             if (GUI_IsWindowObject(Object))
                 GUI_UpdateChildTreeInheritance(Object);
 
-            GUI_Invalidate(Object, NULL);
+            GUI_Invalidate(Object);
         }
     }
     return true;
@@ -464,7 +464,7 @@ boolean GUI_SetObjectText(pGUIOBJECT Object, TTEXT ObjectText)
             GDI_UpdateTextExtent(&ObjectText);
 
             if ((Result = SetTextObject[Object->Type](Object, &ObjectText)) == true)
-                GUI_Invalidate(Object, NULL);
+                GUI_Invalidate(Object);
         }
     }
     return Result;
@@ -513,7 +513,7 @@ boolean GUI_SetObjectFont(pGUIOBJECT Object, pBFC_FONT ObjectFont)
             ObjectText->Font = ObjectFont;
             GDI_UpdateTextExtent(ObjectText);
 
-            GUI_Invalidate(Object, NULL);
+            GUI_Invalidate(Object);
             Result = true;
         }
     }
@@ -573,7 +573,7 @@ boolean GUI_SetObjecTextColor(pGUIOBJECT Object, TTEXTCOLOR Color)
             if (SetTextObject[Object->Type] != NULL)
                 Result = SetTextObject[Object->Type](Object, &ObjectText);
 
-            if (Result) GUI_Invalidate(Object, NULL);
+            if (Result) GUI_Invalidate(Object);
         }
     }
     return Result;
@@ -639,7 +639,7 @@ boolean GUI_SetObjectCaption(pGUIOBJECT Object, char *Caption)
             ObjectText->Text = Caption;
             GDI_UpdateTextExtent(ObjectText);
 
-            GUI_Invalidate(Object, NULL);
+            GUI_Invalidate(Object);
             Result = true;
         }
     }
@@ -668,7 +668,7 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
             if (SetActive[ActiveObject->Type] != NULL)
             {
                 SetActive[ActiveObject->Type](ActiveObject, false);
-                if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+                if (Invalidate) GUI_Invalidate(ActiveObject);
             }
         }
         if ((Object->Type < GO_NUMTYPES) && (ActiveObject = Object) != NULL)
@@ -676,7 +676,7 @@ void GUI_SetObjectActive(pGUIOBJECT Object, boolean Invalidate)
             if (SetActive[ActiveObject->Type] != NULL)
             {
                 SetActive[ActiveObject->Type](ActiveObject, true);
-                if (Invalidate) GUI_Invalidate(ActiveObject, NULL);
+                if (Invalidate) GUI_Invalidate(ActiveObject);
             }
         }
         else ActiveObject = NULL;
@@ -706,7 +706,7 @@ void GUI_UpdateActiveState(pGUIOBJECT Object, boolean Active)
                 (GetActive[ActiveObject->Type](ActiveObject) != Active))
         {
             SetActive[ActiveObject->Type](ActiveObject, Active);
-            GUI_Invalidate(ActiveObject, NULL);
+            GUI_Invalidate(ActiveObject);
         }
     }
 }

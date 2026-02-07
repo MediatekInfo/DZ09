@@ -34,8 +34,8 @@
 #define SFI_BASE                    0xA0140000                                                      // Serial flash interface
 #define MIXED_BASE                  0xA0170000                                                      // Analog Chip Interface Controller (PLL, CLKSQ, FH, CLKSW and SIMLS)
 #define PLL_BASE                    MIXED_BASE
-#define TOPSM_BASE                  0xA0180000                                                      // TOPSM0
 #define MSDC0_BASE                  0xA0130000                                                      // MSDC0
+#define TOPSM_BASE                  0xA0180000                                                      // TOPSM0
 #define SPI_BASE                    0xA01E0000                                                      // SPI
 #define MSDC1_BASE                  0xA0270000                                                      // MSDC1
 #define PWM4_BASE                   0xA0280000                                                      // Pulse-Width Modulation Outputs

@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2024 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -195,10 +195,10 @@ static void USB9_HandleStdRequest(pUSBSETUP Setup)
                 (DevInterface->GetAltInterface == NULL)) Error = true;
         else
         {
-            uint8_t *AltInerfIndex = DevInterface->GetAltInterface(Setup->wIndex);
+            uint8_t *AltInterfIndex = DevInterface->GetAltInterface(Setup->wIndex);
 
-            if (AltInerfIndex == NULL) Error = true;
-            else USB_PrepareDataTransmit(USB_EP0, AltInerfIndex, 1);
+            if (AltInterfIndex == NULL) Error = true;
+            else USB_PrepareDataTransmit(USB_EP0, AltInterfIndex, 1);
         }
         break;
     case USB_SET_INTERFACE:

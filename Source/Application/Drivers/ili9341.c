@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2019 AJScorp
+* Copyright (C) 2025 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -67,34 +67,34 @@ void ILI9341_ResumeLCD(void)
     LCDIF_WriteCommand(ILI9341_DISPON);
 }
 
-uint32_t *ILI9341_SetOutputWindow(pRECT Rct, uint32_t *Count, uint32_t DataAttr, uint32_t CmdAttr)
+pLCDCMD ILI9341_SetOutputWindow(pRECT Rct)
 {
-    uint32_t *Data = NULL;
+    pLCDCMD Command = NULL;
 
-    if ((Rct != NULL) && (Count != NULL))
+    if (Rct != NULL)
     {
         uint32_t i = 0;
 
-        Data = malloc(ILI9341_SETWINCMDSIZE * sizeof(uint32_t));
-        if (Data != NULL)
+        Command = malloc(sizeof(TLCDCMD) + ILI9341_SETWINCMDSIZE * sizeof(uint32_t));
+        if (Command != NULL)
         {
-            Data[i++] = LCDIF_COMM(ILI9341_CASET) | CmdAttr;
-            Data[i++] = LCDIF_COMM(CASSH(Rct->l)) | DataAttr;
-            Data[i++] = LCDIF_COMM(CASSL(Rct->l)) | DataAttr;
-            Data[i++] = LCDIF_COMM(CASEH(Rct->r)) | DataAttr;
-            Data[i++] = LCDIF_COMM(CASEL(Rct->r)) | DataAttr;
+            Command->CMDCount = ILI9341_SETWINCMDSIZE;
+            Command->UpdateRect = *Rct;
 
-            Data[i++] = LCDIF_COMM(ILI9341_RASET) | CmdAttr;
-            Data[i++] = LCDIF_COMM(RASSH(Rct->t + ILI9341_ROWSHIFT)) | DataAttr;
-            Data[i++] = LCDIF_COMM(RASSL(Rct->t + ILI9341_ROWSHIFT)) | DataAttr;
-            Data[i++] = LCDIF_COMM(RASEH(Rct->b + ILI9341_ROWSHIFT)) | DataAttr;
-            Data[i++] = LCDIF_COMM(RASEL(Rct->b + ILI9341_ROWSHIFT)) | DataAttr;
+            Command->CmdArray[i++] = LCDIF_COMM(ILI9341_CASET) | LCDIF_CMD;
+            Command->CmdArray[i++] = LCDIF_COMM(CASSH(Rct->l)) | LCDIF_DATA;
+            Command->CmdArray[i++] = LCDIF_COMM(CASSL(Rct->l)) | LCDIF_DATA;
+            Command->CmdArray[i++] = LCDIF_COMM(CASEH(Rct->r)) | LCDIF_DATA;
+            Command->CmdArray[i++] = LCDIF_COMM(CASEL(Rct->r)) | LCDIF_DATA;
 
-            Data[i++] = LCDIF_COMM(ILI9341_RAMWR) | CmdAttr;
+            Command->CmdArray[i++] = LCDIF_COMM(ILI9341_RASET) | LCDIF_CMD;
+            Command->CmdArray[i++] = LCDIF_COMM(RASSH(Rct->t + ILI9341_ROWSHIFT)) | LCDIF_DATA;
+            Command->CmdArray[i++] = LCDIF_COMM(RASSL(Rct->t + ILI9341_ROWSHIFT)) | LCDIF_DATA;
+            Command->CmdArray[i++] = LCDIF_COMM(RASEH(Rct->b + ILI9341_ROWSHIFT)) | LCDIF_DATA;
+            Command->CmdArray[i++] = LCDIF_COMM(RASEL(Rct->b + ILI9341_ROWSHIFT)) | LCDIF_DATA;
 
-            *Count = i;
+            Command->CmdArray[i++] = LCDIF_COMM(ILI9341_RAMWR) | LCDIF_CMD;
         }
     }
-    return Data;
+    return Command;
 }
-

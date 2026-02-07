@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 AJScorp
+* Copyright (C) 2026 - 2022 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,11 @@
 #define KP_SEL_TRIPLE               (0 << 0)
 #define KP_SEL_DOUBLE               (1 << 0)
 #define KP_SAMPLE(v)                (((v) & 0x1F) << 1)
+#define KP_ROW0                     (1 << 6)
+#define KP_ROW1                     (1 << 7)
+#define KP_ROW2                     (1 << 8)
+#define KP_ROW3                     (1 << 9)
+#define KP_ROW4                     (1 << 10)
 #define KP_COL0                     (1 << 11)
 #define KP_COL1                     (1 << 12)
 #define KP_COL2                     (1 << 13)

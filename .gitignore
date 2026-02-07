@@ -37,4 +37,5 @@ obj
 *.map
 *.save
 *.depend
+*.eds
 doc

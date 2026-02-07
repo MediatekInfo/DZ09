@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2024 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -691,7 +691,7 @@
 #define GPIO32_MASK                 0x07
 #define GPIO32_MODE_IO              0x00                                                            // IO
 #define GPIO32_MODE_MCCM0           0x01                                                            // O
-#define GPIO32_MODE_U2TDX           0x04                                                            // O
+#define GPIO32_MODE_U2TXD           0x04                                                            // O
 
 #define GPIO33_MASK                 0x07
 #define GPIO33_MODE_IO              0x00                                                            // IO

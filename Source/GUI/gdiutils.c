@@ -353,41 +353,48 @@ pRLIST GDI_SUBRectangles(pRECT a, pRECT b)
 
         return Rlist;
     }
-    if (((b->l - a->l) > 0) && ((a->b - a->t) >= 0))
+
+    if ((b->r - b->l) >= 0)
     {
-        /* Left vertical rectangle */
-        Rlist->Item[Rlist->Count].l = a->l;
-        Rlist->Item[Rlist->Count].t = a->t;
-        Rlist->Item[Rlist->Count].r = b->l - 1;
-        Rlist->Item[Rlist->Count].b = a->b;
-        Rlist->Count++;
+        if ((b->t - a->t) > 0)
+        {
+            /* Top horizontal rectangle */
+            Rlist->Item[Rlist->Count].l = a->l;
+            Rlist->Item[Rlist->Count].t = a->t;
+            Rlist->Item[Rlist->Count].r = a->r;
+            Rlist->Item[Rlist->Count].b = b->t - 1;
+            Rlist->Count++;
+        }
+        if ((a->b - b->b) > 0)
+        {
+            /* Bottom horizontal rectangle */
+            Rlist->Item[Rlist->Count].l = a->l;
+            Rlist->Item[Rlist->Count].t = b->b + 1;
+            Rlist->Item[Rlist->Count].r = a->r;
+            Rlist->Item[Rlist->Count].b = a->b;
+            Rlist->Count++;
+        }
     }
-    if (((b->r - b->l) >= 0) && ((b->t - a->t) > 0))
+    if ((a->b - a->t) >= 0)
     {
-        /* Top horizontal rectangle */
-        Rlist->Item[Rlist->Count].l = max(a->l, b->l);
-        Rlist->Item[Rlist->Count].t = a->t;
-        Rlist->Item[Rlist->Count].r = min(a->r, b->r);
-        Rlist->Item[Rlist->Count].b = b->t - 1;
-        Rlist->Count++;
-    }
-    if (((a->r - b->r) > 0) && ((a->b - a->t) >= 0))
-    {
-        /* Right vertical rectangle */
-        Rlist->Item[Rlist->Count].l = b->r + 1;
-        Rlist->Item[Rlist->Count].t = a->t;
-        Rlist->Item[Rlist->Count].r = a->r;
-        Rlist->Item[Rlist->Count].b = a->b;
-        Rlist->Count++;
-    }
-    if (((b->r - b->l) >= 0) && ((a->b - b->b) > 0))
-    {
-        /* Bottom horizontal rectangle */
-        Rlist->Item[Rlist->Count].l = max(a->l, b->l);
-        Rlist->Item[Rlist->Count].t = b->b + 1;
-        Rlist->Item[Rlist->Count].r = min(a->r, b->r);
-        Rlist->Item[Rlist->Count].b = a->b;
-        Rlist->Count++;
+        if ((a->r - b->r) > 0)
+        {
+            /* Right vertical rectangle */
+            Rlist->Item[Rlist->Count].l = b->r + 1;
+            Rlist->Item[Rlist->Count].t = max(a->t, b->t);
+            Rlist->Item[Rlist->Count].r = a->r;
+            Rlist->Item[Rlist->Count].b = min(a->b, b->b);
+            Rlist->Count++;
+        }
+        if ((b->l - a->l) > 0)
+        {
+            /* Left vertical rectangle */
+            Rlist->Item[Rlist->Count].l = a->l;
+            Rlist->Item[Rlist->Count].t = max(a->t, b->t);
+            Rlist->Item[Rlist->Count].r = b->l - 1;
+            Rlist->Item[Rlist->Count].b = min(a->b, b->b);
+            Rlist->Count++;
+        }
     }
     return Rlist;
 }

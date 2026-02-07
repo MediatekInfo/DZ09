@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2020 AJScorp
+* Copyright (C) 2024 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -169,7 +169,7 @@ pGUIOBJECT GUI_CreateWindow(pGUIOBJECT Parent, TRECT Position,
         {
             Win->Head.Type = GO_WINDOW;
             if (Win->Head.Visible && Win->Head.InheritedVisible)
-                GUI_Invalidate((pGUIOBJECT)Win, NULL);
+                GUI_Invalidate((pGUIOBJECT)Win);
         }
         else
         {

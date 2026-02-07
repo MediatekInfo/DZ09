@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2024 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -184,6 +184,44 @@ pDLIST DL_Delete(pDLIST DList, boolean FreeData)
         __restore_interrupts(intflags);
     }
     return NULL;
+}
+
+boolean DL_Clear(pDLIST DList, boolean FreeData)
+{
+    uint32_t intflags;
+    pDLITEM  tmpItem, tmpItemToFree;
+
+    if (DList != NULL)
+    {
+        intflags = __disable_interrupts();
+
+        tmpItem = DList->First;
+        if (FreeData && ((uintptr_t)tmpItem->Data != (uintptr_t)tmpItem))
+        {
+            while(tmpItem != NULL)
+            {
+                if (IsDynamicMemory(tmpItem->Data)) free(tmpItem->Data);
+                tmpItemToFree = tmpItem;
+                tmpItem = tmpItem->Next;
+                free(tmpItemToFree);
+            }
+        }
+        else
+        {
+            while(tmpItem != NULL)
+            {
+                tmpItemToFree = tmpItem;
+                tmpItem = tmpItem->Next;
+                free(tmpItemToFree);
+            }
+        }
+
+        __secure_memset(DList, 0x00, sizeof(TDLIST));
+
+        __restore_interrupts(intflags);
+        return true;
+    }
+    return false;
 }
 
 uint32_t DL_GetItemsCount(pDLIST DList)

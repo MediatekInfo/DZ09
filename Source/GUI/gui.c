@@ -3,7 +3,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2022 - 2019 AJScorp
+* Copyright (C) 2024 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -32,15 +32,13 @@ static boolean GUI_IsObjectVisibleAcrossParents(pPAINTEV PEvent)
     {
         TRECT ObjectPosition;
 
-        if (Object->Parent != NULL)
+        if (Object->Parent == NULL)
         {
-            ObjectPosition = GUI_CalculateClientArea(Object->Parent);
-            GDI_ANDRectangles(&ObjectPosition, &Object->Position);
+            /* In case of layer */
+            IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &Object->Position) &&
+                             ((Object->Parent != NULL) || GUI_IsWindowObject(Object));              // The topmost object in the hierarchy must be a TWIN object.
         }
-        else ObjectPosition = Object->Position;
-
-        IsStillVisible = GDI_ANDRectangles(&PEvent->UpdateRect, &ObjectPosition) &&
-                         ((Object->Parent != NULL) || GUI_IsWindowObject(Object));                  // The topmost object in the hierarchy must be a TWIN object.
+        else IsStillVisible = true;
 
         while(IsStillVisible && (Object->Parent != NULL))
         {
@@ -247,29 +245,37 @@ boolean GUI_Initialize(void)
     return Result;
 }
 
-/*
-   If Object != NULL - Rct coordinates relative to the object.
-   If Rct == NULL - Invalidate whole object
-*/
-void GUI_Invalidate(pGUIOBJECT Object, pRECT Rct)
+void GUI_Invalidate(pGUIOBJECT Object)
 {
     TPAINTEV PaintEvent = {0};
 
     if ((Object != NULL) && Object->InheritedVisible)
     {
         PaintEvent.Object = Object;
-        if (Rct == NULL) PaintEvent.UpdateRect = Object->Position;
-        else
-        {
-            if (Object->Parent != NULL)
-                PaintEvent.UpdateRect = GDI_LocalToGlobalRct(Rct, &Object->Parent->Position.lt);
-            else if (LCDIF_IsLayerInitialized(((pWIN)Object)->Layer) && Object->Visible)
-                PaintEvent.UpdateRect = *Rct;
-            else return;
+        PaintEvent.UpdateRect = Object->Position;
 
-            NORMALIZEVAL(PaintEvent.UpdateRect.l, PaintEvent.UpdateRect.r);
-            NORMALIZEVAL(PaintEvent.UpdateRect.t, PaintEvent.UpdateRect.b);
-        }
+        if (GUI_IsObjectVisibleAcrossParents(&PaintEvent))
+            EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
+    }
+}
+
+void GUI_InvalidateArea(pGUIOBJECT Object, pRECT Rct)
+{
+    TPAINTEV PaintEvent = {0};
+
+    if ((Object != NULL) && Object->InheritedVisible && (Rct != NULL))
+    {
+        PaintEvent.Object = Object;
+
+        if (Object->Parent != NULL)
+            PaintEvent.UpdateRect = GDI_LocalToGlobalRct(Rct, &Object->Parent->Position.lt);
+        else if (LCDIF_IsLayerInitialized(((pWIN)Object)->Layer) && Object->Visible)
+            PaintEvent.UpdateRect = *Rct;
+        else return;
+
+        NORMALIZEVAL(PaintEvent.UpdateRect.l, PaintEvent.UpdateRect.r);
+        NORMALIZEVAL(PaintEvent.UpdateRect.t, PaintEvent.UpdateRect.b);
+
         if (GUI_IsObjectVisibleAcrossParents(&PaintEvent))
             EM_PostEvent(ET_ONPAINT, NULL, &PaintEvent, sizeof(TPAINTEV));
     }
@@ -371,7 +377,7 @@ void GUI_OnPenPressHandler(pEVENT Event)
                 GUI_SetObjectActive(Object, ParentToInvalidate == NULL);
                 if (Object->OnPress != NULL) Object->OnPress(Object, &OnPressXY);
             }
-            GUI_Invalidate(ParentToInvalidate, NULL);
+            GUI_Invalidate(ParentToInvalidate);
         }
         else GUI_SetObjectActive(NULL, true);
     }

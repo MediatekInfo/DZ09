@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020, 2019 AJScorp
+* Copyright (C) 2025 - 2019 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -139,6 +139,6 @@
 extern boolean ILI9341_Initialize(void);
 extern void ILI9341_SleepLCD(void);
 extern void ILI9341_ResumeLCD(void);
-extern uint32_t *ILI9341_SetOutputWindow(pRECT Rct, uint32_t *Count, uint32_t DataAttr, uint32_t CmdAttr);
+extern pLCDCMD ILI9341_SetOutputWindow(pRECT Rct);
 
 #endif /* _ILI9341_H_ */

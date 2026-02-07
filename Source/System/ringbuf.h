@@ -1,7 +1,7 @@
 /*
 * This file is part of the DZ09 project.
 *
-* Copyright (C) 2020 AJScorp
+* Copyright (C) 2024 - 2020 AJScorp
 *
 * This program is free software; you can redistribute it and/or modify
 * it under the terms of the GNU General Public License as published by
@@ -21,15 +21,17 @@
 
 typedef struct tag_RINGBUF
 {
-    uint8_t  *Buffer;
+    uint8_t  *Head;
     uint8_t  *Tail;
-    uint32_t DataCount;
     uint32_t BufferSize;
+    uint8_t  Buffer[];
 } TRINGBUF, *pRINGBUF;
 
 extern pRINGBUF RB_Create(uint32_t BufferSize);
 extern pRINGBUF RB_Destroy(pRINGBUF RingBuffer);
+extern uint32_t RB_WriteByte(pRINGBUF RingBuffer, uint8_t Data);
 extern uint32_t RB_WriteData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
+extern uint32_t RB_ReadByte(pRINGBUF RingBuffer, uint8_t *Data);
 extern uint32_t RB_ReadData(pRINGBUF RingBuffer, uint8_t *Data, uint32_t Count);
 extern uint32_t RB_GetCurrentDataCount(pRINGBUF RingBuffer);
 extern uint32_t RB_GetCurrentFreeSpace(pRINGBUF RingBuffer);
