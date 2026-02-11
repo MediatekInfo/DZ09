@@ -46,6 +46,7 @@
 #define PD_SPI                      (0x17)
 #define PD_OSTIMER                  (0x18)
 #define PD_SLCD_EMI_IDLE            (0x19)
+#define PD_KPAD                     (0x1B)
 #define PD_SPISLV                   (0x1C)
 #define PD_UART1                    (0x1D)
 #define PD_UART2                    (0x1E)
