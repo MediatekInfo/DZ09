@@ -24,6 +24,8 @@
 
 void Init(void)
 {
+    boolean Result;
+
     DBG_Initialize();                                                                               // Setup debug interface
     DebugPrint("\r\n--System initialization--\r\n");
 
@@ -54,10 +56,12 @@ void Init(void)
     RTC_Initialize();
 
     DebugPrint("Initialize event manager...");
-    DebugPrint((EM_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
+    Result = EM_Initialize();
+    DebugPrint(Result ? "Complete.\r\n" : "Failed\r\n");
 
     DebugPrint("Initialize low resolution timers pool...");
-    DebugPrint((LRT_Initialize()) ? "Complete.\r\n" : "Failed\r\n");
+    Result = LRT_Initialize();
+    DebugPrint(Result ? "Complete.\r\n" : "Failed\r\n");
 
     DebugPrint("Power management initialization");
     PMU_Initialize();
