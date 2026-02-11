@@ -20,7 +20,6 @@
 #define _DEBUG_H_
 
 #if _DEBUG_
-#include <stdio.h>
 #define DebugPrint(fmt, args...)    do\
                                     {\
                                         printf(fmt, ## args);\
